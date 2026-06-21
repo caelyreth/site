@@ -1,0 +1,5 @@
+# rt + deps
+node_modules
+
+# os
+.DS_Store
