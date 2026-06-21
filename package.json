@@ -1,10 +1,20 @@
 {
   "name": "@sigrika/site-workspace",
   "private": true,
-  "description": "Ly's digital land, open sourced",
   "license": "EUPL-1.2",
   "author": "Yu <i@iki.moe>",
   "type": "module",
+  "scripts": {
+    "fmt": "oxfmt",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "devDependencies": {
+    "oxfmt": "catalog:tooling",
+    "oxlint": "catalog:tooling",
+    "oxlint-tsgolint": "catalog:tooling",
+    "typescript": "catalog:tooling"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",

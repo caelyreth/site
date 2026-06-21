@@ -1,0 +1,7 @@
+{
+  "name": "@sigrika/land",
+  "private": true,
+  "license": "EUPL-1.2",
+  "author": "Yu <i@iki.moe>",
+  "type": "module"
+}
