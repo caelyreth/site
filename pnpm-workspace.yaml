@@ -1,18 +1,22 @@
 # MARK: - catalogs
 catalogs:
   x:
-    # workaround for svelte-check, tracked on
-    # https://github.com/sveltejs/language-tools/issues/3063
-    '@typescript/native-preview': npm:typescript@rc
-    oxfmt: ^0.51.0
-    oxlint: ^1.69.0
-    oxlint-tsgolint: ^0.23.0
-    typescript: rc
+    '@typescript/native-preview': latest
+    'oxfmt': ^0.51.0
+    'oxlint': ^1.69.0
+    'oxlint-tsgolint': ^0.23.0
+  f:
+    '@sveltejs/adapter-auto': ^7.0.1
+    '@sveltejs/kit': ^2.66.0
+    'svelte': ^5.56.3
+    'svelte-check': ^4.6.0
+    'vite': ^8.0.16
+  t:
+    '@types/node': ^26.0.0
 
 # MARK: - supply chain
 minimumReleaseAgeStrict: true
 minimumReleaseAgeIgnoreMissingTime: false
-trustPolicy: no-downgrade
 
 # MARK: - dep opts
 strictPeerDependencies: true
