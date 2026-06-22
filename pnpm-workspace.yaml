@@ -4,7 +4,10 @@ packages:
 
 # MARK: - catalogs
 catalogs:
-  tooling:
+  x:
+    # workaround for svelte-check, tracked on
+    # https://github.com/sveltejs/language-tools/issues/3063
+    '@typescript/native-preview': npm:typescript@rc
     oxfmt: ^0.51.0
     oxlint: ^1.69.0
     oxlint-tsgolint: ^0.23.0

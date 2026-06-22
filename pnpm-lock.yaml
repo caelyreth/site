@@ -204,7 +204,10 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  tooling:
+  x:
+    '@typescript/native-preview':
+      specifier: npm:typescript@rc
+      version: 7.0.1-rc
     oxfmt:
       specifier: ^0.51.0
       version: 0.51.0
@@ -222,17 +225,20 @@ importers:
 
   .:
     devDependencies:
+      '@typescript/native-preview':
+        specifier: catalog:x
+        version: typescript@7.0.1-rc
       oxfmt:
-        specifier: catalog:tooling
+        specifier: catalog:x
         version: 0.51.0
       oxlint:
-        specifier: catalog:tooling
+        specifier: catalog:x
         version: 1.70.0(oxlint-tsgolint@0.23.0)
       oxlint-tsgolint:
-        specifier: catalog:tooling
+        specifier: catalog:x
         version: 0.23.0
       typescript:
-        specifier: catalog:tooling
+        specifier: catalog:x
         version: 7.0.1-rc
 
   land: {}
