@@ -1,7 +1,3 @@
-# MARK: - workspace
-packages:
-  - land
-
 # MARK: - catalogs
 catalogs:
   x:

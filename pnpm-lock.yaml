@@ -241,8 +241,6 @@ importers:
         specifier: catalog:x
         version: 7.0.1-rc
 
-  land: {}
-
 packages:
 
   '@oxfmt/binding-android-arm-eabi@0.51.0':
