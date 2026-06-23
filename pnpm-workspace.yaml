@@ -1,9 +1,9 @@
 # MARK: - catalogs
 catalogs:
   x:
-    '@typescript/native-preview': latest
+    '@typescript/native-preview': 7.0.0-dev.20260621.1
     'oxfmt': ^0.51.0
-    'oxlint': ^1.69.0
+    'oxlint': ^1.70.0
     'oxlint-tsgolint': ^0.23.0
   f:
     '@sveltejs/adapter-auto': ^7.0.1
