@@ -7,6 +7,7 @@ export default defineConfig({
   sortImports: true,
   quoteProps: 'consistent',
   sortPackageJson: true,
+  svelte: true,
   jsdoc: {
     commentLineStrategy: 'multiline',
     preferCodeFences: true,

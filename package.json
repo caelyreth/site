@@ -25,6 +25,7 @@
     "svelte": "catalog:f",
     "svelte-check": "catalog:f",
     "typescript": "catalog:x",
+    "unocss": "catalog:f",
     "vite": "catalog:f"
   },
   "devEngines": {
