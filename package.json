@@ -2,5 +2,30 @@
   "name": "@caelyreth/site",
   "private": true,
   "license": "EUPL-1.2",
-  "author": "Yu <me@iki.moe>"
+  "author": "Yu <me@iki.moe>",
+  "type": "module",
+  "scripts": {
+    "fmt": "oxfmt",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "catalog:f",
+    "@sveltejs/kit": "catalog:f",
+    "@types/node": "catalog:t",
+    "oxfmt": "catalog:x",
+    "oxlint": "catalog:x",
+    "oxlint-tsgolint": "catalog:x",
+    "svelte": "catalog:f",
+    "svelte-check": "catalog:f",
+    "typescript": "catalog:x",
+    "vite": "catalog:f"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.10.0",
+      "onFail": "error"
+    }
+  }
 }
