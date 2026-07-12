@@ -57,7 +57,7 @@
     },
     "Svelte": {
       "enable_language_server": true,
-      "language_servers": ["oxlint", "oxfmt"],
+      "language_servers": ["oxlint", "oxfmt", "svelte-language-server"],
       "format_on_save": "on",
       "prettier": {
         "allowed": false

@@ -7,7 +7,13 @@
   "scripts": {
     "fmt": "oxfmt",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "check": "svelte-check",
+    "sync": "svelte-kit sync",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite start",
+    "prepare": "pnpm run sync"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "catalog:f",

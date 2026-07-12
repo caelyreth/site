@@ -1,5 +1,8 @@
 # runtime + deps
 node_modules
 
+# dev
+/.svelte-kit
+
 # os
 .DS_Store
