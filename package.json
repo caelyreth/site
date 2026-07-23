@@ -16,6 +16,7 @@
     "prepare": "pnpm run sync"
   },
   "devDependencies": {
+    "@iconify-json/ri": "catalog:f",
     "@sveltejs/adapter-auto": "catalog:f",
     "@sveltejs/kit": "catalog:f",
     "@types/node": "catalog:t",

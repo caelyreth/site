@@ -5,6 +5,20 @@
     <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="text-scale" content="scale" />
+    <script>
+      // restore theme before first paint to avoid a flash
+      try {
+        var t = localStorage.getItem('theme')
+        if (
+          t === 'dark' ||
+          (!t && matchMedia('(prefers-color-scheme: dark)').matches)
+        ) {
+          document.documentElement.classList.add('dark')
+        }
+      } catch {
+        /* localStorage unavailable — stay on media default */
+      }
+    </script>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">

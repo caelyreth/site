@@ -1,0 +1,90 @@
+/* Hallmark · macrostructure: Long Document · placeholder: system-foundations page
+ * theme: custom · vibe: "pure grayscale ground, quiet editorial, one vermilion accent"
+ * paper: oklch(98% 0 0) · accent: oklch(57% 0.17 40)
+ * display: Fraunces · body: Space Grotesk · axes: light / roman-serif / warm
+ * studied: no · context: inferred (user delegated)
+ * user override: zero-chroma neutral ramp (pure grayscale surfaces)
+ */
+
+:root {
+  /* neutral ramp — pure grayscale, zero chroma by request */
+  --color-paper: oklch(98% 0 0);
+  --color-paper-2: oklch(95% 0 0);
+  --color-rule: oklch(89% 0 0);
+  --color-muted: oklch(48% 0 0);
+  --color-ink-2: oklch(34% 0 0);
+  --color-ink: oklch(19% 0 0);
+
+  /* accent — vermilion, the only chroma on the page */
+  --color-accent: oklch(57% 0.17 40);
+  --color-focus: oklch(55% 0.21 40);
+
+  /* type stacks — referenced by uno.config theme.font */
+  --font-stack-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-stack-serif: 'Fraunces', ui-serif, Georgia, serif;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  color-scheme: light;
+}
+
+.dark {
+  --color-paper: oklch(15% 0 0);
+  --color-paper-2: oklch(18.5% 0 0);
+  --color-rule: oklch(27% 0 0);
+  --color-muted: oklch(63% 0 0);
+  --color-ink-2: oklch(76% 0 0);
+  --color-ink: oklch(93% 0 0);
+
+  /* same hue — only lightness and chroma move */
+  --color-accent: oklch(65% 0.15 40);
+  --color-focus: oklch(68% 0.19 40);
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-stack-sans);
+  transition:
+    background-color var(--dur-short) var(--ease-in-out),
+    color var(--dur-short) var(--ease-in-out);
+}
+
+/* dark-mode optical compensation: light text on dark reads heavier */
+.dark body {
+  font-weight: 350;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+/* focus ring appears instantly — never transitioned */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 150ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+  }
+}
