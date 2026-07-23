@@ -1,4 +1,7 @@
-/* Hallmark · macrostructure: Long Document · placeholder: system-foundations page
+/* Hallmark · macrostructure: Workbench · blueprint chrome: hatch fields,
+ * background geometry (circle/square + orbits), boundary rules at the
+ * 48rem measure, registration marks, grain — theme lives in decoration,
+ * formatting, and background; content stays content
  * theme: custom · vibe: "pure grayscale ground, quiet editorial, one vermilion accent"
  * paper: oklch(98% 0 0) · accent: oklch(57% 0.17 40)
  * display: Fraunces · body: Space Grotesk · axes: light / roman-serif / warm
@@ -10,7 +13,9 @@
   /* neutral ramp — pure grayscale, zero chroma by request */
   --color-paper: oklch(98% 0 0);
   --color-paper-2: oklch(95% 0 0);
-  --color-rule: oklch(89% 0 0);
+  --color-hatch: oklch(93.5% 0 0);
+  --color-deco: oklch(92% 0 0);
+  --color-rule: oklch(91% 0 0);
   --color-muted: oklch(48% 0 0);
   --color-ink-2: oklch(34% 0 0);
   --color-ink: oklch(19% 0 0);
@@ -37,6 +42,8 @@
 .dark {
   --color-paper: oklch(15% 0 0);
   --color-paper-2: oklch(18.5% 0 0);
+  --color-hatch: oklch(27% 0 0);
+  --color-deco: oklch(25% 0 0);
   --color-rule: oklch(27% 0 0);
   --color-muted: oklch(63% 0 0);
   --color-ink-2: oklch(76% 0 0);
@@ -55,7 +62,7 @@ body {
 }
 
 body {
-  background: var(--color-paper);
+  background-color: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-stack-sans);
   transition:
@@ -63,9 +70,91 @@ body {
     color var(--dur-short) var(--ease-in-out);
 }
 
+/* leaning-slash hatch — viewport-fixed, visible only where the
+   content column doesn't mask it with its own paper background */
+.hatch {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -55deg,
+    transparent 0 7px,
+    var(--color-hatch) 7px 8px
+  );
+}
+
+/* boundary guidelines — viewport-fixed full-height hairlines at the
+   edges of the 48rem measure; off-viewport below that width */
+.guide {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-rule);
+  z-index: 20;
+  pointer-events: none;
+}
+.guide-left {
+  left: calc(50% - 24rem);
+}
+.guide-right {
+  right: calc(50% - 24rem);
+}
+
+/* registration mark — a small drafting cross at each viewport corner */
+.reg-mark {
+  position: fixed;
+  width: 13px;
+  height: 13px;
+  pointer-events: none;
+  z-index: 30;
+}
+.reg-mark::before,
+.reg-mark::after {
+  content: '';
+  position: absolute;
+  background: var(--color-rule);
+}
+.reg-mark::before {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+}
+.reg-mark::after {
+  top: 50%;
+  left: 0;
+  height: 1px;
+  width: 100%;
+}
+
+/* muted grain over the whole sheet */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
 /* dark-mode optical compensation: light text on dark reads heavier */
 .dark body {
   font-weight: 350;
+}
+
+/* link convention — quiet underline, accent on hover */
+a {
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 0.15em;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    text-decoration-color var(--dur-micro) var(--ease-out);
+}
+a:hover {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
 }
 
 ::selection {

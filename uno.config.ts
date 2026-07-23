@@ -19,6 +19,8 @@ export default defineConfig({
       'ink-2': 'var(--color-ink-2)',
       'muted': 'var(--color-muted)',
       'rule': 'var(--color-rule)',
+      'hatch': 'var(--color-hatch)',
+      'deco': 'var(--color-deco)',
       'accent': 'var(--color-accent)',
       'focus': 'var(--color-focus)',
     },
