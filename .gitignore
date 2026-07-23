@@ -4,5 +4,10 @@ node_modules
 # dev
 /.svelte-kit
 
+# agents
+/.agents
+/.claude
+/.codex
+
 # os
 .DS_Store
