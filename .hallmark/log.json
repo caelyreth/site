@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-07-24",
+    "macrostructure": "Map / Diagram",
+    "theme": "custom",
+    "theme_axes": "light / roman-serif / warm",
+    "vibe": "quiet botanical life beneath a station",
+    "enrichment": "E5 hand-built SVG (living field tracings)",
+    "brief": "Observation opening refined as one large botanical signal field, with colliding contour geometry behind and across four field studies"
+  },
+  {
+    "date": "2026-07-24",
     "macrostructure": "Photographic",
     "theme": "custom",
     "theme_axes": "dark / roman-serif / warm",

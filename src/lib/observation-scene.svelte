@@ -45,5 +45,32 @@
     </a>
 
     <ObservationWindow {observations} />
+
+    <!-- Registration traces sit behind the observation window, placing the
+         studies cleanly above the wider field. -->
+    <svg
+      aria-hidden="true"
+      class="scene-growth-foreground"
+      viewBox="0 0 1600 900"
+      preserveAspectRatio="none"
+      fill="none"
+    >
+      <g stroke="currentColor" vector-effect="non-scaling-stroke">
+        <path
+          class="scene-growth-trace"
+          d="M-44 677C287 544 480 645 748 500s454-72 896-278"
+        />
+        <path
+          class="scene-growth-trace scene-growth-trace-fine"
+          d="M-68 272C226 151 450 316 721 232s454 18 948-202"
+        />
+        <path
+          class="scene-growth-trace scene-growth-trace-fine"
+          d="M945 842c144-129 297-82 425-161s187-171 302-206"
+        />
+        <circle class="scene-growth-front-node" cx="748" cy="500" r="6" />
+        <circle class="scene-growth-front-node" cx="1261" cy="351" r="4" />
+      </g>
+    </svg>
   </section>
 </div>

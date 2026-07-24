@@ -1,6 +1,7 @@
 <script lang="ts">
   const barcodeBars = [
-    2, 1, 3, 1, 1, 2, 4, 1, 2, 1, 3, 2, 1, 4, 1, 2, 2, 1, 3, 1, 2, 4,
+    1, 2, 1, 3, 1, 1, 2, 1, 3, 1, 2, 1, 1, 3, 2, 1, 2, 1, 3, 1, 1, 2, 1, 3,
+    1, 2, 1, 1, 3, 1, 2, 1, 2, 1,
   ]
   const placeholderMap = [
     'Observation archive',
@@ -43,6 +44,16 @@
 
     <div class="footer-grid">
       <section class="footer-module">
+        <p class="footer-label">Site map</p>
+        <ul class="footer-sitemap" aria-label="Placeholder site map">
+          {#each placeholderMap as item}
+            <li>{item}</li>
+          {/each}
+        </ul>
+        <p pt-2 class="footer-detail">Placeholder index only</p>
+      </section>
+
+      <section class="footer-module">
         <p class="footer-label">Archive marker</p>
         <div aria-hidden="true" class="footer-barcode">
           {#each barcodeBars as width}
@@ -51,6 +62,15 @@
         </div>
         <p class="footer-detail">RBK / 2026 / YU</p>
       </section>
+
+      <div aria-hidden="true" class="footer-module footer-base-module">
+        <svg class="footer-base-asterisk" viewBox="0 0 48 48" fill="none">
+          <path
+            d="M24 3v42M3 24h42M9.15 9.15l29.7 29.7M38.85 9.15 9.15 38.85"
+            stroke="currentColor"
+          />
+        </svg>
+      </div>
 
       <section class="footer-module">
         <div class="footer-module-head">
@@ -81,25 +101,6 @@
           <span aria-hidden="true" class="footer-signal">{transmission}</span>
         {/key}
         <p class="footer-detail">Rotating relay identifier</p>
-      </section>
-
-      <div aria-hidden="true" class="footer-module footer-base-module">
-        <svg class="footer-base-asterisk" viewBox="0 0 48 48" fill="none">
-          <path
-            d="M24 3v42M3 24h42M9.15 9.15l29.7 29.7M38.85 9.15 9.15 38.85"
-            stroke="currentColor"
-          />
-        </svg>
-      </div>
-
-      <section class="footer-module">
-        <p class="footer-label">Site map</p>
-        <ul class="footer-sitemap" aria-label="Placeholder site map">
-          {#each placeholderMap as item}
-            <li>{item}</li>
-          {/each}
-        </ul>
-        <p pt-2 class="footer-detail">Placeholder index only</p>
       </section>
     </div>
 

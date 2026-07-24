@@ -6,6 +6,43 @@
   <div aria-hidden="true" class="stars stars-far"></div>
   <div aria-hidden="true" class="stars"></div>
 
+  <!-- A wide field diagram uses layered contour curves, keeping the
+       observation expressive without becoming decorative. -->
+  <svg
+    aria-hidden="true"
+    class="scene-growth scene-growth-back"
+    viewBox="0 0 1600 900"
+    preserveAspectRatio="none"
+    fill="none"
+  >
+    <g stroke="currentColor" vector-effect="non-scaling-stroke">
+      <path
+        class="scene-growth-strong"
+        d="M-120 778C154 585 411 705 667 539S1094 268 1720 176"
+      />
+      <path
+        class="scene-growth-strong"
+        d="M-76 204C246 307 398 164 617 236s410 88 1059-110"
+      />
+      <path
+        class="scene-growth-curve"
+        d="M-96 478C185 368 370 524 622 425s443-236 1099-150"
+      />
+      <path
+        class="scene-growth-curve"
+        d="M-42 855C255 719 416 829 686 710s463-99 973-342"
+      />
+      <path
+        class="scene-growth-curve scene-growth-curve-soft"
+        d="M178-35C380 104 512 64 697 164s385 156 756 36"
+      />
+      <circle class="scene-growth-node" cx="667" cy="539" r="10" />
+      <circle class="scene-growth-node" cx="1113" cy="276" r="8" />
+      <circle class="scene-growth-node" cx="617" cy="236" r="6" />
+      <circle class="scene-growth-node" cx="1126" cy="561" r="5" />
+    </g>
+  </svg>
+
   <span
     class="scene-label v-text hidden sm:block"
     absolute
@@ -23,19 +60,19 @@
     Kept by Yu
   </span>
 
-  <div absolute w-20 class="hidden -rotate-8 sm:block" style="top: 5%; left: 22%">
+  <div absolute w-20 class="scene-solid hidden -rotate-8 sm:block" style="top: 5%; left: 22%">
     <IsoCube />
   </div>
-  <div absolute w-12 class="hidden rotate-10 sm:block" style="top: 12%; right: 22%">
+  <div absolute w-12 class="scene-solid hidden rotate-10 sm:block" style="top: 12%; right: 22%">
     <IsoCube />
   </div>
-  <div absolute w-9 class="hidden -scale-x-100 sm:block" style="top: 60%; left: 16%">
+  <div absolute w-9 class="scene-solid hidden -scale-x-100 sm:block" style="top: 60%; left: 16%">
     <IsoCube />
   </div>
   <div
     absolute
     w-8
-    class="hidden rotate-6 blur-[1.5px] sm:block"
+    class="scene-solid hidden rotate-6 blur-[1.5px] sm:block"
     style="bottom: 8%; right: 24%"
   >
     <IsoCube />
@@ -43,7 +80,7 @@
   <div
     absolute
     w-20
-    class="hidden rotate-3 blur-[2.5px] md:block"
+    class="scene-solid hidden rotate-3 blur-[2.5px] md:block"
     style="bottom: 10%; left: 62%"
   >
     <IsoCube />
