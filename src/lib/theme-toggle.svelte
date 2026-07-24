@@ -15,20 +15,10 @@
 <button
   type="button"
   onclick={toggle}
+  class="theme-toggle"
   aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
   aria-pressed={dark}
   title={dark ? 'Light mode' : 'Dark mode'}
-  grid
-  place-items-center
-  size-9
-  rounded-none
-  cursor-pointer
-  border="1 rule"
-  text="ink-2 hover:ink"
-  bg="hover:paper-2"
-  transition-colors
-  duration-120
-  ease-out
 >
   <span
     class={dark ? 'i-ri-sun-line' : 'i-ri-moon-line'}

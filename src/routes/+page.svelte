@@ -1,4 +1,6 @@
 <script lang="ts">
+  import IsoCube from '$lib/iso-cube.svelte'
+
   const materials = [
     {
       name: 'paper',
@@ -63,7 +65,242 @@
   ]
 </script>
 
-<section pt="16 md:24" pb-14>
+<!-- page 1 — the observation window remains in frame while it shrinks
+     to deck width and dims into the paper background -->
+<div class="capture">
+  <section class="scene full-bleed" flex="~ items-center justify-center">
+    <div class="scene-debris">
+      <!-- starfields, two depths -->
+      <div aria-hidden="true" class="stars stars-far"></div>
+      <div aria-hidden="true" class="stars"></div>
+
+      <!-- machine labels -->
+      <span
+        class="scene-label v-text hidden sm:block"
+        absolute
+        right-3
+        style="top: 50%"
+      >
+        Rainbook program
+      </span>
+      <span
+        class="scene-label v-text-left hidden sm:block"
+        absolute
+        left-3
+        style="top: 50%"
+      >
+        Kept by Yu
+      </span>
+
+      <!-- floating solids — varied orientations and depths -->
+      <div
+        absolute
+        w-28
+        class="hidden -rotate-8 sm:block"
+        style="top: 5%; left: 22%"
+      >
+        <IsoCube />
+      </div>
+      <div
+        absolute
+        w-16
+        class="hidden rotate-10 sm:block"
+        style="top: 12%; right: 22%"
+      >
+        <IsoCube />
+      </div>
+      <div
+        absolute
+        w-12
+        class="hidden -scale-x-100 sm:block"
+        style="top: 60%; left: 16%"
+      >
+        <IsoCube />
+      </div>
+      <div
+        absolute
+        w-10
+        class="hidden rotate-6 blur-[1.5px] sm:block"
+        style="bottom: 8%; right: 24%"
+      >
+        <IsoCube />
+      </div>
+      <div
+        absolute
+        w-32
+        class="hidden rotate-3 blur-[2.5px] md:block"
+        style="bottom: 10%; left: 62%"
+      >
+        <IsoCube />
+      </div>
+
+      <!-- wireframes -->
+      <div
+        absolute
+        w-20
+        class="hidden -rotate-12 sm:block"
+        style="top: 38%; right: 5%"
+      >
+        <IsoCube wire />
+      </div>
+      <div
+        absolute
+        w-10
+        class="hidden rotate-6 sm:block"
+        style="top: 26%; left: 3%"
+      >
+        <IsoCube wire />
+      </div>
+      <div
+        absolute
+        w-8
+        class="hidden -rotate-4 md:block"
+        style="bottom: 6%; left: 38%"
+      >
+        <IsoCube wire />
+      </div>
+
+      <!-- orbits -->
+      <div
+        aria-hidden="true"
+        class="orbit hidden sm:block"
+        absolute
+        size-36
+        style="bottom: 16%; left: 8%"
+      ></div>
+      <div
+        aria-hidden="true"
+        class="orbit hidden md:block"
+        absolute
+        size-20
+        style="top: 24%; right: 30%"
+      ></div>
+
+      <!-- pixel clusters + square markers -->
+      <div
+        aria-hidden="true"
+        class="pixels hidden md:block"
+        absolute
+        style="top: 17%; right: 30%"
+      ></div>
+      <div
+        aria-hidden="true"
+        class="pixels hidden sm:block"
+        absolute
+        style="top: 68%; left: 22%"
+      ></div>
+      <div
+        aria-hidden="true"
+        class="pixels hidden md:block"
+        absolute
+        style="top: 58%; right: 10%"
+      ></div>
+      <span
+        aria-hidden="true"
+        class="marker"
+        absolute
+        style="top: 28%; left: 28%"
+      ></span>
+      <span
+        aria-hidden="true"
+        class="marker hidden sm:block"
+        absolute
+        style="top: 34%; right: 20%"
+      ></span>
+      <span
+        aria-hidden="true"
+        class="marker hidden md:block"
+        absolute
+        style="bottom: 30%; right: 26%"
+      ></span>
+      <span
+        aria-hidden="true"
+        class="marker hidden sm:block"
+        absolute
+        style="top: 47%; right: 18%; background: var(--color-accent)"
+      ></span>
+
+      <!-- streaks + stripe blocks -->
+      <div
+        aria-hidden="true"
+        class="streaks hidden sm:block"
+        absolute
+        style="left: 5%; top: 64%"
+      ></div>
+      <div
+        aria-hidden="true"
+        class="stripe-block hidden sm:block"
+        absolute
+        style="right: 14%; bottom: 24%"
+      ></div>
+      <div
+        aria-hidden="true"
+        class="stripe-block sm hidden md:block"
+        absolute
+        style="left: 7%; top: 42%"
+      ></div>
+    </div>
+
+    <!-- corner labels remain with the window as it docks to the deck -->
+    <span
+      class="scene-label scene-corner scene-corner-left"
+      absolute
+      top-20
+    >
+      Caelyreth — observation window
+    </span>
+    <span
+      class="scene-label scene-corner scene-corner-right"
+      absolute
+      top-20
+    >
+      Field 044° 12′
+    </span>
+    <span
+      class="scene-label scene-corner scene-corner-left"
+      absolute
+      bottom-5
+    >
+      Transmission 001
+    </span>
+    <a
+      href="#station"
+      class="scene-label scene-corner scene-corner-right"
+      absolute
+      bottom-5
+    >
+      Descend to the station ↓
+    </a>
+
+    <!-- the observation itself — preserved through the capture -->
+    <figure relative z-10 flex="~ col items-center" px-6>
+      <div relative>
+        <img
+          src="/observation.jpg"
+          alt="An abstract painting in deep blue — cloud bands over the planet’s day side"
+          width="1200"
+          height="1200"
+          fetchpriority="high"
+          block
+          w-64
+          sm:w-80
+          aspect-square
+          object-cover
+        />
+        <span aria-hidden="true" class="tick tick-tl"></span>
+        <span aria-hidden="true" class="tick tick-tr"></span>
+        <span aria-hidden="true" class="tick tick-bl"></span>
+        <span aria-hidden="true" class="tick tick-br"></span>
+      </div>
+      <figcaption mt-4 class="scene-label">
+        Obs. 001 — cloud bands, day side
+      </figcaption>
+    </figure>
+  </section>
+</div>
+
+<!-- page 2 — the station, where the deck and hatch begin -->
+<section id="station" scroll-mt-20 pt="16 md:24" pb-14>
   <h1
     font-serif
     text="4xl ink md:5xl"

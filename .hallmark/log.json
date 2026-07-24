@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-07-24",
+    "macrostructure": "Photographic",
+    "theme": "custom",
+    "theme_axes": "dark / roman-serif / warm",
+    "vibe": "abandoned relay station, serene, analog instruments",
+    "enrichment": "E5 hand-built SVG (iso cubes, wireframes)",
+    "brief": "One scroll, two pagers: full-width observation window (page 1) + station content (page 2); fixed header docks from full width to 48rem via scroll-driven --p; chrome fades in on descent"
+  },
+  {
+    "date": "2026-07-24",
     "macrostructure": "Workbench",
     "theme": "custom",
     "theme_axes": "light / roman-serif / warm",

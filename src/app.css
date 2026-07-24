@@ -1,6 +1,8 @@
-/* Hallmark · macrostructure: Workbench · scene: Rainbook program's
- * Caelyreth relay station — concrete deck, hazard hatch, theodolite
- * guides, panel bolts, signal lamp, layered grain/mottle/vignette
+/* Hallmark · macrostructure: Workbench + Photographic (observation window)
+ * scene: Rainbook program's Caelyreth relay station — concrete deck,
+ * hazard hatch, theodolite guides, panel bolts, signal lamp; landing
+ * page is the station's observation window: starfield, floating
+ * isometric solids, wireframes, one photograph at center
  * theme: custom · vibe: "abandoned relay station, serene, analog instruments"
  * paper: oklch(96.5% 0 0) · accent: oklch(57% 0.17 40)
  * display: Fraunces · body: Space Grotesk · axes: light / roman-serif / warm
@@ -66,6 +68,11 @@ body {
   overflow-x: clip;
 }
 
+.capture {
+  height: calc(100vh + var(--capture-progress) * 100vh);
+  height: calc(100dvh + var(--capture-progress) * 100dvh);
+}
+
 body {
   background-color: var(--color-field);
   color: var(--color-ink);
@@ -91,6 +98,164 @@ body {
     var(--noise-tile),
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23m");
   background-size: auto, 128px, 320px;
+}
+
+/* the observation window — always dark, day shift or night shift;
+   tokens are scene-local, the station palette stays untouched */
+.scene {
+  --space-bg: oklch(12% 0 0);
+  --space-ink: oklch(88% 0 0);
+  --space-ink-2: oklch(60% 0 0);
+  --space-line: oklch(88% 0 0 / 55%);
+  --cube-hi: oklch(82% 0 0);
+  --cube-mid: oklch(58% 0 0);
+  --cube-lo: oklch(38% 0 0);
+  --star-tile: url('data:image/png;base64,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');
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  color: var(--space-ink);
+  /* The opening eases from space to deck while it remains in frame. */
+  background-color: color-mix(
+    in oklab,
+    var(--space-bg),
+    var(--color-paper) calc(var(--p, 0) * 100%)
+  );
+  clip-path: inset(0 calc(max(0px, 50vw - 24rem) * var(--p, 0)) 0);
+}
+.scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: calc(var(--p, 0) * 0.4);
+  background-image: var(--noise-tile);
+  background-size: 96px;
+}
+
+/* The debris field dissolves and recedes through the opening capture;
+   the framed observation stays. */
+.scene-debris {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: max(0, calc(1 - var(--p, 0) * 1.3));
+  transform: scale(calc(1 - var(--p, 0) * 0.08));
+  transform-origin: center;
+}
+
+/* two depths of starfield — small/dense behind, large/sparse in front */
+.stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--star-tile);
+  background-size: 256px;
+  opacity: 0.85;
+}
+.stars-far {
+  background-size: 384px;
+  opacity: 0.4;
+}
+
+/* machine labels inside the window */
+.scene-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--space-ink-2);
+}
+.scene-corner {
+  z-index: 2;
+}
+.scene-corner-left {
+  left: calc(1.5rem + max(0px, 50vw - 24rem) * var(--p, 0));
+}
+.scene-corner-right {
+  right: calc(1.5rem + max(0px, 50vw - 24rem) * var(--p, 0));
+}
+.v-text {
+  writing-mode: vertical-rl;
+  transform: translateY(-50%);
+}
+
+/* pixel clusters — small checkerboards of light */
+.pixels {
+  width: 24px;
+  height: 16px;
+  background: repeating-conic-gradient(
+      var(--space-ink) 0% 25%,
+      transparent 0% 50%
+    )
+    0 0 / 8px 8px;
+}
+
+/* streak lines crossing the frame */
+.streaks {
+  width: 150px;
+  height: 15px;
+  transform: rotate(-24deg);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--space-ink) 0 1px,
+    transparent 1px 7px
+  );
+  opacity: 0.65;
+}
+
+/* diagonal stripe block */
+.stripe-block {
+  width: 54px;
+  height: 54px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--space-ink) 0 2px,
+    transparent 2px 8px
+  );
+  opacity: 0.75;
+}
+
+/* single square marker */
+.marker {
+  width: 6px;
+  height: 6px;
+  background: var(--space-ink);
+}
+
+/* registration ticks at the frame corners */
+.tick {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 0 solid var(--space-line);
+}
+.tick-tl {
+  top: -6px;
+  left: -6px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.tick-tr {
+  top: -6px;
+  right: -6px;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+.tick-bl {
+  bottom: -6px;
+  left: -6px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+.tick-br {
+  bottom: -6px;
+  right: -6px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
 }
 
 /* boundary guidelines — viewport-fixed full-height hairlines at the
@@ -229,4 +394,107 @@ a:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 150ms !important;
   }
+}
+
+/* full-viewport-width escape from the deck column */
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* station chrome that assembles as you descend (p: 0 -> 1) */
+.chrome-fade {
+  opacity: var(--p, 0);
+}
+
+/* the docking header — full width and transparent over the window,
+   paper and 48rem once docked; everything interpolates via --p */
+.hdr {
+  --hdr-ink: color-mix(
+    in oklab,
+    oklch(88% 0 0),
+    var(--color-ink) calc(var(--p, 0) * 100%)
+  );
+  --hdr-ink-2: color-mix(
+    in oklab,
+    oklch(60% 0 0),
+    var(--color-muted) calc(var(--p, 0) * 100%)
+  );
+  --hdr-line: color-mix(
+    in oklab,
+    transparent,
+    var(--color-rule) calc(var(--p, 0) * 100%)
+  );
+  --toggle-line: var(--hdr-line);
+  --toggle-ink: var(--hdr-ink-2);
+  background-color: color-mix(
+    in oklab,
+    transparent,
+    var(--color-paper) calc(var(--p, 0) * 100%)
+  );
+  border-bottom: 1px solid var(--hdr-line);
+  color: var(--hdr-ink);
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  max-width: calc(
+    48rem + (100vw - 48rem) * (1 - var(--p, 0))
+  );
+  transform: translateX(-50%);
+}
+.hdr-inner {
+  margin-inline: auto;
+  width: 100%;
+  height: 4rem;
+  padding-inline: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.hdr-sub {
+  color: var(--hdr-ink-2);
+}
+
+/* theme toggle — colors come from context (--toggle-*), so it works
+   both over the dark window and on the docked paper bar */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  cursor: pointer;
+  border: 1px solid var(--toggle-line, var(--color-rule));
+  color: var(--toggle-ink, var(--color-ink-2));
+  background: transparent;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+.theme-toggle:hover {
+  color: var(--color-accent);
+}
+
+/* dashed orbit ring for the window scene */
+.orbit {
+  border: 1px dashed var(--space-line);
+  border-radius: 9999px;
+}
+
+.stripe-block.sm {
+  width: 34px;
+  height: 34px;
+}
+
+.v-text-left {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Once the opening transition completes, the header joins document flow
+   and scrolls away with the page. */
+.hdr.flowing {
+  position: absolute;
+  top: calc(var(--capture-progress) * 100vh);
+  top: calc(var(--capture-progress) * 100dvh);
 }
