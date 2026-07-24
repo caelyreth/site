@@ -1,7 +1,11 @@
+<script lang="ts">
+  import StationBoundary from '$lib/station-boundary.svelte'
+</script>
+
 <!-- Station-wide fixed chrome, kept separate from route content. -->
 <div aria-hidden="true" class="hatch"></div>
-<div aria-hidden="true" class="guide guide-left chrome-fade"></div>
-<div aria-hidden="true" class="guide guide-right chrome-fade"></div>
+<StationBoundary side="left" />
+<StationBoundary side="right" />
 <div aria-hidden="true" class="vignette"></div>
 <div aria-hidden="true" class="bolt chrome-fade" top-4 left-4></div>
 <div aria-hidden="true" class="bolt chrome-fade" top-4 right-4></div>
@@ -52,3 +56,60 @@
     <circle cx="100" cy="100" r="1.5" fill="var(--color-deco)" />
   </svg>
 </div>
+
+<style>
+/* the field — hatch stripes, strong static noise, concrete mottle;
+   everything outside the card lives here */
+.hatch {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      -55deg,
+      transparent 0 7px,
+      var(--color-hatch) 7px 8px
+    ),
+    var(--noise-tile),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23m");
+  background-size: auto, 128px, 320px;
+}
+
+
+/* panel bolt — concrete panels joined at the viewport corners */
+.bolt {
+  position: fixed;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+  z-index: 30;
+  border: 1px solid var(--color-rule);
+  border-radius: 50%;
+}
+.bolt::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--color-rule);
+  border-radius: 50%;
+}
+
+/* liminal vignette — the lit center holds the eye */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 38;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 40%,
+    transparent 60%,
+    color-mix(in oklab, var(--color-ink) 7%, transparent) 100%
+  );
+}
+
+/* station chrome that assembles as you descend (p: 0 -> 1) */
+.chrome-fade {
+  opacity: var(--p, 0);
+}
+</style>

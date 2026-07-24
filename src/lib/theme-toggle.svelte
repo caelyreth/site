@@ -37,3 +37,24 @@
     aria-hidden="true"
   ></span>
 </button>
+
+<style>
+/* theme toggle — colors come from context (--toggle-*), so it works
+   both over the dark window and on the docked paper bar */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  cursor: pointer;
+  border: 1px solid var(--toggle-line, var(--color-rule));
+  color: var(--toggle-ink, var(--color-ink-2));
+  background: transparent;
+  transition:
+    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+.theme-toggle:hover {
+  color: var(--color-accent);
+}
+</style>

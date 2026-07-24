@@ -58,3 +58,109 @@
     </div>
   </div>
 </header>
+
+<style>
+/* the docking header — full width and transparent over the window,
+   paper and 48rem once docked; everything interpolates via --p */
+.hdr {
+  --hdr-opening-ink: var(--color-ink);
+  --hdr-opening-ink-2: var(--color-muted);
+  --hdr-ink: color-mix(
+    in oklab,
+    var(--hdr-opening-ink),
+    var(--color-ink) calc(var(--p, 0) * 100%)
+  );
+  --hdr-ink-2: color-mix(
+    in oklab,
+    var(--hdr-opening-ink-2),
+    var(--color-muted) calc(var(--p, 0) * 100%)
+  );
+  --hdr-line: color-mix(
+    in oklab,
+    transparent,
+    var(--color-rule) calc(var(--p, 0) * 100%)
+  );
+  --toggle-line: var(--hdr-line);
+  --toggle-ink: var(--hdr-ink-2);
+  background-color: color-mix(
+    in oklab,
+    transparent,
+    var(--color-paper) calc(var(--p, 0) * 100%)
+  );
+  border-bottom: 1px solid var(--hdr-line);
+  color: var(--hdr-ink);
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  max-width: calc(48rem + (100vw - 48rem) * (1 - var(--p, 0)));
+  transform: translateX(-50%);
+}
+.hdr::before,
+.hdr::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: var(--hdr-line);
+}
+.hdr::before {
+  left: 0;
+}
+.hdr::after {
+  right: 0;
+}
+:global(.dark) .hdr {
+  --hdr-opening-ink: oklch(88% 0 0);
+  --hdr-opening-ink-2: oklch(60% 0 0);
+}
+.hdr-inner {
+  margin-inline: auto;
+  width: 100%;
+  height: 3.25rem;
+  padding-inline: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.hdr-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  color: var(--hdr-ink);
+  line-height: 1;
+}
+.hdr-brand:hover {
+  color: var(--hdr-ink);
+}
+.hdr-brand-mark {
+  display: block;
+  flex: none;
+  width: 3rem;
+  height: 1.5rem;
+}
+.hdr-brand-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.hdr-meta {
+  font-size: 0.625rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 38rem) {
+  .hdr-inner {
+    padding-inline: 0.75rem;
+  }
+  .hdr-meta {
+    display: none;
+  }
+}
+</style>

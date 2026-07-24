@@ -162,3 +162,140 @@
     style="left: 7%; top: 42%"
   ></div>
 </div>
+
+<style>
+/* The debris field dissolves and recedes through the opening capture;
+   the framed observation stays. */
+.scene-debris {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: max(0, calc(1 - var(--p, 0) * 1.3));
+  transform: scale(calc(1 - var(--p, 0) * 0.08));
+  transform-origin: center;
+}
+
+/* The observation is mapped as a living field, not decorated with scattered
+   ornaments. These paths share one coordinate plane and stay quiet enough for
+   the studies to remain the focal point. */
+.scene-growth {
+  position: absolute;
+  inset: -10% -8%;
+  width: 116%;
+  height: 120%;
+  pointer-events: none;
+  color: var(--space-ink);
+}
+.scene-growth-back {
+  opacity: 0.11;
+  transform: rotate(-1.5deg) scale(1.04);
+  transform-origin: center;
+}
+.scene-growth-strong,
+.scene-growth-curve {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.scene-growth-strong {
+  stroke-width: 1.25;
+}
+.scene-growth-curve {
+  stroke-width: 0.9;
+}
+.scene-growth-curve-soft {
+  stroke-width: 0.7;
+  opacity: 0.62;
+}
+.scene-growth-node {
+  fill: var(--space-bg);
+  stroke: currentColor;
+  stroke-width: 1.1;
+}
+
+:global(.dark) .scene-growth-back {
+  opacity: 0.17;
+}
+
+.scene-solid {
+  opacity: 0.42;
+}
+:global(.dark) .scene-solid {
+  opacity: 0.48;
+}
+
+/* two depths of starfield — small/dense behind, large/sparse in front */
+.stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--star-tile);
+  background-size: 256px;
+  opacity: 0.35;
+  filter: invert(1);
+}
+.stars-far {
+  background-size: 384px;
+  opacity: 0.16;
+}
+:global(.dark) .stars {
+  opacity: 0.85;
+  filter: none;
+}
+:global(.dark) .stars-far {
+  opacity: 0.4;
+}
+
+
+/* pixel clusters — small checkerboards of light */
+.pixels {
+  width: 24px;
+  height: 16px;
+  opacity: 0.42;
+  background: repeating-conic-gradient(
+      var(--space-ink) 0% 25%,
+      transparent 0% 50%
+    )
+    0 0 / 8px 8px;
+}
+
+/* diagonal stripe block */
+.stripe-block {
+  width: 54px;
+  height: 54px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--space-ink) 0 2px,
+    transparent 2px 8px
+  );
+  opacity: 0.75;
+}
+
+/* single square marker */
+.marker {
+  width: 6px;
+  height: 6px;
+  background: var(--space-ink);
+}
+
+
+/* dashed orbit ring for the window scene */
+.orbit {
+  border: 1px dashed var(--space-line);
+  border-radius: 9999px;
+}
+
+.stripe-block.sm {
+  width: 34px;
+  height: 34px;
+}
+
+.v-text {
+  writing-mode: vertical-rl;
+  transform: translateY(-50%);
+}
+.v-text-left {
+  transform: translateY(-50%) rotate(180deg);
+}
+</style>

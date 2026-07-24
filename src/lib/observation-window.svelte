@@ -85,3 +85,116 @@
     Obs. 001-004 - four field studies
   </figcaption>
 </figure>
+
+<style>
+/* Four field studies share one registration frame. The rank order is
+   left to right: secondary, primary, tertiary, smallest. */
+.observation-frame {
+  z-index: 30;
+  width: min(92vw, 56rem);
+  transform: scale(calc(1 - var(--p, 0) * 0.2));
+  transform-origin: center;
+}
+.scene-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--space-ink-2);
+}
+.observation-strip-frame {
+  position: relative;
+  width: 100%;
+}
+.observation-strip {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5fr 4fr 2fr 1fr;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  width: 100%;
+  aspect-ratio: 7 / 3.7;
+  overflow: hidden;
+  background: transparent;
+}
+.observation-panel > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  object-fit: cover;
+  object-position: center;
+}
+.observation-panel {
+  min-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+.observation-panel > img {
+  transform: translate3d(-102%, 0, 0);
+  will-change: transform;
+  transition: transform 640ms var(--ease-in-out);
+}
+.observation-panel.is-revealed {
+  opacity: 1;
+}
+.observation-panel.is-revealed > img {
+  transform: translate3d(0, 0, 0);
+}
+
+/* registration ticks at the frame corners */
+.tick {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 0 solid var(--space-line);
+  opacity: 0;
+  transform: scale(0.3);
+  transition:
+    top var(--dur-long) var(--ease-out),
+    left var(--dur-long) var(--ease-out),
+    opacity var(--dur-short) var(--ease-out),
+    transform var(--dur-long) var(--ease-out);
+}
+.tick-tl {
+  border-top-width: 1px;
+  border-left-width: 1px;
+  transform-origin: bottom right;
+}
+.tick-tr {
+  border-top-width: 1px;
+  border-right-width: 1px;
+  transform-origin: bottom left;
+}
+.tick-bl {
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+  transform-origin: top right;
+}
+.tick-br {
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+  transform-origin: top left;
+}
+.observation-strip-frame.is-ready .tick {
+  opacity: 1;
+  transform: scale(1);
+}
+.observation-strip-frame.is-ready .tick-tl {
+  top: -6px;
+  left: -6px;
+}
+.observation-strip-frame.is-ready .tick-tr {
+  top: -6px;
+  left: calc(100% - 6px);
+}
+.observation-strip-frame.is-ready .tick-bl {
+  top: calc(100% - 6px);
+  left: -6px;
+}
+.observation-strip-frame.is-ready .tick-br {
+  top: calc(100% - 6px);
+  left: calc(100% - 6px);
+}
+</style>
