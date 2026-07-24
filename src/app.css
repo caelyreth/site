@@ -319,8 +319,8 @@ body {
 /* Four field studies share one registration frame. The rank order is
    left to right: secondary, primary, tertiary, smallest. */
 .observation-frame {
-  width: min(92vw, 52rem);
-  transform: scale(calc(1 - var(--p, 0) * 0.12));
+  width: min(92vw, 56rem);
+  transform: scale(calc(1 - var(--p, 0) * 0.2));
   transform-origin: center;
 }
 .observation-strip-frame {
@@ -333,7 +333,7 @@ body {
   grid-template-columns: 2.5fr 4fr 2fr 1fr;
   gap: clamp(0.5rem, 1.5vw, 1rem);
   width: 100%;
-  aspect-ratio: 7 / 4;
+  aspect-ratio: 7 / 3.7;
   overflow: hidden;
   background: transparent;
 }
@@ -628,9 +628,7 @@ a:hover {
   top: 0;
   left: 50%;
   width: 100%;
-  max-width: calc(
-    48rem + (100vw - 48rem) * (1 - var(--p, 0))
-  );
+  max-width: calc(48rem + (100vw - 48rem) * (1 - var(--p, 0)));
   transform: translateX(-50%);
 }
 .hdr::before,
@@ -738,7 +736,11 @@ a:hover {
   overflow: hidden;
   border: 0;
   color: var(--color-ink);
-  background-color: color-mix(in oklab, var(--color-paper) 88%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-paper) 88%,
+    transparent
+  );
   backdrop-filter: blur(5px);
 }
 .station-menu::before {
@@ -759,10 +761,22 @@ a:hover {
   pointer-events: none;
   opacity: 0.1;
   background-image:
-    radial-gradient(circle at 1px 1px, var(--color-paper) 0 0.75px, transparent 0.9px),
-    radial-gradient(circle at 1px 1px, var(--color-paper) 0 0.55px, transparent 0.75px);
-  background-position: 0 0, 8px 11px;
-  background-size: 19px 23px, 29px 31px;
+    radial-gradient(
+      circle at 1px 1px,
+      var(--color-paper) 0 0.75px,
+      transparent 0.9px
+    ),
+    radial-gradient(
+      circle at 1px 1px,
+      var(--color-paper) 0 0.55px,
+      transparent 0.75px
+    );
+  background-position:
+    0 0,
+    8px 11px;
+  background-size:
+    19px 23px,
+    29px 31px;
   mix-blend-mode: screen;
 }
 .station-menu::backdrop {
@@ -1283,7 +1297,11 @@ a:hover {
   .footer-module:hover {
     --footer-primary: var(--color-paper);
     --footer-secondary: var(--color-paper);
-    --footer-muted: color-mix(in oklab, var(--color-paper) 68%, transparent);
+    --footer-muted: color-mix(
+      in oklab,
+      var(--color-paper) 68%,
+      transparent
+    );
     --footer-accent: var(--color-paper);
     --footer-rule: color-mix(in oklab, var(--color-paper) 65%, transparent);
 
