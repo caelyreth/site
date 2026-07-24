@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import IsoCube from '$lib/iso-cube.svelte'
 
   const materials = [
@@ -63,6 +64,75 @@
       dark: 'oklch(65% 0.15 40)',
     },
   ]
+
+  const observations = [
+    {
+      src: '/observation_1.jpg',
+      alt: 'Pale blue and white vertical impasto painting',
+    },
+    {
+      src: '/observation_2.jpg',
+      alt: 'Deep blue abstract painting with cloud-like bands',
+    },
+    {
+      src: '/observation_3.jpg',
+      alt: 'Black and white gestural brushwork painting',
+    },
+    {
+      src: '/observation_4.jpg',
+      alt: 'Layered teal, black, and ochre abstract painting',
+    },
+  ]
+
+  let observationImages = $state<(HTMLImageElement | undefined)[]>([])
+  let observationLoaded = $state<boolean[]>([])
+  let observationRevealed = $state<boolean[]>([])
+  let frameReady = $state(false)
+  let nextObservation = 0
+  let revealTimer: number | undefined
+  const FRAME_SETTLE_DELAY = 220
+  const PANEL_REVEAL_DELAY = 300
+
+  function queueObservationReveal() {
+    if (
+      !frameReady ||
+      revealTimer !== undefined ||
+      nextObservation >= observations.length ||
+      !observationLoaded[nextObservation]
+    ) {
+      return
+    }
+
+    revealTimer = window.setTimeout(() => {
+      observationRevealed[nextObservation] = true
+      nextObservation += 1
+      revealTimer = undefined
+      queueObservationReveal()
+    }, nextObservation === 0 ? FRAME_SETTLE_DELAY : PANEL_REVEAL_DELAY)
+  }
+
+  function markObservationLoaded(index: number) {
+    observationLoaded[index] = true
+    queueObservationReveal()
+  }
+
+  onMount(() => {
+    const frameId = requestAnimationFrame(() => {
+      frameReady = true
+      queueObservationReveal()
+    })
+
+    for (const [index, image] of observationImages.entries()) {
+      if (image?.complete && image.naturalWidth > 0) {
+        markObservationLoaded(index)
+      }
+    }
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      if (revealTimer !== undefined) window.clearTimeout(revealTimer)
+    }
+  })
 </script>
 
 <!-- page 1 — the observation window remains in frame while it shrinks
@@ -95,7 +165,7 @@
       <!-- floating solids — varied orientations and depths -->
       <div
         absolute
-        w-28
+        w-20
         class="hidden -rotate-8 sm:block"
         style="top: 5%; left: 22%"
       >
@@ -103,7 +173,7 @@
       </div>
       <div
         absolute
-        w-16
+        w-12
         class="hidden rotate-10 sm:block"
         style="top: 12%; right: 22%"
       >
@@ -111,7 +181,7 @@
       </div>
       <div
         absolute
-        w-12
+        w-9
         class="hidden -scale-x-100 sm:block"
         style="top: 60%; left: 16%"
       >
@@ -119,7 +189,7 @@
       </div>
       <div
         absolute
-        w-10
+        w-8
         class="hidden rotate-6 blur-[1.5px] sm:block"
         style="bottom: 8%; right: 24%"
       >
@@ -127,7 +197,7 @@
       </div>
       <div
         absolute
-        w-32
+        w-20
         class="hidden rotate-3 blur-[2.5px] md:block"
         style="bottom: 10%; left: 62%"
       >
@@ -181,19 +251,19 @@
         aria-hidden="true"
         class="pixels hidden md:block"
         absolute
-        style="top: 17%; right: 30%"
+        style="top: 10%; left: 14%"
       ></div>
       <div
         aria-hidden="true"
         class="pixels hidden sm:block"
         absolute
-        style="top: 68%; left: 22%"
+        style="bottom: 12%; left: 9%"
       ></div>
       <div
         aria-hidden="true"
         class="pixels hidden md:block"
         absolute
-        style="top: 58%; right: 10%"
+        style="top: 18%; right: 7%"
       ></div>
       <span
         aria-hidden="true"
@@ -273,27 +343,29 @@
     </a>
 
     <!-- the observation itself — preserved through the capture -->
-    <figure relative z-10 flex="~ col items-center" px-6>
-      <div relative>
-        <img
-          src="/observation.jpg"
-          alt="An abstract painting in deep blue — cloud bands over the planet’s day side"
-          width="1200"
-          height="1200"
-          fetchpriority="high"
-          block
-          w-64
-          sm:w-80
-          aspect-square
-          object-cover
-        />
+    <figure class="observation-frame" relative z-10 flex="~ col items-center" px-6>
+      <div class="observation-strip-frame" class:is-ready={frameReady}>
+        <div class="observation-strip">
+          {#each observations as observation, index (observation.src)}
+            <img
+              bind:this={observationImages[index]}
+              src={observation.src}
+              alt={observation.alt}
+              fetchpriority={index === 1 ? 'high' : 'auto'}
+              decoding="async"
+              class="observation-panel"
+              class:is-revealed={observationRevealed[index]}
+              onload={() => markObservationLoaded(index)}
+            />
+          {/each}
+        </div>
         <span aria-hidden="true" class="tick tick-tl"></span>
         <span aria-hidden="true" class="tick tick-tr"></span>
         <span aria-hidden="true" class="tick tick-bl"></span>
         <span aria-hidden="true" class="tick tick-br"></span>
       </div>
       <figcaption mt-4 class="scene-label">
-        Obs. 001 — cloud bands, day side
+        Obs. 001-004 - four field studies
       </figcaption>
     </figure>
   </section>
