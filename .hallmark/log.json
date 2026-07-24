@@ -4,6 +4,15 @@
     "macrostructure": "Workbench",
     "theme": "custom",
     "theme_axes": "light / roman-serif / warm",
+    "vibe": "abandoned relay station, serene, analog instruments",
+    "enrichment": "none",
+    "brief": "Caelyreth relay station scene: concrete ramp, layered grain/mottle/vignette, theodolite guides, bolts, status panel (SOL + live clock), signal meter, square brutalist pass"
+  },
+  {
+    "date": "2026-07-24",
+    "macrostructure": "Workbench",
+    "theme": "custom",
+    "theme_axes": "light / roman-serif / warm",
     "vibe": "pure grayscale ground, quiet editorial, one vermilion accent",
     "enrichment": "none",
     "brief": "Caelyreth personal site · theme moved to decoration/background level: margin geometry, hatch, reg-marks; content stripped to hero + index"

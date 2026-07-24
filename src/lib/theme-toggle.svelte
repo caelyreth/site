@@ -21,7 +21,7 @@
   grid
   place-items-center
   size-9
-  rounded-full
+  rounded-none
   cursor-pointer
   border="1 rule"
   text="ink-2 hover:ink"

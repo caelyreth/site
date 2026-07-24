@@ -15,6 +15,7 @@ export default defineConfig({
     colors: {
       'paper': 'var(--color-paper)',
       'paper-2': 'var(--color-paper-2)',
+      'field': 'var(--color-field)',
       'ink': 'var(--color-ink)',
       'ink-2': 'var(--color-ink-2)',
       'muted': 'var(--color-muted)',

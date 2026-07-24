@@ -4,17 +4,43 @@
   import ThemeToggle from '$lib/theme-toggle.svelte'
 
   const { children } = $props()
+
+  // station time — Sol 0 is the day the repository came online
+  const EPOCH = Date.UTC(2026, 6, 12)
+  let now = $state<Date | null>(null)
+
+  $effect(() => {
+    const tick = () => (now = new Date())
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  })
+
+  const sol = $derived(
+    now ? Math.floor((now.getTime() - EPOCH) / 86_400_000) : null,
+  )
+  const clock = $derived(
+    now?.toLocaleTimeString('en-GB', { hour12: false }) ?? null,
+  )
+
+  // rare lamp pulse — 2s fade every 12s, not a 60fps animation loop
+  let dim = $state(false)
+
+  $effect(() => {
+    const id = setInterval(() => (dim = !dim), 12_000)
+    return () => clearInterval(id)
+  })
 </script>
 
-<!-- drafting-sheet chrome -->
+<!-- station chrome -->
 <div aria-hidden="true" class="hatch"></div>
 <div aria-hidden="true" class="guide guide-left"></div>
 <div aria-hidden="true" class="guide guide-right"></div>
-<div aria-hidden="true" class="grain"></div>
-<div aria-hidden="true" class="reg-mark" top-4 left-4></div>
-<div aria-hidden="true" class="reg-mark" top-4 right-4></div>
-<div aria-hidden="true" class="reg-mark" bottom-4 left-4></div>
-<div aria-hidden="true" class="reg-mark" bottom-4 right-4></div>
+<div aria-hidden="true" class="vignette"></div>
+<div aria-hidden="true" class="bolt" top-4 left-4></div>
+<div aria-hidden="true" class="bolt" top-4 right-4></div>
+<div aria-hidden="true" class="bolt" bottom-4 left-4></div>
+<div aria-hidden="true" class="bolt" bottom-4 right-4></div>
 <svg
   aria-hidden="true"
   fixed
@@ -94,49 +120,71 @@
       w-full
       max-w-3xl
       px-6
-      py-5
-      bg-paper
-      flex="~ items-center justify-between"
+      py-4
+      class="deck"
+      flex="~ items-center justify-between gap-4"
     >
-      <a
-        href="/"
-        flex="~ items-center gap-2"
-        font-serif
-        text-lg
-        font-bold
-        tracking-tight
-        decoration-none
-      >
-        Caelyreth
-        <span
-          aria-hidden="true"
-          inline-block
-          size-1.5
-          rounded-full
-          bg-accent
-        ></span>
-      </a>
-      <ThemeToggle />
+      <div flex="~ col gap-0.5">
+        <a
+          href="/"
+          flex="~ items-center gap-2"
+          font-serif
+          text-lg
+          font-bold
+          tracking-tight
+          decoration-none
+        >
+          <span
+            aria-hidden="true"
+            class="lamp"
+            class:is-dim={dim}
+            inline-block
+            size-2
+            bg-accent
+          ></span>
+          Caelyreth
+        </a>
+        <span text="xs muted" uppercase tracking-widest>
+          Rainbook · relay station
+        </span>
+      </div>
+      <div flex="~ items-center gap-5">
+        <div text="sm ink-2" tabular-nums text-right leading-tight>
+          <div>SOL {sol ?? '———'}</div>
+          <div text-muted>{clock ?? '——:——:——'}</div>
+        </div>
+        <ThemeToggle />
+      </div>
     </div>
   </header>
 
   <main flex="~ col 1">
-    <div mx-auto w-full max-w-3xl px-6 bg-paper flex="~ col 1">
+    <div mx-auto w-full max-w-3xl px-6 class="deck" flex="~ col 1">
       {@render children()}
     </div>
   </main>
 
   <footer border="t rule">
-    <div mx-auto w-full max-w-3xl px-6 py-8 bg-paper text="sm muted">
-      <div aria-hidden="true" mb-5 h-1.5 w-24 border="1 rule" flex="~">
-        <div flex-1 bg-ink-2></div>
-        <div flex-1></div>
-        <div flex-1 bg-ink-2></div>
-        <div flex-1></div>
+    <div mx-auto w-full max-w-3xl px-6 py-8 class="deck" text="sm muted">
+      <div mb-5 flex="~ items-end gap-4">
+        <div aria-hidden="true" h-1.5 w-24 border="1 rule" flex="~">
+          <div flex-1 bg-ink-2></div>
+          <div flex-1></div>
+          <div flex-1 bg-ink-2></div>
+          <div flex-1></div>
+        </div>
+        <div aria-hidden="true" flex="~ items-end gap-0.5">
+          <div w-1 h-1 bg-ink-2></div>
+          <div w-1 h-2 bg-ink-2></div>
+          <div w-1 h-3 bg-ink-2></div>
+          <div w-1 h-4 bg-ink-2></div>
+          <div class="lamp" class:is-dim={dim} w-1 h-5 bg-accent></div>
+        </div>
       </div>
       <div flex="~ wrap gap-x-6 gap-y-1">
         <span>© 2026 Yu</span>
-        <span>Svelte 5 + UnoCSS, attributify-first</span>
+        <span>Rainbook program — Caelyreth relay</span>
+        <span>Svelte 5 + UnoCSS</span>
         <span>Fraunces &amp; Space Grotesk</span>
       </div>
     </div>
