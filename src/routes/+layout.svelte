@@ -155,8 +155,8 @@
     </svg>
   </div>
 
-  <!-- the docking header — fixed during the opening, document flow after -->
-  <header class="hdr" class:flowing={p >= 1} fixed top-0 z-50>
+  <!-- the docking header stays pinned as the observation becomes the deck -->
+  <header class="hdr" fixed top-0 z-50>
     <div class="hdr-inner">
       <div flex="~ col gap-0.5">
         <a

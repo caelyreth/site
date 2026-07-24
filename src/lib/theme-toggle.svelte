@@ -5,10 +5,21 @@
     dark = document.documentElement.classList.contains('dark')
   })
 
+  function applyTheme(next: boolean) {
+    dark = next
+    document.documentElement.classList.toggle('dark', next)
+    localStorage.setItem('theme', next ? 'dark' : 'light')
+  }
+
   function toggle() {
-    dark = !dark
-    document.documentElement.classList.toggle('dark', dark)
-    localStorage.setItem('theme', dark ? 'dark' : 'light')
+    const next = !dark
+
+    if (!document.startViewTransition) {
+      applyTheme(next)
+      return
+    }
+
+    document.startViewTransition(() => applyTheme(next))
   }
 </script>
 
