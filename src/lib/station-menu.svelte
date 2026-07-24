@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { flushSync } from 'svelte'
   import ThemeToggle from '$lib/theme-toggle.svelte'
 
   const menuItems = [
@@ -13,7 +14,7 @@
   let closing = $state(false)
   let closeTimer: number | undefined
   let previousBodyOverflow = ''
-  const MENU_CLOSE_DELAY = 420
+  const MENU_CLOSE_FALLBACK = 500
 
   function lockPageScroll() {
     previousBodyOverflow = document.body.style.overflow
@@ -40,8 +41,13 @@
   function requestClose() {
     if (!dialog?.open || closing) return
 
-    closing = true
-    closeTimer = window.setTimeout(() => dialog.close(), MENU_CLOSE_DELAY)
+    // Commit the leave state in this input frame before the dialog countdown starts.
+    flushSync(() => {
+      closing = true
+    })
+    closeTimer = window.setTimeout(() => {
+      if (dialog?.open) dialog.close()
+    }, MENU_CLOSE_FALLBACK)
   }
 
   function handleCancel(event: Event) {
@@ -56,6 +62,12 @@
     menuOpen = false
     restorePageScroll()
     requestAnimationFrame(() => trigger?.focus())
+  }
+
+  function handleAnimationEnd(event: AnimationEvent) {
+    if (event.target !== dialog || event.animationName !== 'station-menu-leave' || !closing) return
+
+    dialog?.close()
   }
 </script>
 
@@ -81,12 +93,14 @@
   aria-label="Station menu"
   oncancel={handleCancel}
   onclose={handleClose}
+  onanimationend={handleAnimationEnd}
 >
   <button
     type="button"
     class="station-menu-dismiss"
     aria-label="Close station menu"
     tabindex="-1"
+    onpointerdown={requestClose}
     onclick={requestClose}
   ></button>
 
@@ -133,6 +147,7 @@
           type="button"
           class={`menu-slip menu-slip-${index + 1}`}
           data-menu-primary={index === 0 ? '' : undefined}
+          onpointerdown={requestClose}
           onclick={requestClose}
         >
           <span class="menu-slip-code">{item.code}</span>
@@ -147,16 +162,6 @@
       <span class="menu-theme-label">Light relay</span>
       <ThemeToggle />
     </section>
-
-    <button
-      type="button"
-      class="station-menu-close"
-      aria-label="Close station menu"
-      title="Close menu"
-      onclick={requestClose}
-    >
-      <span class="i-ri-close-line" text-lg aria-hidden="true"></span>
-    </button>
 
     <p class="menu-field-note">Caelyreth relay / viewing plane 01</p>
   </div>
@@ -196,6 +201,7 @@
   --menu-slip-surface: var(--color-ink);
   --menu-slip-ink: var(--color-paper);
   --menu-drift-ink: var(--color-ink);
+  --menu-focus-duration: 600ms;
 
   position: fixed;
   inset: 0;
@@ -256,10 +262,11 @@
 }
 .station-menu::backdrop {
   background: color-mix(in oklab, var(--color-ink) 20%, transparent);
-  transition: background-color var(--dur-long) var(--ease-in);
 }
 .station-menu.is-closing::backdrop {
   background: transparent;
+  transition:
+    background-color var(--dur-long) var(--ease-out);
 }
 .station-menu-dismiss {
   position: absolute;
@@ -309,10 +316,9 @@
   position: absolute;
   inset: 0;
   z-index: 3;
-  pointer-events: auto;
+  pointer-events: none;
 }
-.menu-theme-slip,
-.station-menu-close {
+.menu-theme-slip {
   z-index: 3;
   pointer-events: auto;
 }
@@ -334,6 +340,7 @@
 }
 .menu-slip {
   cursor: pointer;
+  pointer-events: auto;
   transform: rotate(var(--slip-rotate));
   transition:
     color var(--dur-micro) var(--ease-out),
@@ -523,33 +530,6 @@
   filter: blur(10px);
   transform: rotate(8deg);
 }
-.station-menu-close {
-  position: absolute;
-  top: 0.5rem;
-  right: 1.5rem;
-  display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  place-items: center;
-  padding: 0;
-  cursor: pointer;
-  border: 1px solid var(--color-rule);
-  color: var(--color-ink);
-  background: transparent;
-  transition:
-    border-color var(--dur-micro) var(--ease-out),
-    color var(--dur-micro) var(--ease-out),
-    transform var(--dur-micro) var(--ease-out);
-}
-@media (hover: hover) {
-  .station-menu-close:hover {
-    border-color: var(--color-ink);
-    color: var(--color-accent);
-  }
-}
-.station-menu-close:active {
-  transform: translateY(1px);
-}
 .menu-field-note {
   position: absolute;
   z-index: 3;
@@ -587,21 +567,24 @@
     opacity: 0;
   }
 }
-@keyframes station-menu-enter {
-  from {
-    opacity: 0;
-  }
-}
 @keyframes station-menu-leave {
   to {
     opacity: 0;
   }
 }
 .station-menu[open]:not(.is-closing) {
-  animation: station-menu-enter var(--dur-long) var(--ease-out) both;
+  animation: station-menu-focus var(--menu-focus-duration) var(--ease-in-out) both;
+}
+@keyframes station-menu-focus {
+  from {
+    backdrop-filter: blur(0);
+  }
+  to {
+    backdrop-filter: blur(5px);
+  }
 }
 .station-menu.is-closing {
-  animation: station-menu-leave var(--dur-long) var(--ease-in) both;
+  animation: station-menu-leave var(--dur-long) var(--ease-out) both;
 }
 .station-menu[open]:not(.is-closing) .menu-slip,
 .station-menu[open]:not(.is-closing) .menu-theme-slip {
@@ -639,13 +622,13 @@
 }
 .station-menu.is-closing .menu-slip,
 .station-menu.is-closing .menu-theme-slip {
-  animation: menu-slip-leave var(--dur-long) var(--ease-in) both;
+  animation: menu-slip-leave var(--dur-long) var(--ease-out) both;
 }
 .station-menu.is-closing .menu-drift {
-  animation: menu-drift-leave var(--dur-long) var(--ease-in) both;
+  animation: menu-drift-leave var(--dur-long) var(--ease-out) both;
 }
 .station-menu.is-closing .station-menu-orbits {
-  animation: menu-drift-leave var(--dur-long) var(--ease-in) both;
+  animation: menu-drift-leave var(--dur-long) var(--ease-out) both;
 }
 @media (max-width: 40rem) {
   .menu-slip-1 {
@@ -676,10 +659,6 @@
     top: 64%;
     left: 0;
   }
-  .station-menu-close {
-    top: 0.5rem;
-    right: 0.75rem;
-  }
   .menu-field-note {
     right: 0.75rem;
     bottom: 0.75rem;
@@ -688,6 +667,9 @@
 @media (prefers-reduced-motion: reduce) {
   .station-menu {
     backdrop-filter: none;
+  }
+  .station-menu[open]:not(.is-closing) {
+    animation: none;
   }
   .station-menu[open] .menu-slip,
   .station-menu[open] .menu-theme-slip,

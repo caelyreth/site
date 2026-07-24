@@ -44,7 +44,7 @@
   </svg>
 
   <span
-    class="scene-label v-text hidden sm:block"
+    class="scene-side-label v-text hidden sm:block"
     absolute
     right-3
     style="top: 50%"
@@ -52,7 +52,7 @@
     Rainbook program
   </span>
   <span
-    class="scene-label v-text-left hidden sm:block"
+    class="scene-side-label v-text-left hidden sm:block"
     absolute
     left-3
     style="top: 50%"
@@ -223,6 +223,19 @@
 }
 :global(.dark) .scene-solid {
   opacity: 0.48;
+}
+
+/* These labels sit in the debris layer, outside the scene's scoped caption
+   rules. Keep them at the same muted machine-label level as the frame text. */
+.scene-side-label {
+  z-index: 2;
+  color: var(--space-ink-2);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  opacity: 0.82;
+  text-transform: uppercase;
 }
 
 /* two depths of starfield — small/dense behind, large/sparse in front */

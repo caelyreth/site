@@ -43,10 +43,10 @@
   --dur-short: 220ms;
   --dur-long: 420ms;
 
-  /* shared geometry for the deck, its guides, and the opening clip */
+  /* shared geometry for the deck, its rules, and the opening clip */
   --station-half-measure: 24rem;
+  --station-frame-measure: calc(var(--station-half-measure) * 2);
   --station-guide-outset: 13px;
-  --station-boundary-inset: 1px;
 
   color-scheme: light;
 }
@@ -88,6 +88,7 @@ body {
 /* the deck — center card; its own paper, its own much fainter noise */
 .deck {
   position: relative;
+  max-width: var(--station-frame-measure);
   background-color: var(--color-paper);
 }
 .deck::before {

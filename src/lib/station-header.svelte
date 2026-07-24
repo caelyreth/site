@@ -60,8 +60,8 @@
 </header>
 
 <style>
-/* the docking header — full width and transparent over the window,
-   paper and 48rem once docked; everything interpolates via --p */
+/* The docking header shares the deck's frame measure and edge rules.
+   It stays full-width over the window, then docks as --p reaches 1. */
 .hdr {
   --hdr-opening-ink: var(--color-ink);
   --hdr-opening-ink-2: var(--color-muted);
@@ -93,7 +93,10 @@
   top: 0;
   left: 50%;
   width: 100%;
-  max-width: calc(48rem + (100vw - 48rem) * (1 - var(--p, 0)));
+  max-width: calc(
+    var(--station-frame-measure) +
+      (100vw - var(--station-frame-measure)) * (1 - var(--p, 0))
+  );
   transform: translateX(-50%);
 }
 .hdr::before,

@@ -53,7 +53,7 @@
   <StationHeader />
 
   <main flex="~ col 1">
-    <div mx-auto w-full max-w-3xl px-6 class="deck" flex="~ col 1">
+    <div mx-auto w-full px-6 class="deck" flex="~ col 1">
       {@render children()}
     </div>
   </main>

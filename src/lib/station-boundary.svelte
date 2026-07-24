@@ -21,10 +21,18 @@
 .boundary-guide {
   top: 0;
   bottom: 0;
-  width: 14px;
+  width: 1px;
+  pointer-events: none;
+  background: var(--color-rule);
+}
+.boundary-guide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--station-guide-outset);
   pointer-events: none;
   background-image:
-    linear-gradient(var(--color-rule), var(--color-rule)),
     repeating-linear-gradient(
       to bottom,
       var(--color-rule) 0 1px,
@@ -36,8 +44,7 @@
       transparent 1px 48px
     );
   background-size:
-    1px 100%,
-    13px 100%,
+    var(--station-guide-outset) 100%,
     8px 100%;
   background-repeat: no-repeat;
 }
@@ -47,23 +54,18 @@
   opacity: var(--p, 0);
 }
 .station-boundary.boundary-left {
-  left: calc(
-    50% - var(--station-half-measure) - var(--station-guide-outset) +
-      var(--station-boundary-inset)
-  );
-  background-position:
-    right top,
-    right top,
-    right top;
+  left: calc(50% - var(--station-half-measure));
+}
+.station-boundary.boundary-left::before {
+  right: 0;
+  background-position: right top, right top;
 }
 .station-boundary.boundary-right {
-  right: calc(
-    50% - var(--station-half-measure) - var(--station-guide-outset)
-  );
-  background-position:
-    left top,
-    left top,
-    left top;
+  right: calc(50% - var(--station-half-measure));
+}
+.station-boundary.boundary-right::before {
+  left: 0;
+  background-position: left top, left top;
 }
 .scene-boundary {
   position: absolute;
@@ -71,22 +73,17 @@
   opacity: var(--p, 0);
 }
 .scene-boundary.boundary-left {
-  left: calc(
-    50% - var(--station-half-measure) - var(--station-guide-outset) +
-      var(--station-boundary-inset)
-  );
-  background-position:
-    right top,
-    right top,
-    right top;
+  left: calc(50% - var(--station-half-measure));
+}
+.scene-boundary.boundary-left::before {
+  right: 0;
+  background-position: right top, right top;
 }
 .scene-boundary.boundary-right {
-  right: calc(
-    50% - var(--station-half-measure) - var(--station-guide-outset)
-  );
-  background-position:
-    left top,
-    left top,
-    left top;
+  right: calc(50% - var(--station-half-measure));
+}
+.scene-boundary.boundary-right::before {
+  left: 0;
+  background-position: left top, left top;
 }
 </style>
