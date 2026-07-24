@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ThemeToggle from '$lib/theme-toggle.svelte'
+  import StationMenu from '$lib/station-menu.svelte'
 
   const EPOCH = Date.UTC(2026, 6, 12)
   let now = $state<Date | null>(null)
@@ -54,7 +54,7 @@
       <div class="hdr-meta" tabular-nums text-right>
         <div>SOL {sol ?? '———'}</div>
       </div>
-      <ThemeToggle />
+      <StationMenu />
     </div>
   </div>
 </header>
