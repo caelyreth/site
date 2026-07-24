@@ -23,6 +23,22 @@
     now?.toLocaleTimeString('en-GB', { hour12: false }) ?? null,
   )
 
+  function handleBrandClick(event: MouseEvent) {
+    if (
+      window.location.pathname !== '/' ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return
+    }
+
+    event.preventDefault()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   // rare lamp pulse — 2s fade every 12s, not a 60fps animation loop
   let dim = $state(false)
 
@@ -158,32 +174,24 @@
   <!-- the docking header stays pinned as the observation becomes the deck -->
   <header class="hdr" fixed top-0 z-50>
     <div class="hdr-inner">
-      <div flex="~ col gap-0.5">
-        <a
-          href="/"
-          flex="~ items-center gap-2"
-          font-serif
-          text-lg
-          font-bold
-          tracking-tight
-          decoration-none
+      <a href="/" class="hdr-brand" onclick={handleBrandClick} decoration-none>
+        <svg
+          aria-hidden="true"
+          class="hdr-brand-mark"
+          viewBox="0 0 42 24"
+          fill="none"
         >
-          <span
-            aria-hidden="true"
-            class="lamp"
-            class:is-dim={dim}
-            inline-block
-            size-2
-            bg-accent
-          ></span>
-          Caelyreth
-        </a>
-        <span class="hdr-sub" text="xs" uppercase tracking-widest>
-          Rainbook · relay station
+          <rect x="3.75" y="2" width="7.5" height="20" fill="currentColor" />
+          <rect x="13.25" y="2" width="12" height="20" fill="currentColor" />
+          <rect x="27.25" y="2" width="6" height="20" fill="currentColor" />
+          <rect x="35.25" y="2" width="3" height="20" fill="currentColor" />
+        </svg>
+        <span class="hdr-brand-copy">
+          <span font-serif text-base font-bold tracking-tight>Caelyreth</span>
         </span>
-      </div>
+      </a>
       <div flex="~ items-center gap-5">
-        <div tabular-nums text-right leading-tight text="sm">
+        <div class="hdr-meta" tabular-nums text-right>
           <div>SOL {sol ?? '———'}</div>
           <div class="hdr-sub">{clock ?? '——:——:——'}</div>
         </div>

@@ -578,15 +578,53 @@ a:hover {
 .hdr-inner {
   margin-inline: auto;
   width: 100%;
-  height: 4rem;
+  height: 3.25rem;
   padding-inline: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
+.hdr-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  color: var(--hdr-ink);
+  line-height: 1;
+}
+.hdr-brand:hover {
+  color: var(--hdr-ink);
+}
+.hdr-brand-mark {
+  display: block;
+  flex: none;
+  width: auto;
+  height: 1.75rem;
+}
+.hdr-brand-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 0;
+}
 .hdr-sub {
   color: var(--hdr-ink-2);
+  font-size: 0.625rem;
+  line-height: 1.2;
+}
+.hdr-meta {
+  font-size: 0.625rem;
+  line-height: 1.35;
+}
+@media (max-width: 38rem) {
+  .hdr-inner {
+    padding-inline: 0.75rem;
+  }
+  .hdr-meta {
+    display: none;
+  }
 }
 
 /* theme toggle — colors come from context (--toggle-*), so it works
