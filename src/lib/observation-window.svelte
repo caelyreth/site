@@ -15,8 +15,8 @@
   let nextObservation = 0
   let revealTimer: number | undefined
 
-  const FRAME_SETTLE_DELAY = 220
-  const PANEL_REVEAL_DELAY = 300
+  const FRAME_SETTLE_DELAY = 160
+  const PANEL_REVEAL_DELAY = 240
 
   function queueObservationReveal() {
     if (
@@ -64,16 +64,16 @@
   <div class="observation-strip-frame" class:is-ready={frameReady}>
     <div class="observation-strip">
       {#each observations as observation, index (observation.src)}
-        <img
-          bind:this={observationImages[index]}
-          src={observation.src}
-          alt={observation.alt}
-          fetchpriority={index === 1 ? 'high' : 'auto'}
-          decoding="async"
-          class="observation-panel"
-          class:is-revealed={observationRevealed[index]}
-          onload={() => markObservationLoaded(index)}
-        />
+        <div class="observation-panel" class:is-revealed={observationRevealed[index]}>
+          <img
+            bind:this={observationImages[index]}
+            src={observation.src}
+            alt={observation.alt}
+            fetchpriority={index === 0 ? 'high' : 'auto'}
+            decoding="async"
+            onload={() => markObservationLoaded(index)}
+          />
+        </div>
       {/each}
     </div>
     <span aria-hidden="true" class="tick tick-tl"></span>

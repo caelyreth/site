@@ -297,19 +297,6 @@ body {
     0 0 / 8px 8px;
 }
 
-/* streak lines crossing the frame */
-.streaks {
-  width: 150px;
-  height: 15px;
-  transform: rotate(-24deg);
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--space-ink) 0 1px,
-    transparent 1px 7px
-  );
-  opacity: 0.65;
-}
-
 /* diagonal stripe block */
 .stripe-block {
   width: 54px;
@@ -350,7 +337,7 @@ body {
   overflow: hidden;
   background: transparent;
 }
-.observation-strip > img {
+.observation-panel > img {
   display: block;
   width: 100%;
   height: 100%;
@@ -359,15 +346,21 @@ body {
   object-position: center;
 }
 .observation-panel {
+  min-width: 0;
+  overflow: hidden;
   opacity: 0;
-  transform: scale(1.03);
-  transition:
-    opacity 720ms var(--ease-out),
-    transform 720ms var(--ease-out);
+  transition: opacity 180ms var(--ease-out);
+}
+.observation-panel > img {
+  transform: translate3d(-102%, 0, 0);
+  will-change: transform;
+  transition: transform 640ms var(--ease-in-out);
 }
 .observation-panel.is-revealed {
   opacity: 1;
-  transform: scale(1);
+}
+.observation-panel.is-revealed > img {
+  transform: translate3d(0, 0, 0);
 }
 
 /* registration ticks at the frame corners */
@@ -693,11 +686,6 @@ a:hover {
   align-items: flex-start;
   gap: 0.25rem;
   min-width: 0;
-}
-.hdr-sub {
-  color: var(--hdr-ink-2);
-  font-size: 0.625rem;
-  line-height: 1.2;
 }
 .hdr-meta {
   font-size: 0.625rem;

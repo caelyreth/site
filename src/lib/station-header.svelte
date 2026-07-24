@@ -7,17 +7,13 @@
   $effect(() => {
     const tick = () => (now = new Date())
     tick()
-    const id = setInterval(tick, 1000)
+    const id = setInterval(tick, 60_000)
     return () => clearInterval(id)
   })
 
   const sol = $derived(
     now ? Math.floor((now.getTime() - EPOCH) / 86_400_000) : null,
   )
-  const clock = $derived(
-    now?.toLocaleTimeString('en-GB', { hour12: false }) ?? null,
-  )
-
   function handleBrandClick(event: MouseEvent) {
     if (
       window.location.pathname !== '/' ||
@@ -57,7 +53,6 @@
     <div flex="~ items-center gap-5">
       <div class="hdr-meta" tabular-nums text-right>
         <div>SOL {sol ?? '———'}</div>
-        <div class="hdr-sub">{clock ?? '——:——:——'}</div>
       </div>
       <ThemeToggle />
     </div>

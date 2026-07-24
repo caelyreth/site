@@ -4,19 +4,19 @@
 
   const observations = [
     {
-      src: '/observation_1.jpg',
+      src: '/observation_1.webp',
       alt: 'Pale blue and white vertical impasto painting',
     },
     {
-      src: '/observation_2.jpg',
+      src: '/observation_2.webp',
       alt: 'Deep blue abstract painting with cloud-like bands',
     },
     {
-      src: '/observation_3.jpg',
+      src: '/observation_3.webp',
       alt: 'Black and white gestural brushwork painting',
     },
     {
-      src: '/observation_4.jpg',
+      src: '/observation_4.webp',
       alt: 'Layered teal, black, and ochre abstract painting',
     },
   ]

@@ -151,12 +151,6 @@
 
   <div
     aria-hidden="true"
-    class="streaks hidden sm:block"
-    absolute
-    style="left: 5%; top: 64%"
-  ></div>
-  <div
-    aria-hidden="true"
     class="stripe-block hidden sm:block"
     absolute
     style="right: 14%; bottom: 24%"
