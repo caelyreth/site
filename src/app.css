@@ -757,12 +757,61 @@ a:hover {
   border-block: 1px solid var(--color-rule);
 }
 .footer-module {
+  --footer-primary: var(--color-ink);
+  --footer-secondary: var(--color-ink-2);
+  --footer-muted: var(--color-muted);
+  --footer-accent: var(--color-accent);
+  --footer-rule: var(--color-rule);
+
   display: flex;
   min-width: 0;
   min-height: 9.75rem;
   flex-direction: column;
   align-items: flex-start;
   padding: 1.25rem 0;
+  box-shadow: 0 0 0 transparent;
+  transition:
+    background-color var(--dur-long) var(--ease-out),
+    box-shadow var(--dur-long) var(--ease-out),
+    color var(--dur-long) var(--ease-out);
+}
+@media (hover: hover) {
+  .footer-module:hover {
+    --footer-primary: var(--color-paper);
+    --footer-secondary: var(--color-paper);
+    --footer-muted: color-mix(in oklab, var(--color-paper) 68%, transparent);
+    --footer-accent: var(--color-paper);
+    --footer-rule: color-mix(in oklab, var(--color-paper) 65%, transparent);
+
+    color: var(--color-paper);
+    background-color: var(--color-ink);
+  }
+}
+@media (min-width: 48rem) {
+  .footer-module:first-child {
+    box-shadow: -1.5rem 0 0 transparent;
+  }
+  .footer-module:last-child {
+    box-shadow: 1.5rem 0 0 transparent;
+  }
+}
+@media (hover: hover) and (min-width: 48rem) {
+  .footer-module:first-child:hover {
+    box-shadow: -1.5rem 0 0 var(--color-ink);
+  }
+  .footer-module:last-child:hover {
+    box-shadow: 1.5rem 0 0 var(--color-ink);
+  }
+}
+.footer-module .footer-label,
+.footer-module .footer-status,
+.footer-module .footer-signal,
+.footer-module .footer-sitemap,
+.footer-module .footer-detail {
+  transition: color var(--dur-long) var(--ease-out);
+}
+.footer-module .footer-label {
+  color: var(--footer-muted);
 }
 .footer-module-head {
   display: flex;
@@ -777,7 +826,7 @@ a:hover {
 .footer-base-module {
   align-items: center;
   justify-content: center;
-  color: var(--color-ink-2);
+  color: var(--footer-secondary);
 }
 .footer-base-asterisk {
   width: 2.75rem;
@@ -794,11 +843,12 @@ a:hover {
 }
 .footer-barcode > span {
   flex: var(--bar-width) 1 0;
-  background: var(--color-ink);
+  background: var(--footer-primary);
+  transition: background-color var(--dur-long) var(--ease-out);
 }
 .footer-status {
   margin: 1rem 0 0;
-  color: var(--color-ink);
+  color: var(--footer-primary);
   font-size: 0.75rem;
   line-height: 1.2;
 }
@@ -807,7 +857,7 @@ a:hover {
   width: 100%;
   margin-top: 0.5rem;
   overflow-wrap: anywhere;
-  color: var(--color-accent);
+  color: var(--footer-accent);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -821,12 +871,12 @@ a:hover {
   place-items: center;
   padding: 0;
   cursor: pointer;
-  border: 1px solid var(--color-rule);
-  color: var(--color-ink-2);
+  border: 1px solid var(--footer-rule);
+  color: var(--footer-secondary);
   background: transparent;
   transition:
-    border-color var(--dur-micro) var(--ease-out),
-    color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-long) var(--ease-out),
+    color var(--dur-long) var(--ease-out),
     transform var(--dur-micro) var(--ease-out);
 }
 .footer-signal-toggle svg {
@@ -834,8 +884,8 @@ a:hover {
   height: 0.75rem;
 }
 .footer-signal-toggle:hover {
-  border-color: var(--color-ink-2);
-  color: var(--color-ink);
+  border-color: var(--footer-primary);
+  color: var(--footer-primary);
 }
 .footer-signal-toggle:active {
   transform: translateY(1px);
@@ -866,7 +916,7 @@ a:hover {
   gap: 0.5rem;
   margin: 0.875rem 0 0;
   padding: 0;
-  color: var(--color-ink-2);
+  color: var(--footer-secondary);
   font-size: 0.75rem;
   line-height: 1.2;
   list-style: none;
@@ -879,11 +929,11 @@ a:hover {
 }
 .footer-sitemap li::before {
   content: '—';
-  color: var(--color-muted);
+  color: var(--footer-muted);
 }
 .footer-detail {
   margin: auto 0 0;
-  color: var(--color-muted);
+  color: var(--footer-muted);
   font-size: 0.625rem;
   letter-spacing: 0.04em;
   line-height: 1.3;
