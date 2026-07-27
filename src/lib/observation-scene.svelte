@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import ObservationWindow from '$lib/observation-window.svelte'
   import SceneDebris from '$lib/scene-debris.svelte'
   import StationBoundary from '$lib/station-boundary.svelte'
@@ -21,64 +22,76 @@
       alt: 'Layered teal, black, and ochre abstract painting',
     },
   ]
+
+  let sceneElement = $state<HTMLElement>()
+  // Start the primary scene as visible. The observer corrects this immediately
+  // after mount without delaying the field's first visible pulse.
+  let sceneVisible = $state(true)
+  let motionActive = $state(false)
+
+  onMount(() => {
+    const updateMotionState = () => {
+      motionActive = sceneVisible && document.visibilityState === 'visible'
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        sceneVisible = entry.isIntersecting
+        updateMotionState()
+      },
+      { threshold: 0 },
+    )
+
+    updateMotionState()
+    if (sceneElement) observer.observe(sceneElement)
+    document.addEventListener('visibilitychange', updateMotionState)
+
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', updateMotionState)
+    }
+  })
 </script>
 
 <div class="capture">
-  <section class="scene full-bleed" flex="~ items-center justify-center">
-    <SceneDebris />
-    <StationBoundary side="left" inScene />
-    <StationBoundary side="right" inScene />
+  <section
+    bind:this={sceneElement}
+    class="scene full-bleed"
+  >
+      <div class="scene-foreground" flex="~ items-center justify-center">
+        <div aria-hidden="true" class="scene-surface"></div>
+      <SceneDebris {motionActive} />
+      <StationBoundary side="left" inScene />
+      <StationBoundary side="right" inScene />
 
-    <span class="scene-label scene-corner scene-corner-left" absolute top-20>
-      Caelyreth — observation window
-    </span>
-    <span class="scene-label scene-corner scene-corner-right" absolute top-20>
-      Field 044° 12′
-    </span>
-    <span class="scene-label scene-corner scene-corner-left" absolute bottom-5>
-      Transmission 001
-    </span>
-    <a
-      href="#station"
-      class="scene-label scene-corner scene-corner-right"
-      absolute
-      bottom-5
-    >
-      Descend to the station ↓
-    </a>
+      <span class="scene-label scene-corner scene-corner-left" absolute top-20>
+        Caelyreth — observation window
+      </span>
+      <span class="scene-label scene-corner scene-corner-right" absolute top-20>
+        Field 044° 12′
+      </span>
+      <span class="scene-label scene-corner scene-corner-left" absolute bottom-5>
+        Transmission 001
+      </span>
+      <a
+        href="#station"
+        class="scene-label scene-corner scene-corner-right"
+        absolute
+        bottom-5
+      >
+        Descend to the station ↓
+      </a>
 
-    <ObservationWindow {observations} />
-
-    <!-- Registration traces sit behind the observation window, placing the
-         studies cleanly above the wider field. -->
-    <svg
-      aria-hidden="true"
-      class="scene-growth-foreground"
-      viewBox="0 0 1600 900"
-      preserveAspectRatio="none"
-      fill="none"
-    >
-      <g stroke="currentColor" vector-effect="non-scaling-stroke">
-        <path
-          class="scene-growth-trace"
-          d="M-44 677C287 544 480 645 748 500s454-72 896-278"
-        />
-        <path
-          class="scene-growth-trace scene-growth-trace-fine"
-          d="M-68 272C226 151 450 316 721 232s454 18 948-202"
-        />
-        <path
-          class="scene-growth-trace scene-growth-trace-fine"
-          d="M945 842c144-129 297-82 425-161s187-171 302-206"
-        />
-        <circle class="scene-growth-front-node" cx="748" cy="500" r="6" />
-        <circle class="scene-growth-front-node" cx="1261" cy="351" r="4" />
-      </g>
-    </svg>
+      <ObservationWindow {observations} />
+    </div>
   </section>
 </div>
 
 <style>
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R4 V5
+ * macrostructure: Map / Diagram · theme: custom · motion: experimental
+ * botanical signal field, kept behind the four-study observation focal layer
+ */
 .capture {
   height: calc(100vh + var(--capture-progress) * 100vh);
   height: calc(100dvh + var(--capture-progress) * 100dvh);
@@ -103,12 +116,34 @@
   height: 100dvh;
   overflow: hidden;
   color: var(--space-ink);
-  /* The opening eases from space to deck while it remains in frame. */
+}
+
+/* Surface and field share one clip, exposing the station hatch as the opening
+   docks into the deck rather than leaving a full-viewport dark slab above it. */
+.scene-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background-color: color-mix(
     in oklab,
     var(--space-bg),
     var(--color-paper) calc(var(--p, 0) * 100%)
   );
+}
+.scene-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(var(--p, 0) * 0.4);
+  background-image: var(--noise-tile);
+  background-size: 96px;
+}
+.scene-foreground {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   clip-path: inset(
     0 calc(max(0px, 50vw - var(--station-half-measure)) * var(--p, 0)) 0
   );
@@ -122,51 +157,6 @@
   --cube-mid: oklch(58% 0 0);
   --cube-lo: oklch(38% 0 0);
 }
-.scene::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: calc(var(--p, 0) * 0.4);
-  background-image: var(--noise-tile);
-  background-size: 96px;
-}
-.scene-growth-foreground {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  color: var(--space-ink);
-  opacity: max(0, calc(0.2 - var(--p, 0) * 0.25));
-  transform: scale(calc(1 - var(--p, 0) * 0.025));
-  transform-origin: center;
-}
-.scene-growth-trace {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.scene-growth-trace {
-  stroke-width: 1.25;
-}
-.scene-growth-trace-fine {
-  stroke-width: 0.8;
-  opacity: 0.68;
-}
-.scene-growth-front-node {
-  fill: var(--space-bg);
-  stroke: currentColor;
-  stroke-width: 1.1;
-}
-
-:global(.dark) .scene-growth-foreground {
-  opacity: max(0, calc(0.25 - var(--p, 0) * 0.3));
-}
-
 /* machine labels inside the window */
 .scene-label {
   font-size: 11px;
@@ -192,4 +182,5 @@
   width: 100vw;
   margin-left: calc(50% - 50vw);
 }
+
 </style>

@@ -19,6 +19,7 @@
     "@iconify-json/ri": "catalog:f",
     "@sveltejs/adapter-auto": "catalog:f",
     "@sveltejs/kit": "catalog:f",
+    "@types/d3-delaunay": "^6.0.4",
     "@types/node": "catalog:t",
     "oxfmt": "catalog:x",
     "oxlint": "catalog:x",
@@ -35,5 +36,9 @@
       "version": "11.12.0",
       "onFail": "error"
     }
+  },
+  "dependencies": {
+    "d3-delaunay": "^6.0.4",
+    "three": "^0.185.1"
   }
 }

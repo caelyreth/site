@@ -1,47 +1,14 @@
 <script lang="ts">
   import IsoCube from '$lib/iso-cube.svelte'
+  import NetworkField from '$lib/network-field.svelte'
+
+  const { motionActive }: { motionActive: boolean } = $props()
 </script>
 
 <div class="scene-debris">
   <div aria-hidden="true" class="stars stars-far"></div>
   <div aria-hidden="true" class="stars"></div>
-
-  <!-- A wide field diagram uses layered contour curves, keeping the
-       observation expressive without becoming decorative. -->
-  <svg
-    aria-hidden="true"
-    class="scene-growth scene-growth-back"
-    viewBox="0 0 1600 900"
-    preserveAspectRatio="none"
-    fill="none"
-  >
-    <g stroke="currentColor" vector-effect="non-scaling-stroke">
-      <path
-        class="scene-growth-strong"
-        d="M-120 778C154 585 411 705 667 539S1094 268 1720 176"
-      />
-      <path
-        class="scene-growth-strong"
-        d="M-76 204C246 307 398 164 617 236s410 88 1059-110"
-      />
-      <path
-        class="scene-growth-curve"
-        d="M-96 478C185 368 370 524 622 425s443-236 1099-150"
-      />
-      <path
-        class="scene-growth-curve"
-        d="M-42 855C255 719 416 829 686 710s463-99 973-342"
-      />
-      <path
-        class="scene-growth-curve scene-growth-curve-soft"
-        d="M178-35C380 104 512 64 697 164s385 156 756 36"
-      />
-      <circle class="scene-growth-node" cx="667" cy="539" r="10" />
-      <circle class="scene-growth-node" cx="1113" cy="276" r="8" />
-      <circle class="scene-growth-node" cx="617" cy="236" r="6" />
-      <circle class="scene-growth-node" cx="1126" cy="561" r="5" />
-    </g>
-  </svg>
+  <NetworkField {motionActive} />
 
   <span
     class="scene-side-label v-text hidden sm:block"
@@ -61,13 +28,13 @@
   </span>
 
   <div absolute w-20 class="scene-solid hidden -rotate-8 sm:block" style="top: 5%; left: 22%">
-    <IsoCube />
+    <span class="scene-artifact"><IsoCube /></span>
   </div>
   <div absolute w-12 class="scene-solid hidden rotate-10 sm:block" style="top: 12%; right: 22%">
-    <IsoCube />
+    <span class="scene-artifact"><IsoCube /></span>
   </div>
   <div absolute w-9 class="scene-solid hidden -scale-x-100 sm:block" style="top: 60%; left: 16%">
-    <IsoCube />
+    <span class="scene-artifact"><IsoCube /></span>
   </div>
   <div
     absolute
@@ -75,7 +42,7 @@
     class="scene-solid hidden rotate-6 blur-[1.5px] sm:block"
     style="bottom: 8%; right: 24%"
   >
-    <IsoCube />
+    <span class="scene-artifact"><IsoCube /></span>
   </div>
   <div
     absolute
@@ -83,17 +50,17 @@
     class="scene-solid hidden rotate-3 blur-[2.5px] md:block"
     style="bottom: 10%; left: 62%"
   >
-    <IsoCube />
+    <span class="scene-artifact"><IsoCube /></span>
   </div>
 
   <div absolute w-20 class="hidden -rotate-12 sm:block" style="top: 38%; right: 5%">
-    <IsoCube wire />
+    <span class="scene-artifact"><IsoCube wire /></span>
   </div>
   <div absolute w-10 class="hidden rotate-6 sm:block" style="top: 26%; left: 3%">
-    <IsoCube wire />
+    <span class="scene-artifact"><IsoCube wire /></span>
   </div>
   <div absolute w-8 class="hidden -rotate-4 md:block" style="bottom: 6%; left: 38%">
-    <IsoCube wire />
+    <span class="scene-artifact"><IsoCube wire /></span>
   </div>
 
   <div
@@ -164,6 +131,10 @@
 </div>
 
 <style>
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R4 V5
+ * macrostructure: Map / Diagram · theme: custom · enrichment: signal field
+ * A GPU field and small floating artifacts support, never compete with, the studies.
+ */
 /* The debris field dissolves and recedes through the opening capture;
    the framed observation stays. */
 .scene-debris {
@@ -175,54 +146,16 @@
   transform-origin: center;
 }
 
-/* The observation is mapped as a living field, not decorated with scattered
-   ornaments. These paths share one coordinate plane and stay quiet enough for
-   the studies to remain the focal point. */
-.scene-growth {
-  position: absolute;
-  inset: -10% -8%;
-  width: 116%;
-  height: 120%;
-  pointer-events: none;
-  color: var(--space-ink);
-}
-.scene-growth-back {
-  opacity: 0.11;
-  transform: rotate(-1.5deg) scale(1.04);
-  transform-origin: center;
-}
-.scene-growth-strong,
-.scene-growth-curve {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.scene-growth-strong {
-  stroke-width: 1.25;
-}
-.scene-growth-curve {
-  stroke-width: 0.9;
-}
-.scene-growth-curve-soft {
-  stroke-width: 0.7;
-  opacity: 0.62;
-}
-.scene-growth-node {
-  fill: var(--space-bg);
-  stroke: currentColor;
-  stroke-width: 1.1;
-}
-
-:global(.dark) .scene-growth-back {
-  opacity: 0.17;
-}
-
 .scene-solid {
+  z-index: 1;
   opacity: 0.42;
 }
 :global(.dark) .scene-solid {
   opacity: 0.48;
+}
+.scene-artifact {
+  display: block;
+  width: 100%;
 }
 
 /* These labels sit in the debris layer, outside the scene's scoped caption
@@ -263,6 +196,7 @@
 
 /* pixel clusters — small checkerboards of light */
 .pixels {
+  z-index: 1;
   width: 24px;
   height: 16px;
   opacity: 0.42;
@@ -275,6 +209,7 @@
 
 /* diagonal stripe block */
 .stripe-block {
+  z-index: 1;
   width: 54px;
   height: 54px;
   background: repeating-linear-gradient(
@@ -287,6 +222,7 @@
 
 /* single square marker */
 .marker {
+  z-index: 1;
   width: 6px;
   height: 6px;
   background: var(--space-ink);
@@ -295,10 +231,10 @@
 
 /* dashed orbit ring for the window scene */
 .orbit {
+  z-index: 1;
   border: 1px dashed var(--space-line);
   border-radius: 9999px;
 }
-
 .stripe-block.sm {
   width: 34px;
   height: 34px;
@@ -311,4 +247,5 @@
 .v-text-left {
   transform: translateY(-50%) rotate(180deg);
 }
+
 </style>
