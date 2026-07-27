@@ -100,7 +100,7 @@
 /* The observation window follows the active station shift while keeping
    its local geometry tokens separate from the deck. */
 .scene {
-  --space-bg: var(--color-paper-2);
+  --space-bg: oklch(95% 0 0);
   --space-ink: var(--color-ink);
   --space-ink-2: var(--color-muted);
   --space-line: color-mix(in oklab, var(--color-ink) 55%, transparent);
@@ -149,7 +149,7 @@
   );
 }
 :global(.dark) .scene {
-  --space-bg: oklch(12% 0 0);
+  --space-bg: oklch(14% 0 0);
   --space-ink: oklch(88% 0 0);
   --space-ink-2: oklch(60% 0 0);
   --space-line: oklch(88% 0 0 / 55%);
