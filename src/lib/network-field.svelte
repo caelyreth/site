@@ -13,13 +13,20 @@
   }
   type Three = typeof import('three')
   type SkyData = typeof import('$lib/sky-map-data.generated')
+  type PulseChangeHandler = (active: boolean) => void
 
   const SIGNAL_PALETTES = {
     light: [0x765d56, 0x756c4f, 0x596f5d, 0x4f6f75, 0x596a87, 0x6b607b],
     dark: [0xc2a097, 0xbdb187, 0x9caf9b, 0x8fb2b5, 0x96a8c4, 0xab9db8],
   } as const
 
-  const { motionActive }: { motionActive: boolean } = $props()
+  const {
+    motionActive,
+    onPulseChange,
+  }: {
+    motionActive: boolean
+    onPulseChange?: PulseChangeHandler
+  } = $props()
 
   let canvas = $state<HTMLCanvasElement>()
   let controller: FieldController | undefined
@@ -64,6 +71,7 @@
     target: HTMLCanvasElement,
     three: Three,
     skyData: SkyData,
+    reportPulseChange?: PulseChangeHandler,
   ): FieldController {
     const { SKY_SOURCE_NODES, SKY_VIEW_BASIS } = skyData
     const context = target.getContext('webgl2', {
@@ -334,6 +342,7 @@
     let previousRenderTime = 0
     let sourceIndex = -1
     let signalColorIndex = -1
+    let reportedPulseActive = false
     let signalStartedAt = performance.now()
     let maxSignalDistance = Math.PI / 2
     const signalSpeed = 0.72 / 1000
@@ -536,10 +545,16 @@
       if (idleTimer) window.clearTimeout(idleTimer)
       idleTimer = 0
     }
+    const reportPulse = (nextActive: boolean) => {
+      if (nextActive === reportedPulseActive) return
+      reportedPulseActive = nextActive
+      reportPulseChange?.(nextActive)
+    }
     const stop = () => {
       stopFrame()
       stopTimer()
       pulseRunning = false
+      reportPulse(false)
     }
     const beginPulse = () => {
       if (!active || disposed) return
@@ -551,11 +566,13 @@
       sharedUniforms.uPulseActive.value = 1
       updateSignalColor(true)
       applySource(now)
+      reportPulse(true)
       stopFrame()
       frame = requestAnimationFrame(animate)
     }
     const enterIdle = () => {
       pulseRunning = false
+      reportPulse(false)
       stopFrame()
       sharedUniforms.uPulseActive.value = 0
       sharedUniforms.uPulseDistance.value = 0
@@ -651,11 +668,12 @@
     void Promise.all([import('three'), import('$lib/sky-map-data.generated')])
       .then(([three, skyData]) => {
         if (unmounted || !canvas) return
-        controller = createSkyMapField(canvas, three, skyData)
+        controller = createSkyMapField(canvas, three, skyData, onPulseChange)
         controller.setActive(motionActive)
       })
       .catch((error: unknown) => {
         if (!canvas) return
+        onPulseChange?.(false)
         canvas.dataset.networkState = 'failed'
         console.error('Unable to initialize the observation sky map.', error)
       })

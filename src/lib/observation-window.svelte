@@ -6,7 +6,15 @@
     alt: string
   }
 
-  const { observations }: { observations: readonly Observation[] } = $props()
+  const {
+    observations,
+    pulseActive = false,
+    ratios = [2.5, 4, 2, 1],
+  }: {
+    observations: readonly Observation[]
+    pulseActive?: boolean
+    ratios?: readonly [number, number, number, number]
+  } = $props()
 
   let observationImages = $state<(HTMLImageElement | undefined)[]>([])
   let observationLoaded = $state<boolean[]>([])
@@ -61,8 +69,18 @@
 </script>
 
 <figure class="observation-frame" relative z-10 flex="~ col items-center" px-6>
-  <div class="observation-strip-frame" class:is-ready={frameReady}>
-    <div class="observation-strip">
+  <div
+    class="observation-strip-frame"
+    class:is-pulsing={pulseActive}
+    class:is-ready={frameReady}
+  >
+    <div
+      class="observation-strip"
+      style:--strip-ratio-1={`${ratios[0]}fr`}
+      style:--strip-ratio-2={`${ratios[1]}fr`}
+      style:--strip-ratio-3={`${ratios[2]}fr`}
+      style:--strip-ratio-4={`${ratios[3]}fr`}
+    >
       {#each observations as observation, index (observation.src)}
         <div class="observation-panel" class:is-revealed={observationRevealed[index]}>
           <img
@@ -104,16 +122,27 @@
 .observation-strip-frame {
   position: relative;
   width: 100%;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform var(--dur-long) var(--ease-in-out);
+}
+.observation-strip-frame.is-pulsing {
+  transform: scale(0.94);
+  will-change: transform;
 }
 .observation-strip {
   position: relative;
   display: grid;
-  grid-template-columns: 2.5fr 4fr 2fr 1fr;
+  grid-template-columns:
+    var(--strip-ratio-1) var(--strip-ratio-2) var(--strip-ratio-3)
+    var(--strip-ratio-4);
   gap: clamp(0.5rem, 1.5vw, 1rem);
   width: 100%;
   aspect-ratio: 7 / 3.7;
   overflow: hidden;
   background: transparent;
+  contain: layout paint;
+  transition: grid-template-columns var(--dur-long) var(--ease-in-out);
 }
 .observation-panel > img {
   display: block;
@@ -196,5 +225,12 @@
 .observation-strip-frame.is-ready .tick-br {
   top: calc(100% - 6px);
   left: calc(100% - 6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .observation-strip-frame,
+  .observation-strip {
+    transition: none;
+  }
 }
 </style>

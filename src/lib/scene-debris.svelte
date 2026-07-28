@@ -2,14 +2,20 @@
   import IsoCube from '$lib/iso-cube.svelte'
   import NetworkField from '$lib/network-field.svelte'
 
-  const { motionActive }: { motionActive: boolean } = $props()
+  const {
+    motionActive,
+    onPulseChange,
+  }: {
+    motionActive: boolean
+    onPulseChange: (active: boolean) => void
+  } = $props()
 </script>
 
 <div class="scene-debris">
   <div aria-hidden="true" class="field-texture field-texture-far"></div>
   <div aria-hidden="true" class="field-texture field-texture-near"></div>
   <div class="constellation-layer">
-    <NetworkField {motionActive} />
+    <NetworkField {motionActive} {onPulseChange} />
   </div>
 
   <div class="scene-artifacts">
@@ -21,15 +27,6 @@
     >
       Rainbook program
     </span>
-    <span
-      class="scene-side-label v-text-left hidden sm:block"
-      absolute
-      left-3
-      style="top: 50%"
-    >
-      Kept by Yu
-    </span>
-
     <div
       absolute
       w-20
@@ -297,8 +294,5 @@
   .v-text {
     writing-mode: vertical-rl;
     transform: translateY(-50%);
-  }
-  .v-text-left {
-    transform: translateY(-50%) rotate(180deg);
   }
 </style>

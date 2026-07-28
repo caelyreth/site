@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import ObservationWindow from '$lib/observation-window.svelte'
   import SceneDebris from '$lib/scene-debris.svelte'
+  import SignalSerialTicker from '$lib/signal-serial-ticker.svelte'
   import StationBoundary from '$lib/station-boundary.svelte'
 
   const observations = [
@@ -22,12 +23,79 @@
       alt: 'Layered teal, black, and ochre abstract painting',
     },
   ]
+  const OBSERVATION_LABEL = 'Caelyreth — observation window'
+  const SIGNAL_LOSS_LABELS = [
+    'Caelyr_th // observation w_ndow',
+    '//// signal lost — window 044',
+    'Caelyreth — no carrier 044',
+    'Frame 044 // observation null',
+    'Cael··reth — signal partial //',
+  ] as const
+  const BASE_STRIP_RATIOS = [2.5, 4, 2, 1] as const
+  const STRIP_RATIO_TOTAL = BASE_STRIP_RATIOS.reduce(
+    (total, ratio) => total + ratio,
+    0,
+  )
 
   let sceneElement = $state<HTMLElement>()
   // Start the primary scene as visible. The observer corrects this immediately
   // after mount without delaying the field's first visible pulse.
   let sceneVisible = $state(true)
   let motionActive = $state(false)
+  let pulseActive = $state(false)
+  let stripRatios = $state<[number, number, number, number]>([
+    ...BASE_STRIP_RATIOS,
+  ])
+  let observationLabel = $state(OBSERVATION_LABEL)
+  let labelTimer: number | undefined
+  let previousSignalLabel = -1
+
+  function randomizeStripRatios() {
+    const varied = BASE_STRIP_RATIOS.map(
+      (ratio) => ratio * (0.68 + Math.random() * 0.64),
+    )
+    const normalization =
+      STRIP_RATIO_TOTAL / varied.reduce((total, ratio) => total + ratio, 0)
+    const next = varied.map((ratio) => Number((ratio * normalization).toFixed(3)))
+
+    next[3] = Number(
+      (STRIP_RATIO_TOTAL - next[0] - next[1] - next[2]).toFixed(3),
+    )
+    stripRatios = next as [number, number, number, number]
+  }
+
+  function handlePulseChange(active: boolean) {
+    pulseActive = active
+  }
+
+  $effect(() => {
+    if (!pulseActive) {
+      observationLabel = OBSERVATION_LABEL
+      return
+    }
+
+    let cancelled = false
+    const scrambleLabel = () => {
+      if (cancelled) return
+
+      let next = Math.floor(Math.random() * SIGNAL_LOSS_LABELS.length)
+      if (next === previousSignalLabel && SIGNAL_LOSS_LABELS.length > 1) {
+        next = (next + 1) % SIGNAL_LOSS_LABELS.length
+      }
+      previousSignalLabel = next
+      observationLabel = SIGNAL_LOSS_LABELS[next]
+      labelTimer = window.setTimeout(scrambleLabel, 170 + Math.random() * 130)
+    }
+
+    labelTimer = window.setTimeout(scrambleLabel, 80 + Math.random() * 100)
+
+    return () => {
+      cancelled = true
+      if (labelTimer !== undefined) window.clearTimeout(labelTimer)
+      labelTimer = undefined
+      observationLabel = OBSERVATION_LABEL
+    }
+  })
 
   onMount(() => {
     const updateMotionState = () => {
@@ -60,12 +128,22 @@
   >
       <div class="scene-foreground" flex="~ items-center justify-center">
         <div aria-hidden="true" class="scene-surface"></div>
-      <SceneDebris {motionActive} />
+      <SceneDebris
+        {motionActive}
+        onPulseChange={handlePulseChange}
+      />
+      <SignalSerialTicker {pulseActive} onStep={randomizeStripRatios} />
       <StationBoundary side="left" inScene />
       <StationBoundary side="right" inScene />
 
-      <span class="scene-label scene-corner scene-corner-left" absolute top-20>
-        Caelyreth — observation window
+      <span
+        aria-label={OBSERVATION_LABEL}
+        class="scene-label scene-corner scene-corner-left"
+        class:is-signal-active={pulseActive}
+        absolute
+        top-20
+      >
+        {observationLabel}
       </span>
       <span class="scene-label scene-corner scene-corner-right" absolute top-20>
         Field 044° 12′
@@ -82,7 +160,11 @@
         Descend to the station ↓
       </a>
 
-      <ObservationWindow {observations} />
+      <ObservationWindow
+        {observations}
+        {pulseActive}
+        ratios={stripRatios}
+      />
     </div>
   </section>
 </div>
@@ -100,6 +182,10 @@
 /* The observation window follows the active station shift while keeping
    its local geometry tokens separate from the deck. */
 .scene {
+  --scene-inline-inset: calc(
+    var(--station-inline-gutter) +
+      max(0px, 50vw - var(--station-half-measure)) * var(--p, 0)
+  );
   --space-bg: oklch(95% 0 0);
   --space-ink: var(--color-ink);
   --space-ink-2: var(--color-muted);
@@ -168,14 +254,13 @@
   z-index: 2;
 }
 .scene-corner-left {
-  left: calc(
-    1.5rem + max(0px, 50vw - var(--station-half-measure)) * var(--p, 0)
-  );
+  left: var(--scene-inline-inset);
 }
 .scene-corner-right {
-  right: calc(
-    1.5rem + max(0px, 50vw - var(--station-half-measure)) * var(--p, 0)
-  );
+  right: var(--scene-inline-inset);
+}
+.scene-corner-left.is-signal-active {
+  color: var(--space-ink);
 }
 /* full-viewport-width escape from the deck column */
 .full-bleed {

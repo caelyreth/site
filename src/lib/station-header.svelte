@@ -123,7 +123,7 @@
   margin-inline: auto;
   width: 100%;
   height: 3.25rem;
-  padding-inline: 1.5rem;
+  padding-inline: var(--station-inline-gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -159,9 +159,6 @@
 }
 
 @media (max-width: 38rem) {
-  .hdr-inner {
-    padding-inline: 0.75rem;
-  }
   .hdr-meta {
     display: none;
   }

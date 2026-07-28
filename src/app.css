@@ -47,6 +47,7 @@
   --station-half-measure: 24rem;
   --station-frame-measure: calc(var(--station-half-measure) * 2);
   --station-guide-outset: 13px;
+  --station-inline-gutter: 1.5rem;
 
   color-scheme: light;
 }
@@ -67,6 +68,12 @@
   --color-focus: oklch(68% 0.19 40);
 
   color-scheme: dark;
+}
+
+@media (max-width: 38rem) {
+  :root {
+    --station-inline-gutter: 0.75rem;
+  }
 }
 
 html,
