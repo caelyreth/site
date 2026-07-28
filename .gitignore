@@ -1,0 +1,14 @@
+# runtime + deps
+node_modules
+
+# dev
+/.svelte-kit
+
+# agents
+/.agents
+/.claude
+/.codex
+/.hallmark
+
+# os
+.DS_Store

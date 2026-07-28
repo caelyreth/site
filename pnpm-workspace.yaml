@@ -1,0 +1,10 @@
+# MARK: - catalogs
+catalogs:
+
+# MARK: - supply chain
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+
+# MARK: - dep opts
+strictPeerDependencies: true
+engineStrict: true
