@@ -4,7 +4,28 @@
   "author": "Yu <me@iki.moe>",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "fmt": "oxfmt",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "check": "svelte-check",
+    "sync": "svelte-kit sync",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite start",
+    "prepare": "pnpm run sync"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "catalog:f",
+    "@sveltejs/kit": "catalog:f",
+    "@types/node": "catalog:t",
+    "oxfmt": "catalog:x",
+    "oxlint": "catalog:x",
+    "oxlint-tsgolint": "catalog:x",
+    "svelte": "catalog:f",
+    "svelte-check": "catalog:f",
+    "typescript": "catalog:x",
+    "unocss": "catalog:f",
+    "vite": "catalog:f"
   },
   "devEngines": {
     "packageManager": {
