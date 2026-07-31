@@ -11,6 +11,8 @@
   --color-ink-prime: oklch(34% 0 0);
   --color-accent: oklch(67.3% 0.182 276.935);
   --color-focus: oklch(58.5% 0.233 277.117);
+  --font-stack-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-stack-serif: ui-serif, Georgia, serif;
 
   /* layout control */
   --half-measure: 24rem;

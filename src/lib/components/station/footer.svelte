@@ -169,7 +169,7 @@
   .statement {
     max-width: 36ch;
     margin: 0;
-    color: var(--color-ink-2);
+    color: var(--color-ink-prime);
     font-size: 0.75rem;
     line-height: 1.55;
   }
@@ -180,7 +180,7 @@
   }
   .module {
     --primary: var(--color-ink);
-    --secondary: var(--color-ink-2);
+    --secondary: var(--color-ink-prime);
     --muted: var(--color-muted);
     --accent: var(--color-accent);
     --rule: var(--color-rule);

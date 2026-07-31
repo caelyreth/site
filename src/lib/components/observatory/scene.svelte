@@ -2,6 +2,7 @@
   import Boundary from '$lib/components/station/boundary.svelte'
   import { getStationState } from '$lib/context/station'
 
+  import Canvas from './canvas.svelte'
   import Window from './window.svelte'
 
   let capture: HTMLElement | undefined
@@ -50,6 +51,7 @@
 <div class="capture" {@attach observeCapture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
+      <Canvas />
       <Boundary side="left" inScene reveal />
       <Boundary side="right" inScene reveal />
       <span id="scene-label" class="label corner corner-left label-top"
