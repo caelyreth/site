@@ -57,3 +57,21 @@ body {
     background-color var(--dur-short) var(--ease-in-out),
     color var(--dur-short) var(--ease-in-out);
 }
+
+/* reusable styles */
+
+.deck {
+  position: relative;
+  max-width: var(--frame-measure);
+  background-color: var(--color-paper);
+}
+
+.deck::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: var(--noise-tile);
+  background-size: 96px;
+}
