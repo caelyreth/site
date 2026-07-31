@@ -1,3 +1,5 @@
+import backgroundFragmentSource from './shaders/background.frag.glsl?raw'
+import backgroundVertexSource from './shaders/background.vert.glsl?raw'
 import edgeFragmentSource from './shaders/edge.frag.glsl?raw'
 import edgeVertexSource from './shaders/edge.vert.glsl?raw'
 import projectionSource from './shaders/projection.glsl?raw'
@@ -12,5 +14,7 @@ function withProjection(source: string) {
 
 export const edgeFragmentShader = edgeFragmentSource
 export const edgeVertexShader = withProjection(edgeVertexSource)
+export const backgroundFragmentShader = backgroundFragmentSource
+export const backgroundVertexShader = backgroundVertexSource
 export const starFragmentShader = starFragmentSource
 export const starVertexShader = withProjection(starVertexSource)

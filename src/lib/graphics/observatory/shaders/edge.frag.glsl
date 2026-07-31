@@ -2,6 +2,7 @@ precision highp float;
 
 uniform float uPulseDistance;
 uniform float uPulseActive;
+uniform float uSourceActivation;
 uniform float uHeadWidth;
 uniform float uTailWidth;
 uniform float uSourceRadius;
@@ -24,7 +25,8 @@ void main() {
     0.32;
   float source =
     (1.0 - smoothstep(0.0, uSourceRadius, vSignalDistance)) *
-    (1.0 - smoothstep(uSourceRadius * 1.4, uTailWidth, uPulseDistance));
+    (1.0 - smoothstep(uSourceRadius * 1.4, uTailWidth, uPulseDistance)) *
+    uSourceActivation;
   float activation = max(head, max(wake, source)) * uPulseActive;
   float depthTone = mix(0.68, 1.0, vDepth);
   float baseIntensity = uBaseAlpha * vWeight;

@@ -3,7 +3,6 @@
   import { getStationState } from '$lib/context/station'
 
   import Canvas from './canvas.svelte'
-  import StarField from './star-field.svelte'
   import Window from './window.svelte'
 
   let capture: HTMLElement | undefined
@@ -52,7 +51,6 @@
 <div class="capture" {@attach observeCapture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
-      <StarField />
       <Canvas />
       <Boundary side="left" inScene reveal />
       <Boundary side="right" inScene reveal />

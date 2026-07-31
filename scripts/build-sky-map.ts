@@ -35,7 +35,7 @@ const OUTPUT = fileURLToPath(
   new URL('../src/lib/data/sky-map-data.generated.ts', import.meta.url),
 )
 const VIEW_CENTER: Coordinate = [-38, 42]
-const CAP_RADIUS = 92
+const CAP_RADIUS = 140
 const SOURCE_RADIUS = 70
 const NODE_STRIDE = 4
 const PRINT_WIDTH = 76
