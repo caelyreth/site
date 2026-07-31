@@ -11,6 +11,7 @@
   let controller = $state<FieldController>()
   let sceneVisible = $state(false)
   let pageVisible = $state(true)
+  let fieldReady = $state(false)
 
   function syncActivity() {
     controller?.setActive(sceneVisible && pageVisible)
@@ -20,6 +21,7 @@
     if (!canvas) return
 
     let disposed = false
+    let revealFrame: number | undefined
     const observer =
       typeof IntersectionObserver === 'undefined'
         ? undefined
@@ -52,6 +54,10 @@
           theme.resolvedTheme === 'dark',
         )
         syncActivity()
+        revealFrame = requestAnimationFrame(() => {
+          revealFrame = undefined
+          fieldReady = !disposed
+        })
       })
       .catch((error: unknown) => {
         if (!disposed) {
@@ -64,10 +70,12 @@
 
     return () => {
       disposed = true
+      if (revealFrame !== undefined) cancelAnimationFrame(revealFrame)
       observer?.disconnect()
       document.removeEventListener('visibilitychange', handleVisibility)
       controller?.destroy()
       controller = undefined
+      fieldReady = false
     }
   })
 
@@ -80,6 +88,7 @@
 <canvas
   aria-hidden="true"
   bind:this={canvas}
+  class:is-ready={fieldReady}
   class="canvas"
   data-observatory-canvas
 ></canvas>
@@ -93,11 +102,20 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-long) var(--ease-out);
+  }
+
+  .canvas.is-ready {
     opacity: max(0, calc(1 - var(--p, 0) * 1.25));
   }
 
   @media (prefers-reduced-motion: reduce) {
     .canvas {
+      transition: none;
+    }
+
+    .canvas.is-ready {
       opacity: max(0, calc(0.72 - var(--p, 0) * 1.05));
     }
   }
