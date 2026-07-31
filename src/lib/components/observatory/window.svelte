@@ -33,6 +33,20 @@
 
   .strip {
     min-width: 0;
+    clip-path: inset(0 100% 0 0);
+    animation: strip-reveal 640ms var(--ease-in-out) both;
+  }
+
+  .strip:nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  .strip:nth-child(3) {
+    animation-delay: 240ms;
+  }
+
+  .strip:nth-child(4) {
+    animation-delay: 360ms;
   }
 
   .tick {
@@ -101,5 +115,18 @@
 
   :global(.dark) .study-four {
     background-color: oklch(37% 0.03 25);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .strip {
+      clip-path: none;
+      animation: none;
+    }
+  }
+
+  @keyframes strip-reveal {
+    to {
+      clip-path: inset(0);
+    }
   }
 </style>
