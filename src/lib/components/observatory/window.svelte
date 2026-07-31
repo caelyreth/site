@@ -25,6 +25,7 @@
 
   .frame {
     position: relative;
+    animation: window-expand 640ms var(--ease-in-out-medium) 880ms both;
   }
 
   .strips {
@@ -122,6 +123,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .frame {
+      animation: none;
+    }
+
     .strip {
       clip-path: none;
       animation: none;
@@ -131,6 +136,12 @@
   @keyframes strip-reveal {
     to {
       clip-path: inset(0);
+    }
+  }
+
+  @keyframes window-expand {
+    from {
+      transform: scale(0.86);
     }
   }
 </style>
