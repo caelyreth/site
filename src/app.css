@@ -1,0 +1,13 @@
+:root {
+  --half-measure: 24rem;
+  --frame-measure: calc(var(--half-measure) * 2);
+  --inline-gutter: 1.5rem;
+
+  --noise-tile: url('./lib/assets/noise-tile.webp');
+}
+
+html,
+body {
+  margin: 0;
+  overflow-x: clip;
+}

@@ -130,7 +130,7 @@
     },
     "CSS": {
       "enable_language_server": true,
-      "language_servers": ["oxfmt"],
+      "language_servers": ["oxfmt", "..."],
       "format_on_save": "on",
       "prettier": {
         "allowed": false

@@ -217,6 +217,9 @@ catalogs:
     svelte-check:
       specifier: ^4.7.4
       version: 4.7.4
+    svelte-themes:
+      specifier: ^2.0.10
+      version: 2.0.10
     three:
       specifier: ^0.185.1
       version: 0.185.1
@@ -278,6 +281,9 @@ importers:
       svelte-check:
         specifier: catalog:f
         version: 4.7.4(picomatch@4.0.5)(svelte@5.56.8)(typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2)
+      svelte-themes:
+        specifier: catalog:f
+        version: 2.0.10(svelte@5.56.8)
       three:
         specifier: catalog:f
         version: 0.185.1
@@ -1361,6 +1367,11 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: ^5.0.0 || ^6.0.0
 
+  svelte-themes@2.0.10:
+    resolution: {integrity: sha512-PlUXhJTm29o45DKi7l/iCvrjaHLXsy/HGmVR4RL4VnUwp86YZpTehPK5F5h8zk3oG7V0QFFR9BpsxPV+i40IoA==}
+    peerDependencies:
+      svelte: ^4.0.0 || ^5.0.0
+
   svelte@5.56.8:
     resolution: {integrity: sha512-PY8LOw7xP6c8IOiVqdo0sbbZVYhXRSfklOQLAUyGBKqjTX0wx/z4l/9J+PmBpmlLnxzEb1NqltxQ5/wZme/Cmg==}
     engines: {node: '>=18'}
@@ -2378,6 +2389,10 @@ snapshots:
       typescript: typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2
     transitivePeerDependencies:
       - picomatch
+
+  svelte-themes@2.0.10(svelte@5.56.8):
+    dependencies:
+      svelte: 5.56.8
 
   svelte@5.56.8:
     dependencies:
