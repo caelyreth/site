@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@iconify-json/ri": "catalog:f",
+    "@oxc-node/cli": "catalog:x",
     "@sveltejs/adapter-auto": "catalog:f",
     "@sveltejs/kit": "catalog:f",
     "@types/node": "catalog:t",
