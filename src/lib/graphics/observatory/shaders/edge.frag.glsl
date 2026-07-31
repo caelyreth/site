@@ -2,6 +2,8 @@ precision highp float;
 
 uniform float uPulseDistance;
 uniform float uPulseActive;
+uniform float uTargetDistance;
+uniform float uDestinationConstellationLead;
 uniform float uSourceActivation;
 uniform float uHeadWidth;
 uniform float uTailWidth;
@@ -17,6 +19,7 @@ uniform vec3 uSignalInk;
 uniform float uBaseAlpha;
 varying float vSide;
 varying float vSignalDistance;
+varying float vTargetDistance;
 varying float vWeight;
 varying float vDepth;
 varying float vSegmentVisible;
@@ -49,13 +52,25 @@ void main() {
     vConstellation,
     uTargetConstellation
   );
-  float constellationReveal = smoothstep(
+  float sourceConstellationReveal = smoothstep(
     vSignalDistance - 0.025,
     vSignalDistance + 0.14,
     uPulseDistance
   );
+  float destinationPulse = max(
+    0.0,
+    uPulseDistance - (uTargetDistance - uDestinationConstellationLead)
+  );
+  float targetConstellationReveal = smoothstep(
+    vTargetDistance - 0.025,
+    vTargetDistance + 0.14,
+    destinationPulse
+  );
   float constellationActivation =
-    max(sourceConstellation, targetConstellation) * constellationReveal * 0.58;
+    max(
+      sourceConstellation * sourceConstellationReveal,
+      targetConstellation * targetConstellationReveal
+    ) * 0.58;
   float transientActivation =
     max(head, max(wake, max(source, constellationActivation))) * uPulseActive;
   float retiringConstellation = constellationMatch(

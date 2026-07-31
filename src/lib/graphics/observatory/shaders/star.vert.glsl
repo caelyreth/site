@@ -2,6 +2,7 @@ precision highp float;
 
 attribute float aMagnitude;
 attribute float aDistance;
+attribute float aTargetDistance;
 attribute float aLocator;
 attribute float aConstellation;
 uniform float uAspect;
@@ -9,6 +10,8 @@ uniform float uMapScale;
 uniform float uPixelRatio;
 uniform float uPulseDistance;
 uniform float uPulseActive;
+uniform float uTargetDistance;
+uniform float uDestinationConstellationLead;
 uniform float uSourceActivation;
 uniform float uHeadWidth;
 uniform float uSourceRadius;
@@ -55,14 +58,25 @@ void main() {
     aConstellation,
     uTargetConstellation
   );
-  float constellationReveal = smoothstep(
+  float sourceConstellationReveal = smoothstep(
     aDistance - 0.025,
     aDistance + 0.14,
     uPulseDistance
   );
+  float destinationPulse = max(
+    0.0,
+    uPulseDistance - (uTargetDistance - uDestinationConstellationLead)
+  );
+  float targetConstellationReveal = smoothstep(
+    aTargetDistance - 0.025,
+    aTargetDistance + 0.14,
+    destinationPulse
+  );
   float constellationActivation =
-    max(sourceConstellation, targetConstellation) *
-    constellationReveal *
+    max(
+      sourceConstellation * sourceConstellationReveal,
+      targetConstellation * targetConstellationReveal
+    ) *
     uPulseActive *
     0.58;
   float retiringConstellation = constellationMatch(
