@@ -13,6 +13,7 @@ varying float vSide;
 varying float vSignalDistance;
 varying float vWeight;
 varying float vDepth;
+varying float vSegmentVisible;
 
 void main() {
   float antialias = max(fwidth(vSide) * 1.18, 0.012);
@@ -39,7 +40,7 @@ void main() {
     signalIntensity / max(combinedIntensity, 0.001)
   );
 
-  if (alpha < 0.002) discard;
+  if (vSegmentVisible < 0.5 || alpha < 0.002) discard;
   gl_FragColor = vec4(ink, alpha);
   #include <colorspace_fragment>
 }

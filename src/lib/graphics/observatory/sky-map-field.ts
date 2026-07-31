@@ -72,6 +72,7 @@ const ROUTE_OUTBOUND_RADIUS = 0.54
 const ROUTE_TARGET_VISIBLE_OFFSET = 0.72
 const ROUTE_MIN_SECTOR_GAP = 3
 const ROUTE_MIN_DISTANCE = 0.8
+const ROUTE_MAX_DISTANCE = (150 * Math.PI) / 180
 const ROUTE_TARGET_OFFSET = 0.9
 const ROUTE_MAX_FOLLOW = 0.44
 const SIGNAL_CONTINUATION_DISTANCE = 0.16
@@ -546,23 +547,21 @@ export function createSkyMapField(
       source = sourceCandidate.index
     }
 
-    const eligible = candidates.filter(
+    const boundedCandidates = candidates.filter(
       (candidate) =>
         candidate.index !== source &&
-        sectorGap(sourceCandidate.sector, candidate.sector) >=
-          ROUTE_MIN_SECTOR_GAP &&
         angularDistanceBetweenNodes(source, candidate.index) >=
-          ROUTE_MIN_DISTANCE,
+          ROUTE_MIN_DISTANCE &&
+        angularDistanceBetweenNodes(source, candidate.index) <=
+          ROUTE_MAX_DISTANCE,
+    )
+    const eligible = boundedCandidates.filter(
+      (candidate) =>
+        sectorGap(sourceCandidate.sector, candidate.sector) >=
+        ROUTE_MIN_SECTOR_GAP,
     )
     const distantCandidates =
-      eligible.length > 0
-        ? eligible
-        : candidates.filter(
-            (candidate) =>
-              candidate.index !== source &&
-              angularDistanceBetweenNodes(source, candidate.index) >=
-                ROUTE_MIN_DISTANCE,
-          )
+      eligible.length > 0 ? eligible : boundedCandidates
     const outboundCandidates = distantCandidates.filter(
       (candidate) => candidate.radius >= ROUTE_OUTBOUND_RADIUS,
     )
@@ -570,7 +569,7 @@ export function createSkyMapField(
       outboundCandidates.length > 0 ? outboundCandidates : distantCandidates
     const target =
       pool[Math.floor(Math.random() * pool.length)] ??
-      candidates.find((candidate) => candidate.index !== source) ??
+      boundedCandidates.find((candidate) => candidate.index !== source) ??
       sourceCandidate
 
     return [source, target.index] as const
