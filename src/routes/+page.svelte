@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Scene from '$lib/components/observatory/scene.svelte'
   import Content from '$lib/components/station/content.svelte'
 </script>
 
@@ -6,4 +7,5 @@
   <title>Caelyreth</title>
 </svelte:head>
 
+<Scene />
 <Content />
