@@ -165,7 +165,7 @@
 <style>
   .introduction {
     padding: 4rem 0 3.5rem;
-    scroll-margin-top: 5rem;
+    scroll-margin-top: var(--header-safe-inset);
   }
 
   .heading,

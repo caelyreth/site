@@ -2,15 +2,17 @@
   interface Props {
     side: 'left' | 'right'
     inScene?: boolean
+    reveal?: boolean
   }
 
-  const { side, inScene = false }: Props = $props()
+  const { side, inScene = false, reveal = false }: Props = $props()
 </script>
 
 <div
   aria-hidden="true"
   class:station={!inScene}
   class:scene={inScene}
+  class:reveal
   class:left={side === 'left'}
   class:right={side === 'right'}
   class="guide"
@@ -58,6 +60,10 @@
   .scene {
     position: absolute;
     z-index: 8;
+  }
+
+  .scene.reveal {
+    opacity: var(--p, 0);
   }
 
   .left {
