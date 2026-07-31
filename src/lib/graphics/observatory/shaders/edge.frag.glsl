@@ -6,6 +6,12 @@ uniform float uSourceActivation;
 uniform float uHeadWidth;
 uniform float uTailWidth;
 uniform float uSourceRadius;
+uniform float uSourceConstellation;
+uniform float uTargetConstellation;
+uniform float uHeldSourceConstellation;
+uniform float uHeldTargetConstellation;
+uniform float uRetiringConstellation;
+uniform float uRetireProgress;
 uniform vec3 uInk;
 uniform vec3 uSignalInk;
 uniform float uBaseAlpha;
@@ -14,6 +20,13 @@ varying float vSignalDistance;
 varying float vWeight;
 varying float vDepth;
 varying float vSegmentVisible;
+varying float vConstellation;
+
+float constellationMatch(float group, float constellation) {
+  return step(0.0, constellation) * (
+    1.0 - step(0.5, abs(group - constellation))
+  );
+}
 
 void main() {
   float antialias = max(fwidth(vSide) * 1.18, 0.012);
@@ -28,7 +41,40 @@ void main() {
     (1.0 - smoothstep(0.0, uSourceRadius, vSignalDistance)) *
     (1.0 - smoothstep(uSourceRadius * 1.4, uTailWidth, uPulseDistance)) *
     uSourceActivation;
-  float activation = max(head, max(wake, source)) * uPulseActive;
+  float sourceConstellation = constellationMatch(
+    vConstellation,
+    uSourceConstellation
+  );
+  float targetConstellation = constellationMatch(
+    vConstellation,
+    uTargetConstellation
+  );
+  float constellationReveal = smoothstep(
+    vSignalDistance - 0.025,
+    vSignalDistance + 0.14,
+    uPulseDistance
+  );
+  float constellationActivation =
+    max(sourceConstellation, targetConstellation) * constellationReveal * 0.58;
+  float transientActivation =
+    max(head, max(wake, max(source, constellationActivation))) * uPulseActive;
+  float retiringConstellation = constellationMatch(
+    vConstellation,
+    uRetiringConstellation
+  );
+  const float heldIntensity = 0.72;
+  float heldActivation = max(
+    constellationMatch(vConstellation, uHeldSourceConstellation),
+    constellationMatch(vConstellation, uHeldTargetConstellation)
+  ) * (1.0 - retiringConstellation * uRetireProgress) * heldIntensity;
+  float retiringActivation =
+    retiringConstellation *
+    (1.0 - uRetireProgress) *
+    heldIntensity;
+  float activation = max(
+    transientActivation,
+    max(heldActivation, retiringActivation)
+  );
   float depthTone = mix(0.68, 1.0, vDepth);
   float baseIntensity = uBaseAlpha * vWeight;
   float signalIntensity = activation * 0.84;

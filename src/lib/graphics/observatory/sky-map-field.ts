@@ -42,7 +42,9 @@ type SkyMap = {
   directions: Float32Array
   magnitudes: Float32Array
   edgeNodes: Uint16Array
+  edgeGroups: Uint16Array
   edgeWeights: Float32Array
+  nodeGroups: Int16Array
 }
 type RouteCandidate = {
   index: number
@@ -62,6 +64,7 @@ const LOCATOR_INITIAL_SCALE = 2
 const LOCATOR_DOT_SCALE = 0.08
 const SIGNAL_SPEED = 0.52 / 1000
 const SOURCE_RELEASE_DURATION = LOCATOR_COLLAPSE_DURATION
+const CONSTELLATION_RETIRE_DURATION = 900
 const DAMPING_STIFFNESS = 5.5
 const BASE_MAP_SCALE = 0.48
 const MAP_ZOOM_OUT_FACTOR = 0.31
@@ -111,7 +114,24 @@ function decodeSkyMap(skyData: SkyData): SkyMap {
   const directions = new Float32Array(nodeCount * 3)
   const magnitudes = new Float32Array(nodeCount)
   const edgeNodes = new Uint16Array(edgeCount * 2)
+  const edgeGroups = new Uint16Array(edgeCount)
   const edgeWeights = new Float32Array(edgeCount)
+  const parents = new Uint16Array(nodeCount)
+  const nodeGroups = new Int16Array(nodeCount)
+  nodeGroups.fill(-1)
+
+  for (let index = 0; index < nodeCount; index += 1) {
+    parents[index] = index
+  }
+
+  const findGroup = (node: number) => {
+    let parent = node
+    while (parents[parent] !== parent) {
+      parents[parent] = parents[parents[parent]]
+      parent = parents[parent]
+    }
+    return parent
+  }
 
   for (let index = 0; index < nodeCount; index += 1) {
     const packed = index * SKY_NODE_STRIDE
@@ -128,9 +148,35 @@ function decodeSkyMap(skyData: SkyData): SkyMap {
     edgeNodes[edge] = SKY_EDGES[packed]
     edgeNodes[edge + 1] = SKY_EDGES[packed + 1]
     edgeWeights[index] = EDGE_WEIGHT_BY_CLASS[SKY_EDGES[packed + 2] - 1]
+    const startGroup = findGroup(edgeNodes[edge])
+    const endGroup = findGroup(edgeNodes[edge + 1])
+    if (startGroup !== endGroup) parents[endGroup] = startGroup
   }
 
-  return { directions, magnitudes, edgeNodes, edgeWeights }
+  const groupByRoot = new Map<number, number>()
+  for (let index = 0; index < edgeCount; index += 1) {
+    const edge = index * 2
+    const start = edgeNodes[edge]
+    const end = edgeNodes[edge + 1]
+    const root = findGroup(start)
+    let group = groupByRoot.get(root)
+    if (group === undefined) {
+      group = groupByRoot.size
+      groupByRoot.set(root, group)
+    }
+    edgeGroups[index] = group
+    nodeGroups[start] = group
+    nodeGroups[end] = group
+  }
+
+  return {
+    directions,
+    magnitudes,
+    edgeNodes,
+    edgeGroups,
+    edgeWeights,
+    nodeGroups,
+  }
 }
 
 function choosePixelRatio(width: number, height: number) {
@@ -258,6 +304,12 @@ export function createSkyMapField(
     uSourceRadius: { value: 0.04 },
     uLocatorProgress: { value: 0 },
     uLocatorScale: { value: 1 },
+    uSourceConstellation: { value: -1 },
+    uTargetConstellation: { value: -1 },
+    uHeldSourceConstellation: { value: -1 },
+    uHeldTargetConstellation: { value: -1 },
+    uRetiringConstellation: { value: -1 },
+    uRetireProgress: { value: 1 },
     uBackdrop: { value: backdropTexture },
     uBackgroundAlpha: { value: 1 },
     uBackgroundInk: { value: new three.Color(0x000000) },
@@ -345,6 +397,10 @@ export function createSkyMapField(
     'aWeight',
     new three.InstancedBufferAttribute(skyMap.edgeWeights, 1),
   )
+  edgeGeometry.setAttribute(
+    'aConstellation',
+    new three.InstancedBufferAttribute(skyMap.edgeGroups, 1),
+  )
   edgeGeometry.instanceCount = edgeCount
 
   const backgroundGeometry = new three.BufferGeometry()
@@ -379,6 +435,10 @@ export function createSkyMapField(
       1,
     ),
   )
+  starGeometry.setAttribute(
+    'aConstellation',
+    new three.BufferAttribute(skyMap.nodeGroups, 1),
+  )
 
   const backgroundMesh = new three.Mesh(
     backgroundGeometry,
@@ -408,6 +468,7 @@ export function createSkyMapField(
   let signalColorIndex = -1
   let darkMode = initialDark
   let signalStartedAt = performance.now()
+  let currentConstellationsHeld = false
   let targetDistance = Math.PI / 2
   let signalTravelDistance = Math.PI / 2
   const minimumFrameDuration = 1000 / 60
@@ -503,6 +564,7 @@ export function createSkyMapField(
     nodeIndex: number,
   ): RouteCandidate | undefined {
     if (skyMap.magnitudes[nodeIndex] > ROUTE_CANDIDATE_MAGNITUDE) return
+    if (skyMap.nodeGroups[nodeIndex] < 0) return
     const projected = projectNode(nodeIndex)
     if (projected.depth < 0.12 || projected.radius < ROUTE_CENTER_RADIUS) {
       return
@@ -637,6 +699,8 @@ export function createSkyMapField(
     const previousSource = sourceIndex
     sourceIndex = source
     targetIndex = target
+    uniforms.uSourceConstellation.value = skyMap.nodeGroups[sourceIndex]
+    uniforms.uTargetConstellation.value = skyMap.nodeGroups[targetIndex]
 
     if (previousSource !== sourceIndex) {
       if (previousSource >= 0) locator.setX(previousSource, 0)
@@ -699,6 +763,27 @@ export function createSkyMapField(
       targetViewProgress,
       routeEndForward,
     )
+  }
+
+  function retirePreviousConstellation() {
+    const sourceGroup = skyMap.nodeGroups[sourceIndex]
+    const heldSourceGroup = uniforms.uHeldSourceConstellation.value
+    const heldTargetGroup = uniforms.uHeldTargetConstellation.value
+    const retiringGroup =
+      heldSourceGroup === sourceGroup
+        ? heldTargetGroup
+        : heldTargetGroup === sourceGroup
+          ? heldSourceGroup
+          : heldSourceGroup
+    uniforms.uRetiringConstellation.value = retiringGroup
+    uniforms.uRetireProgress.value = retiringGroup >= 0 ? 0 : 1
+  }
+
+  function holdCurrentConstellations() {
+    uniforms.uHeldSourceConstellation.value =
+      uniforms.uSourceConstellation.value
+    uniforms.uHeldTargetConstellation.value =
+      uniforms.uTargetConstellation.value
   }
 
   const render = () => {
@@ -772,6 +857,10 @@ export function createSkyMapField(
   const enterIdle = () => {
     pulseRunning = false
     stopFrame()
+    if (!currentConstellationsHeld) holdCurrentConstellations()
+    currentConstellationsHeld = true
+    uniforms.uRetiringConstellation.value = -1
+    uniforms.uRetireProgress.value = 1
     uniforms.uPulseActive.value = 0
     uniforms.uSourceActivation.value = 0
     uniforms.uPulseDistance.value = 0
@@ -860,6 +949,16 @@ export function createSkyMapField(
       (pulseDistance - targetDistance - SIGNAL_CONTINUATION_DISTANCE) /
         SIGNAL_FADE_DISTANCE,
     )
+    uniforms.uRetireProgress.value = criticallyDampedProgress(
+      pulseElapsed / CONSTELLATION_RETIRE_DURATION,
+    )
+    if (
+      !currentConstellationsHeld &&
+      pulseDistance >= targetDistance + SIGNAL_CONTINUATION_DISTANCE
+    ) {
+      holdCurrentConstellations()
+      currentConstellationsHeld = true
+    }
     updateRouteView(mapProgress)
     uniforms.uPulseDistance.value = pulseDistance
     uniforms.uPulseActive.value = 1 - fadeProgress
@@ -877,6 +976,7 @@ export function createSkyMapField(
     signalPhase = 'locating'
     phaseStartedAt = now
     sourceActivationAtSpread = 0
+    currentConstellationsHeld = false
     uniforms.uPulseActive.value = 0
     uniforms.uSourceActivation.value = 0
     uniforms.uPulseDistance.value = 0
@@ -885,6 +985,7 @@ export function createSkyMapField(
     updateSignalColor(true)
     const [source, routeTarget] = chooseRoute()
     setRoute(source, routeTarget)
+    retirePreviousConstellation()
     stopFrame()
     frame = requestAnimationFrame(animate)
   }

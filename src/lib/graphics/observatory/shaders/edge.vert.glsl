@@ -5,6 +5,7 @@ attribute vec3 aEnd;
 attribute float aDistanceStart;
 attribute float aDistanceEnd;
 attribute float aWeight;
+attribute float aConstellation;
 uniform vec2 uResolution;
 uniform float uAspect;
 uniform float uMapScale;
@@ -17,6 +18,7 @@ varying float vSignalDistance;
 varying float vWeight;
 varying float vDepth;
 varying float vSegmentVisible;
+varying float vConstellation;
 
 /* @include projection */
 
@@ -57,6 +59,7 @@ void main() {
   vSignalDistance = mix(aDistanceStart, aDistanceEnd, along);
   vWeight = aWeight;
   vDepth = depth;
+  vConstellation = aConstellation;
   vSegmentVisible =
     step(0.16, startDepth) *
     step(0.16, endDepth) *
