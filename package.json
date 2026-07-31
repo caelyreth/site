@@ -23,6 +23,7 @@
     "oxlint-tsgolint": "catalog:x",
     "svelte": "catalog:f",
     "svelte-check": "catalog:f",
+    "three": "catalog:f",
     "typescript": "catalog:x",
     "unocss": "catalog:f",
     "vite": "catalog:f"
