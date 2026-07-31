@@ -15,6 +15,7 @@ catalogs:
     'vite': ^8.1.5
   t:
     '@types/node': ^26.1.2
+    '@types/three': ^0.185.1
 
 # MARK: - supply chain
 minimumReleaseAgeStrict: false
