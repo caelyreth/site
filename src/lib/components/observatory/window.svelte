@@ -1,3 +1,7 @@
+<script lang="ts">
+  // make svelte lsp happy
+</script>
+
 <figure class="window" aria-label="Observatory placeholder studies">
   <div class="frame">
     <div aria-hidden="true" class="strips">
