@@ -1,12 +1,13 @@
 <script lang="ts">
   import Boundary from '$lib/components/station/boundary.svelte'
+  import { getStationState } from '$lib/context/station'
 
   import Window from './window.svelte'
 
-  let progress = $state(0)
   let capture: HTMLElement | undefined
   let scrollFrame: number | undefined
-  const windowScale = $derived(1 - progress * 0.2)
+  const station = getStationState()
+  const windowScale = $derived(1 - station.scrollProgress * 0.2)
 
   function updateProgress() {
     scrollFrame = undefined
@@ -14,7 +15,7 @@
 
     const travel = Math.max(capture.offsetHeight - window.innerHeight, 1)
     const nextProgress = -capture.getBoundingClientRect().top / travel
-    progress = Math.min(1, Math.max(0, nextProgress))
+    station.scrollProgress = Math.min(1, Math.max(0, nextProgress))
   }
 
   function scheduleProgressUpdate() {
@@ -36,7 +37,7 @@
     return () => {
       if (capture === node) capture = undefined
       cancelProgressUpdate()
-      progress = 0
+      station.scrollProgress = 0
     }
   }
 </script>
@@ -46,7 +47,7 @@
   onresize={scheduleProgressUpdate}
 />
 
-<div class="capture" style:--p={progress} {@attach observeCapture}>
+<div class="capture" {@attach observeCapture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
       <Boundary side="left" inScene reveal />

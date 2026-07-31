@@ -3,24 +3,41 @@
   import 'virtual:uno.css'
   import Chrome from '$lib/components/station/chrome.svelte'
   import Footer from '$lib/components/station/footer.svelte'
+  import Header from '$lib/components/station/header.svelte'
+  import { setStationState, type StationState } from '$lib/context/station'
   import { SvelteTheme } from 'svelte-themes'
 
   const { children } = $props()
 
   const themes = ['light', 'dark', 'system'] as const
+  const station = $state<StationState>({
+    scrollProgress: 0,
+  })
+  setStationState(station)
 </script>
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
-  <Chrome />
-  <main>
-    <div class="deck">
-      {@render children()}
-    </div>
-  </main>
-  <Footer />
+  <div class="shell" style:--p={station.scrollProgress}>
+    <Chrome />
+    <Header />
+    <main>
+      <div class="deck">
+        {@render children()}
+      </div>
+    </main>
+    <Footer />
+  </div>
 </SvelteTheme>
 
 <style>
+  .shell {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
   main {
     position: relative;
     display: flex;
