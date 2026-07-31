@@ -1,13 +1,55 @@
 :root {
+  /* light color palette */
+  --color-paper: oklch(96.5% 0 0);
+  --color-paper-prime: oklch(93.5% 0 0);
+  --color-field: oklch(93.5% 0 0);
+  --color-hatch: oklch(92% 0 0);
+  --color-deco: oklch(90.5% 0 0);
+  --color-rule: oklch(89.5% 0 0);
+  --color-muted: oklch(48% 0 0);
+  --color-ink: oklch(19% 0 0);
+  --color-ink-prime: oklch(34% 0 0);
+
+  /* layout control */
   --half-measure: 24rem;
   --frame-measure: calc(var(--half-measure) * 2);
   --inline-gutter: 1.5rem;
 
+  /* texture */
   --noise-tile: url('./lib/assets/noise-tile.webp');
+
+  /* motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 128ms;
+  --dur-short: 224ms;
+  --dur-long: 432ms;
+}
+
+.dark {
+  /* dark color palette */
+  --color-paper: oklch(15% 0 0);
+  --color-paper-prime: oklch(18.5% 0 0);
+  --color-field: oklch(13% 0 0);
+  --color-hatch: oklch(27% 0 0);
+  --color-deco: oklch(25% 0 0);
+  --color-rule: oklch(27% 0 0);
+  --color-muted: oklch(63% 0 0);
+  --color-ink: oklch(93% 0 0);
+  --color-ink-prime: oklch(76% 0 0);
 }
 
 html,
 body {
   margin: 0;
   overflow-x: clip;
+}
+
+body {
+  background-color: var(--color-field);
+  color: var(--color-ink);
+  transition:
+    background-color var(--dur-short) var(--ease-in-out),
+    color var(--dur-short) var(--ease-in-out);
 }

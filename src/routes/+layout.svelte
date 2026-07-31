@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css'
   import 'virtual:uno.css'
+  import SlashBackground from '$lib/components/station/slash.svelte'
   import { SvelteTheme } from 'svelte-themes'
 
   const { children } = $props()
@@ -9,6 +10,7 @@
 </script>
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
+  <SlashBackground />
   <main>
     <div class="deck">
       {@render children()}
@@ -34,6 +36,7 @@
     max-width: var(--frame-measure);
     margin: 0 auto;
     padding-inline: var(--inline-gutter);
+    background-color: var(--color-paper);
   }
 
   .deck::before {
