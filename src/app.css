@@ -9,8 +9,8 @@
   --color-muted: oklch(48% 0 0);
   --color-ink: oklch(19% 0 0);
   --color-ink-prime: oklch(34% 0 0);
-  --color-accent: oklch(57% 0.17 40);
-  --color-focus: oklch(55% 0.21 40);
+  --color-accent: oklch(67.3% 0.182 276.935);
+  --color-focus: oklch(58.5% 0.233 277.117);
 
   /* layout control */
   --half-measure: 24rem;
@@ -40,8 +40,8 @@
   --color-muted: oklch(63% 0 0);
   --color-ink: oklch(93% 0 0);
   --color-ink-prime: oklch(76% 0 0);
-  --color-accent: oklch(65% 0.15 40);
-  --color-focus: oklch(68% 0.19 40);
+  --color-accent: oklch(78.5% 0.115 274.713);
+  --color-focus: oklch(67.3% 0.182 276.935);
 }
 
 html,

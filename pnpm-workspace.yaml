@@ -6,6 +6,7 @@ catalogs:
     'oxlint-tsgolint': ^7.0.2001
     'typescript': npm:typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2
   f:
+    '@iconify-json/ri': ^1.2.10
     '@sveltejs/adapter-auto': ^7.0.1
     '@sveltejs/kit': ^2.70.2
     'svelte': ^5.56.8
