@@ -1,6 +1,22 @@
 /* oxlint-disable complexity, typescript/prefer-readonly-parameter-types -- WebGL setup and pulse state share one lifecycle. */
 import type * as SkyDataModule from '$lib/data/sky-map-data.generated'
-import type * as ThreeModule from 'three'
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Camera,
+  Color,
+  Float32BufferAttribute,
+  InstancedBufferAttribute,
+  InstancedBufferGeometry,
+  Mesh,
+  Points,
+  Scene,
+  ShaderMaterial,
+  SRGBColorSpace,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+} from 'three'
 
 import {
   edgeFragmentShader,
@@ -9,7 +25,6 @@ import {
   starVertexShader,
 } from './shaders'
 
-type Three = typeof ThreeModule
 type SkyData = typeof SkyDataModule
 type FieldController = {
   destroy: () => void
@@ -29,6 +44,23 @@ const SIGNAL_PALETTES = {
 } as const
 const EDGE_WEIGHT_BY_CLASS = [1, 0.76, 0.56] as const
 const PULSE_HEAD_WIDTH = 0.1
+const three = {
+  BufferAttribute,
+  BufferGeometry,
+  Camera,
+  Color,
+  Float32BufferAttribute,
+  InstancedBufferAttribute,
+  InstancedBufferGeometry,
+  Mesh,
+  Points,
+  Scene,
+  ShaderMaterial,
+  SRGBColorSpace,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+}
 
 function decodeSkyMap(skyData: SkyData): SkyMap {
   const { SKY_EDGES, SKY_NODES, SKY_NODE_STRIDE } = skyData
@@ -68,11 +100,10 @@ function choosePixelRatio(width: number, height: number) {
 
 export function createSkyMapField(
   target: HTMLCanvasElement,
-  three: Three,
   skyData: SkyData,
   initialDark = false,
 ): FieldController {
-  let renderer: ThreeModule.WebGLRenderer
+  let renderer: WebGLRenderer
   try {
     renderer = new three.WebGLRenderer({
       alpha: true,
@@ -282,13 +313,13 @@ export function createSkyMapField(
   function updateSource(now: number, selectNewSource = true) {
     const starDistance = starGeometry.getAttribute(
       'aDistance',
-    ) as ThreeModule.BufferAttribute
+    ) as BufferAttribute
     const edgeStartDistance = edgeGeometry.getAttribute(
       'aDistanceStart',
-    ) as ThreeModule.InstancedBufferAttribute
+    ) as InstancedBufferAttribute
     const edgeEndDistance = edgeGeometry.getAttribute(
       'aDistanceEnd',
-    ) as ThreeModule.InstancedBufferAttribute
+    ) as InstancedBufferAttribute
 
     if (selectNewSource || sourceIndex < 0) {
       let next =

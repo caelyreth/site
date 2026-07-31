@@ -42,14 +42,12 @@
 
     void Promise.all([
       import('$lib/graphics/observatory/sky-map-field'),
-      import('three'),
       import('$lib/data/sky-map-data.generated'),
     ])
-      .then(([runtime, three, skyData]) => {
+      .then(([runtime, skyData]) => {
         if (disposed || !canvas) return
         controller = runtime.createSkyMapField(
           canvas,
-          three,
           skyData,
           theme.resolvedTheme === 'dark',
         )
