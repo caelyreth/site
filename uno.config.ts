@@ -1,6 +1,5 @@
 import {
   defineConfig,
-  presetAttributify,
   presetWind4,
   transformerDirectives,
   transformerVariantGroup,
@@ -14,7 +13,6 @@ export default defineConfig({
         reset: true,
       },
     }),
-    presetAttributify(),
   ],
   transformers: [transformerVariantGroup(), transformerDirectives()],
 })
