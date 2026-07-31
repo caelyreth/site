@@ -16,6 +16,7 @@
   --half-measure: 24rem;
   --frame-measure: calc(var(--half-measure) * 2);
   --inline-gutter: 1.5rem;
+  --guide-outset: 13px;
 
   /* texture */
   --noise-tile: url('./lib/assets/noise-tile.webp');

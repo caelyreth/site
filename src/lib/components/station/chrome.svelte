@@ -1,8 +1,10 @@
 <script lang="ts">
-  // make svelte lsp happy
+  import Boundary from './boundary.svelte'
 </script>
 
 <div aria-hidden="true" class="hatch"></div>
+<Boundary side="left" />
+<Boundary side="right" />
 
 <style>
   .hatch {

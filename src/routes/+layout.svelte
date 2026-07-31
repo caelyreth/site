@@ -1,8 +1,8 @@
 <script lang="ts">
   import '../app.css'
   import 'virtual:uno.css'
+  import Chrome from '$lib/components/station/chrome.svelte'
   import Footer from '$lib/components/station/footer.svelte'
-  import SlashBackground from '$lib/components/station/slash.svelte'
   import { SvelteTheme } from 'svelte-themes'
 
   const { children } = $props()
@@ -11,7 +11,7 @@
 </script>
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
-  <SlashBackground />
+  <Chrome />
   <main>
     <div class="deck">
       {@render children()}
