@@ -1,9 +1,15 @@
 <figure class="window" aria-label="Observatory placeholder studies">
-  <div aria-hidden="true" class="strips">
-    <div class="strip study-one"></div>
-    <div class="strip study-two"></div>
-    <div class="strip study-three"></div>
-    <div class="strip study-four"></div>
+  <div class="frame">
+    <div aria-hidden="true" class="strips">
+      <div class="strip study-one"></div>
+      <div class="strip study-two"></div>
+      <div class="strip study-three"></div>
+      <div class="strip study-four"></div>
+    </div>
+    <span aria-hidden="true" class="tick tick-top-left"></span>
+    <span aria-hidden="true" class="tick tick-top-right"></span>
+    <span aria-hidden="true" class="tick tick-bottom-left"></span>
+    <span aria-hidden="true" class="tick tick-bottom-right"></span>
   </div>
 </figure>
 
@@ -11,6 +17,10 @@
   .window {
     width: 100%;
     margin: 0;
+  }
+
+  .frame {
+    position: relative;
   }
 
   .strips {
@@ -23,6 +33,42 @@
 
   .strip {
     min-width: 0;
+  }
+
+  .tick {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    pointer-events: none;
+    border: 0 solid var(--color-rule);
+  }
+
+  .tick-top-left {
+    top: -0.375rem;
+    left: -0.375rem;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+
+  .tick-top-right {
+    top: -0.375rem;
+    right: -0.375rem;
+    border-top-width: 1px;
+    border-right-width: 1px;
+  }
+
+  .tick-bottom-left {
+    bottom: -0.375rem;
+    left: -0.375rem;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+  }
+
+  .tick-bottom-right {
+    right: -0.375rem;
+    bottom: -0.375rem;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
   }
 
   .study-one {
