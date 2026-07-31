@@ -53,6 +53,10 @@ body {
   overflow-x: clip;
 }
 
+html.station-scroll-locked {
+  overflow: hidden;
+}
+
 body {
   background-color: var(--color-field);
   color: var(--color-ink);

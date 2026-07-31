@@ -1,6 +1,8 @@
 <script lang="ts">
   import { base } from '$app/paths'
 
+  import Menu from './menu.svelte'
+
   const homePath = base || '/'
 </script>
 
@@ -23,14 +25,7 @@
     </a>
     <div class="actions">
       <span class="sol">SOL ---</span>
-      <button
-        type="button"
-        class="menu-trigger"
-        aria-label="Open station menu"
-        title="Open station menu"
-      >
-        <span class="i-ri-menu-4-line" aria-hidden="true"></span>
-      </button>
+      <Menu />
     </div>
   </div>
 </header>
@@ -142,39 +137,6 @@
     font-size: 0.625rem;
     font-variant-numeric: tabular-nums;
     line-height: 1.35;
-  }
-
-  .menu-trigger {
-    display: grid;
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
-    cursor: pointer;
-    border: 1px solid
-      color-mix(in oklab, var(--header-ink) 35%, transparent);
-    color: var(--header-ink);
-    background: transparent;
-    place-items: center;
-    transition:
-      border-color var(--dur-micro) var(--ease-out),
-      color var(--dur-micro) var(--ease-out),
-      transform var(--dur-micro) var(--ease-out);
-  }
-
-  .menu-trigger :global(span) {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  @media (hover: hover) {
-    .menu-trigger:hover {
-      border-color: var(--header-ink);
-      color: var(--color-accent);
-    }
-  }
-
-  .menu-trigger:active {
-    transform: translateY(1px);
   }
 
   @media (max-width: 38rem) {
