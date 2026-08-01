@@ -9,8 +9,8 @@
   --color-muted: oklch(48% 0 0);
   --color-ink: oklch(19% 0 0);
   --color-ink-prime: oklch(34% 0 0);
-  --color-accent: oklch(67.3% 0.182 276.935);
-  --color-focus: oklch(58.5% 0.233 277.117);
+  --color-accent: oklch(51.5% 0.125 260);
+  --color-focus: oklch(58% 0.165 260);
   --font-stack-sans: ui-sans-serif, system-ui, sans-serif;
   --font-stack-serif: ui-serif, Georgia, serif;
 

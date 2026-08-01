@@ -346,6 +346,7 @@ export function createSkyMapField(
     uInk: { value: new three.Color(0xffffff) },
     uSignalInk: { value: new three.Color(0xffffff) },
     uBaseAlpha: { value: 0.2 },
+    uSurveyMode: { value: initialDark ? 0 : 1 },
   }
   const backgroundMaterial = new three.ShaderMaterial({
     transparent: true,
@@ -988,22 +989,17 @@ export function createSkyMapField(
   }
   const updateTheme = (dark: boolean) => {
     darkMode = dark
-    const lightness = dark ? 0.9 : 0.18
-    uniforms.uInk.value.setRGB(
-      lightness,
-      lightness,
-      lightness,
+    uniforms.uInk.value.setHex(
+      dark ? 0xe6e6e6 : 0x1b3851,
       three.SRGBColorSpace,
     )
-    uniforms.uBaseAlpha.value = dark ? 0.18 : 0.2
-    uniforms.uBackgroundAlpha.value = dark ? 2 : 1
-    const backgroundLightness = dark ? 0.9 : 0.06
-    uniforms.uBackgroundInk.value.setRGB(
-      backgroundLightness,
-      backgroundLightness,
-      backgroundLightness,
+    uniforms.uBaseAlpha.value = dark ? 0.18 : 0.26
+    uniforms.uBackgroundAlpha.value = dark ? 2 : 0.24
+    uniforms.uBackgroundInk.value.setHex(
+      dark ? 0xe6e6e6 : 0x294c67,
       three.SRGBColorSpace,
     )
+    uniforms.uSurveyMode.value = dark ? 0 : 1
     updateSignalColor()
   }
   const resize = () => {

@@ -17,6 +17,7 @@ uniform float uRetireProgress;
 uniform vec3 uInk;
 uniform vec3 uSignalInk;
 uniform float uBaseAlpha;
+uniform float uSurveyMode;
 varying float vSide;
 varying float vSignalDistance;
 varying float vTargetDistance;
@@ -33,7 +34,17 @@ float constellationMatch(float group, float constellation) {
 
 void main() {
   float antialias = max(fwidth(vSide) * 1.18, 0.012);
-  float coverage = 1.0 - smoothstep(0.34 - antialias, 0.34 + antialias, abs(vSide));
+  float nightCoverage = 1.0 - smoothstep(
+    0.34 - antialias,
+    0.34 + antialias,
+    abs(vSide)
+  );
+  float surveyCoverage = 1.0 - smoothstep(
+    0.27 - antialias,
+    0.27 + antialias,
+    abs(vSide)
+  );
+  float coverage = mix(nightCoverage, surveyCoverage, uSurveyMode);
   float behind = uPulseDistance - vSignalDistance;
   float head = 1.0 - smoothstep(uHeadWidth * 0.2, uHeadWidth, abs(behind));
   float wake =
@@ -91,7 +102,7 @@ void main() {
     max(heldActivation, retiringActivation)
   );
   float depthTone = mix(0.68, 1.0, vDepth);
-  float baseIntensity = uBaseAlpha * vWeight;
+  float baseIntensity = uBaseAlpha * vWeight * mix(1.0, 0.64, uSurveyMode);
   float signalIntensity = activation * 0.84;
   float combinedIntensity = baseIntensity + signalIntensity;
   float alpha = combinedIntensity * coverage * depthTone;

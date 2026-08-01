@@ -1,5 +1,5 @@
 export const SIGNAL_PALETTES = {
-  light: [0x765d56, 0x756c4f, 0x596f5d, 0x4f6f75, 0x596a87, 0x6b607b],
+  light: [0x9e4d44, 0x8b7024, 0x39795c, 0x2b7685, 0x4c6eaa, 0x7b538f],
   dark: [0xc2a097, 0xbdb187, 0x9caf9b, 0x8fb2b5, 0x96a8c4, 0xab9db8],
 } as const
 
@@ -14,14 +14,7 @@ export const SIGNAL_STATUS_LABELS = [
 
 // These retain the WebGL palette hues while giving the status readout clearer contrast.
 export const TRANSMISSION_COLORS = {
-  light: [
-    'oklch(51% 0.1 37)',
-    'oklch(52% 0.09 95)',
-    'oklch(50% 0.08 150)',
-    'oklch(50% 0.075 205)',
-    'oklch(50% 0.085 252)',
-    'oklch(51% 0.08 305)',
-  ],
+  light: ['#9e4d44', '#8b7024', '#39795c', '#2b7685', '#4c6eaa', '#7b538f'],
   dark: [
     'oklch(77% 0.105 37)',
     'oklch(80% 0.095 95)',
