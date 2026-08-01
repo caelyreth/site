@@ -7,6 +7,8 @@ import routeFragmentSource from './shaders/route.frag.glsl?raw'
 import routeVertexSource from './shaders/route.vert.glsl?raw'
 import starFragmentSource from './shaders/star.frag.glsl?raw'
 import starVertexSource from './shaders/star.vert.glsl?raw'
+import trailFragmentSource from './shaders/trail.frag.glsl?raw'
+import trailVertexSource from './shaders/trail.vert.glsl?raw'
 
 const projectionMarker = '/* @include projection */'
 
@@ -22,3 +24,5 @@ export const routeFragmentShader = routeFragmentSource
 export const routeVertexShader = withProjection(routeVertexSource)
 export const starFragmentShader = starFragmentSource
 export const starVertexShader = withProjection(starVertexSource)
+export const trailFragmentShader = trailFragmentSource
+export const trailVertexShader = trailVertexSource

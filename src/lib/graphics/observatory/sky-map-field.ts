@@ -32,6 +32,8 @@ import {
   routeVertexShader,
   starFragmentShader,
   starVertexShader,
+  trailFragmentShader,
+  trailVertexShader,
 } from './shaders'
 import { SIGNAL_PALETTES } from './signal-colors'
 
@@ -100,6 +102,8 @@ const BACKDROP_SIZE = 256
 const BACKDROP_CELL_SIZE = 1
 const BACKDROP_CELL_COUNT = BACKDROP_SIZE / BACKDROP_CELL_SIZE
 const VIEW_STATUS_INTERVAL = 100
+const TRAIL_RESPONSE = 3.1
+const TRAIL_MAX_LENGTH = 72
 const three = {
   BufferAttribute,
   BufferGeometry,
@@ -347,6 +351,30 @@ export function createSkyMapField(
     uSignalInk: { value: new three.Color(0xffffff) },
     uBaseAlpha: { value: 0.2 },
     uSurveyMode: { value: initialDark ? 0 : 1 },
+    uTrailMapScale: { value: BASE_MAP_SCALE },
+    uTrailMaxLength: { value: TRAIL_MAX_LENGTH },
+    uTrailOpacity: { value: 0 },
+    uTrailRight: {
+      value: new three.Vector3(
+        SKY_VIEW_BASIS[0],
+        SKY_VIEW_BASIS[1],
+        SKY_VIEW_BASIS[2],
+      ),
+    },
+    uTrailUp: {
+      value: new three.Vector3(
+        SKY_VIEW_BASIS[3],
+        SKY_VIEW_BASIS[4],
+        SKY_VIEW_BASIS[5],
+      ),
+    },
+    uTrailForward: {
+      value: new three.Vector3(
+        SKY_VIEW_BASIS[6],
+        SKY_VIEW_BASIS[7],
+        SKY_VIEW_BASIS[8],
+      ),
+    },
   }
   const backgroundMaterial = new three.ShaderMaterial({
     transparent: true,
@@ -383,6 +411,15 @@ export function createSkyMapField(
     uniforms,
     vertexShader: starVertexShader,
     fragmentShader: starFragmentShader,
+  })
+  const trailMaterial = new three.ShaderMaterial({
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+    toneMapped: false,
+    uniforms,
+    vertexShader: trailVertexShader,
+    fragmentShader: trailFragmentShader,
   })
 
   const ribbon: number[] = []
@@ -469,6 +506,25 @@ export function createSkyMapField(
   )
   routeGeometry.setIndex(routeIndices)
 
+  const trailGeometry = new three.InstancedBufferGeometry()
+  trailGeometry.setAttribute(
+    'position',
+    new three.Float32BufferAttribute(
+      [0, -1, 0, 0, 1, 0, 1, -1, 0, 1, 1, 0],
+      3,
+    ),
+  )
+  trailGeometry.setIndex([0, 1, 2, 2, 1, 3])
+  trailGeometry.setAttribute(
+    'aDirection',
+    new three.InstancedBufferAttribute(skyMap.directions, 3),
+  )
+  trailGeometry.setAttribute(
+    'aMagnitude',
+    new three.InstancedBufferAttribute(skyMap.magnitudes, 1),
+  )
+  trailGeometry.instanceCount = skyMap.magnitudes.length
+
   const backgroundGeometry = new three.BufferGeometry()
   backgroundGeometry.setAttribute(
     'position',
@@ -524,10 +580,13 @@ export function createSkyMapField(
   const routeMesh = new three.Mesh(routeGeometry, routeMaterial)
   routeMesh.frustumCulled = false
   routeMesh.renderOrder = 0.5
+  const trailMesh = new three.Mesh(trailGeometry, trailMaterial)
+  trailMesh.frustumCulled = false
+  trailMesh.renderOrder = 0.75
   const starPoints = new three.Points(starGeometry, starMaterial)
   starPoints.frustumCulled = false
   starPoints.renderOrder = 1
-  scene.add(backgroundMesh, edgeMesh, routeMesh, starPoints)
+  scene.add(backgroundMesh, edgeMesh, routeMesh, trailMesh, starPoints)
 
   let requestedActive = false
   let active = false
@@ -768,6 +827,50 @@ export function createSkyMapField(
       .crossVectors(uniforms.uRight.value, uniforms.uForward.value)
       .normalize()
     uniforms.uMapScale.value = mapScale
+  }
+
+  function syncTrailView() {
+    uniforms.uTrailForward.value.copy(uniforms.uForward.value)
+    uniforms.uTrailRight.value.copy(uniforms.uRight.value)
+    uniforms.uTrailUp.value.copy(uniforms.uUp.value)
+    uniforms.uTrailMapScale.value = uniforms.uMapScale.value
+    uniforms.uTrailOpacity.value = 0
+  }
+
+  function updateTrailView(deltaMilliseconds: number) {
+    const response =
+      1 - Math.exp((-TRAIL_RESPONSE * deltaMilliseconds) / 1000)
+    uniforms.uTrailForward.value
+      .lerp(uniforms.uForward.value, response)
+      .normalize()
+    uniforms.uTrailRight.value.crossVectors(
+      uniforms.uTrailForward.value,
+      worldUp,
+    )
+    if (uniforms.uTrailRight.value.lengthSq() < 0.0001) {
+      uniforms.uTrailRight.value.copy(uniforms.uRight.value)
+    } else {
+      uniforms.uTrailRight.value.normalize()
+    }
+    uniforms.uTrailUp.value
+      .crossVectors(
+        uniforms.uTrailRight.value,
+        uniforms.uTrailForward.value,
+      )
+      .normalize()
+    uniforms.uTrailMapScale.value +=
+      (uniforms.uMapScale.value - uniforms.uTrailMapScale.value) * response
+    const angularLag = angularDistanceBetweenDirections(
+      uniforms.uTrailForward.value,
+      uniforms.uForward.value,
+    )
+    const scaleLag = Math.abs(
+      uniforms.uMapScale.value - uniforms.uTrailMapScale.value,
+    )
+    uniforms.uTrailOpacity.value = Math.min(
+      1,
+      Math.max(0, (angularLag + scaleLag * 1.4) / 0.008),
+    )
   }
 
   function updateRouteView(progress: number) {
@@ -1014,6 +1117,7 @@ export function createSkyMapField(
     uniforms.uPixelRatio.value = pixelRatio
     uniforms.uAspect.value = width / height
     uniforms.uHalfWidth.value = 1.32 * pixelRatio
+    uniforms.uTrailMaxLength.value = TRAIL_MAX_LENGTH * pixelRatio
     if (sourceIndex < 0 || targetIndex < 0) {
       const [source, routeTarget] = chooseRoute()
       setRoute(source, routeTarget)
@@ -1051,11 +1155,13 @@ export function createSkyMapField(
     uniforms.uPulseDistance.value = 0
     uniforms.uLocatorProgress.value = 0
     uniforms.uLocatorScale.value = 1
+    uniforms.uTrailOpacity.value = 0
     endSpread()
     if (targetIndex >= 0) {
       updateRouteView(1)
       settledForward.copy(routeEndForward)
     }
+    syncTrailView()
     render()
     if (active && !disposed) {
       idleTimer = window.setTimeout(beginPulse, 2600 + Math.random() * 3000)
@@ -1071,6 +1177,10 @@ export function createSkyMapField(
       return
     }
 
+    const frameDelta =
+      previousRenderTime > 0
+        ? Math.min(50, now - previousRenderTime)
+        : minimumFrameDuration
     previousRenderTime = now
     const phaseElapsed = now - phaseStartedAt
     if (signalPhase === 'locating') {
@@ -1147,6 +1257,7 @@ export function createSkyMapField(
       currentConstellationsHeld = true
     }
     updateRouteView(mapProgress)
+    updateTrailView(frameDelta)
     if (!routeLanded && mapProgress >= 1) {
       routeLanded = true
       callbacks.onRouteLand?.()
@@ -1174,6 +1285,7 @@ export function createSkyMapField(
     uniforms.uPulseDistance.value = 0
     uniforms.uLocatorProgress.value = 0
     uniforms.uLocatorScale.value = LOCATOR_INITIAL_SCALE
+    syncTrailView()
     updateSignalColor(true)
     const [source, routeTarget] = chooseRoute()
     setRoute(source, routeTarget)
@@ -1197,6 +1309,7 @@ export function createSkyMapField(
     uniforms.uLocatorScale.value = 1
     settledForward.copy(uniforms.uForward.value)
     uniforms.uMapScale.value = BASE_MAP_SCALE
+    syncTrailView()
     render()
   }
   const resizeObserver = new ResizeObserver(resize)
@@ -1224,15 +1337,23 @@ export function createSkyMapField(
       stop()
       resizeObserver.disconnect()
       reducedMotion.removeEventListener('change', handleReducedMotion)
-      scene.remove(backgroundMesh, edgeMesh, routeMesh, starPoints)
+      scene.remove(
+        backgroundMesh,
+        edgeMesh,
+        routeMesh,
+        trailMesh,
+        starPoints,
+      )
       backgroundGeometry.dispose()
       edgeGeometry.dispose()
       routeGeometry.dispose()
       starGeometry.dispose()
+      trailGeometry.dispose()
       backgroundMaterial.dispose()
       edgeMaterial.dispose()
       routeMaterial.dispose()
       starMaterial.dispose()
+      trailMaterial.dispose()
       backdropTexture.dispose()
       renderer.dispose()
     },
