@@ -10,12 +10,18 @@
 
   type FieldController = ReturnType<typeof createSkyMapField>
   type CanvasProps = {
+    onRouteLand?: () => void
     onSpreadEnd?: () => void
     onSpreadStart?: (status: SkyMapPulseStatus) => void
     onViewChange?: (status: SkyMapViewStatus) => void
   }
 
-  let { onSpreadEnd, onSpreadStart, onViewChange }: CanvasProps = $props()
+  let {
+    onRouteLand,
+    onSpreadEnd,
+    onSpreadStart,
+    onViewChange,
+  }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
   let controller = $state<FieldController>()
@@ -62,12 +68,15 @@
           canvas,
           skyData,
           theme.resolvedTheme === 'dark',
-          { onSpreadEnd, onSpreadStart, onViewChange },
+          { onRouteLand, onSpreadEnd, onSpreadStart, onViewChange },
         )
         syncActivity()
         revealFrame = requestAnimationFrame(() => {
-          revealFrame = undefined
-          fieldReady = !disposed
+          if (disposed) return
+          revealFrame = requestAnimationFrame(() => {
+            revealFrame = undefined
+            fieldReady = true
+          })
         })
       })
       .catch((error: unknown) => {
@@ -114,7 +123,7 @@
     height: 100%;
     pointer-events: none;
     opacity: 0;
-    transition: opacity var(--dur-long) var(--ease-out);
+    transition: opacity 720ms var(--ease-out);
   }
 
   .canvas.is-ready {

@@ -1,19 +1,83 @@
 <script lang="ts">
-  // make svelte lsp happy
+  import { onMount } from 'svelte'
+
+  type WindowProps = {
+    active?: boolean
+    compact?: boolean
+    onLoadComplete?: () => void
+    signalColor: string
+  }
+
+  const shutters = [
+    { axis: '28%', code: 'AP-01', readout: 'NW 07', scan: '65%' },
+    { axis: '61%', code: 'AP-02', readout: 'EL 19', scan: '36%' },
+    { axis: '42%', code: 'AP-03', readout: 'RA 32', scan: '55%' },
+    { axis: '68%', code: 'AP-04', readout: 'AZ 11', scan: '28%' },
+  ] as const
+
+  /* oxlint-disable prefer-const -- props react to the live spread state. */
+  let {
+    active = false,
+    compact = false,
+    onLoadComplete,
+    signalColor,
+  }: WindowProps = $props()
+
+  let loadComplete = false
+
+  function completeLoad() {
+    if (loadComplete) return
+    loadComplete = true
+    onLoadComplete?.()
+  }
+
+  function handleFrameAnimationEnd(event: AnimationEvent) {
+    if (
+      event.target !== event.currentTarget ||
+      event.animationName !== 'window-expand'
+    ) {
+      return
+    }
+    completeLoad()
+  }
+
+  onMount(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      completeLoad()
+      return
+    }
+
+    const fallback = window.setTimeout(completeLoad, 1_600)
+    return () => window.clearTimeout(fallback)
+  })
 </script>
 
-<figure class="window" aria-label="Observatory placeholder studies">
-  <div class="frame">
-    <div aria-hidden="true" class="strips">
-      <div class="strip study-one"></div>
-      <div class="strip study-two"></div>
-      <div class="strip study-three"></div>
-      <div class="strip study-four"></div>
+<figure
+  aria-hidden="true"
+  class:active
+  class:compact
+  class="window"
+  style:--shutter-signal={signalColor}
+>
+  <div class="frame" onanimationend={handleFrameAnimationEnd}>
+    <div class="strips">
+      {#each shutters as shutter (shutter.code)}
+        <section
+          class="strip"
+          style:--shutter-axis={shutter.axis}
+          style:--shutter-scan={shutter.scan}
+        >
+          <span class="shutter-meta">{shutter.code}</span>
+          <span class="shutter-readout">{shutter.readout}</span>
+          <span class="shutter-axis"></span>
+          <span class="shutter-sweep"></span>
+        </section>
+      {/each}
     </div>
-    <span aria-hidden="true" class="tick tick-top-left"></span>
-    <span aria-hidden="true" class="tick tick-top-right"></span>
-    <span aria-hidden="true" class="tick tick-bottom-left"></span>
-    <span aria-hidden="true" class="tick tick-bottom-right"></span>
+    <span class="tick tick-top-left"></span>
+    <span class="tick tick-top-right"></span>
+    <span class="tick tick-bottom-left"></span>
+    <span class="tick tick-bottom-right"></span>
   </div>
 </figure>
 
@@ -21,6 +85,14 @@
   .window {
     width: 100%;
     margin: 0;
+    pointer-events: none;
+    transform-origin: center;
+    will-change: transform;
+    transition: transform 1s var(--ease-out);
+  }
+
+  .window.compact {
+    transform: scale(0.82);
   }
 
   .frame {
@@ -37,9 +109,17 @@
   }
 
   .strip {
+    position: relative;
     min-width: 0;
+    overflow: hidden;
+    border-inline: 1px solid
+      color-mix(in oklab, var(--color-rule) 72%, transparent);
     clip-path: inset(0 100% 0 0);
+    background-color: color-mix(in oklab, var(--color-ink) 3%, transparent);
     animation: strip-reveal 640ms var(--ease-in-out) both;
+    transition:
+      border-color 560ms var(--ease-out),
+      background-color 560ms var(--ease-out);
   }
 
   .strip:nth-child(2) {
@@ -54,12 +134,106 @@
     animation-delay: 360ms;
   }
 
+  .strip::before,
+  .strip::after {
+    position: absolute;
+    pointer-events: none;
+    content: '';
+  }
+
+  .strip::before {
+    inset: 0.7rem 0.35rem;
+    border-block: 1px solid
+      color-mix(in oklab, var(--color-rule) 58%, transparent);
+  }
+
+  .strip::after {
+    top: 0.7rem;
+    bottom: 0.7rem;
+    left: 50%;
+    width: 1px;
+    background: color-mix(in oklab, var(--color-rule) 58%, transparent);
+  }
+
+  .shutter-meta,
+  .shutter-readout {
+    position: absolute;
+    z-index: 1;
+    color: var(--color-muted);
+    font-size: clamp(0.375rem, 0.5vw, 0.5rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    transition: color 560ms var(--ease-out);
+  }
+
+  .shutter-meta {
+    top: 0.28rem;
+    left: 0.35rem;
+  }
+
+  .shutter-readout {
+    right: 0.35rem;
+    bottom: 0.28rem;
+    text-align: right;
+  }
+
+  .shutter-axis,
+  .shutter-sweep {
+    position: absolute;
+    right: 0.35rem;
+    left: 0.35rem;
+    height: 1px;
+    transform-origin: left;
+  }
+
+  .shutter-axis {
+    top: var(--shutter-axis);
+    background: color-mix(in oklab, var(--color-rule) 52%, transparent);
+  }
+
+  .shutter-sweep {
+    top: var(--shutter-scan);
+    opacity: 0;
+    background: var(--shutter-signal);
+    transform: scaleX(0.16);
+    transition:
+      opacity 260ms var(--ease-out),
+      transform 720ms var(--ease-out);
+  }
+
+  .window.active .strip {
+    border-color: color-mix(
+      in oklab,
+      var(--shutter-signal) 54%,
+      var(--color-rule)
+    );
+    background-color: color-mix(
+      in oklab,
+      var(--shutter-signal) 5%,
+      transparent
+    );
+  }
+
+  .window.active .shutter-meta,
+  .window.active .shutter-readout {
+    color: color-mix(
+      in oklab,
+      var(--shutter-signal) 74%,
+      var(--color-muted)
+    );
+  }
+
+  .window.active .shutter-sweep {
+    opacity: 0.86;
+    transform: scaleX(1);
+  }
+
   .tick {
     position: absolute;
     width: 0.75rem;
     height: 0.75rem;
-    pointer-events: none;
-    border: 0 solid var(--color-rule);
+    border: 0 solid color-mix(in oklab, var(--color-rule) 72%, transparent);
   }
 
   .tick-top-left {
@@ -90,46 +264,44 @@
     border-bottom-width: 1px;
   }
 
-  .study-one {
-    background-color: oklch(71% 0.035 230);
-  }
+  @media (max-width: 38rem) {
+    .strip::before {
+      inset: 0.35rem 0.18rem;
+    }
 
-  .study-two {
-    background-color: oklch(66% 0.04 273);
-  }
+    .strip::after {
+      top: 0.35rem;
+      bottom: 0.35rem;
+    }
 
-  .study-three {
-    background-color: oklch(74% 0.035 108);
-  }
+    .shutter-axis,
+    .shutter-sweep {
+      right: 0.18rem;
+      left: 0.18rem;
+    }
 
-  .study-four {
-    background-color: oklch(61% 0.03 25);
-  }
-
-  :global(.dark) .study-one {
-    background-color: oklch(43% 0.035 230);
-  }
-
-  :global(.dark) .study-two {
-    background-color: oklch(39% 0.04 273);
-  }
-
-  :global(.dark) .study-three {
-    background-color: oklch(46% 0.035 108);
-  }
-
-  :global(.dark) .study-four {
-    background-color: oklch(37% 0.03 25);
+    .shutter-meta,
+    .shutter-readout {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .frame {
+    .frame,
+    .strip {
       animation: none;
     }
 
     .strip {
       clip-path: none;
-      animation: none;
+    }
+
+    .strip,
+    .window,
+    .shutter-meta,
+    .shutter-readout,
+    .shutter-sweep {
+      transition: none;
     }
   }
 

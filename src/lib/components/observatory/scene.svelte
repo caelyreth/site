@@ -15,7 +15,7 @@
   import { fly } from 'svelte/transition'
 
   import Canvas from './canvas.svelte'
-  // import Window from './window.svelte'
+  import Window from './window.svelte'
 
   let capture: HTMLElement | undefined
   let scrollFrame: number | undefined
@@ -24,6 +24,8 @@
     Array<{ colorIndex: number; sequence: number }>
   >([])
   let spreading = $state(false)
+  let shuttersLoaded = $state(false)
+  let windowCompact = $state(false)
   let spreadColorIndex = $state(0)
   let viewStatus = $state<SkyMapViewStatus>({
     declination: 42,
@@ -37,11 +39,12 @@
       ? TRANSMISSION_COLORS.dark
       : TRANSMISSION_COLORS.light,
   )
-  // const windowScale = $derived(1 - station.scrollProgress * 0.2)
+  const windowScale = $derived(1 - station.scrollProgress * 0.2)
 
   function beginSpread({ colorIndex }: SkyMapPulseStatus) {
     spreadColorIndex = colorIndex
     spreading = true
+    windowCompact = true
     transmissions = [
       { colorIndex, sequence: transmissionSequence },
       ...transmissions,
@@ -51,6 +54,15 @@
 
   function endSpread() {
     spreading = false
+    windowCompact = false
+  }
+
+  function settleWindow() {
+    windowCompact = false
+  }
+
+  function revealSkyMap() {
+    shuttersLoaded = true
   }
 
   function transmissionColor(colorIndex: number) {
@@ -118,11 +130,22 @@
 <div class="capture" {@attach observeCapture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
-      <Canvas
-        onSpreadEnd={endSpread}
-        onSpreadStart={beginSpread}
-        onViewChange={updateViewStatus}
-      />
+      {#if shuttersLoaded}
+        <Canvas
+          onRouteLand={settleWindow}
+          onSpreadEnd={endSpread}
+          onSpreadStart={beginSpread}
+          onViewChange={updateViewStatus}
+        />
+      {/if}
+      <div class="window-stage" style:transform={`scale(${windowScale})`}>
+        <Window
+          active={spreading}
+          compact={windowCompact}
+          onLoadComplete={revealSkyMap}
+          signalColor={transmissionColor(spreadColorIndex)}
+        />
+      </div>
       <Boundary side="left" inScene reveal />
       <Boundary side="right" inScene reveal />
       <span id="scene-label" class="label corner corner-left label-top"
@@ -173,9 +196,6 @@
         class="label corner corner-right label-bottom descent"
         href="#station">Descend to station</a
       >
-      <!-- <div class="window-stage" style:transform={`scale(${windowScale})`}>
-        <Window />
-      </div> -->
     </div>
   </section>
 </div>
@@ -228,7 +248,7 @@
 
   .window-stage {
     position: relative;
-    z-index: 9;
+    z-index: 1;
     width: min(92vw, 56rem);
     transform-origin: center;
     will-change: transform;

@@ -50,6 +50,7 @@ export type SkyMapPulseStatus = {
   colorIndex: number
 }
 type FieldCallbacks = {
+  onRouteLand?: () => void
   onSpreadEnd?: () => void
   onSpreadStart?: (status: SkyMapPulseStatus) => void
   onViewChange?: (status: SkyMapViewStatus) => void
@@ -546,6 +547,7 @@ export function createSkyMapField(
   let targetDistance = Math.PI / 2
   let signalTravelDistance = Math.PI / 2
   let signalFadeStartDistance = Math.PI / 2
+  let routeLanded = false
   let spreading = false
   let lastViewStatusAt = -Infinity
   let lastViewStatusKey = ''
@@ -1149,6 +1151,10 @@ export function createSkyMapField(
       currentConstellationsHeld = true
     }
     updateRouteView(mapProgress)
+    if (!routeLanded && mapProgress >= 1) {
+      routeLanded = true
+      callbacks.onRouteLand?.()
+    }
     uniforms.uPulseDistance.value = pulseDistance
     uniforms.uPulseActive.value = 1 - fadeProgress
     uniforms.uSourceActivation.value =
@@ -1164,6 +1170,7 @@ export function createSkyMapField(
     previousRenderTime = 0
     signalPhase = 'locating'
     phaseStartedAt = now
+    routeLanded = false
     sourceActivationAtSpread = 0
     currentConstellationsHeld = false
     uniforms.uPulseActive.value = 0
