@@ -8,6 +8,7 @@
   import type {
     SkyMapPulseStatus,
     SkyMapViewStatus,
+    SkyMapZoomReturnStatus,
   } from '$lib/graphics/observatory/sky-map-field'
   import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
   import { useTheme } from 'svelte-themes'
@@ -26,6 +27,7 @@
   let spreading = $state(false)
   let shuttersLoaded = $state(false)
   let windowCompact = $state(false)
+  let windowScaleDuration = $state(1000)
   let spreadColorIndex = $state(0)
   let viewStatus = $state<SkyMapViewStatus>({
     declination: 42,
@@ -44,6 +46,7 @@
   function beginSpread({ colorIndex }: SkyMapPulseStatus) {
     spreadColorIndex = colorIndex
     spreading = true
+    windowScaleDuration = 1000
     windowCompact = true
     transmissions = [
       { colorIndex, sequence: transmissionSequence },
@@ -58,6 +61,11 @@
   }
 
   function settleWindow() {
+    windowCompact = false
+  }
+
+  function beginZoomReturn({ duration }: SkyMapZoomReturnStatus) {
+    windowScaleDuration = duration
     windowCompact = false
   }
 
@@ -136,6 +144,7 @@
           onSpreadEnd={endSpread}
           onSpreadStart={beginSpread}
           onViewChange={updateViewStatus}
+          onZoomReturnStart={beginZoomReturn}
         />
       {/if}
       <div class="window-stage" style:transform={`scale(${windowScale})`}>
@@ -143,6 +152,7 @@
           active={spreading}
           compact={windowCompact}
           onLoadComplete={revealSkyMap}
+          scaleDuration={windowScaleDuration}
           signalColor={transmissionColor(spreadColorIndex)}
         />
       </div>

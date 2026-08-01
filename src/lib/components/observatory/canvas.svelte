@@ -4,6 +4,7 @@
     createSkyMapField,
     SkyMapPulseStatus,
     SkyMapViewStatus,
+    SkyMapZoomReturnStatus,
   } from '$lib/graphics/observatory/sky-map-field'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
@@ -14,6 +15,7 @@
     onSpreadEnd?: () => void
     onSpreadStart?: (status: SkyMapPulseStatus) => void
     onViewChange?: (status: SkyMapViewStatus) => void
+    onZoomReturnStart?: (status: SkyMapZoomReturnStatus) => void
   }
 
   let {
@@ -21,6 +23,7 @@
     onSpreadEnd,
     onSpreadStart,
     onViewChange,
+    onZoomReturnStart,
   }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
@@ -68,7 +71,13 @@
           canvas,
           skyData,
           theme.resolvedTheme === 'dark',
-          { onRouteLand, onSpreadEnd, onSpreadStart, onViewChange },
+          {
+            onRouteLand,
+            onSpreadEnd,
+            onSpreadStart,
+            onViewChange,
+            onZoomReturnStart,
+          },
         )
         syncActivity()
         revealFrame = requestAnimationFrame(() => {

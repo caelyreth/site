@@ -88,7 +88,7 @@ void main() {
 
   clip += normalClip * position.y;
   vAlong = position.x;
-  vMotion = smoothstep(0.2, 2.4, motionLength);
+  vMotion = smoothstep(0.75, 3.2, motionLength);
   vSide = position.y;
   vVisible =
     step(0.16, currentDepth) *

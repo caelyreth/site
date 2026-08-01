@@ -74,7 +74,7 @@ void main() {
   );
   float targetConstellationReveal = smoothstep(
     vTargetDistance - 0.025,
-    vTargetDistance + 0.14,
+    vTargetDistance + 0.08,
     destinationPulse
   );
   float constellationActivation =

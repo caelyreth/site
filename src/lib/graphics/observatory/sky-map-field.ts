@@ -52,11 +52,15 @@ export type SkyMapViewStatus = {
 export type SkyMapPulseStatus = {
   colorIndex: number
 }
+export type SkyMapZoomReturnStatus = {
+  duration: number
+}
 type FieldCallbacks = {
   onRouteLand?: () => void
   onSpreadEnd?: () => void
   onSpreadStart?: (status: SkyMapPulseStatus) => void
   onViewChange?: (status: SkyMapViewStatus) => void
+  onZoomReturnStart?: (status: SkyMapZoomReturnStatus) => void
 }
 type SkyMap = {
   directions: Float32Array
@@ -79,12 +83,11 @@ const LOCATOR_DURATION = 1100
 const LOCATOR_COLLAPSE_DURATION = 520
 const LOCATOR_INITIAL_SCALE = 2
 const LOCATOR_DOT_SCALE = 0.08
-const SIGNAL_SPEED = 0.34 / 1000
+const SIGNAL_SPEED = 0.7 / 1000
 const SOURCE_RELEASE_DURATION = LOCATOR_COLLAPSE_DURATION
 const CONSTELLATION_RETIRE_DURATION = 900
 const DAMPING_STIFFNESS = 5.5
 const BASE_VIEW_RADIUS = (55 * Math.PI) / 180
-const WIDE_VIEW_RADIUS = (74 * Math.PI) / 180
 const ROUTE_CANDIDATE_MAGNITUDE = 3.6
 const ROUTE_CENTER_RADIUS = 0.22
 const ROUTE_SOURCE_MAX_RADIUS = 0.44
@@ -98,20 +101,33 @@ const ROUTE_PREFERRED_CAMERA_ROTATION = (42 * Math.PI) / 180
 const ROUTE_MAX_CAMERA_ROTATION = (58 * Math.PI) / 180
 const ROUTE_FINAL_SOURCE_MIN_DISTANCE = (60 * Math.PI) / 180
 const ROUTE_SCORE_POOL_SIZE = 4
+const ROUTE_HISTORY_LENGTH = 4
+const ROUTE_MAX_BACKTRACK_DOT = 0.35
 const ROUTE_RIBBON_SEGMENTS = 48
 const SIGNAL_CONTINUATION_DISTANCE = 0.16
 const SIGNAL_FADE_DISTANCE = 0.26
-const DESTINATION_CONSTELLATION_LEAD = 0.42
+const DESTINATION_CONSTELLATION_LEAD = 0.54
 const TAU = Math.PI * 2
 const BACKDROP_SIZE = 256
 const BACKDROP_CELL_SIZE = 1
 const BACKDROP_CELL_COUNT = BACKDROP_SIZE / BACKDROP_CELL_SIZE
 const VIEW_STATUS_INTERVAL = 100
-const VIEW_MOTION_START = 0.08
-const VIEW_MOTION_END = 0.78
-const TRAIL_RESPONSE = 1.55
-const TRAIL_MAX_LENGTH = 136
+const CAMERA_ANGULAR_SPEED = (18 * Math.PI) / 180 / 1000
+const CAMERA_ROUTE_LEAD = 300
+const CAMERA_ARRIVAL_LEAD = 120
+const CAMERA_MIN_WIDENING = (8 * Math.PI) / 180
+const CAMERA_MAX_WIDENING = (12 * Math.PI) / 180
+const TRAVEL_ACCELERATION_PORTION = 0.06
+const ZOOM_OUT_MIN_DURATION = 560
+const ZOOM_OUT_MAX_DURATION = 720
+const ZOOM_IN_MIN_DURATION = 650
+const ZOOM_IN_MAX_DURATION = 810
+const ZOOM_MIN_HOLD_DURATION = 80
+const ZOOM_ACCELERATION_PORTION = 0.2
+const TRAIL_RESPONSE = 1.18
+const TRAIL_MAX_LENGTH = 168
 const TRAIL_FIELD_SAMPLE_RATE = 0.24
+const TRAIL_RELEASE_DURATION = 520
 const three = {
   BufferAttribute,
   BufferGeometry,
@@ -226,11 +242,72 @@ function criticallyDampedProgress(value: number) {
   return Math.min(1, response / settledResponse)
 }
 
-function softLandingProgress(value: number) {
+function smootherstepProgress(value: number) {
   const progress = Math.min(1, Math.max(0, value))
   return (
     progress * progress * progress * (progress * (6 * progress - 15) + 10)
   )
+}
+
+function cruiseProgress(value: number, ramp: number) {
+  const progress = Math.min(1, Math.max(0, value))
+  const normalization = 1 - ramp
+  if (progress < ramp) {
+    return (0.5 * progress * progress) / (ramp * normalization)
+  }
+  if (progress <= 1 - ramp) {
+    return (progress - ramp * 0.5) / normalization
+  }
+  const remaining = 1 - progress
+  return 1 - (0.5 * remaining * remaining) / (ramp * normalization)
+}
+
+function travelProgress(value: number) {
+  return cruiseProgress(value, TRAVEL_ACCELERATION_PORTION)
+}
+
+function cameraMotionProgress(value: number) {
+  return smootherstepProgress(value)
+}
+
+function inverseTravelProgress(value: number) {
+  const target = Math.min(1, Math.max(0, value))
+  let lower = 0
+  let upper = 1
+  for (let iteration = 0; iteration < 18; iteration += 1) {
+    const middle = (lower + upper) * 0.5
+    if (travelProgress(middle) < target) lower = middle
+    else upper = middle
+  }
+  return (lower + upper) * 0.5
+}
+
+function zoomEnvelope(
+  cameraProgress: number,
+  zoomOutEndProgress: number,
+  zoomInStartProgress: number,
+) {
+  const progress = Math.min(1, Math.max(0, cameraProgress))
+  if (progress < zoomOutEndProgress) {
+    return cruiseProgress(
+      progress / Math.max(0.001, zoomOutEndProgress),
+      ZOOM_ACCELERATION_PORTION,
+    )
+  }
+  if (progress < zoomInStartProgress) return 1
+  return (
+    1 -
+    cruiseProgress(
+      (progress - zoomInStartProgress) /
+        Math.max(0.001, 1 - zoomInStartProgress),
+      ZOOM_ACCELERATION_PORTION,
+    )
+  )
+}
+
+function trailReleaseOpacity(value: number) {
+  const progress = Math.min(1, Math.max(0, value))
+  return Math.pow(1 - progress, 3)
 }
 
 function mapScaleForViewRadius(viewRadius: number) {
@@ -636,6 +713,7 @@ export function createSkyMapField(
   let sourceActivationAtSpread = 0
   let sourceIndex = -1
   let targetIndex = -1
+  let previousRouteSourceIndex = -1
   let signalColorIndex = -1
   let darkMode = initialDark
   let signalStartedAt = performance.now()
@@ -643,6 +721,13 @@ export function createSkyMapField(
   let targetDistance = Math.PI / 2
   let signalTravelDistance = Math.PI / 2
   let signalFadeStartDistance = Math.PI / 2
+  let signalDuration = signalTravelDistance / SIGNAL_SPEED
+  let cameraDuration = 5000
+  let cameraStartDelay = CAMERA_ROUTE_LEAD
+  let routeWideViewRadius = BASE_VIEW_RADIUS + CAMERA_MIN_WIDENING
+  let zoomOutEndProgress = 0.4
+  let zoomInStartProgress = 0.46
+  let zoomReturnStarted = false
   let routeLanded = false
   let spreading = false
   let lastViewStatusAt = -Infinity
@@ -665,6 +750,10 @@ export function createSkyMapField(
   const scoredSourceDirection = new three.Vector3()
   const scoredTargetDirection = new three.Vector3()
   const scoredFinalForward = new three.Vector3()
+  const scoredPreviousSourceDirection = new three.Vector3()
+  const scoredBacktrackTangent = new three.Vector3()
+  const scoredOutgoingTangent = new three.Vector3()
+  const recentConstellationGroups: number[] = []
   let viewRadius = BASE_VIEW_RADIUS
   let trailViewRadius = BASE_VIEW_RADIUS
 
@@ -818,8 +907,30 @@ export function createSkyMapField(
     }
 
     setNodeDirection(source, scoredSourceDirection)
+    const sourceGroup = skyMap.nodeGroups[source]
+    const previousSourceGroup =
+      previousRouteSourceIndex >= 0
+        ? skyMap.nodeGroups[previousRouteSourceIndex]
+        : -1
+    const hasIncomingDirection =
+      previousRouteSourceIndex >= 0 && previousRouteSourceIndex !== source
+    if (hasIncomingDirection) {
+      setNodeDirection(
+        previousRouteSourceIndex,
+        scoredPreviousSourceDirection,
+      )
+      scoredBacktrackTangent
+        .copy(scoredPreviousSourceDirection)
+        .addScaledVector(
+          scoredSourceDirection,
+          -scoredPreviousSourceDirection.dot(scoredSourceDirection),
+        )
+        .normalize()
+    }
     const measuredCandidates = candidates.flatMap((candidate) => {
       if (candidate.index === source) return []
+      const targetGroup = skyMap.nodeGroups[candidate.index]
+      if (targetGroup === sourceGroup) return []
       const distance = angularDistanceBetweenNodes(source, candidate.index)
       const cameraRotation = Math.max(
         0,
@@ -832,6 +943,16 @@ export function createSkyMapField(
         return []
       }
       setNodeDirection(candidate.index, scoredTargetDirection)
+      scoredOutgoingTangent
+        .copy(scoredTargetDirection)
+        .addScaledVector(
+          scoredSourceDirection,
+          -scoredTargetDirection.dot(scoredSourceDirection),
+        )
+        .normalize()
+      const backtrackDot = hasIncomingDirection
+        ? scoredOutgoingTangent.dot(scoredBacktrackTangent)
+        : -1
       interpolateDirection(
         uniforms.uForward.value,
         scoredTargetDirection,
@@ -841,18 +962,26 @@ export function createSkyMapField(
       return [
         {
           cameraRotation,
+          backtrackDot,
           candidate,
           distance,
           finalSourceDistance: angularDistanceBetweenDirections(
             scoredSourceDirection,
             scoredFinalForward,
           ),
+          targetGroup,
         },
       ]
     })
     const scoredCandidates = measuredCandidates.flatMap((metrics) => {
-      const { cameraRotation, candidate, distance, finalSourceDistance } =
-        metrics
+      const {
+        backtrackDot,
+        cameraRotation,
+        candidate,
+        distance,
+        finalSourceDistance,
+        targetGroup,
+      } = metrics
       if (
         distance < ROUTE_MIN_DISTANCE ||
         distance > ROUTE_MAX_DISTANCE ||
@@ -871,6 +1000,7 @@ export function createSkyMapField(
       )
       const directionScore =
         sectorGap(sourceCandidate.sector, candidate.sector) / 4
+      const continuationScore = (1 - backtrackDot) * 0.5
       const sourceExitScore = Math.min(
         1,
         (finalSourceDistance - ROUTE_FINAL_SOURCE_MIN_DISTANCE) /
@@ -886,17 +1016,34 @@ export function createSkyMapField(
       )
       return [
         {
+          backtrackDot,
           candidate,
           score:
             distanceScore * 2 +
             rotationScore * 0.7 +
             sourceExitScore * 0.55 +
             directionScore * 0.35 +
+            continuationScore * 0.6 +
             outboundScore * 0.1,
+          targetGroup,
         },
       ]
     })
-    const directionallySeparated = scoredCandidates.filter(
+    const nonReversingCandidates = scoredCandidates.filter(
+      ({ backtrackDot, targetGroup }) =>
+        backtrackDot <= ROUTE_MAX_BACKTRACK_DOT &&
+        targetGroup !== previousSourceGroup,
+    )
+    const freshCandidates = nonReversingCandidates.filter(
+      ({ targetGroup }) => !recentConstellationGroups.includes(targetGroup),
+    )
+    const diverseCandidates =
+      freshCandidates.length > 0
+        ? freshCandidates
+        : nonReversingCandidates.length > 0
+          ? nonReversingCandidates
+          : scoredCandidates
+    const directionallySeparated = diverseCandidates.filter(
       ({ candidate }) =>
         sectorGap(sourceCandidate.sector, candidate.sector) >=
         ROUTE_MIN_SECTOR_GAP,
@@ -904,7 +1051,7 @@ export function createSkyMapField(
     const routePool =
       directionallySeparated.length > 0
         ? directionallySeparated
-        : scoredCandidates
+        : diverseCandidates
     routePool.sort((first, second) => second.score - first.score)
     const finalists = routePool.slice(0, ROUTE_SCORE_POOL_SIZE)
     const [fallback] = measuredCandidates
@@ -990,7 +1137,10 @@ export function createSkyMapField(
     uniforms.uTrailOpacity.value = 0
   }
 
-  function updateTrailView(deltaMilliseconds: number) {
+  function updateTrailView(
+    deltaMilliseconds: number,
+    releaseOpacity: number,
+  ) {
     const response =
       1 - Math.exp((-TRAIL_RESPONSE * deltaMilliseconds) / 1000)
     trailOrientation.slerp(viewOrientation, response).normalize()
@@ -998,22 +1148,75 @@ export function createSkyMapField(
     applyTrailState()
     const angularLag = trailOrientation.angleTo(viewOrientation)
     const radiusLag = Math.abs(viewRadius - trailViewRadius)
-    uniforms.uTrailOpacity.value = Math.min(
-      1,
-      Math.max(0, (angularLag + radiusLag * 0.7) / 0.008),
-    )
+    uniforms.uTrailOpacity.value =
+      Math.min(1, Math.max(0, (angularLag + radiusLag * 0.7) / 0.008)) *
+      releaseOpacity
   }
 
   function updateRouteView(progress: number) {
-    const settledProgress = softLandingProgress(progress)
+    const settledProgress = cameraMotionProgress(progress)
     viewOrientation
       .copy(routeStartOrientation)
       .slerp(routeEndOrientation, settledProgress)
       .normalize()
-    const widened = Math.sin(Math.PI * settledProgress)
+    const widened = zoomEnvelope(
+      progress,
+      zoomOutEndProgress,
+      zoomInStartProgress,
+    )
     viewRadius =
-      BASE_VIEW_RADIUS + (WIDE_VIEW_RADIUS - BASE_VIEW_RADIUS) * widened
+      BASE_VIEW_RADIUS + (routeWideViewRadius - BASE_VIEW_RADIUS) * widened
     applyViewState()
+  }
+
+  function configureRouteTiming(cameraRotation: number) {
+    cameraDuration = cameraRotation / CAMERA_ANGULAR_SPEED
+    const rotationRange =
+      ROUTE_MAX_CAMERA_ROTATION - ROUTE_MIN_CAMERA_ROTATION
+    const rotationRatio = Math.min(
+      1,
+      Math.max(
+        0,
+        (cameraRotation - ROUTE_MIN_CAMERA_ROTATION) / rotationRange,
+      ),
+    )
+    routeWideViewRadius =
+      BASE_VIEW_RADIUS +
+      CAMERA_MIN_WIDENING +
+      (CAMERA_MAX_WIDENING - CAMERA_MIN_WIDENING) * rotationRatio
+    let zoomOutDuration =
+      ZOOM_OUT_MIN_DURATION +
+      (ZOOM_OUT_MAX_DURATION - ZOOM_OUT_MIN_DURATION) * rotationRatio
+    let zoomInDuration =
+      ZOOM_IN_MIN_DURATION +
+      (ZOOM_IN_MAX_DURATION - ZOOM_IN_MIN_DURATION) * rotationRatio
+    const availableZoomDuration = Math.max(
+      1,
+      cameraDuration - ZOOM_MIN_HOLD_DURATION,
+    )
+    const combinedZoomDuration = zoomOutDuration + zoomInDuration
+    if (combinedZoomDuration > availableZoomDuration) {
+      const durationScale = availableZoomDuration / combinedZoomDuration
+      zoomOutDuration *= durationScale
+      zoomInDuration *= durationScale
+    }
+    zoomOutEndProgress = zoomOutDuration / cameraDuration
+    zoomInStartProgress = 1 - zoomInDuration / cameraDuration
+    const targetArrivalProgress = inverseTravelProgress(
+      targetDistance / signalTravelDistance,
+    )
+    const minimumDuration =
+      (CAMERA_ROUTE_LEAD + cameraDuration + CAMERA_ARRIVAL_LEAD) /
+      Math.max(0.01, targetArrivalProgress)
+    signalDuration = Math.max(
+      signalTravelDistance / SIGNAL_SPEED,
+      minimumDuration,
+    )
+    const targetArrivalTime = targetArrivalProgress * signalDuration
+    cameraStartDelay = Math.max(
+      CAMERA_ROUTE_LEAD,
+      targetArrivalTime - cameraDuration - CAMERA_ARRIVAL_LEAD,
+    )
   }
 
   function setRoute(source: number, target: number) {
@@ -1153,6 +1356,18 @@ export function createSkyMapField(
       .copy(routeStartOrientation)
       .premultiply(routeOrientationDelta)
       .normalize()
+    configureRouteTiming(cameraRotation)
+    previousRouteSourceIndex = sourceIndex
+    const existingTargetGroup =
+      recentConstellationGroups.indexOf(targetConstellation)
+    if (existingTargetGroup >= 0) {
+      recentConstellationGroups.splice(existingTargetGroup, 1)
+    }
+    recentConstellationGroups.unshift(targetConstellation)
+    recentConstellationGroups.length = Math.min(
+      recentConstellationGroups.length,
+      ROUTE_HISTORY_LENGTH,
+    )
   }
 
   function retirePreviousConstellation() {
@@ -1350,26 +1565,23 @@ export function createSkyMapField(
       return
     }
 
-    const pulseDuration = signalTravelDistance / SIGNAL_SPEED
     const pulseElapsed = now - signalStartedAt
-    if (pulseElapsed >= pulseDuration) {
+    if (pulseElapsed >= signalDuration) {
       enterIdle()
       return
     }
     const pulseDistance =
-      signalTravelDistance *
-      criticallyDampedProgress(pulseElapsed / pulseDuration)
+      signalTravelDistance * travelProgress(pulseElapsed / signalDuration)
     const sourceRelease = criticallyDampedProgress(
       pulseElapsed / SOURCE_RELEASE_DURATION,
     )
-    const mapProgress = Math.min(1, pulseDistance / targetDistance)
-    const viewProgress = Math.min(
+    const cameraProgress = Math.min(
       1,
-      Math.max(
-        0,
-        (mapProgress - VIEW_MOTION_START) /
-          (VIEW_MOTION_END - VIEW_MOTION_START),
-      ),
+      Math.max(0, (pulseElapsed - cameraStartDelay) / cameraDuration),
+    )
+    const cameraEndTime = cameraStartDelay + cameraDuration
+    const trailOpacity = trailReleaseOpacity(
+      (pulseElapsed - cameraEndTime) / TRAIL_RELEASE_DURATION,
     )
     const fadeProgress = criticallyDampedProgress(
       (pulseDistance - signalFadeStartDistance) / SIGNAL_FADE_DISTANCE,
@@ -1384,9 +1596,15 @@ export function createSkyMapField(
       holdCurrentConstellations()
       currentConstellationsHeld = true
     }
-    updateRouteView(viewProgress)
-    updateTrailView(frameDelta)
-    if (!routeLanded && viewProgress >= 1) {
+    if (!zoomReturnStarted && cameraProgress >= zoomInStartProgress) {
+      zoomReturnStarted = true
+      callbacks.onZoomReturnStart?.({
+        duration: Math.max(0, cameraEndTime - pulseElapsed),
+      })
+    }
+    updateRouteView(cameraProgress)
+    updateTrailView(frameDelta, trailOpacity)
+    if (!routeLanded && cameraProgress >= 1) {
       routeLanded = true
       callbacks.onRouteLand?.()
     }
@@ -1405,6 +1623,7 @@ export function createSkyMapField(
     previousRenderTime = 0
     signalPhase = 'locating'
     phaseStartedAt = now
+    zoomReturnStarted = false
     routeLanded = false
     sourceActivationAtSpread = 0
     currentConstellationsHeld = false

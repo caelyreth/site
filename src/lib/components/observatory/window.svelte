@@ -5,6 +5,7 @@
     active?: boolean
     compact?: boolean
     onLoadComplete?: () => void
+    scaleDuration?: number
     signalColor: string
   }
 
@@ -20,6 +21,7 @@
     active = false,
     compact = false,
     onLoadComplete,
+    scaleDuration = 1000,
     signalColor,
   }: WindowProps = $props()
 
@@ -57,6 +59,7 @@
   class:active
   class:compact
   class="window"
+  style:--window-scale-duration={`${scaleDuration}ms`}
   style:--shutter-signal={signalColor}
 >
   <div class="frame" onanimationend={handleFrameAnimationEnd}>
@@ -88,7 +91,7 @@
     pointer-events: none;
     transform-origin: center;
     will-change: transform;
-    transition: transform 1s var(--ease-out);
+    transition: transform var(--window-scale-duration) var(--ease-in-out);
   }
 
   .window.compact {
