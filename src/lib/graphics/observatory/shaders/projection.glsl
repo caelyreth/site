@@ -1,9 +1,8 @@
 vec2 projectSky(vec3 point, out float depth) {
-  vec3 direction = normalize(point);
   vec3 local = vec3(
-    dot(direction, uRight),
-    dot(direction, uUp),
-    dot(direction, uForward)
+    dot(point, uRight),
+    dot(point, uUp),
+    dot(point, uForward)
   );
   float denominator = max(0.08, 1.0 + local.z);
   vec2 stereographic = 2.0 * local.xy / denominator;

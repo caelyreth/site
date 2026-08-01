@@ -21,9 +21,7 @@ void main() {
     4.0 * stereographic / denominator,
     (4.0 - squaredRadius) / denominator
   );
-  vec3 direction = normalize(
-    local.x * uRight + local.y * uUp + local.z * uForward
-  );
+  vec3 direction = local.x * uRight + local.y * uUp + local.z * uForward;
   float longitude = atan(direction.z, direction.x);
   float latitude = asin(clamp(direction.y, -1.0, 1.0));
   vec2 skyUv = vec2(

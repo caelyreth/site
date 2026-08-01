@@ -1,6 +1,6 @@
 precision highp float;
 
-attribute float aMagnitude;
+attribute float aBrightness;
 attribute float aDistance;
 attribute float aTargetDistance;
 attribute float aLocator;
@@ -42,14 +42,23 @@ float constellationMatch(float group, float constellation) {
 void main() {
   float depth;
   vec2 point = projectSky(position, depth);
+  if (depth < 0.16) {
+    vActivation = 0.0;
+    vBrightness = aBrightness;
+    vDepth = depth;
+    vLocator = 0.0;
+    vStarRadius = 1.0;
+    gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+    gl_PointSize = 1.0;
+    return;
+  }
   float head = 1.0 - smoothstep(
     uHeadWidth * 0.25,
     uHeadWidth,
     abs(uPulseDistance - aDistance)
   );
   float source = 1.0 - smoothstep(0.0, uSourceRadius, aDistance);
-  float brightnessBase = clamp((6.25 - aMagnitude) / 7.75, 0.015, 1.0);
-  vBrightness = pow(brightnessBase, 1.28);
+  vBrightness = aBrightness;
   float waveActivation =
     head *
     (1.0 - source) *

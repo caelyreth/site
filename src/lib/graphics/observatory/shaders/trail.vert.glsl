@@ -1,14 +1,14 @@
 precision highp float;
 
 attribute vec3 aDirection;
-attribute float aMagnitude;
+attribute float aStrength;
+attribute float aWidthFactor;
 uniform vec2 uResolution;
 uniform float uAspect;
 uniform float uMapScale;
 uniform float uTrailMapScale;
 uniform float uHalfWidth;
 uniform float uTrailMaxLength;
-uniform float uTrailOpacity;
 uniform vec3 uRight;
 uniform vec3 uUp;
 uniform vec3 uForward;
@@ -16,7 +16,7 @@ uniform vec3 uTrailRight;
 uniform vec3 uTrailUp;
 uniform vec3 uTrailForward;
 varying float vAlong;
-varying float vBrightness;
+varying float vStrength;
 varying float vMotion;
 varying float vSide;
 varying float vVisible;
@@ -29,11 +29,10 @@ vec2 projectWithBasis(
   float scale,
   out float depth
 ) {
-  vec3 direction = normalize(point);
   vec3 local = vec3(
-    dot(direction, right),
-    dot(direction, up),
-    dot(direction, forward)
+    dot(point, right),
+    dot(point, up),
+    dot(point, forward)
   );
   float denominator = max(0.08, 1.0 + local.z);
   vec2 stereographic = 2.0 * local.xy / denominator;
@@ -68,6 +67,18 @@ void main() {
     uTrailMapScale,
     previousDepth
   );
+  vVisible =
+    step(0.16, currentDepth) *
+    step(0.16, previousDepth) *
+    insideViewport(currentPoint);
+  if (vVisible < 0.5) {
+    vAlong = position.x;
+    vStrength = aStrength;
+    vMotion = 0.0;
+    vSide = position.y;
+    gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+    return;
+  }
   vec2 motionPixels = (currentPoint - previousPoint) * uResolution;
   float motionLength = length(motionPixels);
   vec2 direction = motionPixels / max(motionLength, 0.0001);
@@ -76,11 +87,10 @@ void main() {
   vec2 point = mix(startPoint, currentPoint, position.x);
   vec2 normal = vec2(-direction.y, direction.x);
   vec2 clip = vec2(point.x * 2.0 - 1.0, 1.0 - point.y * 2.0);
-  float brightnessBase = clamp((6.25 - aMagnitude) / 7.75, 0.015, 1.0);
-  vBrightness = pow(brightnessBase, 1.28);
+  vStrength = aStrength;
   float halfWidth =
     uHalfWidth *
-    mix(0.5, 1.02, pow(vBrightness, 0.68)) *
+    mix(0.5, 1.02, aWidthFactor) *
     mix(0.82, 1.0, currentDepth) *
     mix(0.18, 1.0, position.x);
   vec2 normalClip =
@@ -90,10 +100,5 @@ void main() {
   vAlong = position.x;
   vMotion = smoothstep(0.75, 3.2, motionLength);
   vSide = position.y;
-  vVisible =
-    step(0.16, currentDepth) *
-    step(0.16, previousDepth) *
-    insideViewport(currentPoint) *
-    step(0.001, uTrailOpacity);
   gl_Position = vec4(clip, 0.0, 1.0);
 }

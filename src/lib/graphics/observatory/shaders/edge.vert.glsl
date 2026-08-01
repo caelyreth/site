@@ -39,12 +39,21 @@ float insideViewport(vec2 point) {
 
 void main() {
   float along = position.x;
-  float depth;
-  vec2 point = projectSky(arcPoint(along), depth);
   float startDepth;
   float endDepth;
   vec2 startPoint = projectSky(aStart, startDepth);
   vec2 endPoint = projectSky(aEnd, endDepth);
+  vSegmentVisible =
+    step(0.16, startDepth) *
+    step(0.16, endDepth) *
+    insideViewport(startPoint) *
+    insideViewport(endPoint);
+  if (vSegmentVisible < 0.5) {
+    gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+    return;
+  }
+  float depth;
+  vec2 point = projectSky(arcPoint(along), depth);
   float tangentStep = 0.022;
   float unusedDepth;
   vec2 before = projectSky(arcPoint(max(0.0, along - tangentStep)), unusedDepth);
@@ -64,10 +73,5 @@ void main() {
   vWeight = aWeight;
   vDepth = depth;
   vConstellation = aConstellation;
-  vSegmentVisible =
-    step(0.16, startDepth) *
-    step(0.16, endDepth) *
-    insideViewport(startPoint) *
-    insideViewport(endPoint);
   gl_Position = vec4(clip, 0.0, 1.0);
 }

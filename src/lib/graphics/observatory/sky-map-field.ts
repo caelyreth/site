@@ -87,6 +87,8 @@ const SIGNAL_SPEED = 0.7 / 1000
 const SOURCE_RELEASE_DURATION = LOCATOR_COLLAPSE_DURATION
 const CONSTELLATION_RETIRE_DURATION = 900
 const DAMPING_STIFFNESS = 5.5
+const DAMPING_SETTLED_RESPONSE =
+  1 - (1 + DAMPING_STIFFNESS) * Math.exp(-DAMPING_STIFFNESS)
 const BASE_VIEW_RADIUS = (55 * Math.PI) / 180
 const ROUTE_CANDIDATE_MAGNITUDE = 3.6
 const ROUTE_CENTER_RADIUS = 0.22
@@ -225,10 +227,18 @@ function decodeSkyMap(skyData: SkyData): SkyMap {
 }
 
 function choosePixelRatio(width: number, height: number) {
-  const nativeRatio = Math.min(window.devicePixelRatio || 1, 2)
-  const pixelBudget = 3_200_000
+  const nativeRatio = Math.min(window.devicePixelRatio || 1, 1.75)
+  const pixelBudget = 2_600_000
   const budgetRatio = Math.sqrt(pixelBudget / Math.max(1, width * height))
   return Math.max(1, Math.min(nativeRatio, budgetRatio))
+}
+
+function brightnessForMagnitude(magnitude: number) {
+  const brightnessBase = Math.min(
+    1,
+    Math.max(0.015, (6.25 - magnitude) / 7.75),
+  )
+  return Math.pow(brightnessBase, 1.28)
 }
 
 function criticallyDampedProgress(value: number) {
@@ -237,9 +247,7 @@ function criticallyDampedProgress(value: number) {
     1 -
     (1 + DAMPING_STIFFNESS * progress) *
       Math.exp(-DAMPING_STIFFNESS * progress)
-  const settledResponse =
-    1 - (1 + DAMPING_STIFFNESS) * Math.exp(-DAMPING_STIFFNESS)
-  return Math.min(1, response / settledResponse)
+  return Math.min(1, response / DAMPING_SETTLED_RESPONSE)
 }
 
 function smootherstepProgress(value: number) {
@@ -307,7 +315,8 @@ function zoomEnvelope(
 
 function trailReleaseOpacity(value: number) {
   const progress = Math.min(1, Math.max(0, value))
-  return Math.pow(1 - progress, 3)
+  const remaining = 1 - progress
+  return remaining * remaining * remaining
 }
 
 function mapScaleForViewRadius(viewRadius: number) {
@@ -383,10 +392,14 @@ export function createSkyMapField(
 
   const { SKY_SOURCE_NODES, SKY_VIEW_BASIS } = skyData
   const skyMap = decodeSkyMap(skyData)
+  const starBrightnesses = new Float32Array(skyMap.magnitudes.length)
   const trailDirections: number[] = []
-  const trailMagnitudes: number[] = []
+  const trailStrengths: number[] = []
+  const trailWidthFactors: number[] = []
   let trailSeed = 0x71e2a9d5
   for (let index = 0; index < skyMap.magnitudes.length; index += 1) {
+    const brightness = brightnessForMagnitude(skyMap.magnitudes[index])
+    starBrightnesses[index] = brightness
     trailSeed = (trailSeed * 1_664_525 + 1_013_904_223) >>> 0
     const selected = trailSeed / 4_294_967_296 < TRAIL_FIELD_SAMPLE_RATE
     if (skyMap.nodeGroups[index] < 0 && !selected) continue
@@ -396,7 +409,8 @@ export function createSkyMapField(
       skyMap.directions[direction + 1],
       skyMap.directions[direction + 2],
     )
-    trailMagnitudes.push(skyMap.magnitudes[index])
+    trailStrengths.push(0.16 + Math.pow(brightness, 0.72) * 0.38)
+    trailWidthFactors.push(Math.pow(brightness, 0.68))
   }
   const backdropTexture = createBackdropTexture()
   const nodeDistances = new Float32Array(skyMap.magnitudes.length)
@@ -630,13 +644,17 @@ export function createSkyMapField(
     ),
   )
   trailGeometry.setAttribute(
-    'aMagnitude',
+    'aStrength',
+    new three.InstancedBufferAttribute(new Float32Array(trailStrengths), 1),
+  )
+  trailGeometry.setAttribute(
+    'aWidthFactor',
     new three.InstancedBufferAttribute(
-      new Float32Array(trailMagnitudes),
+      new Float32Array(trailWidthFactors),
       1,
     ),
   )
-  trailGeometry.instanceCount = trailMagnitudes.length
+  trailGeometry.instanceCount = trailStrengths.length
 
   const backgroundGeometry = new three.BufferGeometry()
   backgroundGeometry.setAttribute(
@@ -653,8 +671,8 @@ export function createSkyMapField(
     new three.BufferAttribute(skyMap.directions, 3),
   )
   starGeometry.setAttribute(
-    'aMagnitude',
-    new three.BufferAttribute(skyMap.magnitudes, 1),
+    'aBrightness',
+    new three.BufferAttribute(starBrightnesses, 1),
   )
   starGeometry.setAttribute(
     'aDistance',
@@ -729,6 +747,7 @@ export function createSkyMapField(
   let zoomInStartProgress = 0.46
   let zoomReturnStarted = false
   let routeLanded = false
+  let lastCameraProgress = -1
   let spreading = false
   let lastViewStatusAt = -Infinity
   let lastViewStatusKey = ''
@@ -736,9 +755,9 @@ export function createSkyMapField(
   const reducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)',
   )
-  const baseRight = uniforms.uRight.value.clone()
-  const baseUp = uniforms.uUp.value.clone()
-  const baseForward = uniforms.uForward.value.clone()
+  const baseRight = uniforms.uRight.value.clone().normalize()
+  const baseUp = uniforms.uUp.value.clone().normalize()
+  const baseForward = uniforms.uForward.value.clone().normalize()
   const viewOrientation = new three.Quaternion()
   const trailOrientation = new three.Quaternion()
   const routeStartOrientation = new three.Quaternion()
@@ -1105,9 +1124,9 @@ export function createSkyMapField(
     up: Vector3,
     forward: Vector3,
   ) {
-    right.copy(baseRight).applyQuaternion(orientation).normalize()
-    up.copy(baseUp).applyQuaternion(orientation).normalize()
-    forward.copy(baseForward).applyQuaternion(orientation).normalize()
+    right.copy(baseRight).applyQuaternion(orientation)
+    up.copy(baseUp).applyQuaternion(orientation)
+    forward.copy(baseForward).applyQuaternion(orientation)
   }
 
   function applyViewState() {
@@ -1140,10 +1159,19 @@ export function createSkyMapField(
   function updateTrailView(
     deltaMilliseconds: number,
     releaseOpacity: number,
+    cameraProgress: number,
   ) {
+    if (cameraProgress <= 0) {
+      uniforms.uTrailOpacity.value = 0
+      return
+    }
+    if (releaseOpacity <= 0) {
+      if (uniforms.uTrailOpacity.value > 0) syncTrailView()
+      return
+    }
     const response =
       1 - Math.exp((-TRAIL_RESPONSE * deltaMilliseconds) / 1000)
-    trailOrientation.slerp(viewOrientation, response).normalize()
+    trailOrientation.slerp(viewOrientation, response)
     trailViewRadius += (viewRadius - trailViewRadius) * response
     applyTrailState()
     const angularLag = trailOrientation.angleTo(viewOrientation)
@@ -1154,11 +1182,12 @@ export function createSkyMapField(
   }
 
   function updateRouteView(progress: number) {
+    if (progress === lastCameraProgress) return
+    lastCameraProgress = progress
     const settledProgress = cameraMotionProgress(progress)
     viewOrientation
       .copy(routeStartOrientation)
       .slerp(routeEndOrientation, settledProgress)
-      .normalize()
     const widened = zoomEnvelope(
       progress,
       zoomOutEndProgress,
@@ -1220,6 +1249,7 @@ export function createSkyMapField(
   }
 
   function setRoute(source: number, target: number) {
+    lastCameraProgress = -1
     const starDistance = starGeometry.getAttribute(
       'aDistance',
     ) as BufferAttribute
@@ -1409,6 +1439,8 @@ export function createSkyMapField(
     callbacks.onViewChange({ declination, rightAscension, scale })
   }
   const render = () => {
+    routeMesh.visible = uniforms.uPulseActive.value > 0.001
+    trailMesh.visible = uniforms.uTrailOpacity.value > 0.001
     publishViewStatus()
     renderer.render(scene, camera)
   }
@@ -1603,7 +1635,7 @@ export function createSkyMapField(
       })
     }
     updateRouteView(cameraProgress)
-    updateTrailView(frameDelta, trailOpacity)
+    updateTrailView(frameDelta, trailOpacity, cameraProgress)
     if (!routeLanded && cameraProgress >= 1) {
       routeLanded = true
       callbacks.onRouteLand?.()

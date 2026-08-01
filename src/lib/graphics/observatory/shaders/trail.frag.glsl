@@ -4,7 +4,7 @@ uniform vec3 uInk;
 uniform float uSurveyMode;
 uniform float uTrailOpacity;
 varying float vAlong;
-varying float vBrightness;
+varying float vStrength;
 varying float vMotion;
 varying float vSide;
 varying float vVisible;
@@ -17,12 +17,11 @@ void main() {
     abs(vSide)
   );
   float tailGradient = mix(0.08, 1.0, smoothstep(0.0, 1.0, vAlong));
-  float brightness = mix(0.16, 0.54, pow(vBrightness, 0.72));
   float themeStrength = mix(0.9, 0.68, uSurveyMode);
   float alpha =
     coverage *
     tailGradient *
-    brightness *
+    vStrength *
     vMotion *
     vVisible *
     uTrailOpacity *

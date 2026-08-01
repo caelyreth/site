@@ -42,26 +42,30 @@ void main() {
   float depthTone = mix(0.62, 1.0, vDepth);
   float baseIntensity = uBaseAlpha * 0.72 + vBrightness * 0.88;
   float signalIntensity = vActivation * 0.82;
-  float angle = fract(0.25 - atan(markerCoordinate.y, markerCoordinate.x) / 6.28318530718);
-  float trace = 1.0 - smoothstep(
-    uLocatorProgress,
-    uLocatorProgress + 0.045,
-    angle
-  );
-  float dash = 1.0 - smoothstep(
-    0.28,
-    0.34,
-    abs(fract(angle * 12.0 + 0.5) - 0.5)
-  );
-  float ringDistance = abs(radius - 0.7 * uLocatorScale);
-  float ring = 1.0 - smoothstep(
-    antialias * 0.65,
-    antialias * 1.8,
-    ringDistance
-  );
-  float locatorVisibility = smoothstep(0.08, 0.18, uLocatorScale);
-  float locatorIntensity =
-    vLocator * ring * dash * trace * locatorVisibility * 0.52;
+  float locatorIntensity = 0.0;
+  if (vLocator > 0.5) {
+    float angle = fract(
+      0.25 - atan(markerCoordinate.y, markerCoordinate.x) / 6.28318530718
+    );
+    float trace = 1.0 - smoothstep(
+      uLocatorProgress,
+      uLocatorProgress + 0.045,
+      angle
+    );
+    float dash = 1.0 - smoothstep(
+      0.28,
+      0.34,
+      abs(fract(angle * 12.0 + 0.5) - 0.5)
+    );
+    float ringDistance = abs(radius - 0.7 * uLocatorScale);
+    float ring = 1.0 - smoothstep(
+      antialias * 0.65,
+      antialias * 1.8,
+      ringDistance
+    );
+    float locatorVisibility = smoothstep(0.08, 0.18, uLocatorScale);
+    locatorIntensity = ring * dash * trace * locatorVisibility * 0.52;
+  }
   float starIntensity = (baseIntensity + signalIntensity) * coverage;
   float combinedIntensity = starIntensity + locatorIntensity;
   float alpha = combinedIntensity * depthTone;
