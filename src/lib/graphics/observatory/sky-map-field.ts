@@ -33,12 +33,26 @@ import {
   starFragmentShader,
   starVertexShader,
 } from './shaders'
+import { SIGNAL_PALETTES } from './signal-colors'
 
 type SkyData = typeof SkyDataModule
 type FieldController = {
   destroy: () => void
   setActive: (active: boolean) => void
   setTheme: (dark: boolean) => void
+}
+export type SkyMapViewStatus = {
+  declination: number
+  rightAscension: number
+  scale: number
+}
+export type SkyMapPulseStatus = {
+  colorIndex: number
+}
+type FieldCallbacks = {
+  onSpreadEnd?: () => void
+  onSpreadStart?: (status: SkyMapPulseStatus) => void
+  onViewChange?: (status: SkyMapViewStatus) => void
 }
 type SkyMap = {
   directions: Float32Array
@@ -54,10 +68,6 @@ type RouteCandidate = {
   sector: number
 }
 
-const SIGNAL_PALETTES = {
-  light: [0x765d56, 0x756c4f, 0x596f5d, 0x4f6f75, 0x596a87, 0x6b607b],
-  dark: [0xc2a097, 0xbdb187, 0x9caf9b, 0x8fb2b5, 0x96a8c4, 0xab9db8],
-} as const
 const EDGE_WEIGHT_BY_CLASS = [1, 0.76, 0.56] as const
 const PULSE_HEAD_WIDTH = 0.18
 const LOCATOR_DURATION = 1100
@@ -88,6 +98,7 @@ const TAU = Math.PI * 2
 const BACKDROP_SIZE = 256
 const BACKDROP_CELL_SIZE = 1
 const BACKDROP_CELL_COUNT = BACKDROP_SIZE / BACKDROP_CELL_SIZE
+const VIEW_STATUS_INTERVAL = 100
 const three = {
   BufferAttribute,
   BufferGeometry,
@@ -205,7 +216,7 @@ export function createSkyMapField(
   target: HTMLCanvasElement,
   skyData: SkyData,
   initialDark = false,
-  onPulseComplete?: () => void,
+  callbacks: FieldCallbacks = {},
 ): FieldController {
   let renderer: WebGLRenderer
   try {
@@ -530,6 +541,9 @@ export function createSkyMapField(
   let targetDistance = Math.PI / 2
   let signalTravelDistance = Math.PI / 2
   let signalFadeStartDistance = Math.PI / 2
+  let spreading = false
+  let lastViewStatusAt = -Infinity
+  let lastViewStatusKey = ''
   const minimumFrameDuration = 1000 / 60
   const reducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)',
@@ -928,7 +942,25 @@ export function createSkyMapField(
       uniforms.uTargetConstellation.value
   }
 
+  const publishViewStatus = () => {
+    if (!callbacks.onViewChange) return
+    const now = performance.now()
+    if (now - lastViewStatusAt < VIEW_STATUS_INTERVAL) return
+
+    const forward = uniforms.uForward.value
+    const rightAscension =
+      ((Math.atan2(forward.z, forward.x) * 180) / Math.PI + 360) % 360
+    const declination = (Math.asin(forward.y) * 180) / Math.PI
+    const scale = uniforms.uMapScale.value
+    const statusKey = `${rightAscension.toFixed(2)}:${declination.toFixed(2)}:${scale.toFixed(3)}`
+    if (statusKey === lastViewStatusKey) return
+
+    lastViewStatusAt = now
+    lastViewStatusKey = statusKey
+    callbacks.onViewChange({ declination, rightAscension, scale })
+  }
   const render = () => {
+    publishViewStatus()
     renderer.render(scene, camera)
   }
   const updateSignalColor = (selectNewColor = false) => {
@@ -991,10 +1023,16 @@ export function createSkyMapField(
     if (idleTimer) window.clearTimeout(idleTimer)
     idleTimer = 0
   }
+  const endSpread = () => {
+    if (!spreading) return
+    spreading = false
+    callbacks.onSpreadEnd?.()
+  }
   const stop = () => {
     stopFrame()
     stopTimer()
     pulseRunning = false
+    endSpread()
   }
   const enterIdle = () => {
     pulseRunning = false
@@ -1008,11 +1046,11 @@ export function createSkyMapField(
     uniforms.uPulseDistance.value = 0
     uniforms.uLocatorProgress.value = 0
     uniforms.uLocatorScale.value = 1
+    endSpread()
     if (targetIndex >= 0) {
       updateRouteView(1)
       settledForward.copy(routeEndForward)
     }
-    onPulseComplete?.()
     render()
     if (active && !disposed) {
       idleTimer = window.setTimeout(beginPulse, 2600 + Math.random() * 3000)
@@ -1071,6 +1109,8 @@ export function createSkyMapField(
       uniforms.uLocatorProgress.value = 0
       uniforms.uLocatorScale.value = 1
       uniforms.uPulseActive.value = 1
+      spreading = true
+      callbacks.onSpreadStart?.({ colorIndex: signalColorIndex })
       frame = requestAnimationFrame(animate)
       return
     }

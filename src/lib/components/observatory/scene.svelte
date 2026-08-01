@@ -1,7 +1,17 @@
 <script lang="ts">
   import Boundary from '$lib/components/station/boundary.svelte'
   import { getStationState } from '$lib/context/station'
+  import {
+    SIGNAL_STATUS_LABELS,
+    TRANSMISSION_COLORS,
+  } from '$lib/graphics/observatory/signal-colors'
+  import type {
+    SkyMapPulseStatus,
+    SkyMapViewStatus,
+  } from '$lib/graphics/observatory/sky-map-field'
   import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
+  import { useTheme } from 'svelte-themes'
+  import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
 
   import Canvas from './canvas.svelte'
@@ -10,11 +20,61 @@
   let capture: HTMLElement | undefined
   let scrollFrame: number | undefined
   let transmissionSequence = $state(1)
+  let transmissions = $state<
+    Array<{ colorIndex: number; sequence: number }>
+  >([])
+  let spreading = $state(false)
+  let spreadColorIndex = $state(0)
+  let viewStatus = $state<SkyMapViewStatus>({
+    declination: 42,
+    rightAscension: 322,
+    scale: 0.48,
+  })
   const station = getStationState()
+  const theme = useTheme()
+  const transmissionColors = $derived(
+    theme.resolvedTheme === 'dark'
+      ? TRANSMISSION_COLORS.dark
+      : TRANSMISSION_COLORS.light,
+  )
   // const windowScale = $derived(1 - station.scrollProgress * 0.2)
 
-  function advanceTransmission() {
+  function beginSpread({ colorIndex }: SkyMapPulseStatus) {
+    spreadColorIndex = colorIndex
+    spreading = true
+    transmissions = [
+      { colorIndex, sequence: transmissionSequence },
+      ...transmissions,
+    ].slice(0, 3)
     transmissionSequence += 1
+  }
+
+  function endSpread() {
+    spreading = false
+  }
+
+  function transmissionColor(colorIndex: number) {
+    return transmissionColors[colorIndex] ?? transmissionColors[0]
+  }
+
+  function transmissionLabel(colorIndex: number) {
+    return SIGNAL_STATUS_LABELS[colorIndex] ?? SIGNAL_STATUS_LABELS[0]
+  }
+
+  function updateViewStatus(nextStatus: SkyMapViewStatus) {
+    viewStatus = nextStatus
+  }
+
+  function formatCoordinate(value: number, signed = false) {
+    const absolute = Math.abs(value)
+    let degrees = Math.floor(absolute)
+    let minutes = Math.round((absolute - degrees) * 60)
+    if (minutes === 60) {
+      degrees += 1
+      minutes = 0
+    }
+    const sign = signed ? (value >= 0 ? '+' : '-') : ''
+    return `${sign}${String(degrees).padStart(3, '0')}D ${String(minutes).padStart(2, '0')}M`
   }
 
   function updateProgress() {
@@ -58,24 +118,57 @@
 <div class="capture" {@attach observeCapture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
-      <Canvas onPulseComplete={advanceTransmission} />
+      <Canvas
+        onSpreadEnd={endSpread}
+        onSpreadStart={beginSpread}
+        onViewChange={updateViewStatus}
+      />
       <Boundary side="left" inScene reveal />
       <Boundary side="right" inScene reveal />
       <span id="scene-label" class="label corner corner-left label-top"
         >Caelyreth / Observatory</span
       >
-      <span class="label corner corner-right label-top"
-        >Field 044 deg 12 min</span
+      <span
+        class:spreading
+        class="label corner corner-right label-top view-status"
+        style:--view-signal-color={transmissionColor(spreadColorIndex)}
+        ><span class="view-status-key">RA</span>
+        {formatCoordinate(viewStatus.rightAscension)} /
+        <span class="view-status-key">DEC</span>
+        {formatCoordinate(viewStatus.declination, true)} /
+        <span class="view-status-key">Z</span>
+        {viewStatus.scale.toFixed(2)}</span
       >
-      {#key transmissionSequence}<span
-          class="label corner corner-left label-bottom transmission"
-          in:fly={textRefreshIn}
-          out:fly={textRefreshOut}
-          >Transmission {String(transmissionSequence).padStart(
-            3,
-            '0',
-          )}</span
-        >{/key}
+      <div
+        aria-hidden="true"
+        class="label corner corner-left label-bottom transmission-log"
+      >
+        {#if transmissions.length === 0}
+          <span class="transmission transmission-empty"
+            ><span class="transmission-name">No log</span><span
+              class="transmission-sequence">000</span
+            ></span
+          >
+        {:else}
+          {#each transmissions as transmission, index (transmission.sequence)}
+            <span
+              animate:flip={{ duration: 360 }}
+              class="transmission"
+              in:fly={textRefreshIn}
+              out:fly={textRefreshOut}
+              style:--transmission-color={transmissionColor(
+                transmission.colorIndex,
+              )}
+              style:--transmission-opacity={1 - index * 0.3}
+              ><span class="transmission-name"
+                >{transmissionLabel(transmission.colorIndex)}</span
+              ><span class="transmission-sequence"
+                >{String(transmission.sequence).padStart(3, '0')}</span
+              ></span
+            >
+          {/each}
+        {/if}
+      </div>
       <a
         class="label corner corner-right label-bottom descent"
         href="#station">Descend to station</a
@@ -183,9 +276,56 @@
       text-decoration-color var(--dur-micro) var(--ease-out);
   }
 
-  .transmission {
-    display: inline-block;
+  .view-status {
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .view-status-key {
+    color: var(--color-muted);
+    transition: color var(--dur-long) var(--ease-out);
+  }
+
+  .view-status.spreading .view-status-key {
+    color: var(--view-signal-color);
+  }
+
+  .transmission-log {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 11.25rem;
+    max-width: calc(100vw - var(--scene-inline-inset) - 1rem);
+    height: 2.75rem;
+    gap: 0.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .transmission {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 3ch;
+    column-gap: 0.5rem;
+    color: var(--transmission-color);
+    opacity: var(--transmission-opacity);
+    white-space: nowrap;
+    will-change: opacity, transform;
+    transition:
+      color var(--dur-short) var(--ease-out),
+      opacity var(--dur-long) var(--ease-out);
+  }
+
+  .transmission-empty {
+    color: var(--color-muted);
+    opacity: 1;
+  }
+
+  .transmission-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .transmission-sequence {
+    text-align: right;
   }
 
   @media (hover: hover) {
