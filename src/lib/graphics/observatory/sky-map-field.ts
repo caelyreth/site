@@ -205,6 +205,7 @@ export function createSkyMapField(
   target: HTMLCanvasElement,
   skyData: SkyData,
   initialDark = false,
+  onPulseComplete?: () => void,
 ): FieldController {
   let renderer: WebGLRenderer
   try {
@@ -1011,6 +1012,7 @@ export function createSkyMapField(
       updateRouteView(1)
       settledForward.copy(routeEndForward)
     }
+    onPulseComplete?.()
     render()
     if (active && !disposed) {
       idleTimer = window.setTimeout(beginPulse, 2600 + Math.random() * 3000)

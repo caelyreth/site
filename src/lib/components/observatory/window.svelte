@@ -141,7 +141,7 @@
 
   @keyframes window-expand {
     from {
-      transform: scale(0.86);
+      transform: scale(0.42);
     }
   }
 </style>

@@ -1,14 +1,21 @@
 <script lang="ts">
   import Boundary from '$lib/components/station/boundary.svelte'
   import { getStationState } from '$lib/context/station'
+  import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
+  import { fly } from 'svelte/transition'
 
   import Canvas from './canvas.svelte'
-  import Window from './window.svelte'
+  // import Window from './window.svelte'
 
   let capture: HTMLElement | undefined
   let scrollFrame: number | undefined
+  let transmissionSequence = $state(1)
   const station = getStationState()
-  const windowScale = $derived(1 - station.scrollProgress * 0.2)
+  // const windowScale = $derived(1 - station.scrollProgress * 0.2)
+
+  function advanceTransmission() {
+    transmissionSequence += 1
+  }
 
   function updateProgress() {
     scrollFrame = undefined
@@ -51,7 +58,7 @@
 <div class="capture" {@attach observeCapture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
-      <Canvas />
+      <Canvas onPulseComplete={advanceTransmission} />
       <Boundary side="left" inScene reveal />
       <Boundary side="right" inScene reveal />
       <span id="scene-label" class="label corner corner-left label-top"
@@ -60,16 +67,22 @@
       <span class="label corner corner-right label-top"
         >Field 044 deg 12 min</span
       >
-      <span class="label corner corner-left label-bottom"
-        >Transmission 001</span
-      >
+      {#key transmissionSequence}<span
+          class="label corner corner-left label-bottom transmission"
+          in:fly={textRefreshIn}
+          out:fly={textRefreshOut}
+          >Transmission {String(transmissionSequence).padStart(
+            3,
+            '0',
+          )}</span
+        >{/key}
       <a
         class="label corner corner-right label-bottom descent"
         href="#station">Descend to station</a
       >
-      <div class="window-stage" style:transform={`scale(${windowScale})`}>
+      <!-- <div class="window-stage" style:transform={`scale(${windowScale})`}>
         <Window />
-      </div>
+      </div> -->
     </div>
   </section>
 </div>
@@ -168,6 +181,11 @@
     transition:
       color var(--dur-micro) var(--ease-out),
       text-decoration-color var(--dur-micro) var(--ease-out);
+  }
+
+  .transmission {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
   }
 
   @media (hover: hover) {

@@ -1,5 +1,8 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- a Svelte rune must remain mutable. */
+  import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
+  import { fly } from 'svelte/transition'
+
   const barcodeBars = [
     1, 2, 1, 3, 1, 1, 2, 1, 3, 1, 2, 1, 1, 3, 2, 1, 2, 1, 3, 1, 1, 2, 1, 3,
     1, 2, 1, 1, 3, 1, 2, 1, 2, 1,
@@ -121,8 +124,11 @@
           </button>
         </div>
         <p class="status">Carrier retained</p>
-        {#key transmission}<span aria-hidden="true" class="signal"
-            >{transmission}</span
+        {#key transmission}<span
+            aria-hidden="true"
+            class="signal"
+            in:fly={textRefreshIn}
+            out:fly={textRefreshOut}>{transmission}</span
           >{/key}
         <p class="detail">Rotating relay identifier</p>
       </section>
@@ -263,7 +269,6 @@
     color: var(--accent);
     font-size: 0.75rem;
     font-variant-numeric: tabular-nums;
-    animation: signal-refresh var(--dur-short) var(--ease-out) both;
   }
   .detail {
     margin: auto 0 0;
@@ -351,16 +356,6 @@
     }
     .module:last-child:hover {
       box-shadow: 1.5rem 0 0 var(--color-ink);
-    }
-  }
-  @keyframes signal-refresh {
-    from {
-      opacity: 0;
-      transform: translateY(3px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
 </style>

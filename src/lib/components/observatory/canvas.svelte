@@ -5,7 +5,11 @@
   import { useTheme } from 'svelte-themes'
 
   type FieldController = ReturnType<typeof createSkyMapField>
+  type CanvasProps = {
+    onPulseComplete?: () => void
+  }
 
+  let { onPulseComplete }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
   let controller = $state<FieldController>()
@@ -52,6 +56,7 @@
           canvas,
           skyData,
           theme.resolvedTheme === 'dark',
+          onPulseComplete,
         )
         syncActivity()
         revealFrame = requestAnimationFrame(() => {
