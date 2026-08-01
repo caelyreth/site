@@ -69,7 +69,7 @@ type RouteCandidate = {
 }
 
 const EDGE_WEIGHT_BY_CLASS = [1, 0.76, 0.56] as const
-const PULSE_HEAD_WIDTH = 0.18
+const PULSE_HEAD_WIDTH = 0.28
 const LOCATOR_DURATION = 1100
 const LOCATOR_COLLAPSE_DURATION = 520
 const LOCATOR_INITIAL_SCALE = 2
@@ -210,6 +210,11 @@ function criticallyDampedProgress(value: number) {
   const settledResponse =
     1 - (1 + DAMPING_STIFFNESS) * Math.exp(-DAMPING_STIFFNESS)
   return Math.min(1, response / settledResponse)
+}
+
+function softLandingProgress(value: number) {
+  const progress = Math.min(1, Math.max(0, value))
+  return progress * progress * (3 - 2 * progress)
 }
 
 export function createSkyMapField(
@@ -763,13 +768,15 @@ export function createSkyMapField(
   }
 
   function updateRouteView(progress: number) {
+    const settledProgress = softLandingProgress(progress)
     interpolateDirection(
       routeStartForward,
       routeEndForward,
-      progress,
+      settledProgress,
       routeForward,
     )
-    const zoomOut = Math.sin(Math.PI * progress) * MAP_ZOOM_OUT_FACTOR
+    const zoomOut =
+      Math.sin(Math.PI * settledProgress) * MAP_ZOOM_OUT_FACTOR
     setMapView(routeForward, BASE_MAP_SCALE * (1 - zoomOut))
   }
 
