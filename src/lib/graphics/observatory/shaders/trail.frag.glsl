@@ -1,7 +1,6 @@
 precision highp float;
 
 uniform vec3 uInk;
-uniform vec3 uSignalInk;
 uniform float uSurveyMode;
 uniform float uTrailOpacity;
 varying float vAlong;
@@ -30,7 +29,6 @@ void main() {
     themeStrength;
 
   if (alpha < 0.002) discard;
-  vec3 trailInk = mix(uInk, uSignalInk, mix(0.12, 0.08, uSurveyMode));
-  gl_FragColor = vec4(trailInk, alpha);
+  gl_FragColor = vec4(uInk, alpha);
   #include <colorspace_fragment>
 }

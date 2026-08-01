@@ -77,7 +77,7 @@ const LOCATOR_DURATION = 1100
 const LOCATOR_COLLAPSE_DURATION = 520
 const LOCATOR_INITIAL_SCALE = 2
 const LOCATOR_DOT_SCALE = 0.08
-const SIGNAL_SPEED = 0.52 / 1000
+const SIGNAL_SPEED = 0.42 / 1000
 const SOURCE_RELEASE_DURATION = LOCATOR_COLLAPSE_DURATION
 const CONSTELLATION_RETIRE_DURATION = 900
 const DAMPING_STIFFNESS = 5.5
@@ -90,7 +90,7 @@ const ROUTE_OUTBOUND_RADIUS = 0.54
 const ROUTE_TARGET_VISIBLE_OFFSET = 0.72
 const ROUTE_MIN_SECTOR_GAP = 3
 const ROUTE_MIN_DISTANCE = 0.8
-const ROUTE_MAX_DISTANCE = (150 * Math.PI) / 180
+const ROUTE_MAX_DISTANCE = (120 * Math.PI) / 180
 const ROUTE_TARGET_OFFSET = 0.9
 const ROUTE_MAX_FOLLOW = 0.44
 const ROUTE_RIBBON_SEGMENTS = 48
@@ -102,8 +102,9 @@ const BACKDROP_SIZE = 256
 const BACKDROP_CELL_SIZE = 1
 const BACKDROP_CELL_COUNT = BACKDROP_SIZE / BACKDROP_CELL_SIZE
 const VIEW_STATUS_INTERVAL = 100
-const TRAIL_RESPONSE = 3.1
-const TRAIL_MAX_LENGTH = 72
+const TRAIL_RESPONSE = 1.55
+const TRAIL_MAX_LENGTH = 136
+const TRAIL_FIELD_SAMPLE_RATE = 0.24
 const three = {
   BufferAttribute,
   BufferGeometry,
@@ -291,6 +292,21 @@ export function createSkyMapField(
 
   const { SKY_SOURCE_NODES, SKY_VIEW_BASIS } = skyData
   const skyMap = decodeSkyMap(skyData)
+  const trailDirections: number[] = []
+  const trailMagnitudes: number[] = []
+  let trailSeed = 0x71e2a9d5
+  for (let index = 0; index < skyMap.magnitudes.length; index += 1) {
+    trailSeed = (trailSeed * 1_664_525 + 1_013_904_223) >>> 0
+    const selected = trailSeed / 4_294_967_296 < TRAIL_FIELD_SAMPLE_RATE
+    if (skyMap.nodeGroups[index] < 0 && !selected) continue
+    const direction = index * 3
+    trailDirections.push(
+      skyMap.directions[direction],
+      skyMap.directions[direction + 1],
+      skyMap.directions[direction + 2],
+    )
+    trailMagnitudes.push(skyMap.magnitudes[index])
+  }
   const backdropTexture = createBackdropTexture()
   const nodeDistances = new Float32Array(skyMap.magnitudes.length)
   const scene = new three.Scene()
@@ -517,13 +533,19 @@ export function createSkyMapField(
   trailGeometry.setIndex([0, 1, 2, 2, 1, 3])
   trailGeometry.setAttribute(
     'aDirection',
-    new three.InstancedBufferAttribute(skyMap.directions, 3),
+    new three.InstancedBufferAttribute(
+      new Float32Array(trailDirections),
+      3,
+    ),
   )
   trailGeometry.setAttribute(
     'aMagnitude',
-    new three.InstancedBufferAttribute(skyMap.magnitudes, 1),
+    new three.InstancedBufferAttribute(
+      new Float32Array(trailMagnitudes),
+      1,
+    ),
   )
-  trailGeometry.instanceCount = skyMap.magnitudes.length
+  trailGeometry.instanceCount = trailMagnitudes.length
 
   const backgroundGeometry = new three.BufferGeometry()
   backgroundGeometry.setAttribute(
@@ -579,10 +601,10 @@ export function createSkyMapField(
   edgeMesh.frustumCulled = false
   const routeMesh = new three.Mesh(routeGeometry, routeMaterial)
   routeMesh.frustumCulled = false
-  routeMesh.renderOrder = 0.5
+  routeMesh.renderOrder = 0.75
   const trailMesh = new three.Mesh(trailGeometry, trailMaterial)
   trailMesh.frustumCulled = false
-  trailMesh.renderOrder = 0.75
+  trailMesh.renderOrder = 0.25
   const starPoints = new three.Points(starGeometry, starMaterial)
   starPoints.frustumCulled = false
   starPoints.renderOrder = 1
@@ -1243,6 +1265,10 @@ export function createSkyMapField(
       pulseElapsed / SOURCE_RELEASE_DURATION,
     )
     const mapProgress = Math.min(1, pulseDistance / targetDistance)
+    const viewProgress = Math.min(
+      1,
+      Math.max(0, (mapProgress - 0.07) / 0.85),
+    )
     const fadeProgress = criticallyDampedProgress(
       (pulseDistance - signalFadeStartDistance) / SIGNAL_FADE_DISTANCE,
     )
@@ -1256,9 +1282,9 @@ export function createSkyMapField(
       holdCurrentConstellations()
       currentConstellationsHeld = true
     }
-    updateRouteView(mapProgress)
+    updateRouteView(viewProgress)
     updateTrailView(frameDelta)
-    if (!routeLanded && mapProgress >= 1) {
+    if (!routeLanded && viewProgress >= 1) {
       routeLanded = true
       callbacks.onRouteLand?.()
     }

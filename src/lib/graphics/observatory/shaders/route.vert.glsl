@@ -49,7 +49,7 @@ void main() {
   vec2 clip = vec2(point.x * 2.0 - 1.0, 1.0 - point.y * 2.0);
   vec2 normalClip =
     vec2(normal.x, -normal.y) *
-    (2.15 * uHalfWidth * mix(0.76, 1.0, depth) / uResolution);
+    (2.55 * uHalfWidth * mix(0.76, 1.0, depth) / uResolution);
 
   clip += normalClip * position.y;
   vSide = position.y;

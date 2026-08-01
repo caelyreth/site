@@ -80,7 +80,7 @@ void main() {
   vBrightness = pow(brightnessBase, 1.28);
   float halfWidth =
     uHalfWidth *
-    mix(0.62, 1.34, pow(vBrightness, 0.68)) *
+    mix(0.5, 1.02, pow(vBrightness, 0.68)) *
     mix(0.82, 1.0, currentDepth) *
     mix(0.18, 1.0, position.x);
   vec2 normalClip =
