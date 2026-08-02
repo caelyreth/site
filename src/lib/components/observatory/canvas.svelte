@@ -2,28 +2,28 @@
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
   import type {
     createSkyMapField,
+    SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
     SkyMapViewStatus,
-    SkyMapZoomReturnStatus,
   } from '$lib/graphics/observatory/sky-map-field'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
 
   type FieldController = ReturnType<typeof createSkyMapField>
   type CanvasProps = {
-    onRouteLand?: () => void
+    onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
+    onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
     onSpreadEnd?: () => void
     onSpreadStart?: (status: SkyMapPulseStatus) => void
     onViewChange?: (status: SkyMapViewStatus) => void
-    onZoomReturnStart?: (status: SkyMapZoomReturnStatus) => void
   }
 
   let {
-    onRouteLand,
+    onForegroundContractStart,
+    onForegroundReturnStart,
     onSpreadEnd,
     onSpreadStart,
     onViewChange,
-    onZoomReturnStart,
   }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
@@ -72,11 +72,11 @@
           skyData,
           theme.resolvedTheme === 'dark',
           {
-            onRouteLand,
+            onForegroundContractStart,
+            onForegroundReturnStart,
             onSpreadEnd,
             onSpreadStart,
             onViewChange,
-            onZoomReturnStart,
           },
         )
         syncActivity()

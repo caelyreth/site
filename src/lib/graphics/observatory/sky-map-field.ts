@@ -52,15 +52,15 @@ export type SkyMapViewStatus = {
 export type SkyMapPulseStatus = {
   colorIndex: number
 }
-export type SkyMapZoomReturnStatus = {
+export type SkyMapLayerMotionStatus = {
   duration: number
 }
 type FieldCallbacks = {
-  onRouteLand?: () => void
+  onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
+  onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
   onSpreadEnd?: () => void
   onSpreadStart?: (status: SkyMapPulseStatus) => void
   onViewChange?: (status: SkyMapViewStatus) => void
-  onZoomReturnStart?: (status: SkyMapZoomReturnStatus) => void
 }
 type SkyMap = {
   directions: Float32Array
@@ -79,8 +79,8 @@ type RouteCandidate = {
 
 const EDGE_WEIGHT_BY_CLASS = [1, 0.76, 0.56] as const
 const PULSE_HEAD_WIDTH = 0.28
-const LOCATOR_DURATION = 1100
-const LOCATOR_COLLAPSE_DURATION = 520
+const LOCATOR_DURATION = 1040
+const LOCATOR_COLLAPSE_DURATION = 480
 const LOCATOR_INITIAL_SCALE = 2
 const LOCATOR_DOT_SCALE = 0.08
 const SIGNAL_SPEED = 0.7 / 1000
@@ -114,22 +114,28 @@ const BACKDROP_SIZE = 256
 const BACKDROP_CELL_SIZE = 1
 const BACKDROP_CELL_COUNT = BACKDROP_SIZE / BACKDROP_CELL_SIZE
 const VIEW_STATUS_INTERVAL = 100
-const CAMERA_ANGULAR_SPEED = (18 * Math.PI) / 180 / 1000
-const CAMERA_ROUTE_LEAD = 300
-const CAMERA_ARRIVAL_LEAD = 120
+const CAMERA_ANGULAR_SPEED = (20 * Math.PI) / 180 / 1000
+const CAMERA_MIN_ROUTE_LEAD = 240
+const CAMERA_MAX_ROUTE_LEAD = 620
+const CAMERA_CAPTURE_LAG = 60
 const CAMERA_MIN_WIDENING = (8 * Math.PI) / 180
 const CAMERA_MAX_WIDENING = (12 * Math.PI) / 180
-const TRAVEL_ACCELERATION_PORTION = 0.06
-const ZOOM_OUT_MIN_DURATION = 560
-const ZOOM_OUT_MAX_DURATION = 720
-const ZOOM_IN_MIN_DURATION = 650
-const ZOOM_IN_MAX_DURATION = 810
-const ZOOM_MIN_HOLD_DURATION = 80
-const ZOOM_ACCELERATION_PORTION = 0.2
+const SIGNAL_VELOCITY_APEX = 0.38
+const SIGNAL_TERMINAL_VELOCITY = 0.22
+const ROUTE_VELOCITY_APEX = 0.34
+const ROUTE_TERMINAL_VELOCITY = 0.28
+const CAMERA_VELOCITY_APEX = 0.44
+const FOREGROUND_CONTRACT_DELAY = 85
+const FOREGROUND_CONTRACT_MIN_DURATION = 620
+const FOREGROUND_CONTRACT_MAX_DURATION = 860
+const FOREGROUND_CONTRACT_APEX_LEAD = 70
+const FOREGROUND_RETURN_LAG = 130
+const FOREGROUND_SETTLE_LAG = 75
 const TRAIL_RESPONSE = 1.18
 const TRAIL_MAX_LENGTH = 168
 const TRAIL_FIELD_SAMPLE_RATE = 0.24
-const TRAIL_RELEASE_DURATION = 520
+const TRAIL_RELEASE_PROGRESS = 0.78
+const TRAIL_CAPTURE_LEAD = 35
 const three = {
   BufferAttribute,
   BufferGeometry,
@@ -257,60 +263,74 @@ function smootherstepProgress(value: number) {
   )
 }
 
-function cruiseProgress(value: number, ramp: number) {
+function impulseProgress(
+  value: number,
+  apex: number,
+  terminalVelocity = 0,
+) {
   const progress = Math.min(1, Math.max(0, value))
-  const normalization = 1 - ramp
-  if (progress < ramp) {
-    return (0.5 * progress * progress) / (ramp * normalization)
+  const peakVelocity = 2 - terminalVelocity * (1 - apex)
+  if (progress < apex) {
+    return (0.5 * peakVelocity * progress * progress) / apex
   }
-  if (progress <= 1 - ramp) {
-    return (progress - ramp * 0.5) / normalization
-  }
-  const remaining = 1 - progress
-  return 1 - (0.5 * remaining * remaining) / (ramp * normalization)
+  const elapsed = progress - apex
+  const deceleration = (terminalVelocity - peakVelocity) / (1 - apex)
+  return (
+    0.5 * peakVelocity * apex +
+    peakVelocity * elapsed +
+    0.5 * deceleration * elapsed * elapsed
+  )
 }
 
-function travelProgress(value: number) {
-  return cruiseProgress(value, TRAVEL_ACCELERATION_PORTION)
-}
-
-function cameraMotionProgress(value: number) {
-  return smootherstepProgress(value)
-}
-
-function inverseTravelProgress(value: number) {
+function inverseImpulseProgress(
+  value: number,
+  apex: number,
+  terminalVelocity = 0,
+) {
   const target = Math.min(1, Math.max(0, value))
   let lower = 0
   let upper = 1
   for (let iteration = 0; iteration < 18; iteration += 1) {
     const middle = (lower + upper) * 0.5
-    if (travelProgress(middle) < target) lower = middle
-    else upper = middle
+    if (impulseProgress(middle, apex, terminalVelocity) < target) {
+      lower = middle
+    } else {
+      upper = middle
+    }
   }
   return (lower + upper) * 0.5
 }
 
-function zoomEnvelope(
-  cameraProgress: number,
-  zoomOutEndProgress: number,
-  zoomInStartProgress: number,
-) {
-  const progress = Math.min(1, Math.max(0, cameraProgress))
-  if (progress < zoomOutEndProgress) {
-    return cruiseProgress(
-      progress / Math.max(0.001, zoomOutEndProgress),
-      ZOOM_ACCELERATION_PORTION,
-    )
-  }
-  if (progress < zoomInStartProgress) return 1
-  return (
-    1 -
-    cruiseProgress(
-      (progress - zoomInStartProgress) /
-        Math.max(0.001, 1 - zoomInStartProgress),
-      ZOOM_ACCELERATION_PORTION,
-    )
+function signalProgress(value: number) {
+  return impulseProgress(
+    value,
+    SIGNAL_VELOCITY_APEX,
+    SIGNAL_TERMINAL_VELOCITY,
   )
+}
+
+function routeProgress(value: number) {
+  return impulseProgress(
+    value,
+    ROUTE_VELOCITY_APEX,
+    ROUTE_TERMINAL_VELOCITY,
+  )
+}
+
+function cameraMotionProgress(value: number) {
+  return impulseProgress(value, CAMERA_VELOCITY_APEX)
+}
+
+function cameraVelocityEnvelope(value: number) {
+  const progress = Math.min(1, Math.max(0, value))
+  if (progress < CAMERA_VELOCITY_APEX) {
+    return progress / CAMERA_VELOCITY_APEX
+  }
+  return (1 - progress) / (1 - CAMERA_VELOCITY_APEX)
+}
+
+function zoomEnvelope(cameraProgress: number) {
+  return smootherstepProgress(cameraVelocityEnvelope(cameraProgress))
 }
 
 function trailReleaseOpacity(value: number) {
@@ -444,6 +464,7 @@ export function createSkyMapField(
     },
     uHalfWidth: { value: 1.32 },
     uPulseDistance: { value: 0 },
+    uRoutePulseDistance: { value: 0 },
     uPulseActive: { value: 0 },
     uTargetDistance: { value: 0 },
     uDestinationConstellationLead: {
@@ -741,12 +762,16 @@ export function createSkyMapField(
   let signalFadeStartDistance = Math.PI / 2
   let signalDuration = signalTravelDistance / SIGNAL_SPEED
   let cameraDuration = 5000
-  let cameraStartDelay = CAMERA_ROUTE_LEAD
+  let cameraStartDelay = CAMERA_MIN_ROUTE_LEAD
   let routeWideViewRadius = BASE_VIEW_RADIUS + CAMERA_MIN_WIDENING
-  let zoomOutEndProgress = 0.4
-  let zoomInStartProgress = 0.46
-  let zoomReturnStarted = false
-  let routeLanded = false
+  let foregroundContractStart = FOREGROUND_CONTRACT_DELAY
+  let foregroundContractEnd = FOREGROUND_CONTRACT_DELAY
+  let foregroundReturnStart = 0
+  let foregroundReturnEnd = 0
+  let foregroundContractStarted = false
+  let foregroundReturnStarted = false
+  let trailReleaseStart = 0
+  let trailReleaseDuration = 1
   let lastCameraProgress = -1
   let spreading = false
   let lastViewStatusAt = -Infinity
@@ -1188,18 +1213,14 @@ export function createSkyMapField(
     viewOrientation
       .copy(routeStartOrientation)
       .slerp(routeEndOrientation, settledProgress)
-    const widened = zoomEnvelope(
-      progress,
-      zoomOutEndProgress,
-      zoomInStartProgress,
-    )
+    const widened = zoomEnvelope(progress)
     viewRadius =
       BASE_VIEW_RADIUS + (routeWideViewRadius - BASE_VIEW_RADIUS) * widened
     applyViewState()
   }
 
   function configureRouteTiming(cameraRotation: number) {
-    cameraDuration = cameraRotation / CAMERA_ANGULAR_SPEED
+    const nominalCameraDuration = cameraRotation / CAMERA_ANGULAR_SPEED
     const rotationRange =
       ROUTE_MAX_CAMERA_ROTATION - ROUTE_MIN_CAMERA_ROTATION
     const rotationRatio = Math.min(
@@ -1213,38 +1234,51 @@ export function createSkyMapField(
       BASE_VIEW_RADIUS +
       CAMERA_MIN_WIDENING +
       (CAMERA_MAX_WIDENING - CAMERA_MIN_WIDENING) * rotationRatio
-    let zoomOutDuration =
-      ZOOM_OUT_MIN_DURATION +
-      (ZOOM_OUT_MAX_DURATION - ZOOM_OUT_MIN_DURATION) * rotationRatio
-    let zoomInDuration =
-      ZOOM_IN_MIN_DURATION +
-      (ZOOM_IN_MAX_DURATION - ZOOM_IN_MIN_DURATION) * rotationRatio
-    const availableZoomDuration = Math.max(
-      1,
-      cameraDuration - ZOOM_MIN_HOLD_DURATION,
-    )
-    const combinedZoomDuration = zoomOutDuration + zoomInDuration
-    if (combinedZoomDuration > availableZoomDuration) {
-      const durationScale = availableZoomDuration / combinedZoomDuration
-      zoomOutDuration *= durationScale
-      zoomInDuration *= durationScale
-    }
-    zoomOutEndProgress = zoomOutDuration / cameraDuration
-    zoomInStartProgress = 1 - zoomInDuration / cameraDuration
-    const targetArrivalProgress = inverseTravelProgress(
+    const targetArrivalProgress = inverseImpulseProgress(
       targetDistance / signalTravelDistance,
+      ROUTE_VELOCITY_APEX,
+      ROUTE_TERMINAL_VELOCITY,
     )
-    const minimumDuration =
-      (CAMERA_ROUTE_LEAD + cameraDuration + CAMERA_ARRIVAL_LEAD) /
-      Math.max(0.01, targetArrivalProgress)
-    signalDuration = Math.max(
-      signalTravelDistance / SIGNAL_SPEED,
-      minimumDuration,
+    signalDuration = signalTravelDistance / SIGNAL_SPEED
+    let targetArrivalTime = targetArrivalProgress * signalDuration
+    const minimumTargetArrival =
+      CAMERA_MIN_ROUTE_LEAD + nominalCameraDuration - CAMERA_CAPTURE_LAG
+    if (targetArrivalTime < minimumTargetArrival) {
+      signalDuration *= minimumTargetArrival / targetArrivalTime
+      targetArrivalTime = minimumTargetArrival
+    }
+    const nominalCameraStart =
+      targetArrivalTime + CAMERA_CAPTURE_LAG - nominalCameraDuration
+    cameraStartDelay = Math.min(
+      CAMERA_MAX_ROUTE_LEAD,
+      Math.max(CAMERA_MIN_ROUTE_LEAD, nominalCameraStart),
     )
-    const targetArrivalTime = targetArrivalProgress * signalDuration
-    cameraStartDelay = Math.max(
-      CAMERA_ROUTE_LEAD,
-      targetArrivalTime - cameraDuration - CAMERA_ARRIVAL_LEAD,
+    cameraDuration =
+      targetArrivalTime + CAMERA_CAPTURE_LAG - cameraStartDelay
+
+    const cameraApexTime =
+      cameraStartDelay + cameraDuration * CAMERA_VELOCITY_APEX
+    foregroundContractStart = FOREGROUND_CONTRACT_DELAY
+    const desiredContractDuration =
+      cameraApexTime -
+      foregroundContractStart -
+      FOREGROUND_CONTRACT_APEX_LEAD
+    const contractDuration = Math.min(
+      FOREGROUND_CONTRACT_MAX_DURATION,
+      Math.max(FOREGROUND_CONTRACT_MIN_DURATION, desiredContractDuration),
+    )
+    foregroundContractEnd = foregroundContractStart + contractDuration
+    foregroundReturnStart = cameraApexTime + FOREGROUND_RETURN_LAG
+    foregroundReturnEnd =
+      cameraStartDelay + cameraDuration + FOREGROUND_SETTLE_LAG
+    trailReleaseStart =
+      cameraStartDelay + cameraDuration * TRAIL_RELEASE_PROGRESS
+    trailReleaseDuration = Math.max(
+      1,
+      cameraStartDelay +
+        cameraDuration -
+        TRAIL_CAPTURE_LEAD -
+        trailReleaseStart,
     )
   }
 
@@ -1521,6 +1555,7 @@ export function createSkyMapField(
     uniforms.uPulseActive.value = 0
     uniforms.uSourceActivation.value = 0
     uniforms.uPulseDistance.value = 0
+    uniforms.uRoutePulseDistance.value = 0
     uniforms.uLocatorProgress.value = 0
     uniforms.uLocatorScale.value = 1
     uniforms.uTrailOpacity.value = 0
@@ -1602,8 +1637,11 @@ export function createSkyMapField(
       enterIdle()
       return
     }
+    const timelineProgress = pulseElapsed / signalDuration
     const pulseDistance =
-      signalTravelDistance * travelProgress(pulseElapsed / signalDuration)
+      signalTravelDistance * signalProgress(timelineProgress)
+    const routePulseDistance =
+      signalTravelDistance * routeProgress(timelineProgress)
     const sourceRelease = criticallyDampedProgress(
       pulseElapsed / SOURCE_RELEASE_DURATION,
     )
@@ -1611,9 +1649,8 @@ export function createSkyMapField(
       1,
       Math.max(0, (pulseElapsed - cameraStartDelay) / cameraDuration),
     )
-    const cameraEndTime = cameraStartDelay + cameraDuration
     const trailOpacity = trailReleaseOpacity(
-      (pulseElapsed - cameraEndTime) / TRAIL_RELEASE_DURATION,
+      (pulseElapsed - trailReleaseStart) / trailReleaseDuration,
     )
     const fadeProgress = criticallyDampedProgress(
       (pulseDistance - signalFadeStartDistance) / SIGNAL_FADE_DISTANCE,
@@ -1628,19 +1665,25 @@ export function createSkyMapField(
       holdCurrentConstellations()
       currentConstellationsHeld = true
     }
-    if (!zoomReturnStarted && cameraProgress >= zoomInStartProgress) {
-      zoomReturnStarted = true
-      callbacks.onZoomReturnStart?.({
-        duration: Math.max(0, cameraEndTime - pulseElapsed),
+    if (
+      !foregroundContractStarted &&
+      pulseElapsed >= foregroundContractStart
+    ) {
+      foregroundContractStarted = true
+      callbacks.onForegroundContractStart?.({
+        duration: Math.max(0, foregroundContractEnd - pulseElapsed),
+      })
+    }
+    if (!foregroundReturnStarted && pulseElapsed >= foregroundReturnStart) {
+      foregroundReturnStarted = true
+      callbacks.onForegroundReturnStart?.({
+        duration: Math.max(0, foregroundReturnEnd - pulseElapsed),
       })
     }
     updateRouteView(cameraProgress)
     updateTrailView(frameDelta, trailOpacity, cameraProgress)
-    if (!routeLanded && cameraProgress >= 1) {
-      routeLanded = true
-      callbacks.onRouteLand?.()
-    }
     uniforms.uPulseDistance.value = pulseDistance
+    uniforms.uRoutePulseDistance.value = routePulseDistance
     uniforms.uPulseActive.value = 1 - fadeProgress
     uniforms.uSourceActivation.value =
       sourceActivationAtSpread * (1 - sourceRelease)
@@ -1655,13 +1698,14 @@ export function createSkyMapField(
     previousRenderTime = 0
     signalPhase = 'locating'
     phaseStartedAt = now
-    zoomReturnStarted = false
-    routeLanded = false
+    foregroundContractStarted = false
+    foregroundReturnStarted = false
     sourceActivationAtSpread = 0
     currentConstellationsHeld = false
     uniforms.uPulseActive.value = 0
     uniforms.uSourceActivation.value = 0
     uniforms.uPulseDistance.value = 0
+    uniforms.uRoutePulseDistance.value = 0
     uniforms.uLocatorProgress.value = 0
     uniforms.uLocatorScale.value = LOCATOR_INITIAL_SCALE
     syncTrailView()
@@ -1684,6 +1728,7 @@ export function createSkyMapField(
     uniforms.uPulseActive.value = 0
     uniforms.uSourceActivation.value = 0
     uniforms.uPulseDistance.value = 0
+    uniforms.uRoutePulseDistance.value = 0
     uniforms.uLocatorProgress.value = 0
     uniforms.uLocatorScale.value = 1
     viewRadius = BASE_VIEW_RADIUS

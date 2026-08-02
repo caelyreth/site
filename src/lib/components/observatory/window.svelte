@@ -5,6 +5,7 @@
     active?: boolean
     compact?: boolean
     onLoadComplete?: () => void
+    returning?: boolean
     scaleDuration?: number
     signalColor: string
   }
@@ -21,6 +22,7 @@
     active = false,
     compact = false,
     onLoadComplete,
+    returning = false,
     scaleDuration = 1000,
     signalColor,
   }: WindowProps = $props()
@@ -58,6 +60,7 @@
   aria-hidden="true"
   class:active
   class:compact
+  class:returning
   class="window"
   style:--window-scale-duration={`${scaleDuration}ms`}
   style:--shutter-signal={signalColor}
@@ -91,11 +94,16 @@
     pointer-events: none;
     transform-origin: center;
     will-change: transform;
-    transition: transform var(--window-scale-duration) var(--ease-in-out);
+    transition: transform var(--window-scale-duration)
+      cubic-bezier(0.46, 0, 0.22, 1);
   }
 
   .window.compact {
     transform: scale(0.82);
+  }
+
+  .window.returning {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.18, 1);
   }
 
   .frame {
@@ -121,8 +129,8 @@
     background-color: color-mix(in oklab, var(--color-ink) 3%, transparent);
     animation: strip-reveal 640ms var(--ease-in-out) both;
     transition:
-      border-color 560ms var(--ease-out),
-      background-color 560ms var(--ease-out);
+      border-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .strip:nth-child(2) {
@@ -167,7 +175,7 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.08em;
     line-height: 1;
-    transition: color 560ms var(--ease-out);
+    transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .shutter-meta {
@@ -201,8 +209,8 @@
     background: var(--shutter-signal);
     transform: scaleX(0.16);
     transition:
-      opacity 260ms var(--ease-out),
-      transform 720ms var(--ease-out);
+      opacity 320ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 780ms cubic-bezier(0.46, 0, 0.2, 1);
   }
 
   .window.active .strip {

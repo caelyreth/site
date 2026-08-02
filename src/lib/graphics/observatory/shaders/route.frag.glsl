@@ -1,6 +1,6 @@
 precision highp float;
 
-uniform float uPulseDistance;
+uniform float uRoutePulseDistance;
 uniform float uPulseActive;
 uniform vec3 uSignalInk;
 varying float vSide;
@@ -15,14 +15,14 @@ void main() {
     abs(vSide)
   );
   float revealed = 1.0 - smoothstep(
-    uPulseDistance + 0.008,
-    uPulseDistance + 0.05,
+    uRoutePulseDistance + 0.008,
+    uRoutePulseDistance + 0.05,
     vDistance
   );
   float head = 1.0 - smoothstep(
     0.024,
     0.16,
-    abs(uPulseDistance - vDistance)
+    abs(uRoutePulseDistance - vDistance)
   );
   float alpha =
     revealed * (0.44 + head * 0.46) * uPulseActive * coverage *

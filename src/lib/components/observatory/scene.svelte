@@ -6,9 +6,9 @@
     TRANSMISSION_COLORS,
   } from '$lib/graphics/observatory/signal-colors'
   import type {
+    SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
     SkyMapViewStatus,
-    SkyMapZoomReturnStatus,
   } from '$lib/graphics/observatory/sky-map-field'
   import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
   import { useTheme } from 'svelte-themes'
@@ -27,6 +27,7 @@
   let spreading = $state(false)
   let shuttersLoaded = $state(false)
   let windowCompact = $state(false)
+  let windowReturning = $state(false)
   let windowScaleDuration = $state(1000)
   let spreadColorIndex = $state(0)
   let viewStatus = $state<SkyMapViewStatus>({
@@ -46,8 +47,7 @@
   function beginSpread({ colorIndex }: SkyMapPulseStatus) {
     spreadColorIndex = colorIndex
     spreading = true
-    windowScaleDuration = 1000
-    windowCompact = true
+    windowReturning = false
     transmissions = [
       { colorIndex, sequence: transmissionSequence },
       ...transmissions,
@@ -57,15 +57,19 @@
 
   function endSpread() {
     spreading = false
+    windowReturning = false
     windowCompact = false
   }
 
-  function settleWindow() {
-    windowCompact = false
-  }
-
-  function beginZoomReturn({ duration }: SkyMapZoomReturnStatus) {
+  function contractWindow({ duration }: SkyMapLayerMotionStatus) {
     windowScaleDuration = duration
+    windowReturning = false
+    windowCompact = true
+  }
+
+  function returnWindow({ duration }: SkyMapLayerMotionStatus) {
+    windowScaleDuration = duration
+    windowReturning = true
     windowCompact = false
   }
 
@@ -140,11 +144,11 @@
     <div class="foreground">
       {#if shuttersLoaded}
         <Canvas
-          onRouteLand={settleWindow}
+          onForegroundContractStart={contractWindow}
+          onForegroundReturnStart={returnWindow}
           onSpreadEnd={endSpread}
           onSpreadStart={beginSpread}
           onViewChange={updateViewStatus}
-          onZoomReturnStart={beginZoomReturn}
         />
       {/if}
       <div class="window-stage" style:transform={`scale(${windowScale})`}>
@@ -152,6 +156,7 @@
           active={spreading}
           compact={windowCompact}
           onLoadComplete={revealSkyMap}
+          returning={windowReturning}
           scaleDuration={windowScaleDuration}
           signalColor={transmissionColor(spreadColorIndex)}
         />
