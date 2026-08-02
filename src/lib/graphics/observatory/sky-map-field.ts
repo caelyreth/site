@@ -234,7 +234,7 @@ function decodeSkyMap(skyData: SkyData): SkyMap {
 
 function choosePixelRatio(width: number, height: number) {
   const nativeRatio = Math.min(window.devicePixelRatio || 1, 1.75)
-  const pixelBudget = 2_600_000
+  const pixelBudget = 3_700_000
   const budgetRatio = Math.sqrt(pixelBudget / Math.max(1, width * height))
   return Math.max(1, Math.min(nativeRatio, budgetRatio))
 }
