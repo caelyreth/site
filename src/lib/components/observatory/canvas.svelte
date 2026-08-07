@@ -4,6 +4,7 @@
     createSkyMapField,
     SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
+    SkyMapRollerMotionStatus,
     SkyMapViewStatus,
   } from '$lib/graphics/observatory/sky-map-field'
   import { onMount } from 'svelte'
@@ -11,16 +12,20 @@
 
   type FieldController = ReturnType<typeof createSkyMapField>
   type CanvasProps = {
+    onFadeInStart?: () => void
     onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
     onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
+    onRollerMotion?: (status: SkyMapRollerMotionStatus) => void
     onSpreadEnd?: () => void
     onSpreadStart?: (status: SkyMapPulseStatus) => void
     onViewChange?: (status: SkyMapViewStatus) => void
   }
 
   let {
+    onFadeInStart,
     onForegroundContractStart,
     onForegroundReturnStart,
+    onRollerMotion,
     onSpreadEnd,
     onSpreadStart,
     onViewChange,
@@ -74,6 +79,7 @@
           {
             onForegroundContractStart,
             onForegroundReturnStart,
+            onRollerMotion,
             onSpreadEnd,
             onSpreadStart,
             onViewChange,
@@ -85,6 +91,7 @@
           revealFrame = requestAnimationFrame(() => {
             revealFrame = undefined
             fieldReady = true
+            onFadeInStart?.()
           })
         })
       })
@@ -132,7 +139,7 @@
     height: 100%;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 720ms var(--ease-out);
+    transition: opacity 1000ms var(--ease-out);
   }
 
   .canvas.is-ready {

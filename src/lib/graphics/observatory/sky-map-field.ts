@@ -51,13 +51,20 @@ export type SkyMapViewStatus = {
 }
 export type SkyMapPulseStatus = {
   colorIndex: number
+  rollerDirection: -1 | 1
 }
 export type SkyMapLayerMotionStatus = {
   duration: number
 }
+export type SkyMapRollerMotionStatus = {
+  direction: -1 | 1
+  duration: number
+  sequence: number
+}
 type FieldCallbacks = {
   onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
   onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
+  onRollerMotion?: (status: SkyMapRollerMotionStatus) => void
   onSpreadEnd?: () => void
   onSpreadStart?: (status: SkyMapPulseStatus) => void
   onViewChange?: (status: SkyMapViewStatus) => void
@@ -131,6 +138,8 @@ const FOREGROUND_CONTRACT_MAX_DURATION = 860
 const FOREGROUND_CONTRACT_APEX_LEAD = 70
 const FOREGROUND_RETURN_LAG = 130
 const FOREGROUND_SETTLE_LAG = 75
+const ROLLER_MIN_DURATION = 860
+const ROLLER_MAX_DURATION = 1400
 const TRAIL_RESPONSE = 1.18
 const TRAIL_MAX_LENGTH = 168
 const TRAIL_FIELD_SAMPLE_RATE = 0.24
@@ -764,12 +773,15 @@ export function createSkyMapField(
   let cameraDuration = 5000
   let cameraStartDelay = CAMERA_MIN_ROUTE_LEAD
   let routeWideViewRadius = BASE_VIEW_RADIUS + CAMERA_MIN_WIDENING
+  let rollerDirection: -1 | 1 = 1
+  let rollerMotionSequence = 0
   let foregroundContractStart = FOREGROUND_CONTRACT_DELAY
   let foregroundContractEnd = FOREGROUND_CONTRACT_DELAY
   let foregroundReturnStart = 0
   let foregroundReturnEnd = 0
   let foregroundContractStarted = false
   let foregroundReturnStarted = false
+  let rollerMotionStarted = false
   let trailReleaseStart = 0
   let trailReleaseDuration = 1
   let lastCameraProgress = -1
@@ -1282,6 +1294,13 @@ export function createSkyMapField(
     )
   }
 
+  function configureRollerDirection() {
+    const verticalPan = routeViewEndForward.dot(uniforms.uUp.value)
+
+    // The roller follows the sky's apparent vertical drift, not the camera pan.
+    rollerDirection = verticalPan >= 0 ? -1 : 1
+  }
+
   function setRoute(source: number, target: number) {
     lastCameraProgress = -1
     const starDistance = starGeometry.getAttribute(
@@ -1421,6 +1440,7 @@ export function createSkyMapField(
       .premultiply(routeOrientationDelta)
       .normalize()
     configureRouteTiming(cameraRotation)
+    configureRollerDirection()
     previousRouteSourceIndex = sourceIndex
     const existingTargetGroup =
       recentConstellationGroups.indexOf(targetConstellation)
@@ -1627,7 +1647,10 @@ export function createSkyMapField(
       uniforms.uLocatorScale.value = 1
       uniforms.uPulseActive.value = 1
       spreading = true
-      callbacks.onSpreadStart?.({ colorIndex: signalColorIndex })
+        callbacks.onSpreadStart?.({
+          colorIndex: signalColorIndex,
+          rollerDirection,
+        })
       frame = requestAnimationFrame(animate)
       return
     }
@@ -1649,6 +1672,18 @@ export function createSkyMapField(
       1,
       Math.max(0, (pulseElapsed - cameraStartDelay) / cameraDuration),
     )
+    if (!rollerMotionStarted && cameraProgress > 0) {
+      rollerMotionStarted = true
+      rollerMotionSequence += 1
+      callbacks.onRollerMotion?.({
+        direction: rollerDirection,
+        duration: Math.min(
+          ROLLER_MAX_DURATION,
+          Math.max(ROLLER_MIN_DURATION, cameraDuration * 0.72),
+        ),
+        sequence: rollerMotionSequence,
+      })
+    }
     const trailOpacity = trailReleaseOpacity(
       (pulseElapsed - trailReleaseStart) / trailReleaseDuration,
     )
@@ -1700,6 +1735,7 @@ export function createSkyMapField(
     phaseStartedAt = now
     foregroundContractStarted = false
     foregroundReturnStarted = false
+    rollerMotionStarted = false
     sourceActivationAtSpread = 0
     currentConstellationsHeld = false
     uniforms.uPulseActive.value = 0

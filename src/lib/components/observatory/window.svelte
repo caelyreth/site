@@ -1,11 +1,16 @@
 <script lang="ts">
+  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/sky-map-field'
   import { onMount } from 'svelte'
+
+  import Roller from './roller.svelte'
 
   type WindowProps = {
     active?: boolean
     compact?: boolean
     onLoadComplete?: () => void
     returning?: boolean
+    rollerMotion: SkyMapRollerMotionStatus
+    rollerVisible: boolean
     scaleDuration?: number
     signalColor: string
   }
@@ -14,7 +19,6 @@
     { axis: '28%', code: 'AP-01', readout: 'NW 07', scan: '65%' },
     { axis: '61%', code: 'AP-02', readout: 'EL 19', scan: '36%' },
     { axis: '42%', code: 'AP-03', readout: 'RA 32', scan: '55%' },
-    { axis: '68%', code: 'AP-04', readout: 'AZ 11', scan: '28%' },
   ] as const
 
   /* oxlint-disable prefer-const -- props react to the live spread state. */
@@ -23,6 +27,8 @@
     compact = false,
     onLoadComplete,
     returning = false,
+    rollerMotion,
+    rollerVisible,
     scaleDuration = 1000,
     signalColor,
   }: WindowProps = $props()
@@ -79,6 +85,12 @@
           <span class="shutter-sweep"></span>
         </section>
       {/each}
+      <Roller
+        {active}
+        motion={rollerMotion}
+        {rollerVisible}
+        {signalColor}
+      />
     </div>
     <span class="tick tick-top-left"></span>
     <span class="tick tick-top-right"></span>
@@ -89,6 +101,7 @@
 
 <style>
   .window {
+    --strip-fill: color-mix(in oklab, var(--color-ink) 2%, transparent);
     width: 100%;
     margin: 0;
     pointer-events: none;
@@ -126,7 +139,7 @@
     border-inline: 1px solid
       color-mix(in oklab, var(--color-rule) 72%, transparent);
     clip-path: inset(0 100% 0 0);
-    background-color: color-mix(in oklab, var(--color-ink) 3%, transparent);
+    background-color: var(--strip-fill);
     animation: strip-reveal 640ms var(--ease-in-out) both;
     transition:
       border-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -139,10 +152,6 @@
 
   .strip:nth-child(3) {
     animation-delay: 240ms;
-  }
-
-  .strip:nth-child(4) {
-    animation-delay: 360ms;
   }
 
   .strip::before,
@@ -222,7 +231,7 @@
     background-color: color-mix(
       in oklab,
       var(--shutter-signal) 5%,
-      transparent
+      var(--strip-fill)
     );
   }
 

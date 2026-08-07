@@ -8,6 +8,7 @@
   import type {
     SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
+    SkyMapRollerMotionStatus,
     SkyMapViewStatus,
   } from '$lib/graphics/observatory/sky-map-field'
   import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
@@ -25,9 +26,15 @@
     Array<{ colorIndex: number; sequence: number }>
   >([])
   let spreading = $state(false)
+  let skyMapVisible = $state(false)
   let shuttersLoaded = $state(false)
   let windowCompact = $state(false)
   let windowReturning = $state(false)
+  let rollerMotion = $state<SkyMapRollerMotionStatus>({
+    direction: 1,
+    duration: 0,
+    sequence: 0,
+  })
   let windowScaleDuration = $state(1000)
   let spreadColorIndex = $state(0)
   let viewStatus = $state<SkyMapViewStatus>({
@@ -44,7 +51,11 @@
   )
   const windowScale = $derived(1 - station.scrollProgress * 0.2)
 
-  function beginSpread({ colorIndex }: SkyMapPulseStatus) {
+  function beginSpread({
+    colorIndex,
+    rollerDirection,
+  }: SkyMapPulseStatus) {
+    rollerMotion.direction = rollerDirection
     spreadColorIndex = colorIndex
     spreading = true
     windowReturning = false
@@ -73,8 +84,17 @@
     windowCompact = false
   }
 
+  function updateRollerMotion(nextMotion: SkyMapRollerMotionStatus) {
+    rollerMotion = nextMotion
+  }
+
   function revealSkyMap() {
     shuttersLoaded = true
+    skyMapVisible = true
+  }
+
+  function revealSkyMapField() {
+    skyMapVisible = true
   }
 
   function transmissionColor(colorIndex: number) {
@@ -144,8 +164,10 @@
     <div class="foreground">
       {#if shuttersLoaded}
         <Canvas
+          onFadeInStart={revealSkyMapField}
           onForegroundContractStart={contractWindow}
           onForegroundReturnStart={returnWindow}
+          onRollerMotion={updateRollerMotion}
           onSpreadEnd={endSpread}
           onSpreadStart={beginSpread}
           onViewChange={updateViewStatus}
@@ -157,6 +179,8 @@
           compact={windowCompact}
           onLoadComplete={revealSkyMap}
           returning={windowReturning}
+          {rollerMotion}
+          rollerVisible={skyMapVisible}
           scaleDuration={windowScaleDuration}
           signalColor={transmissionColor(spreadColorIndex)}
         />
