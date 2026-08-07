@@ -4,16 +4,18 @@
 
   type IndexRollerProps = {
     active: boolean
+    continuityPosition: number
     motion: SkyMapRollerMotionStatus
     rollerVisible: boolean
     signalColor: string
   }
 
-  const indexPerforations = Array.from({ length: 28 })
+  const indexPerforations = Array.from({ length: 44 })
 
   /* oxlint-disable prefer-const -- props react to live roller state. */
   let {
     active,
+    continuityPosition,
     motion,
     rollerVisible,
     signalColor,
@@ -27,6 +29,7 @@
   class:rollerVisible
   class="strip strip-index"
   style:--aperture-signal={signalColor}
+  style:--continuity-position={`${continuityPosition}%`}
   style:--roller-duration={`${motion.duration}ms`}
   style:--roller-cycle={motion.direction > 0 ? '3.19rem' : '-3.19rem'}
 >
@@ -115,7 +118,6 @@
     bottom: 0.75rem;
     left: 0.4rem;
     width: 0.28rem;
-    border-inline: 1px solid var(--aperture-line);
     opacity: 0.68;
   }
 
@@ -173,11 +175,14 @@
   .continuity-line {
     position: absolute;
     z-index: 2;
-    top: 67%;
+    top: var(--continuity-position);
     right: 0;
     left: 0;
     height: 1px;
+    opacity: 0;
     background: var(--aperture-line);
+    transform: scaleX(0.72);
+    transform-origin: left;
     transition:
       background-color 520ms var(--ease-out),
       opacity 520ms var(--ease-out);
@@ -216,7 +221,7 @@
     left: 0.4rem;
     display: grid;
     width: 0.42rem;
-    grid-template-rows: repeat(28, 1fr);
+    grid-template-rows: repeat(44, 1fr);
     place-items: center;
     opacity: 0;
     transition: opacity 1000ms var(--ease-out);
@@ -341,6 +346,7 @@
       var(--aperture-signal) 64%,
       var(--color-rule)
     );
+    animation: continuity-lightup 1.04s var(--ease-out) both;
   }
 
   .strip.active .roller-meta,
@@ -450,6 +456,20 @@
   @keyframes roller-cycle {
     to {
       transform: translateY(var(--roller-cycle));
+    }
+  }
+
+  @keyframes continuity-lightup {
+    0% {
+      opacity: 0;
+      transform: scaleX(0.72);
+    }
+    24% {
+      opacity: 0.96;
+    }
+    100% {
+      opacity: 0.72;
+      transform: scaleX(1);
     }
   }
 </style>

@@ -7,6 +7,7 @@
   type WindowProps = {
     active?: boolean
     compact?: boolean
+    continuityPositions: readonly number[]
     onLoadComplete?: () => void
     returning?: boolean
     rollerMotion: SkyMapRollerMotionStatus
@@ -16,15 +17,16 @@
   }
 
   const shutters = [
-    { axis: '28%', code: 'AP-01', readout: 'NW 07', scan: '65%' },
-    { axis: '61%', code: 'AP-02', readout: 'EL 19', scan: '36%' },
-    { axis: '42%', code: 'AP-03', readout: 'RA 32', scan: '55%' },
+    { code: 'AP-01', readout: 'NW 07' },
+    { code: 'AP-02', readout: 'EL 19' },
+    { code: 'AP-03', readout: 'RA 32' },
   ] as const
 
   /* oxlint-disable prefer-const -- props react to the live spread state. */
   let {
     active = false,
     compact = false,
+    continuityPositions,
     onLoadComplete,
     returning = false,
     rollerMotion,
@@ -73,20 +75,19 @@
 >
   <div class="frame" onanimationend={handleFrameAnimationEnd}>
     <div class="strips">
-      {#each shutters as shutter (shutter.code)}
+      {#each shutters as shutter, index (shutter.code)}
         <section
           class="strip"
-          style:--shutter-axis={shutter.axis}
-          style:--shutter-scan={shutter.scan}
+          style:--shutter-axis={`${continuityPositions[index] ?? 50}%`}
         >
           <span class="shutter-meta">{shutter.code}</span>
           <span class="shutter-readout">{shutter.readout}</span>
           <span class="shutter-axis"></span>
-          <span class="shutter-sweep"></span>
         </section>
       {/each}
       <Roller
         {active}
+        continuityPosition={continuityPositions[3] ?? 67}
         motion={rollerMotion}
         {rollerVisible}
         {signalColor}
@@ -198,28 +199,16 @@
     text-align: right;
   }
 
-  .shutter-axis,
-  .shutter-sweep {
+  .shutter-axis {
     position: absolute;
     right: 0.35rem;
     left: 0.35rem;
     height: 1px;
-    transform-origin: left;
-  }
-
-  .shutter-axis {
     top: var(--shutter-axis);
-    background: color-mix(in oklab, var(--color-rule) 52%, transparent);
-  }
-
-  .shutter-sweep {
-    top: var(--shutter-scan);
     opacity: 0;
-    background: var(--shutter-signal);
-    transform: scaleX(0.16);
-    transition:
-      opacity 320ms cubic-bezier(0.4, 0, 0.2, 1),
-      transform 780ms cubic-bezier(0.46, 0, 0.2, 1);
+    background: color-mix(in oklab, var(--color-rule) 52%, transparent);
+    transform: scaleX(0.72);
+    transform-origin: left;
   }
 
   .window.active .strip {
@@ -244,9 +233,9 @@
     );
   }
 
-  .window.active .shutter-sweep {
-    opacity: 0.86;
-    transform: scaleX(1);
+  .window.active .shutter-axis {
+    background: var(--shutter-signal);
+    animation: continuity-lightup 1.04s var(--ease-out) both;
   }
 
   .tick {
@@ -294,8 +283,7 @@
       bottom: 0.35rem;
     }
 
-    .shutter-axis,
-    .shutter-sweep {
+    .shutter-axis {
       right: 0.18rem;
       left: 0.18rem;
     }
@@ -320,7 +308,7 @@
     .window,
     .shutter-meta,
     .shutter-readout,
-    .shutter-sweep {
+    .shutter-axis {
       transition: none;
     }
   }
@@ -328,6 +316,20 @@
   @keyframes strip-reveal {
     to {
       clip-path: inset(0);
+    }
+  }
+
+  @keyframes continuity-lightup {
+    0% {
+      opacity: 0;
+      transform: scaleX(0.72);
+    }
+    24% {
+      opacity: 0.96;
+    }
+    100% {
+      opacity: 0.72;
+      transform: scaleX(1);
     }
   }
 

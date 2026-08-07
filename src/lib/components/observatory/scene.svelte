@@ -30,6 +30,7 @@
   let shuttersLoaded = $state(false)
   let windowCompact = $state(false)
   let windowReturning = $state(false)
+  let continuityPositions = $state([28, 61, 42, 67])
   let rollerMotion = $state<SkyMapRollerMotionStatus>({
     direction: 1,
     duration: 0,
@@ -51,11 +52,27 @@
   )
   const windowScale = $derived(1 - station.scrollProgress * 0.2)
 
+  function randomizedContinuityPositions() {
+    const positions = [16, 38, 60, 82].map(
+      (center) => center + Math.floor(Math.random() * 11) - 5,
+    )
+
+    for (let index = positions.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1))
+      const currentPosition = positions[index]
+      positions[index] = positions[swapIndex]
+      positions[swapIndex] = currentPosition
+    }
+
+    return positions
+  }
+
   function beginSpread({
     colorIndex,
     rollerDirection,
   }: SkyMapPulseStatus) {
     rollerMotion.direction = rollerDirection
+    continuityPositions = randomizedContinuityPositions()
     spreadColorIndex = colorIndex
     spreading = true
     windowReturning = false
@@ -177,6 +194,7 @@
         <Window
           active={spreading}
           compact={windowCompact}
+          {continuityPositions}
           onLoadComplete={revealSkyMap}
           returning={windowReturning}
           {rollerMotion}
