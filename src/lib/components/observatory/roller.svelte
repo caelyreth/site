@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/sky-map-field'
+  import { fly } from 'svelte/transition'
 
   type IndexRollerProps = {
     active: boolean
@@ -46,6 +47,24 @@
     <span class="material-exposure"></span>
   </div>
 
+  <span class="roller-meta">AP-04</span>
+  <span class="roller-readout">
+    {#if motion.direction > 0}
+      <span
+        class="roller-readout-value"
+        in:fly={{ y: -4, duration: 240 }}
+        out:fly={{ y: 4, duration: 180 }}
+        >DEC DN</span
+      >
+    {:else}
+      <span
+        class="roller-readout-value"
+        in:fly={{ y: 4, duration: 240 }}
+        out:fly={{ y: -4, duration: 180 }}
+        >DEC UP</span
+      >
+    {/if}
+  </span>
   <span class="continuity-line" aria-hidden="true"></span>
   <span class="signal-swatch" aria-hidden="true"></span>
 </section>
@@ -117,6 +136,38 @@
     transition:
       opacity 720ms var(--ease-out),
       transform 960ms var(--ease-in-out);
+  }
+
+  .roller-meta,
+  .roller-readout {
+    position: absolute;
+    z-index: 4;
+    color: var(--color-muted);
+    font-size: clamp(0.375rem, 0.5vw, 0.5rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .roller-meta {
+    top: 0.28rem;
+    left: 0.35rem;
+  }
+
+  .roller-readout {
+    right: 0.35rem;
+    bottom: 0.28rem;
+    width: 3rem;
+    height: 0.5rem;
+    text-align: right;
+  }
+
+  .roller-readout-value {
+    position: absolute;
+    top: 0;
+    right: 0;
+    white-space: nowrap;
   }
 
   .continuity-line {
@@ -292,6 +343,15 @@
     );
   }
 
+  .strip.active .roller-meta,
+  .strip.active .roller-readout {
+    color: color-mix(
+      in oklab,
+      var(--aperture-signal) 74%,
+      var(--color-muted)
+    );
+  }
+
   .strip.active .continuity-line::after {
     border-color: var(--aperture-signal);
     transform: translateX(-0.38rem) rotate(135deg);
@@ -331,6 +391,11 @@
       bottom: 0.58rem;
       width: 0.3rem;
       height: 0.3rem;
+    }
+
+    .roller-meta,
+    .roller-readout {
+      display: none;
     }
   }
 
