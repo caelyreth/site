@@ -28,6 +28,7 @@
   let spreading = $state(false)
   let skyMapVisible = $state(false)
   let shuttersLoaded = $state(false)
+  let typingPaused = $state(false)
   let windowCompact = $state(false)
   let windowReturning = $state(false)
   let rollerMotion = $state<SkyMapRollerMotionStatus>({
@@ -58,6 +59,7 @@
     rollerMotion.direction = rollerDirection
     spreadColorIndex = colorIndex
     spreading = true
+    typingPaused = true
     windowReturning = false
     transmissions = [
       { colorIndex, sequence: transmissionSequence },
@@ -68,6 +70,7 @@
 
   function endSpread() {
     spreading = false
+    typingPaused = false
     windowReturning = false
     windowCompact = false
   }
@@ -86,6 +89,10 @@
 
   function updateRollerMotion(nextMotion: SkyMapRollerMotionStatus) {
     rollerMotion = nextMotion
+  }
+
+  function resumeTyping() {
+    typingPaused = false
   }
 
   function revealSkyMap() {
@@ -164,6 +171,7 @@
     <div class="foreground">
       {#if shuttersLoaded}
         <Canvas
+          onDestinationArrival={resumeTyping}
           onFadeInStart={revealSkyMapField}
           onForegroundContractStart={contractWindow}
           onForegroundReturnStart={returnWindow}
@@ -183,6 +191,7 @@
           rollerVisible={skyMapVisible}
           scaleDuration={windowScaleDuration}
           signalColor={transmissionColor(spreadColorIndex)}
+          {typingPaused}
         />
       </div>
       <Boundary side="left" inScene reveal />

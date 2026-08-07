@@ -62,6 +62,7 @@ export type SkyMapRollerMotionStatus = {
   sequence: number
 }
 type FieldCallbacks = {
+  onDestinationArrival?: () => void
   onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
   onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
   onRollerMotion?: (status: SkyMapRollerMotionStatus) => void
@@ -775,6 +776,7 @@ export function createSkyMapField(
   let routeWideViewRadius = BASE_VIEW_RADIUS + CAMERA_MIN_WIDENING
   let rollerDirection: -1 | 1 = 1
   let rollerMotionSequence = 0
+  let destinationArrived = false
   let foregroundContractStart = FOREGROUND_CONTRACT_DELAY
   let foregroundContractEnd = FOREGROUND_CONTRACT_DELAY
   let foregroundReturnStart = 0
@@ -1582,6 +1584,10 @@ export function createSkyMapField(
     endSpread()
     if (targetIndex >= 0) {
       updateRouteView(1)
+      if (!destinationArrived) {
+        destinationArrived = true
+        callbacks.onDestinationArrival?.()
+      }
     }
     syncTrailView()
     render()
@@ -1716,6 +1722,10 @@ export function createSkyMapField(
       })
     }
     updateRouteView(cameraProgress)
+    if (!destinationArrived && cameraProgress >= 1) {
+      destinationArrived = true
+      callbacks.onDestinationArrival?.()
+    }
     updateTrailView(frameDelta, trailOpacity, cameraProgress)
     uniforms.uPulseDistance.value = pulseDistance
     uniforms.uRoutePulseDistance.value = routePulseDistance
@@ -1736,6 +1746,7 @@ export function createSkyMapField(
     foregroundContractStarted = false
     foregroundReturnStarted = false
     rollerMotionStarted = false
+    destinationArrived = false
     sourceActivationAtSpread = 0
     currentConstellationsHeld = false
     uniforms.uPulseActive.value = 0

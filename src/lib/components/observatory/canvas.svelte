@@ -12,6 +12,7 @@
 
   type FieldController = ReturnType<typeof createSkyMapField>
   type CanvasProps = {
+    onDestinationArrival?: () => void
     onFadeInStart?: () => void
     onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
     onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
@@ -22,6 +23,7 @@
   }
 
   let {
+    onDestinationArrival,
     onFadeInStart,
     onForegroundContractStart,
     onForegroundReturnStart,
@@ -77,6 +79,7 @@
           skyData,
           theme.resolvedTheme === 'dark',
           {
+            onDestinationArrival,
             onForegroundContractStart,
             onForegroundReturnStart,
             onRollerMotion,

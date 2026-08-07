@@ -2,6 +2,7 @@
   import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/sky-map-field'
   import { onMount } from 'svelte'
 
+  import FieldLog from './field-log.svelte'
   import Roller from './roller.svelte'
 
   type WindowProps = {
@@ -13,6 +14,7 @@
     rollerVisible: boolean
     scaleDuration?: number
     signalColor: string
+    typingPaused: boolean
   }
 
   const shutters = [
@@ -31,6 +33,7 @@
     rollerVisible,
     scaleDuration = 1000,
     signalColor,
+    typingPaused,
   }: WindowProps = $props()
 
   let loadComplete = false
@@ -74,10 +77,19 @@
   <div class="frame" onanimationend={handleFrameAnimationEnd}>
     <div class="strips">
       {#each shutters as shutter (shutter.code)}
-        <section class="strip">
-          <span class="shutter-meta">{shutter.code}</span>
-          <span class="shutter-readout">{shutter.readout}</span>
-        </section>
+        {#if shutter.code === 'AP-02'}
+          <FieldLog
+            {active}
+            paused={typingPaused}
+            {signalColor}
+            visible={rollerVisible}
+          />
+        {:else}
+          <section class="strip">
+            <span class="shutter-meta">{shutter.code}</span>
+            <span class="shutter-readout">{shutter.readout}</span>
+          </section>
+        {/if}
       {/each}
       <Roller
         {active}
