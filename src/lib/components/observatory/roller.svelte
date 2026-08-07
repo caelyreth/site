@@ -4,7 +4,6 @@
 
   type IndexRollerProps = {
     active: boolean
-    continuityPosition: number
     motion: SkyMapRollerMotionStatus
     rollerVisible: boolean
     signalColor: string
@@ -15,11 +14,19 @@
   /* oxlint-disable prefer-const -- props react to live roller state. */
   let {
     active,
-    continuityPosition,
     motion,
     rollerVisible,
     signalColor,
   }: IndexRollerProps = $props()
+  let continuityPosition = $state(67)
+  let wasActive = false
+
+  $effect.pre(() => {
+    if (active && !wasActive) {
+      continuityPosition = 16 + Math.floor(Math.random() * 69)
+    }
+    wasActive = active
+  })
 </script>
 
 <section

@@ -7,7 +7,6 @@
   type WindowProps = {
     active?: boolean
     compact?: boolean
-    continuityPositions: readonly number[]
     onLoadComplete?: () => void
     returning?: boolean
     rollerMotion: SkyMapRollerMotionStatus
@@ -26,7 +25,6 @@
   let {
     active = false,
     compact = false,
-    continuityPositions,
     onLoadComplete,
     returning = false,
     rollerMotion,
@@ -75,19 +73,14 @@
 >
   <div class="frame" onanimationend={handleFrameAnimationEnd}>
     <div class="strips">
-      {#each shutters as shutter, index (shutter.code)}
-        <section
-          class="strip"
-          style:--shutter-axis={`${continuityPositions[index] ?? 50}%`}
-        >
+      {#each shutters as shutter (shutter.code)}
+        <section class="strip">
           <span class="shutter-meta">{shutter.code}</span>
           <span class="shutter-readout">{shutter.readout}</span>
-          <span class="shutter-axis"></span>
         </section>
       {/each}
       <Roller
         {active}
-        continuityPosition={continuityPositions[3] ?? 67}
         motion={rollerMotion}
         {rollerVisible}
         {signalColor}
@@ -199,18 +192,6 @@
     text-align: right;
   }
 
-  .shutter-axis {
-    position: absolute;
-    right: 0.35rem;
-    left: 0.35rem;
-    height: 1px;
-    top: var(--shutter-axis);
-    opacity: 0;
-    background: color-mix(in oklab, var(--color-rule) 52%, transparent);
-    transform: scaleX(0.72);
-    transform-origin: left;
-  }
-
   .window.active .strip {
     border-color: color-mix(
       in oklab,
@@ -231,11 +212,6 @@
       var(--shutter-signal) 74%,
       var(--color-muted)
     );
-  }
-
-  .window.active .shutter-axis {
-    background: var(--shutter-signal);
-    animation: continuity-lightup 1.04s var(--ease-out) both;
   }
 
   .tick {
@@ -283,11 +259,6 @@
       bottom: 0.35rem;
     }
 
-    .shutter-axis {
-      right: 0.18rem;
-      left: 0.18rem;
-    }
-
     .shutter-meta,
     .shutter-readout {
       display: none;
@@ -307,8 +278,7 @@
     .strip,
     .window,
     .shutter-meta,
-    .shutter-readout,
-    .shutter-axis {
+    .shutter-readout {
       transition: none;
     }
   }
@@ -316,20 +286,6 @@
   @keyframes strip-reveal {
     to {
       clip-path: inset(0);
-    }
-  }
-
-  @keyframes continuity-lightup {
-    0% {
-      opacity: 0;
-      transform: scaleX(0.72);
-    }
-    24% {
-      opacity: 0.96;
-    }
-    100% {
-      opacity: 0.72;
-      transform: scaleX(1);
     }
   }
 
