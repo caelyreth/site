@@ -5,13 +5,13 @@
     reveal?: boolean
   }
 
-  const { side, inScene = false, reveal = false }: Props = $props()
+  const { side, inScene: in_scene = false, reveal = false }: Props = $props()
 </script>
 
 <div
   aria-hidden="true"
-  class:station={!inScene}
-  class:scene={inScene}
+  class:station={!in_scene}
+  class:scene={in_scene}
   class:reveal
   class:left={side === 'left'}
   class:right={side === 'right'}

@@ -1,133 +1,133 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
   import type {
-    createSkyMapField,
+    create_sky_map_field,
     SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
     SkyMapRollerMotionStatus,
     SkyMapViewStatus,
-  } from '$lib/graphics/observatory/sky-map-field'
+  } from '$lib/graphics/observatory/field'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
 
-  type FieldController = ReturnType<typeof createSkyMapField>
+  type SkyMapController = ReturnType<typeof create_sky_map_field>
   type CanvasProps = {
-    onDestinationArrival?: () => void
-    onFadeInStart?: () => void
-    onForegroundContractStart?: (status: SkyMapLayerMotionStatus) => void
-    onForegroundReturnStart?: (status: SkyMapLayerMotionStatus) => void
-    onRollerMotion?: (status: SkyMapRollerMotionStatus) => void
-    onSpreadEnd?: () => void
-    onSpreadStart?: (status: SkyMapPulseStatus) => void
-    onViewChange?: (status: SkyMapViewStatus) => void
+    on_destination_arrival?: () => void
+    on_fade_in_start?: () => void
+    on_foreground_contract_start?: (status: SkyMapLayerMotionStatus) => void
+    on_foreground_return_start?: (status: SkyMapLayerMotionStatus) => void
+    on_roller_motion?: (status: SkyMapRollerMotionStatus) => void
+    on_spread_end?: () => void
+    on_spread_start?: (status: SkyMapPulseStatus) => void
+    on_view_change?: (status: SkyMapViewStatus) => void
   }
 
+  /* oxlint-disable prefer-const -- props react to parent callbacks. */
   let {
-    onDestinationArrival,
-    onFadeInStart,
-    onForegroundContractStart,
-    onForegroundReturnStart,
-    onRollerMotion,
-    onSpreadEnd,
-    onSpreadStart,
-    onViewChange,
+    on_destination_arrival,
+    on_fade_in_start,
+    on_foreground_contract_start,
+    on_foreground_return_start,
+    on_roller_motion,
+    on_spread_end,
+    on_spread_start,
+    on_view_change,
   }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
-  let controller = $state<FieldController>()
-  let sceneVisible = $state(false)
-  let pageVisible = $state(true)
-  let fieldReady = $state(false)
+  let controller = $state<SkyMapController>()
+  let scene_visible = $state(false)
+  let page_visible = $state(true)
+  let field_ready = $state(false)
 
-  function syncActivity() {
-    controller?.setActive(sceneVisible && pageVisible)
+  // MARK: - lifecycle
+
+  function sync_activity() {
+    controller?.set_active(scene_visible && page_visible)
   }
 
   onMount(() => {
     if (!canvas) return
 
     let disposed = false
-    let revealFrame: number | undefined
+    let reveal_frame: number | undefined
     const observer =
       typeof IntersectionObserver === 'undefined'
         ? undefined
         : new IntersectionObserver(([entry]) => {
-            sceneVisible = entry?.isIntersecting ?? false
-            syncActivity()
+            scene_visible = entry?.isIntersecting ?? false
+            sync_activity()
           })
-    const handleVisibility = () => {
-      pageVisible = document.visibilityState === 'visible'
-      syncActivity()
+    const handle_visibility = () => {
+      page_visible = document.visibilityState === 'visible'
+      sync_activity()
     }
 
     if (observer) {
       observer.observe(canvas)
     } else {
-      sceneVisible = true
+      scene_visible = true
     }
-    document.addEventListener('visibilitychange', handleVisibility)
-    pageVisible = document.visibilityState === 'visible'
+    document.addEventListener('visibilitychange', handle_visibility)
+    page_visible = document.visibilityState === 'visible'
 
     void Promise.all([
-      import('$lib/graphics/observatory/sky-map-field'),
+      import('$lib/graphics/observatory/field'),
       import('$lib/data/sky-map-data.generated'),
     ])
-      .then(([runtime, skyData]) => {
+      .then(([runtime, sky_data]) => {
         if (disposed || !canvas) return
-        controller = runtime.createSkyMapField(
+        controller = runtime.create_sky_map_field(
           canvas,
-          skyData,
+          sky_data,
           theme.resolvedTheme === 'dark',
           {
-            onDestinationArrival,
-            onForegroundContractStart,
-            onForegroundReturnStart,
-            onRollerMotion,
-            onSpreadEnd,
-            onSpreadStart,
-            onViewChange,
+            on_destination_arrival,
+            on_foreground_contract_start,
+            on_foreground_return_start,
+            on_roller_motion,
+            on_spread_end,
+            on_spread_start,
+            on_view_change,
           },
         )
-        syncActivity()
-        revealFrame = requestAnimationFrame(() => {
+        sync_activity()
+        reveal_frame = requestAnimationFrame(() => {
           if (disposed) return
-          revealFrame = requestAnimationFrame(() => {
-            revealFrame = undefined
-            fieldReady = true
-            onFadeInStart?.()
+          reveal_frame = requestAnimationFrame(() => {
+            reveal_frame = undefined
+            field_ready = true
+            on_fade_in_start?.()
           })
         })
       })
       .catch((error: unknown) => {
         if (!disposed) {
-          console.error(
-            'Unable to initialize the observatory sky map.',
-            error,
-          )
+          console.error('Unable to initialize the observatory sky map.', error)
         }
       })
 
     return () => {
       disposed = true
-      if (revealFrame !== undefined) cancelAnimationFrame(revealFrame)
+      if (reveal_frame !== undefined) cancelAnimationFrame(reveal_frame)
       observer?.disconnect()
-      document.removeEventListener('visibilitychange', handleVisibility)
+      document.removeEventListener('visibilitychange', handle_visibility)
       controller?.destroy()
       controller = undefined
-      fieldReady = false
+      field_ready = false
     }
   })
 
   $effect(() => {
-    controller?.setTheme(theme.resolvedTheme === 'dark')
-    controller?.setActive(sceneVisible && pageVisible)
+    controller?.set_theme(theme.resolvedTheme === 'dark')
+    controller?.set_active(scene_visible && page_visible)
   })
 </script>
 
 <canvas
   aria-hidden="true"
   bind:this={canvas}
-  class:is-ready={fieldReady}
+  class:is-ready={field_ready}
   class="canvas"
   data-observatory-canvas
 ></canvas>

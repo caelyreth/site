@@ -1,31 +1,31 @@
 <script lang="ts">
-  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/sky-map-field'
+  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/field'
   import { fly } from 'svelte/transition'
 
   type IndexRollerProps = {
     active: boolean
     motion: SkyMapRollerMotionStatus
-    rollerVisible: boolean
-    signalColor: string
+    roller_visible: boolean
+    signal_color: string
   }
 
-  const indexPerforations = Array.from({ length: 44 })
+  const index_perforations = Array.from({ length: 44 })
 
   /* oxlint-disable prefer-const -- props react to live roller state. */
   let {
     active,
     motion,
-    rollerVisible,
-    signalColor,
+    roller_visible,
+    signal_color,
   }: IndexRollerProps = $props()
-  let continuityPosition = $state(67)
-  let wasActive = false
+  let continuity_position = $state(67)
+  let was_active = false
 
   $effect.pre(() => {
-    if (active && !wasActive) {
-      continuityPosition = 16 + Math.floor(Math.random() * 69)
+    if (active && !was_active) {
+      continuity_position = 16 + Math.floor(Math.random() * 69)
     }
-    wasActive = active
+    was_active = active
   })
 </script>
 
@@ -33,16 +33,16 @@
   class:active
   class:rollerDown={motion.direction > 0}
   class:rollerUp={motion.direction < 0}
-  class:rollerVisible
+  class:rollerVisible={roller_visible}
   class="strip strip-index"
-  style:--aperture-signal={signalColor}
-  style:--continuity-position={`${continuityPosition}%`}
+  style:--aperture-signal={signal_color}
+  style:--continuity-position={`${continuity_position}%`}
   style:--roller-duration={`${motion.duration}ms`}
   style:--roller-cycle={motion.direction > 0 ? '3.19rem' : '-3.19rem'}
 >
   <div class="material" aria-hidden="true">
     <span class="index-perforation-track">
-      {#each indexPerforations as _}
+      {#each index_perforations as _}
         <i></i>
       {/each}
     </span>

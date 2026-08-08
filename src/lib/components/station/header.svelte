@@ -3,12 +3,12 @@
 
   import Menu from './menu.svelte'
 
-  const homePath = base || '/'
+  const home_path = base || '/'
 </script>
 
 <header class="header">
   <div class="inner">
-    <a href={homePath} class="brand">
+    <a href={home_path} class="brand">
       <svg
         aria-hidden="true"
         class="brand-mark"

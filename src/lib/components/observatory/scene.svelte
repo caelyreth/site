@@ -1,6 +1,6 @@
 <script lang="ts">
   import Boundary from '$lib/components/station/boundary.svelte'
-  import { getStationState } from '$lib/context/station'
+  import { get_station_state } from '$lib/context/station'
   import {
     SIGNAL_STATUS_LABELS,
     TRANSMISSION_COLORS,
@@ -10,9 +10,9 @@
     SkyMapPulseStatus,
     SkyMapRollerMotionStatus,
     SkyMapViewStatus,
-  } from '$lib/graphics/observatory/sky-map-field'
-  import { textRefreshIn, textRefreshOut } from '$lib/motion/text-refresh'
-  import { useTheme } from 'svelte-themes'
+  } from '$lib/graphics/observatory/field'
+  import { text_refresh_in, text_refresh_out } from '$lib/motion/text-refresh'
+  import { useTheme as use_theme } from 'svelte-themes'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
 
@@ -20,103 +20,105 @@
   import Window from './window.svelte'
 
   let capture: HTMLElement | undefined
-  let scrollFrame: number | undefined
-  let transmissionSequence = $state(1)
+  let scroll_frame: number | undefined
+  let transmission_sequence = $state(1)
   let transmissions = $state<
-    Array<{ colorIndex: number; sequence: number }>
+    Array<{ color_index: number; sequence: number }>
   >([])
   let spreading = $state(false)
-  let skyMapVisible = $state(false)
-  let shuttersLoaded = $state(false)
-  let typingPaused = $state(false)
-  let windowCompact = $state(false)
-  let windowReturning = $state(false)
-  let rollerMotion = $state<SkyMapRollerMotionStatus>({
+  let sky_map_visible = $state(false)
+  let shutters_loaded = $state(false)
+  let typing_paused = $state(false)
+  let window_compact = $state(false)
+  let window_returning = $state(false)
+  let roller_motion = $state<SkyMapRollerMotionStatus>({
     direction: 1,
     duration: 0,
     sequence: 0,
   })
-  let windowScaleDuration = $state(1000)
-  let spreadColorIndex = $state(0)
-  let viewStatus = $state<SkyMapViewStatus>({
+  let window_scale_duration = $state(1000)
+  let spread_color_index = $state(0)
+  let view_status = $state<SkyMapViewStatus>({
     declination: 42,
-    rightAscension: 322,
+    right_ascension: 322,
     scale: 0.48,
   })
-  const station = getStationState()
-  const theme = useTheme()
-  const transmissionColors = $derived(
+  const station = get_station_state()
+  const theme = use_theme()
+  const transmission_colors = $derived(
     theme.resolvedTheme === 'dark'
       ? TRANSMISSION_COLORS.dark
       : TRANSMISSION_COLORS.light,
   )
-  const windowScale = $derived(1 - station.scrollProgress * 0.2)
+  const window_scale = $derived(1 - station.scroll_progress * 0.2)
 
-  function beginSpread({
-    colorIndex,
-    rollerDirection,
+  // MARK: - sky map callbacks
+
+  function begin_spread({
+    color_index,
+    roller_direction,
   }: SkyMapPulseStatus) {
-    rollerMotion.direction = rollerDirection
-    spreadColorIndex = colorIndex
+    roller_motion.direction = roller_direction
+    spread_color_index = color_index
     spreading = true
-    typingPaused = true
-    windowReturning = false
+    typing_paused = true
+    window_returning = false
     transmissions = [
-      { colorIndex, sequence: transmissionSequence },
+      { color_index, sequence: transmission_sequence },
       ...transmissions,
     ].slice(0, 3)
-    transmissionSequence += 1
+    transmission_sequence += 1
   }
 
-  function endSpread() {
+  function end_spread() {
     spreading = false
-    typingPaused = false
-    windowReturning = false
-    windowCompact = false
+    typing_paused = false
+    window_returning = false
+    window_compact = false
   }
 
-  function contractWindow({ duration }: SkyMapLayerMotionStatus) {
-    windowScaleDuration = duration
-    windowReturning = false
-    windowCompact = true
+  function contract_window({ duration }: SkyMapLayerMotionStatus) {
+    window_scale_duration = duration
+    window_returning = false
+    window_compact = true
   }
 
-  function returnWindow({ duration }: SkyMapLayerMotionStatus) {
-    windowScaleDuration = duration
-    windowReturning = true
-    windowCompact = false
+  function return_window({ duration }: SkyMapLayerMotionStatus) {
+    window_scale_duration = duration
+    window_returning = true
+    window_compact = false
   }
 
-  function updateRollerMotion(nextMotion: SkyMapRollerMotionStatus) {
-    rollerMotion = nextMotion
+  function update_roller_motion(next_motion: SkyMapRollerMotionStatus) {
+    roller_motion = next_motion
   }
 
-  function resumeTyping() {
-    typingPaused = false
+  function resume_typing() {
+    typing_paused = false
   }
 
-  function revealSkyMap() {
-    shuttersLoaded = true
-    skyMapVisible = true
+  function reveal_sky_map() {
+    shutters_loaded = true
+    sky_map_visible = true
   }
 
-  function revealSkyMapField() {
-    skyMapVisible = true
+  function reveal_sky_map_field() {
+    sky_map_visible = true
   }
 
-  function transmissionColor(colorIndex: number) {
-    return transmissionColors[colorIndex] ?? transmissionColors[0]
+  function transmission_color(color_index: number) {
+    return transmission_colors[color_index] ?? transmission_colors[0]
   }
 
-  function transmissionLabel(colorIndex: number) {
-    return SIGNAL_STATUS_LABELS[colorIndex] ?? SIGNAL_STATUS_LABELS[0]
+  function transmission_label(color_index: number) {
+    return SIGNAL_STATUS_LABELS[color_index] ?? SIGNAL_STATUS_LABELS[0]
   }
 
-  function updateViewStatus(nextStatus: SkyMapViewStatus) {
-    viewStatus = nextStatus
+  function update_view_status(next_status: SkyMapViewStatus) {
+    view_status = next_status
   }
 
-  function formatCoordinate(value: number, signed = false) {
+  function format_coordinate(value: number, signed = false) {
     const absolute = Math.abs(value)
     let degrees = Math.floor(absolute)
     let minutes = Math.round((absolute - degrees) * 60)
@@ -128,70 +130,72 @@
     return `${sign}${String(degrees).padStart(3, '0')}D ${String(minutes).padStart(2, '0')}M`
   }
 
-  function updateProgress() {
-    scrollFrame = undefined
+  // MARK: - scroll tracking
+
+  function update_progress() {
+    scroll_frame = undefined
     if (!capture) return
 
     const travel = Math.max(capture.offsetHeight - window.innerHeight, 1)
-    const nextProgress = -capture.getBoundingClientRect().top / travel
-    station.scrollProgress = Math.min(1, Math.max(0, nextProgress))
+    const next_progress = -capture.getBoundingClientRect().top / travel
+    station.scroll_progress = Math.min(1, Math.max(0, next_progress))
   }
 
-  function scheduleProgressUpdate() {
-    if (scrollFrame !== undefined) return
-    scrollFrame = requestAnimationFrame(updateProgress)
+  function schedule_progress_update() {
+    if (scroll_frame !== undefined) return
+    scroll_frame = requestAnimationFrame(update_progress)
   }
 
-  function cancelProgressUpdate() {
-    if (scrollFrame === undefined) return
-    cancelAnimationFrame(scrollFrame)
-    scrollFrame = undefined
+  function cancel_progress_update() {
+    if (scroll_frame === undefined) return
+    cancelAnimationFrame(scroll_frame)
+    scroll_frame = undefined
   }
 
-  function observeCapture(node: HTMLElement) {
+  function observe_capture(node: HTMLElement) {
     capture = node
-    cancelProgressUpdate()
-    updateProgress()
+    cancel_progress_update()
+    update_progress()
 
     return () => {
       if (capture === node) capture = undefined
-      cancelProgressUpdate()
-      station.scrollProgress = 0
+      cancel_progress_update()
+      station.scroll_progress = 0
     }
   }
 </script>
 
 <svelte:window
-  onscroll={scheduleProgressUpdate}
-  onresize={scheduleProgressUpdate}
+  onscroll={schedule_progress_update}
+  onresize={schedule_progress_update}
 />
 
-<div class="capture" {@attach observeCapture}>
+<div class="capture" {@attach observe_capture}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
-      {#if shuttersLoaded}
+      {#if shutters_loaded}
         <Canvas
-          onDestinationArrival={resumeTyping}
-          onFadeInStart={revealSkyMapField}
-          onForegroundContractStart={contractWindow}
-          onForegroundReturnStart={returnWindow}
-          onRollerMotion={updateRollerMotion}
-          onSpreadEnd={endSpread}
-          onSpreadStart={beginSpread}
-          onViewChange={updateViewStatus}
+          on_destination_arrival={resume_typing}
+          on_fade_in_start={reveal_sky_map_field}
+          on_foreground_contract_start={contract_window}
+          on_foreground_return_start={return_window}
+          on_roller_motion={update_roller_motion}
+          on_spread_end={end_spread}
+          on_spread_start={begin_spread}
+          on_view_change={update_view_status}
         />
       {/if}
-      <div class="window-stage" style:transform={`scale(${windowScale})`}>
+      <div class="window-stage" style:transform={`scale(${window_scale})`}>
         <Window
           active={spreading}
-          compact={windowCompact}
-          onLoadComplete={revealSkyMap}
-          returning={windowReturning}
-          {rollerMotion}
-          rollerVisible={skyMapVisible}
-          scaleDuration={windowScaleDuration}
-          signalColor={transmissionColor(spreadColorIndex)}
-          {typingPaused}
+          compact={window_compact}
+          on_load_complete={reveal_sky_map}
+          returning={window_returning}
+          {roller_motion}
+          roller_visible={sky_map_visible}
+          scale_duration={window_scale_duration}
+          signal_color={transmission_color(spread_color_index)}
+          {typing_paused}
         />
       </div>
       <Boundary side="left" inScene reveal />
@@ -202,13 +206,13 @@
       <span
         class:spreading
         class="label corner corner-right label-top view-status"
-        style:--view-signal-color={transmissionColor(spreadColorIndex)}
+        style:--view-signal-color={transmission_color(spread_color_index)}
         ><span class="view-status-key">RA</span>
-        {formatCoordinate(viewStatus.rightAscension)} /
+        {format_coordinate(view_status.right_ascension)} /
         <span class="view-status-key">DEC</span>
-        {formatCoordinate(viewStatus.declination, true)} /
+        {format_coordinate(view_status.declination, true)} /
         <span class="view-status-key">Z</span>
-        {viewStatus.scale.toFixed(2)}</span
+        {view_status.scale.toFixed(2)}</span
       >
       <div
         aria-hidden="true"
@@ -225,14 +229,14 @@
             <span
               animate:flip={{ duration: 360 }}
               class="transmission"
-              in:fly={textRefreshIn}
-              out:fly={textRefreshOut}
-              style:--transmission-color={transmissionColor(
-                transmission.colorIndex,
+               in:fly={text_refresh_in}
+               out:fly={text_refresh_out}
+              style:--transmission-color={transmission_color(
+                transmission.color_index,
               )}
               style:--transmission-opacity={1 - index * 0.3}
               ><span class="transmission-name"
-                >{transmissionLabel(transmission.colorIndex)}</span
+                >{transmission_label(transmission.color_index)}</span
               ><span class="transmission-sequence"
                 >{String(transmission.sequence).padStart(3, '0')}</span
               ></span

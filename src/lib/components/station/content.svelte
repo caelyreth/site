@@ -70,7 +70,7 @@
   ] as const satisfies readonly Material[]
 </script>
 
-{#snippet directoryRow(title: string, detail: string, last = false)}
+{#snippet directory_row(title: string, detail: string, last = false)}
   <div class:directory-row-last={last} class="directory-row">
     <span class="directory-name font-serif">{title}</span>
     <span class="directory-detail">{detail}</span>
@@ -93,15 +93,15 @@
 <section class="content-section">
   <h2 class="section-heading font-serif">Station directory</h2>
   <div class="directory">
-    {@render directoryRow(
+    {@render directory_row(
       'Field log',
       'notes on architecture, geometry, space - forthcoming',
     )}
-    {@render directoryRow(
+    {@render directory_row(
       'Instruments',
       'things made, still running - forthcoming',
     )}
-    {@render directoryRow('Manifest', 'crew of one - forthcoming', true)}
+    {@render directory_row('Manifest', 'crew of one - forthcoming', true)}
   </div>
 </section>
 

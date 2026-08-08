@@ -4,20 +4,20 @@
   import Chrome from '$lib/components/station/chrome.svelte'
   import Footer from '$lib/components/station/footer.svelte'
   import Header from '$lib/components/station/header.svelte'
-  import { setStationState, type StationState } from '$lib/context/station'
+  import { set_station_state, type StationState } from '$lib/context/station'
   import { SvelteTheme } from 'svelte-themes'
 
   const { children } = $props()
 
   const themes = ['light', 'dark', 'system'] as const
   const station = $state<StationState>({
-    scrollProgress: 0,
+    scroll_progress: 0,
   })
-  setStationState(station)
+  set_station_state(station)
 </script>
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
-  <div class="shell" style:--p={station.scrollProgress}>
+  <div class="shell" style:--p={station.scroll_progress}>
     <Chrome />
     <Header />
     <main>

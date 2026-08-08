@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/sky-map-field'
+  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/field'
   import { onMount } from 'svelte'
 
   import FieldLog from './field-log.svelte'
@@ -8,13 +8,13 @@
   type WindowProps = {
     active?: boolean
     compact?: boolean
-    onLoadComplete?: () => void
+    on_load_complete?: () => void
     returning?: boolean
-    rollerMotion: SkyMapRollerMotionStatus
-    rollerVisible: boolean
-    scaleDuration?: number
-    signalColor: string
-    typingPaused: boolean
+    roller_motion: SkyMapRollerMotionStatus
+    roller_visible: boolean
+    scale_duration?: number
+    signal_color: string
+    typing_paused: boolean
   }
 
   const shutters = [
@@ -25,64 +25,64 @@
 
   /* oxlint-disable prefer-const -- props react to the live spread state. */
   let {
-    active = false,
-    compact = false,
-    onLoadComplete,
-    returning = false,
-    rollerMotion,
-    rollerVisible,
-    scaleDuration = 1000,
-    signalColor,
-    typingPaused,
+    active: is_active = false,
+    compact: is_compact = false,
+    on_load_complete,
+    returning: is_returning = false,
+    roller_motion,
+    roller_visible,
+    scale_duration = 1000,
+    signal_color,
+    typing_paused,
   }: WindowProps = $props()
 
-  let loadComplete = false
+  let load_complete = false
 
-  function completeLoad() {
-    if (loadComplete) return
-    loadComplete = true
-    onLoadComplete?.()
+  function complete_load() {
+    if (load_complete) return
+    load_complete = true
+    on_load_complete?.()
   }
 
-  function handleFrameAnimationEnd(event: AnimationEvent) {
+  function handle_frame_animation_end(event: AnimationEvent) {
     if (
       event.target !== event.currentTarget ||
       event.animationName !== 'window-expand'
     ) {
       return
     }
-    completeLoad()
+    complete_load()
   }
 
   onMount(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      completeLoad()
+      complete_load()
       return
     }
 
-    const fallback = window.setTimeout(completeLoad, 1_600)
-    return () => window.clearTimeout(fallback)
+    const fallback_timer = window.setTimeout(complete_load, 1_600)
+    return () => window.clearTimeout(fallback_timer)
   })
 </script>
 
 <figure
   aria-hidden="true"
-  class:active
-  class:compact
-  class:returning
+  class:active={is_active}
+  class:compact={is_compact}
+  class:returning={is_returning}
   class="window"
-  style:--window-scale-duration={`${scaleDuration}ms`}
-  style:--shutter-signal={signalColor}
+  style:--window-scale-duration={`${scale_duration}ms`}
+  style:--shutter-signal={signal_color}
 >
-  <div class="frame" onanimationend={handleFrameAnimationEnd}>
+  <div class="frame" onanimationend={handle_frame_animation_end}>
     <div class="strips">
       {#each shutters as shutter (shutter.code)}
         {#if shutter.code === 'AP-02'}
           <FieldLog
-            {active}
-            paused={typingPaused}
-            {signalColor}
-            visible={rollerVisible}
+            active={is_active}
+            paused={typing_paused}
+            {signal_color}
+            visible={roller_visible}
           />
         {:else}
           <section class="strip">
@@ -92,10 +92,10 @@
         {/if}
       {/each}
       <Roller
-        {active}
-        motion={rollerMotion}
-        {rollerVisible}
-        {signalColor}
+        active={is_active}
+        motion={roller_motion}
+        {roller_visible}
+        {signal_color}
       />
     </div>
     <span class="tick tick-top-left"></span>

@@ -1,8 +1,8 @@
 import { createContext } from 'svelte'
 
 export type StationState = {
-  scrollProgress: number
+  scroll_progress: number
 }
 
-export const [getStationState, setStationState] =
+export const [get_station_state, set_station_state] =
   createContext<StationState>()

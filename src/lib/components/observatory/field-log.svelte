@@ -5,7 +5,7 @@
   type FieldLogProps = {
     active?: boolean
     paused?: boolean
-    signalColor: string
+    signal_color: string
     visible: boolean
   }
   type FieldRecord = {
@@ -18,105 +18,109 @@
     'Transit note: the quiet interval is longer than predicted. Keep the aperture open until the last star settles. A weak trace is moving below the marked plane, too slow to call weather and too clean to call noise.',
     'The return signal arrives clean. Mark the change, wait for the dust to clear, and begin the next observation. Three distant points remain aligned after the route is gone; their order is unchanged.',
   ]
-  const corruptionGlyphs = ['//', '::', '++', '..', 'XX', '00', '<>']
+  const corruption_glyphs = ['//', '::', '++', '..', 'XX', '00', '<>']
 
   /* oxlint-disable prefer-const -- props react to live observatory state. */
   let {
     active = false,
     paused = false,
-    signalColor,
+    signal_color,
     visible,
   }: FieldLogProps = $props()
 
+  // MARK: - typewriter
   let records = $state<FieldRecord[]>([{ id: 1, text: '' }])
-  let entryIndex = $state(0)
-  let characterIndex = $state(0)
+  let entry_index = $state(0)
+  let character_index = $state(0)
   let phase = $state<'typing' | 'holding'>('typing')
-  let reducedMotion = $state(false)
+  let reduced_motion = $state(false)
   let timer: ReturnType<typeof setTimeout> | undefined
   let corruption = $state('')
-  let corruptionX = $state(48)
-  let corruptionY = $state(36)
-  let corruptionTimer: ReturnType<typeof setTimeout> | undefined
+  let corruption_x = $state(48)
+  let corruption_y = $state(36)
+  let corruption_timer: ReturnType<typeof setTimeout> | undefined
 
-  const statusLabel = $derived(
-    paused && (phase !== 'typing' || endsWord(currentText()))
+  const status_label = $derived(
+    paused && (phase !== 'typing' || ends_word(current_text()))
       ? 'HOLD'
       : phase === 'typing'
         ? 'WRITE'
         : 'FILED',
   )
-  const atPauseBoundary = $derived(
-    paused && (phase !== 'typing' || endsWord(currentText())),
+  const at_pause_boundary = $derived(
+    paused && (phase !== 'typing' || ends_word(current_text())),
   )
 
-  function currentRecord() {
+  function current_record() {
     return records.at(-1)
   }
 
-  function currentText() {
-    return currentRecord()?.text ?? ''
+  function current_text() {
+    return current_record()?.text ?? ''
   }
 
-  function endsWord(value: string) {
+  function ends_word(value: string) {
     const character = value.at(-1)
     return character === undefined || /[\s.,;:!?]/.test(character)
   }
 
-  function shouldFinishCurrentWord() {
-    return paused && phase === 'typing' && !endsWord(currentText())
+  function should_finish_current_word() {
+    return paused && phase === 'typing' && !ends_word(current_text())
   }
 
-  function canAdvance() {
-    return visible && !reducedMotion && (!paused || shouldFinishCurrentWord())
+  function can_advance() {
+    return visible && !reduced_motion && (!paused || should_finish_current_word())
   }
 
-  function clearTimer() {
+  function clear_timer() {
     if (timer === undefined) return
     clearTimeout(timer)
     timer = undefined
   }
 
-  function clearCorruptionTimer() {
-    if (corruptionTimer === undefined) return
-    clearTimeout(corruptionTimer)
-    corruptionTimer = undefined
+  // MARK: - corruption
+  function clear_corruption_timer() {
+    if (corruption_timer === undefined) return
+    clearTimeout(corruption_timer)
+    corruption_timer = undefined
   }
 
-  function canScheduleCorruption() {
-    return corruptionTimer === undefined && visible && !reducedMotion
+  function can_schedule_corruption() {
+    return corruption_timer === undefined && visible && !reduced_motion
   }
 
-  function scheduleCorruption(isActive: boolean) {
-    if (!canScheduleCorruption()) return
-    corruptionTimer = setTimeout(() => {
-      corruptionTimer = undefined
+  function schedule_corruption(is_active: boolean) {
+    if (!can_schedule_corruption()) return
+    corruption_timer = setTimeout(() => {
+      corruption_timer = undefined
       corruption =
-        corruptionGlyphs[Math.floor(Math.random() * corruptionGlyphs.length)]
-      corruptionX = 34 + Math.random() * 50
-      corruptionY = 18 + Math.random() * 68
-      scheduleCorruption(active)
-    }, isActive ? 900 + Math.random() * 700 : 420 + Math.random() * 400)
+        corruption_glyphs[
+          Math.floor(Math.random() * corruption_glyphs.length)
+        ]
+      corruption_x = 34 + Math.random() * 50
+      corruption_y = 18 + Math.random() * 68
+      schedule_corruption(active)
+    }, is_active ? 900 + Math.random() * 700 : 420 + Math.random() * 400)
   }
 
-  function canScheduleTypewriter() {
+  function can_schedule_typewriter() {
     return (
       timer === undefined &&
       visible &&
-      !reducedMotion &&
-      (!paused || shouldFinishCurrentWord())
+      !reduced_motion &&
+      (!paused || should_finish_current_word())
     )
   }
 
   function schedule(delay: number) {
-    if (!canScheduleTypewriter()) return
+    if (!can_schedule_typewriter()) return
     timer = setTimeout(() => {
       timer = undefined
       advance()
     }, delay)
   }
 
-  function characterDelay(character: string) {
+  function character_delay(character: string) {
     if (character === '\n') return 520 + Math.random() * 260
     if (/[.!?]/.test(character)) return 420 + Math.random() * 360
     if (/[,;:]/.test(character)) return 180 + Math.random() * 180
@@ -124,45 +128,45 @@
     return 30 + Math.random() * 68
   }
 
-  function advanceTyping() {
-    const entry = entries[entryIndex]
-    if (characterIndex >= entry.length) {
+  function advance_typing() {
+    const entry = entries[entry_index]
+    if (character_index >= entry.length) {
       phase = 'holding'
       schedule(1200 + Math.random() * 1100)
       return
     }
 
-    const record = currentRecord()
+    const record = current_record()
     if (!record) return
-    const character = entry[characterIndex]
+    const character = entry[character_index]
     record.text += character
-    characterIndex += 1
-    schedule(characterDelay(character))
+    character_index += 1
+    schedule(character_delay(character))
   }
 
-  function beginNextRecord() {
-    entryIndex = (entryIndex + 1) % entries.length
+  function begin_next_record() {
+    entry_index = (entry_index + 1) % entries.length
     records.push({ id: records.length + 1, text: '' })
-    characterIndex = 0
+    character_index = 0
     phase = 'typing'
     schedule(280 + Math.random() * 320)
   }
 
   function advance() {
-    if (!canAdvance()) return
+    if (!can_advance()) return
     if (phase === 'typing') {
-      advanceTyping()
+      advance_typing()
       return
     }
-    beginNextRecord()
+    begin_next_record()
   }
 
-  function syncTypewriter() {
+  function sync_typewriter() {
     if (paused) {
-      if (shouldFinishCurrentWord()) {
+      if (should_finish_current_word()) {
         schedule(0)
       } else {
-        clearTimer()
+        clear_timer()
       }
       return
     }
@@ -170,60 +174,60 @@
   }
 
   $effect(() => {
-    const isActive = active
-    if (!visible || reducedMotion) {
-      clearCorruptionTimer()
+    const is_active = active
+    if (!visible || reduced_motion) {
+      clear_corruption_timer()
       corruption = ''
       return
     }
-    clearCorruptionTimer()
+    clear_corruption_timer()
     corruption = ''
-    scheduleCorruption(isActive)
+    schedule_corruption(is_active)
   })
 
   $effect(() => {
-    if (!visible || reducedMotion) {
-      clearTimer()
+    if (!visible || reduced_motion) {
+      clear_timer()
       return
     }
-    syncTypewriter()
+    sync_typewriter()
   })
 
   onMount(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleReducedMotion = () => {
-      reducedMotion = mediaQuery.matches
-      if (!reducedMotion) return
-      clearTimer()
-      const record = currentRecord()
+    const media_query = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handle_reduced_motion = () => {
+      reduced_motion = media_query.matches
+      if (!reduced_motion) return
+      clear_timer()
+      const record = current_record()
       if (!record) return
-      record.text = entries[entryIndex]
-      characterIndex = record.text.length
+      record.text = entries[entry_index]
+      character_index = record.text.length
       phase = 'holding'
     }
 
-    handleReducedMotion()
-    mediaQuery.addEventListener('change', handleReducedMotion)
+    handle_reduced_motion()
+    media_query.addEventListener('change', handle_reduced_motion)
 
     return () => {
-      mediaQuery.removeEventListener('change', handleReducedMotion)
-      clearTimer()
-      clearCorruptionTimer()
+      media_query.removeEventListener('change', handle_reduced_motion)
+      clear_timer()
+      clear_corruption_timer()
     }
   })
 
   onDestroy(() => {
-    clearTimer()
-    clearCorruptionTimer()
+    clear_timer()
+    clear_corruption_timer()
   })
 </script>
 
 <section
   class:active
-  class:paused={atPauseBoundary}
+  class:paused={at_pause_boundary}
   class:visible
   class="strip field-log"
-  style:--field-signal={signalColor}
+  style:--field-signal={signal_color}
 >
   <span class="field-meta">AP-02</span>
   <span class="field-readout">EL 19</span>
@@ -234,14 +238,14 @@
       <div class="field-stream">
         {#each records as record, index (record.id)}
           <article
-            animate:flip={{ duration: reducedMotion ? 0 : 440 }}
+            animate:flip={{ duration: reduced_motion ? 0 : 440 }}
             class:complete={index < records.length - 1}
             class:current={index === records.length - 1}
             class="field-entry"
           >
             <header class="entry-header">
               <span>REC-{String(record.id).padStart(3, '0')}</span>
-              <span>{index === records.length - 1 ? statusLabel : 'FILED'}</span>
+              <span>{index === records.length - 1 ? status_label : 'FILED'}</span>
             </header>
             <p class="entry-copy">
               {record.text}{#if index === records.length - 1}
@@ -252,8 +256,8 @@
               <span
                 aria-hidden="true"
                 class="entry-corruption"
-                style:--corruption-x={`${corruptionX}%`}
-                style:--corruption-y={`${corruptionY}%`}
+                style:--corruption-x={`${corruption_x}%`}
+                style:--corruption-y={`${corruption_y}%`}
                 >{corruption}</span
               >
             {/if}

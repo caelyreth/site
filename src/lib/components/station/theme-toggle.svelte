@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { flushSync } from 'svelte'
-  import { useTheme } from 'svelte-themes'
+  import { flushSync as flush_sync } from 'svelte'
+  import { useTheme as use_theme } from 'svelte-themes'
 
   type ThemeMode = 'system' | 'light' | 'dark'
 
@@ -22,33 +22,34 @@
     icon: string
   }>
 
-  const theme = useTheme()
-  const activeTheme = $derived((theme.theme ?? 'system') as ThemeMode)
+  const theme = use_theme()
+  const active_theme = $derived((theme.theme ?? 'system') as ThemeMode)
 
-  function applyTheme(next: ThemeMode) {
-    flushSync(() => {
+  // MARK: - theme transition
+  function apply_theme(next: ThemeMode) {
+    flush_sync(() => {
       theme.theme = next
     })
   }
 
-  function shouldSkipTransition(next: ThemeMode) {
-    const resolvedNext = next === 'system' ? theme.systemTheme : next
+  function should_skip_transition(next: ThemeMode) {
+    const resolved_next = next === 'system' ? theme.systemTheme : next
     return (
-      resolvedNext === theme.resolvedTheme ||
+      resolved_next === theme.resolvedTheme ||
       !document.startViewTransition ||
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     )
   }
 
-  function setTheme(next: ThemeMode) {
-    if (next === activeTheme) return
+  function set_theme(next: ThemeMode) {
+    if (next === active_theme) return
 
-    if (shouldSkipTransition(next)) {
-      applyTheme(next)
+    if (should_skip_transition(next)) {
+      apply_theme(next)
       return
     }
 
-    document.startViewTransition(() => applyTheme(next))
+    document.startViewTransition(() => apply_theme(next))
   }
 </script>
 
@@ -56,11 +57,11 @@
   {#each modes as mode (mode.value)}
     <button
       type="button"
-      class:active={activeTheme === mode.value}
+      class:active={active_theme === mode.value}
       aria-label={mode.label}
-      aria-pressed={activeTheme === mode.value}
+      aria-pressed={active_theme === mode.value}
       title={mode.label}
-      onclick={() => setTheme(mode.value)}
+      onclick={() => set_theme(mode.value)}
     >
       <span class={mode.icon} aria-hidden="true"></span>
     </button>
