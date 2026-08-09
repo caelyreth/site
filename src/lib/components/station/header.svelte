@@ -37,17 +37,17 @@
     --header-ink: color-mix(
       in oklab,
       var(--opening-ink),
-      var(--color-ink) calc(var(--p, 0) * 100%)
+      var(--color-ink) calc(var(--observatory-progress) * 100%)
     );
     --header-muted: color-mix(
       in oklab,
       var(--opening-muted),
-      var(--color-muted) calc(var(--p, 0) * 100%)
+      var(--color-muted) calc(var(--observatory-progress) * 100%)
     );
     --header-rule: color-mix(
       in oklab,
       transparent,
-      var(--color-rule) calc(var(--p, 0) * 100%)
+      var(--color-rule) calc(var(--observatory-progress) * 100%)
     );
     position: fixed;
     top: 0;
@@ -56,14 +56,13 @@
     width: 100%;
     max-width: calc(
       var(--frame-measure) + (100vw - var(--frame-measure)) *
-        (1 - var(--p, 0))
+        var(--observatory-opening)
     );
-    border-bottom: 1px solid var(--header-rule);
     color: var(--header-ink);
     background-color: color-mix(
       in oklab,
       transparent,
-      var(--color-paper) calc(var(--p, 0) * 100%)
+      var(--color-paper) calc(var(--observatory-progress) * 100%)
     );
     transform: translateX(-50%);
   }
@@ -91,7 +90,7 @@
     display: flex;
     width: 100%;
     height: var(--header-block-size);
-    padding-inline: var(--inline-gutter);
+    padding-inline: var(--observatory-header-inset);
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
@@ -143,5 +142,11 @@
     .sol {
       display: none;
     }
+  }
+
+  :global(
+    html[data-observatory-pending='true'] .shell:not(.station-ready) .header
+  ) {
+    visibility: hidden;
   }
 </style>

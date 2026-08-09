@@ -1,6 +1,7 @@
 import { createContext } from 'svelte'
 
 export type StationState = {
+  is_ready: boolean
   scroll_progress: number
 }
 

@@ -5,7 +5,11 @@
     reveal?: boolean
   }
 
-  const { side, inScene: in_scene = false, reveal = false }: Props = $props()
+  const {
+    side,
+    inScene: in_scene = false,
+    reveal = false,
+  }: Props = $props()
 </script>
 
 <div
@@ -63,7 +67,11 @@
   }
 
   .scene.reveal {
-    opacity: var(--p, 0);
+    opacity: var(--observatory-progress);
+  }
+
+  .station {
+    opacity: var(--observatory-progress);
   }
 
   .left {

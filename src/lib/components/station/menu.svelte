@@ -87,6 +87,7 @@
 
 <button
   type="button"
+  class:is-open={menu_open}
   class="trigger"
   aria-controls="station-menu"
   aria-expanded={menu_open}
@@ -122,37 +123,80 @@
 
 <style>
   .trigger {
+    --trigger-rule: color-mix(in oklab, var(--header-ink) 28%, transparent);
+    --trigger-surface: color-mix(
+      in oklab,
+      var(--header-ink) 4%,
+      transparent
+    );
+
+    position: relative;
     display: grid;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.75rem;
+    height: 1.75rem;
     flex: none;
     padding: 0;
     cursor: pointer;
-    border: 1px solid
-      color-mix(in oklab, var(--header-ink) 35%, transparent);
+    border: 0;
+    border-block: 1px solid var(--trigger-rule);
     color: var(--header-ink);
-    background: transparent;
+    background-color: var(--trigger-surface);
     place-items: center;
     transition:
+      background-color var(--dur-micro) var(--ease-out),
       border-color var(--dur-micro) var(--ease-out),
-      color var(--dur-micro) var(--ease-out),
-      transform var(--dur-micro) var(--ease-out);
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .trigger::before {
+    position: absolute;
+    inset: 0.3125rem 0.375rem;
+    pointer-events: none;
+    content: '';
+    border-inline: 1px solid var(--trigger-rule);
   }
 
   .trigger :global(span) {
+    position: relative;
+    z-index: 1;
     width: 1.125rem;
     height: 1.125rem;
+    transition: transform var(--dur-micro) var(--ease-out);
   }
 
   @media (hover: hover) {
     .trigger:hover {
-      border-color: var(--header-ink);
+      --trigger-rule: color-mix(
+        in oklab,
+        var(--header-ink) 58%,
+        transparent
+      );
+      --trigger-surface: color-mix(
+        in oklab,
+        var(--header-ink) 8%,
+        transparent
+      );
       color: var(--color-accent);
     }
   }
 
+  .trigger.is-open,
   .trigger:active {
+    --trigger-rule: var(--header-ink);
+    --trigger-surface: color-mix(
+      in oklab,
+      var(--header-ink) 12%,
+      transparent
+    );
+  }
+
+  .trigger:active :global(span) {
     transform: translateY(1px);
+  }
+
+  .trigger:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -2px;
   }
 
   .menu {

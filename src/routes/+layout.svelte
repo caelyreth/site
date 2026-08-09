@@ -4,26 +4,32 @@
   import Chrome from '$lib/components/station/chrome.svelte'
   import Footer from '$lib/components/station/footer.svelte'
   import Header from '$lib/components/station/header.svelte'
-  import { set_station_state, type StationState } from '$lib/context/station'
+  import {
+    set_station_state,
+    type StationState,
+  } from '$lib/context/station'
   import { SvelteTheme } from 'svelte-themes'
 
   const { children } = $props()
 
   const themes = ['light', 'dark', 'system'] as const
   const station = $state<StationState>({
+    is_ready: false,
     scroll_progress: 0,
   })
   set_station_state(station)
 </script>
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
-  <div class="shell" style:--p={station.scroll_progress}>
+  <div
+    class:station-ready={station.is_ready}
+    class="shell"
+    style:--p={station.scroll_progress}
+  >
     <Chrome />
     <Header />
     <main>
-      <div class="deck">
-        {@render children()}
-      </div>
+      {@render children()}
     </main>
     <Footer />
   </div>
@@ -31,6 +37,32 @@
 
 <style>
   .shell {
+    --observatory-progress: var(--p, 0);
+    --observatory-opening: calc(1 - var(--observatory-progress));
+    --observatory-panel-inset: calc(
+      var(--observatory-frame-inset) * var(--observatory-opening)
+    );
+    --observatory-panel-top: calc(
+      var(--header-block-size) * var(--observatory-opening)
+    );
+    --observatory-panel-radius: calc(
+      var(--observatory-frame-radius) * var(--observatory-opening)
+    );
+    --observatory-panel-rule: color-mix(
+      in oklab,
+      var(--color-rule) calc(var(--observatory-opening) * 100%),
+      transparent
+    );
+    --observatory-content-rule: color-mix(
+      in oklab,
+      var(--observatory-panel-rule),
+      var(--color-rule) calc(var(--observatory-progress) * 100%)
+    );
+    --observatory-header-inset: calc(
+      var(--observatory-frame-inset) +
+        (var(--inline-gutter) - var(--observatory-frame-inset)) *
+        var(--observatory-progress)
+    );
     position: relative;
     z-index: 10;
     display: flex;
@@ -44,15 +76,5 @@
     flex: 1;
     flex-direction: column;
     min-height: 100vh;
-  }
-
-  .deck {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    width: 100%;
-    margin: 0 auto;
-    padding-inline: var(--inline-gutter);
-    background-color: var(--color-paper);
   }
 </style>

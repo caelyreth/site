@@ -21,6 +21,8 @@
   --guide-outset: 13px;
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
+  --observatory-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
+  --observatory-frame-radius: clamp(0.5rem, 1vw, 0.875rem);
 
   /* texture */
   --noise-tile: url('./lib/assets/noise-tile.webp');

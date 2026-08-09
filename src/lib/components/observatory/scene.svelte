@@ -1,17 +1,20 @@
 <script lang="ts">
   import Boundary from '$lib/components/station/boundary.svelte'
   import { get_station_state } from '$lib/context/station'
-  import {
-    SIGNAL_STATUS_LABELS,
-    TRANSMISSION_COLORS,
-  } from '$lib/graphics/observatory/signal-colors'
   import type {
     SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
     SkyMapRollerMotionStatus,
     SkyMapViewStatus,
   } from '$lib/graphics/observatory/field'
-  import { text_refresh_in, text_refresh_out } from '$lib/motion/text-refresh'
+  import {
+    SIGNAL_STATUS_LABELS,
+    TRANSMISSION_COLORS,
+  } from '$lib/graphics/observatory/signal-colors'
+  import {
+    text_refresh_in,
+    text_refresh_out,
+  } from '$lib/motion/text-refresh'
   import { useTheme as use_theme } from 'svelte-themes'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
@@ -20,7 +23,9 @@
   import Window from './window.svelte'
 
   let capture: HTMLElement | undefined
+  let initial_sync_frame: number | undefined
   let scroll_frame: number | undefined
+  const scroll_storage_key = 'caelyreth:observatory-scroll-y'
   let transmission_sequence = $state(1)
   let transmissions = $state<
     Array<{ color_index: number; sequence: number }>
@@ -141,6 +146,31 @@
     station.scroll_progress = Math.min(1, Math.max(0, next_progress))
   }
 
+  function persist_scroll_position() {
+    sessionStorage.setItem(scroll_storage_key, String(window.scrollY))
+  }
+
+  function saved_scroll_position() {
+    const navigation = performance.getEntriesByType('navigation')[0] as
+      | PerformanceNavigationTiming
+      | undefined
+    if (navigation?.type !== 'reload') return
+
+    const saved_scroll_y = Number(
+      sessionStorage.getItem(scroll_storage_key),
+    )
+    if (!Number.isFinite(saved_scroll_y)) return
+
+    return Math.max(0, saved_scroll_y)
+  }
+
+  function restore_scroll_position() {
+    const saved_scroll_y = saved_scroll_position()
+    if (!saved_scroll_y || window.scrollY !== 0) return
+
+    window.scrollTo(0, saved_scroll_y)
+  }
+
   function schedule_progress_update() {
     if (scroll_frame !== undefined) return
     scroll_frame = requestAnimationFrame(update_progress)
@@ -152,20 +182,45 @@
     scroll_frame = undefined
   }
 
+  function cancel_initial_sync() {
+    if (initial_sync_frame === undefined) return
+    cancelAnimationFrame(initial_sync_frame)
+    initial_sync_frame = undefined
+  }
+
+  function sync_initial_progress() {
+    cancel_initial_sync()
+    restore_scroll_position()
+    update_progress()
+    initial_sync_frame = requestAnimationFrame(() => {
+      initial_sync_frame = requestAnimationFrame(() => {
+        initial_sync_frame = undefined
+        update_progress()
+        station.is_ready = true
+      })
+    })
+  }
+
   function observe_capture(node: HTMLElement) {
     capture = node
+    station.is_ready = false
+    document.documentElement.dataset.observatoryPending = 'true'
     cancel_progress_update()
-    update_progress()
+    sync_initial_progress()
 
     return () => {
       if (capture === node) capture = undefined
+      cancel_initial_sync()
       cancel_progress_update()
+      document.documentElement.removeAttribute('data-observatory-pending')
+      station.is_ready = false
       station.scroll_progress = 0
     }
   }
 </script>
 
 <svelte:window
+  onpagehide={persist_scroll_position}
   onscroll={schedule_progress_update}
   onresize={schedule_progress_update}
 />
@@ -229,8 +284,8 @@
             <span
               animate:flip={{ duration: 360 }}
               class="transmission"
-               in:fly={text_refresh_in}
-               out:fly={text_refresh_out}
+              in:fly={text_refresh_in}
+              out:fly={text_refresh_out}
               style:--transmission-color={transmission_color(
                 transmission.color_index,
               )}
@@ -261,7 +316,7 @@
   .scene {
     --scene-inline-inset: calc(
       var(--inline-gutter) + max(0px, 50vw - var(--half-measure)) *
-        var(--p, 0)
+        var(--observatory-progress)
     );
     position: sticky;
     top: 0;
@@ -271,21 +326,35 @@
     height: 100dvh;
     margin-inline: calc(50% - 50vw);
     overflow: hidden;
+    clip-path: inset(
+      0
+        calc(
+          max(0px, 50vw - var(--half-measure)) * var(--observatory-progress)
+        )
+        0
+    );
+    will-change: clip-path;
   }
 
   .foreground {
     position: absolute;
-    inset: 0;
+    inset: var(--observatory-panel-top) var(--observatory-panel-inset)
+      var(--observatory-panel-inset);
     z-index: 1;
     display: grid;
     overflow: hidden;
-    border-block: 1px solid var(--color-rule);
+    border: 1px solid var(--observatory-panel-rule);
+    border-block-color: var(--observatory-content-rule);
+    border-radius: var(--observatory-panel-radius);
     background-color: var(--color-paper-prime);
     clip-path: inset(
-      0 calc(max(0px, 50vw - var(--half-measure)) * var(--p, 0)) 0
+      0
+        calc(
+          max(0px, 50vw - var(--half-measure)) * var(--observatory-progress)
+        )
+        0
     );
     place-items: center;
-    will-change: clip-path;
   }
 
   .foreground::before {
@@ -332,7 +401,10 @@
   }
 
   .label-top {
-    top: var(--header-safe-inset);
+    top: calc(
+      1.25rem + (var(--header-safe-inset) - 1.25rem) *
+        var(--observatory-progress)
+    );
   }
 
   .label-bottom {
@@ -416,5 +488,11 @@
       font-size: 0.5625rem;
       letter-spacing: 0.08em;
     }
+  }
+
+  :global(
+    html[data-observatory-pending='true'] .shell:not(.station-ready) .scene
+  ) {
+    visibility: hidden;
   }
 </style>
