@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/types'
+  import { reduced_motion } from '$lib/motion/reduced-motion'
   import { onMount } from 'svelte'
 
   import './aperture-strip.css'
@@ -50,7 +51,7 @@
   }
 
   onMount(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (reduced_motion.current) {
       complete_load()
       return
     }
@@ -108,7 +109,7 @@
     transform-origin: center;
     will-change: transform;
     transition: transform var(--window-scale-duration)
-      cubic-bezier(0.46, 0, 0.22, 1);
+      var(--ease-observatory-traverse);
   }
 
   .window.compact {
@@ -116,12 +117,13 @@
   }
 
   .window.returning {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.18, 1);
+    transition-timing-function: var(--ease-observatory-return);
   }
 
   .frame {
     position: relative;
-    animation: window-expand 640ms var(--ease-in-out-medium) 880ms both;
+    animation: window-expand var(--dur-observatory-reveal)
+      var(--ease-in-out-medium) 880ms both;
   }
 
   .strips {

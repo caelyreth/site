@@ -1,3 +1,7 @@
+import {
+  reduced_motion,
+  type ReducedMotionPreference,
+} from '$lib/motion/reduced-motion'
 /* oxlint-disable complexity, typescript/prefer-readonly-parameter-types -- WebGL setup and pulse state share one lifecycle. */
 import { Quaternion, Vector3 } from 'three'
 
@@ -44,6 +48,7 @@ export function create_sky_map_engine(
   sky_data: SkyMapPayload,
   initial_dark = false,
   callbacks: SkyMapEngineCallbacks = {},
+  motion_preference: ReducedMotionPreference = reduced_motion,
 ): SkyMapEngine {
   // MARK: - setup
 
@@ -60,9 +65,6 @@ export function create_sky_map_engine(
   }
   const sky_map_renderer = maybe_sky_map_renderer
 
-  const reduced_motion = window.matchMedia(
-    '(prefers-reduced-motion: reduce)',
-  )
   const base_right = new Vector3(
     SKY_VIEW_BASIS[0],
     SKY_VIEW_BASIS[1],
@@ -662,7 +664,7 @@ export function create_sky_map_engine(
   }
 
   function sync_activity() {
-    const next_active = requested_active && !reduced_motion.matches
+    const next_active = requested_active && !motion_preference.current
     if (active === next_active) return
     stop()
     active = next_active
@@ -686,7 +688,9 @@ export function create_sky_map_engine(
   apply_view_state()
   sync_trail_view()
   resize_observer.observe(target)
-  reduced_motion.addEventListener('change', handle_reduced_motion)
+  const unsubscribe_reduced_motion = motion_preference.subscribe(
+    handle_reduced_motion,
+  )
   resize()
 
   return {
@@ -703,7 +707,7 @@ export function create_sky_map_engine(
       disposed = true
       stop()
       resize_observer.disconnect()
-      reduced_motion.removeEventListener('change', handle_reduced_motion)
+      unsubscribe_reduced_motion()
       sky_map_renderer.dispose()
     },
   }

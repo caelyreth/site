@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { reduced_motion as motion_preference } from '$lib/motion/reduced-motion'
   import { onDestroy, onMount } from 'svelte'
   import { flip } from 'svelte/animate'
 
@@ -181,6 +182,17 @@
     schedule(120)
   }
 
+  function handle_reduced_motion(next_reduced_motion: boolean) {
+    reduced_motion = next_reduced_motion
+    if (!reduced_motion) return
+    clear_timer()
+    const record = current_record()
+    if (!record) return
+    record.text = entries[entry_index]
+    character_index = record.text.length
+    phase = 'holding'
+  }
+
   $effect(() => {
     const is_active = active
     if (!visible || reduced_motion) {
@@ -202,25 +214,10 @@
   })
 
   onMount(() => {
-    const media_query = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    )
-    const handle_reduced_motion = () => {
-      reduced_motion = media_query.matches
-      if (!reduced_motion) return
-      clear_timer()
-      const record = current_record()
-      if (!record) return
-      record.text = entries[entry_index]
-      character_index = record.text.length
-      phase = 'holding'
-    }
-
-    handle_reduced_motion()
-    media_query.addEventListener('change', handle_reduced_motion)
+    const unsubscribe = motion_preference.subscribe(handle_reduced_motion)
 
     return () => {
-      media_query.removeEventListener('change', handle_reduced_motion)
+      unsubscribe()
       clear_timer()
       clear_corruption_timer()
     }
@@ -299,7 +296,8 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.08em;
     line-height: 1;
-    transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--dur-observatory-content)
+      var(--ease-observatory-state);
   }
 
   .field-paper {
@@ -363,9 +361,9 @@
     border: 1px solid var(--field-line);
     background: var(--field-card);
     transition:
-      background-color 480ms var(--ease-out),
-      border-color 480ms var(--ease-out),
-      opacity 480ms var(--ease-out);
+      background-color var(--dur-observatory-content) var(--ease-out),
+      border-color var(--dur-observatory-content) var(--ease-out),
+      opacity var(--dur-observatory-content) var(--ease-out);
   }
 
   .field-entry.complete {
@@ -425,12 +423,12 @@
     min-height: 1.5em;
     margin: 0.38rem 0 0;
     color: color-mix(in oklab, var(--color-ink) 64%, var(--color-muted));
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-family: var(--font-stack-mono);
     font-size: 0.78rem;
     line-height: 1.48;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
-    transition: color 520ms var(--ease-out);
+    transition: color var(--dur-observatory-surface) var(--ease-out);
   }
 
   .entry-corruption {
@@ -439,7 +437,7 @@
     top: var(--corruption-y);
     left: var(--corruption-x);
     color: var(--color-accent);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-family: var(--font-stack-mono);
     font-size: 0.58rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -462,7 +460,8 @@
     background: var(--color-accent);
     opacity: 0.82;
     animation: caret-blink 920ms steps(1, end) infinite;
-    transition: background-color 480ms var(--ease-out);
+    transition: background-color var(--dur-observatory-content)
+      var(--ease-out);
   }
 
   .field-log.paused .caret {

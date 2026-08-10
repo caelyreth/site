@@ -32,11 +32,13 @@
   border-inline: 1px solid var(--observatory-strip-line);
   background-color: var(--observatory-strip-fill);
   clip-path: inset(0 100% 0 0);
-  animation: observatory-strip-reveal 640ms var(--ease-in-out)
-    var(--observatory-strip-reveal-delay) both;
+  animation: observatory-strip-reveal var(--dur-observatory-reveal)
+    var(--ease-in-out) var(--observatory-strip-reveal-delay) both;
   transition:
-    border-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    border-color var(--dur-observatory-surface)
+      var(--ease-observatory-state),
+    background-color var(--dur-observatory-surface)
+      var(--ease-observatory-state);
 }
 
 .observatory-strip::before {
@@ -71,7 +73,8 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.08em;
   line-height: 1;
-  transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color var(--dur-observatory-surface)
+    var(--ease-observatory-state);
 }
 
 .observatory-strip__meta {

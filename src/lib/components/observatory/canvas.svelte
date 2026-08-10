@@ -114,7 +114,7 @@
     height: 100%;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 1000ms var(--ease-out);
+    transition: opacity var(--dur-observatory-fade) var(--ease-out);
   }
 
   .canvas.is-ready {

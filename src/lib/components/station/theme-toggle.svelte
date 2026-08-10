@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { reduced_motion } from '$lib/motion/reduced-motion'
   import { flushSync as flush_sync } from 'svelte'
   import { useTheme as use_theme } from 'svelte-themes'
 
@@ -37,7 +38,7 @@
     return (
       resolved_next === theme.resolvedTheme ||
       !document.startViewTransition ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      reduced_motion.current
     )
   }
 
@@ -71,9 +72,9 @@
 <style>
   .theme-toggle {
     display: inline-grid;
-    height: 2.25rem;
+    height: var(--theme-toggle-size, 2.25rem);
     border: 1px solid var(--toggle-rule, var(--color-rule));
-    grid-auto-columns: 2.25rem;
+    grid-auto-columns: var(--theme-toggle-size, 2.25rem);
     grid-auto-flow: column;
   }
 
@@ -106,7 +107,7 @@
     z-index: 1;
   }
 
-  .theme-toggle :global(span) {
+  .theme-toggle span {
     width: 1rem;
     height: 1rem;
   }
@@ -119,8 +120,8 @@
 
   @media (max-width: 24rem) {
     .theme-toggle {
-      height: 2rem;
-      grid-auto-columns: 2rem;
+      height: var(--theme-toggle-size, 2rem);
+      grid-auto-columns: var(--theme-toggle-size, 2rem);
     }
   }
 </style>

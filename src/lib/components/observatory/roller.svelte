@@ -117,8 +117,8 @@
   .material-exposure {
     transform-origin: center;
     transition:
-      opacity 720ms var(--ease-out),
-      transform 960ms var(--ease-in-out);
+      opacity var(--dur-observatory-travel) var(--ease-out),
+      transform var(--dur-observatory-fade) var(--ease-in-out);
   }
 
   .roller-readout {
@@ -145,8 +145,8 @@
     transform: scaleX(0.72);
     transform-origin: left;
     transition:
-      background-color 520ms var(--ease-out),
-      opacity 520ms var(--ease-out);
+      background-color var(--dur-observatory-surface) var(--ease-out),
+      opacity var(--dur-observatory-surface) var(--ease-out);
   }
 
   .continuity-line::after {
@@ -159,8 +159,8 @@
     content: '';
     transform: rotate(45deg);
     transition:
-      border-color 520ms var(--ease-out),
-      transform 720ms var(--ease-out);
+      border-color var(--dur-observatory-surface) var(--ease-out),
+      transform var(--dur-observatory-travel) var(--ease-out);
   }
 
   .continuity-line::before {
@@ -185,7 +185,7 @@
     grid-template-rows: repeat(44, 1fr);
     place-items: center;
     opacity: 0;
-    transition: opacity 1000ms var(--ease-out);
+    transition: opacity var(--dur-observatory-fade) var(--ease-out);
   }
 
   .index-perforation-track i {
@@ -202,7 +202,7 @@
     inset: 9% 16% 9% 46%;
     overflow: hidden;
     opacity: 0;
-    transition: opacity 1000ms var(--ease-out);
+    transition: opacity var(--dur-observatory-fade) var(--ease-out);
     mask-image: linear-gradient(
       to bottom,
       rgb(0 0 0 / 0.1),
@@ -283,9 +283,9 @@
     border: 1px solid var(--observatory-strip-line);
     background: transparent;
     transition:
-      background-color 520ms var(--ease-out),
-      border-color 520ms var(--ease-out),
-      transform 720ms var(--ease-out);
+      background-color var(--dur-observatory-surface) var(--ease-out),
+      border-color var(--dur-observatory-surface) var(--ease-out),
+      transform var(--dur-observatory-travel) var(--ease-out);
   }
 
   .roller-strip.active .continuity-line {
@@ -304,7 +304,7 @@
   }
 
   .roller-strip.active .continuity-line::before {
-    animation: signal-traverse 1.28s cubic-bezier(0.46, 0, 0.22, 1)
+    animation: signal-traverse 1.28s var(--ease-observatory-traverse)
       var(--signal-delay) both;
   }
 
