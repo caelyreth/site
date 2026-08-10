@@ -4,69 +4,36 @@ import type { BufferAttribute, InstancedBufferAttribute } from 'three'
 
 import {
   BASE_VIEW_RADIUS,
-  CAMERA_ANGULAR_SPEED,
-  CAMERA_CAPTURE_LAG,
-  CAMERA_MAX_ROUTE_LEAD,
-  CAMERA_MAX_WIDENING,
-  CAMERA_MIN_ROUTE_LEAD,
-  CAMERA_MIN_WIDENING,
-  CAMERA_VELOCITY_APEX,
-  CONSTELLATION_RETIRE_DURATION,
   DESTINATION_CONSTELLATION_LEAD,
-  FOREGROUND_CONTRACT_APEX_LEAD,
-  FOREGROUND_CONTRACT_DELAY,
-  FOREGROUND_CONTRACT_MAX_DURATION,
-  FOREGROUND_CONTRACT_MIN_DURATION,
-  FOREGROUND_RETURN_LAG,
-  FOREGROUND_SETTLE_LAG,
   LOCATOR_COLLAPSE_DURATION,
   LOCATOR_DOT_SCALE,
   LOCATOR_DURATION,
   LOCATOR_INITIAL_SCALE,
-  ROUTE_CANDIDATE_MAGNITUDE,
-  ROUTE_CENTER_RADIUS,
-  ROUTE_FINAL_SOURCE_MIN_DISTANCE,
   ROUTE_HISTORY_LENGTH,
-  ROUTE_MAX_BACKTRACK_DOT,
   ROUTE_MAX_CAMERA_ROTATION,
-  ROUTE_MAX_DISTANCE,
-  ROUTE_MIN_CAMERA_ROTATION,
-  ROUTE_MIN_DISTANCE,
-  ROUTE_MIN_SECTOR_GAP,
-  ROUTE_OUTBOUND_RADIUS,
-  ROUTE_PREFERRED_CAMERA_ROTATION,
-  ROUTE_SCORE_POOL_SIZE,
-  ROUTE_SOURCE_MAX_RADIUS,
   ROUTE_TARGET_VISIBLE_OFFSET,
-  ROUTE_TERMINAL_VELOCITY,
-  ROUTE_VELOCITY_APEX,
-  ROLLER_MAX_DURATION,
-  ROLLER_MIN_DURATION,
   SIGNAL_CONTINUATION_DISTANCE,
   SIGNAL_FADE_DISTANCE,
-  SIGNAL_SPEED,
-  SOURCE_RELEASE_DURATION,
-  TRAIL_CAPTURE_LEAD,
   TRAIL_MAX_LENGTH,
-  TRAIL_RELEASE_PROGRESS,
   TRAIL_RESPONSE,
-  TAU,
   VIEW_STATUS_INTERVAL,
 } from './constants'
 import {
   camera_motion_progress,
   choose_pixel_ratio,
   critically_damped_progress,
-  inverse_impulse_progress,
   map_scale_for_view_radius,
-  route_progress,
-  signal_progress,
-  trail_release_opacity,
   zoom_envelope,
 } from './motion'
+import { collect_route_candidates, select_route } from './route-selection'
 import { SIGNAL_PALETTES } from './signal-colors'
+import {
+  create_pulse_timeline,
+  pulse_frame_at,
+  roller_motion_duration,
+  type PulseTimeline,
+} from './timeline'
 import type {
-  RouteCandidate,
   SkyMapEngine,
   SkyMapEngineCallbacks,
   SkyMapPayload,
@@ -115,12 +82,6 @@ export function create_sky_map_engine(
   const route_view_start_forward = new Vector3()
   const route_view_end_forward = new Vector3()
   const route_target_direction = new Vector3()
-  const scored_source_direction = new Vector3()
-  const scored_target_direction = new Vector3()
-  const scored_final_forward = new Vector3()
-  const scored_previous_source_direction = new Vector3()
-  const scored_backtrack_tangent = new Vector3()
-  const scored_outgoing_tangent = new Vector3()
 
   let requested_active = false
   let active = false
@@ -140,24 +101,13 @@ export function create_sky_map_engine(
   let signal_started_at = performance.now()
   let current_constellations_held = false
   let target_distance = Math.PI / 2
-  let signal_travel_distance = Math.PI / 2
-  let signal_fade_start_distance = Math.PI / 2
-  let signal_duration = signal_travel_distance / SIGNAL_SPEED
-  let camera_duration = 5000
-  let camera_start_delay = CAMERA_MIN_ROUTE_LEAD
-  let route_wide_view_radius = BASE_VIEW_RADIUS + CAMERA_MIN_WIDENING
+  let pulse_timeline: PulseTimeline | undefined
   let roller_direction: -1 | 1 = 1
   let roller_motion_sequence = 0
   let destination_arrived = false
-  let foreground_contract_start = FOREGROUND_CONTRACT_DELAY
-  let foreground_contract_end = FOREGROUND_CONTRACT_DELAY
-  let foreground_return_start = 0
-  let foreground_return_end = 0
   let foreground_contract_started = false
   let foreground_return_started = false
   let roller_motion_started = false
-  let trail_release_start = 0
-  let trail_release_duration = 1
   let last_camera_progress = -1
   let spreading = false
   let last_view_status_at = -Infinity
@@ -183,13 +133,6 @@ export function create_sky_map_engine(
     return Math.acos(Math.max(-1, Math.min(1, cosine)))
   }
 
-  function angular_distance_between_nodes(
-    first_index: number,
-    second_index: number,
-  ) {
-    return angular_distance_from_node(first_index * 3, second_index)
-  }
-
   function angular_distance_between_directions(
     first: Vector3,
     second: Vector3,
@@ -210,67 +153,8 @@ export function create_sky_map_engine(
     return direction_target.normalize()
   }
 
-  function project_node(node_index: number) {
-    const node_offset = node_index * 3
-    const right =
-      sky_map.directions[node_offset] * uniforms.uRight.value.x +
-      sky_map.directions[node_offset + 1] * uniforms.uRight.value.y +
-      sky_map.directions[node_offset + 2] * uniforms.uRight.value.z
-    const up =
-      sky_map.directions[node_offset] * uniforms.uUp.value.x +
-      sky_map.directions[node_offset + 1] * uniforms.uUp.value.y +
-      sky_map.directions[node_offset + 2] * uniforms.uUp.value.z
-    const forward =
-      sky_map.directions[node_offset] * uniforms.uForward.value.x +
-      sky_map.directions[node_offset + 1] * uniforms.uForward.value.y +
-      sky_map.directions[node_offset + 2] * uniforms.uForward.value.z
-    const denominator = Math.max(0.08, 1 + forward)
-    const horizontal =
-      (((2 * right) / denominator) * uniforms.uMapScale.value) /
-      uniforms.uAspect.value
-    const vertical = ((2 * up) / denominator) * uniforms.uMapScale.value
-    return {
-      depth: (forward + 1) * 0.5,
-      radius: Math.hypot(horizontal * uniforms.uAspect.value, vertical),
-      view_distance: Math.acos(Math.max(-1, Math.min(1, forward))),
-      x: 0.5 - horizontal,
-      y: 0.5 - vertical,
-    }
-  }
-
-  function sector_gap(first: number, second: number) {
-    const difference = Math.abs(first - second)
-    return Math.min(difference, 8 - difference)
-  }
-
-  function route_candidate_for(
-    node_index: number,
-  ): RouteCandidate | undefined {
-    if (sky_map.magnitudes[node_index] > ROUTE_CANDIDATE_MAGNITUDE) return
-    if (sky_map.node_groups[node_index] < 0) return
-    const projected = project_node(node_index)
-    if (projected.depth < 0.12 || projected.radius < ROUTE_CENTER_RADIUS) {
-      return
-    }
-    const angle = Math.atan2(
-      projected.y - 0.5,
-      (projected.x - 0.5) * uniforms.uAspect.value,
-    )
-    return {
-      index: node_index,
-      radius: projected.radius,
-      sector: Math.floor((((angle + TAU) % TAU) / TAU) * 8),
-      view_distance: projected.view_distance,
-    }
-  }
-
-  function collect_route_candidates() {
-    const candidates: RouteCandidate[] = []
-    for (let index = 0; index < sky_map.magnitudes.length; index += 1) {
-      const candidate = route_candidate_for(index)
-      if (candidate) candidates.push(candidate)
-    }
-    return candidates
+  function vector_components(vector: Vector3) {
+    return [vector.x, vector.y, vector.z] as const
   }
 
   function interpolate_direction(
@@ -302,209 +186,23 @@ export function create_sky_map_engine(
   }
 
   function choose_route() {
-    const candidates = collect_route_candidates()
-    if (candidates.length === 0) {
-      return [SKY_SOURCE_NODES[0], SKY_SOURCE_NODES[1]] as const
+    const view = {
+      aspect: uniforms.uAspect.value,
+      forward: vector_components(uniforms.uForward.value),
+      map_scale: uniforms.uMapScale.value,
+      right: vector_components(uniforms.uRight.value),
+      up: vector_components(uniforms.uUp.value),
     }
-    const visible_sources = candidates.filter(
-      (candidate) => candidate.radius <= ROUTE_SOURCE_MAX_RADIUS,
-    )
-    const source_pool =
-      visible_sources.length > 0 ? visible_sources : candidates
-    let source = target_index
-    const carried_constellation =
-      source >= 0 ? sky_map.node_groups[source] : -1
-    const carried_sources = source_pool.filter(
-      (candidate) =>
-        sky_map.node_groups[candidate.index] === carried_constellation &&
-        candidate.index !== source,
-    )
-    const carried_pool =
-      carried_sources.length > 0
-        ? carried_sources
-        : source_pool.filter(
-            (candidate) =>
-              sky_map.node_groups[candidate.index] ===
-              carried_constellation,
-          )
-    let source_candidate =
-      carried_pool[Math.floor(Math.random() * carried_pool.length)] ??
-      (source >= 0 ? route_candidate_for(source) : undefined)
-    if (source_candidate) source = source_candidate.index
-    if (
-      !source_candidate ||
-      source_candidate.radius > ROUTE_SOURCE_MAX_RADIUS
-    ) {
-      source_candidate =
-        source_pool[Math.floor(Math.random() * source_pool.length)]
-      source = source_candidate.index
-    }
-
-    set_node_direction(source, scored_source_direction)
-    const source_group = sky_map.node_groups[source]
-    const previous_source_group =
-      previous_route_source_index >= 0
-        ? sky_map.node_groups[previous_route_source_index]
-        : -1
-    const has_incoming_direction =
-      previous_route_source_index >= 0 &&
-      previous_route_source_index !== source
-    if (has_incoming_direction) {
-      set_node_direction(
-        previous_route_source_index,
-        scored_previous_source_direction,
-      )
-      scored_backtrack_tangent
-        .copy(scored_previous_source_direction)
-        .addScaledVector(
-          scored_source_direction,
-          -scored_previous_source_direction.dot(scored_source_direction),
-        )
-        .normalize()
-    }
-    const measured_candidates = candidates.flatMap((candidate) => {
-      if (candidate.index === source) return []
-      const target_group = sky_map.node_groups[candidate.index]
-      if (target_group === source_group) return []
-      const distance = angular_distance_between_nodes(
-        source,
-        candidate.index,
-      )
-      const camera_rotation = Math.max(
-        0,
-        candidate.view_distance - ROUTE_TARGET_VISIBLE_OFFSET,
-      )
-      if (
-        camera_rotation < ROUTE_MIN_CAMERA_ROTATION ||
-        camera_rotation > ROUTE_MAX_CAMERA_ROTATION
-      ) {
-        return []
-      }
-      set_node_direction(candidate.index, scored_target_direction)
-      scored_outgoing_tangent
-        .copy(scored_target_direction)
-        .addScaledVector(
-          scored_source_direction,
-          -scored_target_direction.dot(scored_source_direction),
-        )
-        .normalize()
-      const backtrack_dot = has_incoming_direction
-        ? scored_outgoing_tangent.dot(scored_backtrack_tangent)
-        : -1
-      interpolate_direction(
-        uniforms.uForward.value,
-        scored_target_direction,
-        camera_rotation / candidate.view_distance,
-        scored_final_forward,
-      )
-      return [
-        {
-          backtrack_dot,
-          camera_rotation,
-          candidate,
-          distance,
-          final_source_distance: angular_distance_between_directions(
-            scored_source_direction,
-            scored_final_forward,
-          ),
-          target_group,
-        },
-      ]
+    return select_route({
+      candidates: collect_route_candidates(sky_map, view),
+      fallback: [SKY_SOURCE_NODES[0], SKY_SOURCE_NODES[1]],
+      forward: view.forward,
+      previous_source_index: previous_route_source_index,
+      random: Math.random,
+      recent_constellation_groups,
+      sky_map,
+      target_index,
     })
-    const scored_candidates = measured_candidates.flatMap((metrics) => {
-      const {
-        backtrack_dot,
-        camera_rotation,
-        candidate,
-        distance,
-        final_source_distance,
-        target_group,
-      } = metrics
-      if (
-        distance < ROUTE_MIN_DISTANCE ||
-        distance > ROUTE_MAX_DISTANCE ||
-        final_source_distance < ROUTE_FINAL_SOURCE_MIN_DISTANCE
-      ) {
-        return []
-      }
-      const distance_score =
-        (distance - ROUTE_MIN_DISTANCE) /
-        (ROUTE_MAX_DISTANCE - ROUTE_MIN_DISTANCE)
-      const rotation_score = Math.max(
-        0,
-        1 -
-          Math.abs(camera_rotation - ROUTE_PREFERRED_CAMERA_ROTATION) /
-            ROUTE_PREFERRED_CAMERA_ROTATION,
-      )
-      const direction_score =
-        sector_gap(source_candidate.sector, candidate.sector) / 4
-      const continuation_score = (1 - backtrack_dot) * 0.5
-      const source_exit_score = Math.min(
-        1,
-        (final_source_distance - ROUTE_FINAL_SOURCE_MIN_DISTANCE) /
-          (ROUTE_MAX_DISTANCE - ROUTE_FINAL_SOURCE_MIN_DISTANCE),
-      )
-      const outbound_score = Math.min(
-        1,
-        Math.max(
-          0,
-          (candidate.radius - ROUTE_SOURCE_MAX_RADIUS) /
-            (ROUTE_OUTBOUND_RADIUS - ROUTE_SOURCE_MAX_RADIUS),
-        ),
-      )
-      return [
-        {
-          backtrack_dot,
-          candidate,
-          score:
-            distance_score * 2 +
-            rotation_score * 0.7 +
-            source_exit_score * 0.55 +
-            direction_score * 0.35 +
-            continuation_score * 0.6 +
-            outbound_score * 0.1,
-          target_group,
-        },
-      ]
-    })
-    const non_reversing_candidates = scored_candidates.filter(
-      ({ backtrack_dot, target_group }) =>
-        backtrack_dot <= ROUTE_MAX_BACKTRACK_DOT &&
-        target_group !== previous_source_group,
-    )
-    const fresh_candidates = non_reversing_candidates.filter(
-      ({ target_group }) =>
-        !recent_constellation_groups.includes(target_group),
-    )
-    const diverse_candidates =
-      fresh_candidates.length > 0
-        ? fresh_candidates
-        : non_reversing_candidates.length > 0
-          ? non_reversing_candidates
-          : scored_candidates
-    const directionally_separated = diverse_candidates.filter(
-      ({ candidate }) =>
-        sector_gap(source_candidate.sector, candidate.sector) >=
-        ROUTE_MIN_SECTOR_GAP,
-    )
-    const route_pool =
-      directionally_separated.length > 0
-        ? directionally_separated
-        : diverse_candidates
-    route_pool.sort((first, second) => second.score - first.score)
-    const finalists = route_pool.slice(0, ROUTE_SCORE_POOL_SIZE)
-    const [fallback] = measured_candidates
-      .filter(
-        ({ distance, final_source_distance }) =>
-          distance >= ROUTE_MIN_DISTANCE &&
-          final_source_distance >= ROUTE_FINAL_SOURCE_MIN_DISTANCE,
-      )
-      .sort((first, second) => second.distance - first.distance)
-    const route_target =
-      finalists[Math.floor(Math.random() * finalists.length)]?.candidate ??
-      fallback?.candidate ??
-      source_candidate
-    return [source, route_target.index] as const
   }
 
   function camera_rotation_for_target(view_distance: number) {
@@ -580,76 +278,16 @@ export function create_sky_map_engine(
 
   function update_route_view(progress: number) {
     if (progress === last_camera_progress) return
+    if (!pulse_timeline) return
     last_camera_progress = progress
     view_orientation
       .copy(route_start_orientation)
       .slerp(route_end_orientation, camera_motion_progress(progress))
     view_radius =
       BASE_VIEW_RADIUS +
-      (route_wide_view_radius - BASE_VIEW_RADIUS) * zoom_envelope(progress)
+      (pulse_timeline.route_wide_view_radius - BASE_VIEW_RADIUS) *
+        zoom_envelope(progress)
     apply_view_state()
-  }
-
-  function configure_route_timing(camera_rotation: number) {
-    const nominal_camera_duration = camera_rotation / CAMERA_ANGULAR_SPEED
-    const rotation_range =
-      ROUTE_MAX_CAMERA_ROTATION - ROUTE_MIN_CAMERA_ROTATION
-    const rotation_ratio = Math.min(
-      1,
-      Math.max(
-        0,
-        (camera_rotation - ROUTE_MIN_CAMERA_ROTATION) / rotation_range,
-      ),
-    )
-    route_wide_view_radius =
-      BASE_VIEW_RADIUS +
-      CAMERA_MIN_WIDENING +
-      (CAMERA_MAX_WIDENING - CAMERA_MIN_WIDENING) * rotation_ratio
-    const target_arrival_progress = inverse_impulse_progress(
-      target_distance / signal_travel_distance,
-      ROUTE_VELOCITY_APEX,
-      ROUTE_TERMINAL_VELOCITY,
-    )
-    signal_duration = signal_travel_distance / SIGNAL_SPEED
-    let target_arrival_time = target_arrival_progress * signal_duration
-    const minimum_target_arrival =
-      CAMERA_MIN_ROUTE_LEAD + nominal_camera_duration - CAMERA_CAPTURE_LAG
-    if (target_arrival_time < minimum_target_arrival) {
-      signal_duration *= minimum_target_arrival / target_arrival_time
-      target_arrival_time = minimum_target_arrival
-    }
-    const nominal_camera_start =
-      target_arrival_time + CAMERA_CAPTURE_LAG - nominal_camera_duration
-    camera_start_delay = Math.min(
-      CAMERA_MAX_ROUTE_LEAD,
-      Math.max(CAMERA_MIN_ROUTE_LEAD, nominal_camera_start),
-    )
-    camera_duration =
-      target_arrival_time + CAMERA_CAPTURE_LAG - camera_start_delay
-    const camera_apex_time =
-      camera_start_delay + camera_duration * CAMERA_VELOCITY_APEX
-    foreground_contract_start = FOREGROUND_CONTRACT_DELAY
-    const desired_contract_duration =
-      camera_apex_time -
-      foreground_contract_start -
-      FOREGROUND_CONTRACT_APEX_LEAD
-    const contract_duration = Math.min(
-      FOREGROUND_CONTRACT_MAX_DURATION,
-      Math.max(FOREGROUND_CONTRACT_MIN_DURATION, desired_contract_duration),
-    )
-    foreground_contract_end = foreground_contract_start + contract_duration
-    foreground_return_start = camera_apex_time + FOREGROUND_RETURN_LAG
-    foreground_return_end =
-      camera_start_delay + camera_duration + FOREGROUND_SETTLE_LAG
-    trail_release_start =
-      camera_start_delay + camera_duration * TRAIL_RELEASE_PROGRESS
-    trail_release_duration = Math.max(
-      1,
-      camera_start_delay +
-        camera_duration -
-        TRAIL_CAPTURE_LEAD -
-        trail_release_start,
-    )
   }
 
   function configure_roller_direction() {
@@ -763,7 +401,7 @@ export function create_sky_map_engine(
     target_distance = node_distances[target_index]
     uniforms.uTargetDistance.value = target_distance
     uniforms.uRouteLength.value = target_distance
-    signal_fade_start_distance = Math.max(
+    const signal_fade_start_distance = Math.max(
       target_distance + SIGNAL_CONTINUATION_DISTANCE,
       constellation_reveal_distance + SIGNAL_CONTINUATION_DISTANCE,
       target_distance -
@@ -771,7 +409,7 @@ export function create_sky_map_engine(
         target_constellation_radius +
         SIGNAL_CONTINUATION_DISTANCE,
     )
-    signal_travel_distance =
+    const signal_travel_distance =
       signal_fade_start_distance + SIGNAL_FADE_DISTANCE
     route_start_orientation.copy(view_orientation)
     route_view_start_forward.copy(uniforms.uForward.value)
@@ -799,7 +437,12 @@ export function create_sky_map_engine(
       .copy(route_start_orientation)
       .premultiply(route_orientation_delta)
       .normalize()
-    configure_route_timing(camera_rotation)
+    pulse_timeline = create_pulse_timeline(
+      target_distance,
+      signal_fade_start_distance,
+      signal_travel_distance,
+      camera_rotation,
+    )
     configure_roller_direction()
     previous_route_source_index = source_index
     const existing_target_group = recent_constellation_groups.indexOf(
@@ -1031,79 +674,71 @@ export function create_sky_map_engine(
       return
     }
     const pulse_elapsed = now - signal_started_at
-    if (pulse_elapsed >= signal_duration) {
+    if (
+      !pulse_timeline ||
+      pulse_elapsed >= pulse_timeline.signal_duration
+    ) {
       enter_idle()
       return
     }
-    const timeline_progress = pulse_elapsed / signal_duration
-    const pulse_distance =
-      signal_travel_distance * signal_progress(timeline_progress)
-    const route_pulse_distance =
-      signal_travel_distance * route_progress(timeline_progress)
-    const source_release = critically_damped_progress(
-      pulse_elapsed / SOURCE_RELEASE_DURATION,
-    )
-    const camera_progress = Math.min(
-      1,
-      Math.max(0, (pulse_elapsed - camera_start_delay) / camera_duration),
-    )
-    if (!roller_motion_started && camera_progress > 0) {
+    const pulse_frame = pulse_frame_at(pulse_timeline, pulse_elapsed)
+    if (!roller_motion_started && pulse_frame.camera_progress > 0) {
       roller_motion_started = true
       roller_motion_sequence += 1
       callbacks.on_roller_motion?.({
         direction: roller_direction,
-        duration: Math.min(
-          ROLLER_MAX_DURATION,
-          Math.max(ROLLER_MIN_DURATION, camera_duration * 0.72),
-        ),
+        duration: roller_motion_duration(pulse_timeline.camera_duration),
         sequence: roller_motion_sequence,
       })
     }
-    const trail_opacity = trail_release_opacity(
-      (pulse_elapsed - trail_release_start) / trail_release_duration,
-    )
-    const fade_progress = critically_damped_progress(
-      (pulse_distance - signal_fade_start_distance) / SIGNAL_FADE_DISTANCE,
-    )
-    uniforms.uRetireProgress.value = critically_damped_progress(
-      pulse_elapsed / CONSTELLATION_RETIRE_DURATION,
-    )
+    uniforms.uRetireProgress.value = pulse_frame.retire_progress
     if (
       !current_constellations_held &&
-      pulse_distance >= signal_fade_start_distance
+      pulse_frame.pulse_distance >=
+        pulse_timeline.signal_fade_start_distance
     ) {
       hold_current_constellations()
       current_constellations_held = true
     }
     if (
       !foreground_contract_started &&
-      pulse_elapsed >= foreground_contract_start
+      pulse_elapsed >= pulse_timeline.foreground_contract_start
     ) {
       foreground_contract_started = true
       callbacks.on_foreground_contract_start?.({
-        duration: Math.max(0, foreground_contract_end - pulse_elapsed),
+        duration: Math.max(
+          0,
+          pulse_timeline.foreground_contract_end - pulse_elapsed,
+        ),
       })
     }
     if (
       !foreground_return_started &&
-      pulse_elapsed >= foreground_return_start
+      pulse_elapsed >= pulse_timeline.foreground_return_start
     ) {
       foreground_return_started = true
       callbacks.on_foreground_return_start?.({
-        duration: Math.max(0, foreground_return_end - pulse_elapsed),
+        duration: Math.max(
+          0,
+          pulse_timeline.foreground_return_end - pulse_elapsed,
+        ),
       })
     }
-    update_route_view(camera_progress)
-    if (!destination_arrived && camera_progress >= 1) {
+    update_route_view(pulse_frame.camera_progress)
+    if (!destination_arrived && pulse_frame.camera_progress >= 1) {
       destination_arrived = true
       callbacks.on_destination_arrival?.()
     }
-    update_trail_view(frame_delta, trail_opacity, camera_progress)
-    uniforms.uPulseDistance.value = pulse_distance
-    uniforms.uRoutePulseDistance.value = route_pulse_distance
-    uniforms.uPulseActive.value = 1 - fade_progress
+    update_trail_view(
+      frame_delta,
+      pulse_frame.trail_opacity,
+      pulse_frame.camera_progress,
+    )
+    uniforms.uPulseDistance.value = pulse_frame.pulse_distance
+    uniforms.uRoutePulseDistance.value = pulse_frame.route_pulse_distance
+    uniforms.uPulseActive.value = 1 - pulse_frame.fade_progress
     uniforms.uSourceActivation.value =
-      source_activation_at_spread * (1 - source_release)
+      source_activation_at_spread * (1 - pulse_frame.source_release)
     render()
     frame = requestAnimationFrame(animate)
   }
