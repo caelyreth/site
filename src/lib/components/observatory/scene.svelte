@@ -191,7 +191,13 @@
 
 <div class="capture" {@attach observe_fallback_progress}>
   <section class="scene" aria-labelledby="scene-label">
-    <div class="foreground">
+    <div
+      class:active={visual.pulse.active}
+      class="foreground"
+      style:--observatory-signal={transmission_color(
+        visual.pulse.signal_color_index,
+      )}
+    >
       {#if visual.shutters_loaded}
         <Canvas on_event={handle_canvas_event} />
       {/if}
@@ -204,7 +210,6 @@
           roller_motion={visual.pulse.roller_motion}
           roller_visible={visual.field === 'visible'}
           scale_duration={visual.pulse.scale_duration}
-          signal_color={transmission_color(visual.pulse.signal_color_index)}
           typing_paused={visual.pulse.typing_paused}
         />
       </div>
@@ -216,9 +221,6 @@
       <span
         class:spreading={visual.pulse.active}
         class="label corner corner-right label-top view-status"
-        style:--view-signal-color={transmission_color(
-          visual.pulse.signal_color_index,
-        )}
         ><span class="view-status-key">RA</span>
         {format_coordinate(view_status.right_ascension)} /
         <span class="view-status-key">DEC</span>
@@ -324,6 +326,30 @@
     background-size: var(--noise-size);
   }
 
+  .foreground::after {
+    --foreground-signal: color-mix(
+      in oklab,
+      var(--observatory-signal) 72%,
+      transparent
+    );
+
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    content: '';
+    border: 1px solid var(--foreground-signal);
+    border-radius: inherit;
+    box-shadow: inset 0 0 1.25rem -0.875rem var(--foreground-signal);
+    filter: opacity(var(--observatory-panel-opening));
+    opacity: 0;
+  }
+
+  .foreground.active::after {
+    animation: observatory-frame-signal var(--dur-observatory-signal)
+      var(--ease-observatory-traverse);
+  }
+
   .window-stage {
     position: relative;
     z-index: 1;
@@ -387,7 +413,7 @@
   }
 
   .view-status.spreading .view-status-key {
-    color: var(--view-signal-color);
+    color: var(--observatory-signal);
   }
 
   .transmission-log {
@@ -442,6 +468,35 @@
     .label {
       font-size: 0.5625rem;
       letter-spacing: 0.08em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .foreground.active::after {
+      animation: none;
+      opacity: 0.72;
+    }
+  }
+
+  @keyframes observatory-frame-signal {
+    0% {
+      opacity: 0;
+    }
+
+    12% {
+      opacity: 0.95;
+    }
+
+    46% {
+      opacity: 0.58;
+    }
+
+    78% {
+      opacity: 0.24;
+    }
+
+    to {
+      opacity: 0;
     }
   }
 </style>

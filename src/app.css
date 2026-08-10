@@ -64,6 +64,7 @@
   --dur-observatory-surface: 520ms;
   --dur-observatory-travel: 720ms;
   --dur-observatory-fade: 1000ms;
+  --dur-observatory-signal: 1800ms;
   --ease-observatory-state: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-observatory-traverse: cubic-bezier(0.46, 0, 0.22, 1);
   --ease-observatory-return: cubic-bezier(0.4, 0, 0.18, 1);

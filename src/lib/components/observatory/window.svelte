@@ -15,7 +15,6 @@
     roller_motion: SkyMapRollerMotionStatus
     roller_visible: boolean
     scale_duration?: number
-    signal_color: string
     typing_paused: boolean
   }
 
@@ -28,7 +27,6 @@
     roller_motion,
     roller_visible,
     scale_duration = 1000,
-    signal_color,
     typing_paused,
   }: WindowProps = $props()
 
@@ -68,7 +66,6 @@
   class:returning={is_returning}
   class="window"
   style:--window-scale-duration={`${scale_duration}ms`}
-  style:--observatory-signal={signal_color}
 >
   <div class="frame" onanimationend={handle_frame_animation_end}>
     <div class="strips">
