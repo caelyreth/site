@@ -388,7 +388,7 @@ export function create_sky_map_engine(
   // MARK: - rendering
 
   function publish_view_status() {
-    if (!callbacks.on_view_change) return
+    if (!callbacks.on_event) return
     const now = performance.now()
     if (now - last_view_status_at < VIEW_STATUS_INTERVAL) return
     const forward = view_forward
@@ -400,7 +400,10 @@ export function create_sky_map_engine(
     if (status_key === last_view_status_key) return
     last_view_status_at = now
     last_view_status_key = status_key
-    callbacks.on_view_change({ declination, right_ascension, scale })
+    callbacks.on_event({
+      type: 'view_change',
+      status: { declination, right_ascension, scale },
+    })
   }
 
   function render() {
@@ -455,7 +458,7 @@ export function create_sky_map_engine(
   function end_spread() {
     if (!spreading) return
     spreading = false
-    callbacks.on_spread_end?.()
+    callbacks.on_event?.({ type: 'spread_end' })
   }
 
   function stop() {
@@ -476,7 +479,7 @@ export function create_sky_map_engine(
       update_route_view(1)
       if (!destination_arrived) {
         destination_arrived = true
-        callbacks.on_destination_arrival?.()
+        callbacks.on_event?.({ type: 'destination_arrival' })
       }
     }
     sync_trail_view()
@@ -544,9 +547,12 @@ export function create_sky_map_engine(
       sky_map_renderer.set_locator(0, 1)
       sky_map_renderer.set_pulse(1, 0, 0, source_activation_at_spread)
       spreading = true
-      callbacks.on_spread_start?.({
-        color_index: signal_color_index,
-        roller_direction,
+      callbacks.on_event?.({
+        type: 'spread_start',
+        status: {
+          color_index: signal_color_index,
+          roller_direction,
+        },
       })
       frame = requestAnimationFrame(animate)
       return
@@ -563,10 +569,13 @@ export function create_sky_map_engine(
     if (!roller_motion_started && pulse_frame.camera_progress > 0) {
       roller_motion_started = true
       roller_motion_sequence += 1
-      callbacks.on_roller_motion?.({
-        direction: roller_direction,
-        duration: roller_motion_duration(pulse_timeline.camera_duration),
-        sequence: roller_motion_sequence,
+      callbacks.on_event?.({
+        type: 'roller_motion',
+        status: {
+          direction: roller_direction,
+          duration: roller_motion_duration(pulse_timeline.camera_duration),
+          sequence: roller_motion_sequence,
+        },
       })
     }
     sky_map_renderer.set_retire_progress(pulse_frame.retire_progress)
@@ -583,11 +592,14 @@ export function create_sky_map_engine(
       pulse_elapsed >= pulse_timeline.foreground_contract_start
     ) {
       foreground_contract_started = true
-      callbacks.on_foreground_contract_start?.({
-        duration: Math.max(
-          0,
-          pulse_timeline.foreground_contract_end - pulse_elapsed,
-        ),
+      callbacks.on_event?.({
+        type: 'foreground_contract_start',
+        status: {
+          duration: Math.max(
+            0,
+            pulse_timeline.foreground_contract_end - pulse_elapsed,
+          ),
+        },
       })
     }
     if (
@@ -595,17 +607,20 @@ export function create_sky_map_engine(
       pulse_elapsed >= pulse_timeline.foreground_return_start
     ) {
       foreground_return_started = true
-      callbacks.on_foreground_return_start?.({
-        duration: Math.max(
-          0,
-          pulse_timeline.foreground_return_end - pulse_elapsed,
-        ),
+      callbacks.on_event?.({
+        type: 'foreground_return_start',
+        status: {
+          duration: Math.max(
+            0,
+            pulse_timeline.foreground_return_end - pulse_elapsed,
+          ),
+        },
       })
     }
     update_route_view(pulse_frame.camera_progress)
     if (!destination_arrived && pulse_frame.camera_progress >= 1) {
       destination_arrived = true
-      callbacks.on_destination_arrival?.()
+      callbacks.on_event?.({ type: 'destination_arrival' })
     }
     update_trail_view(
       frame_delta,

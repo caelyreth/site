@@ -2,10 +2,11 @@
   import { onDestroy, onMount } from 'svelte'
   import { flip } from 'svelte/animate'
 
+  import './aperture-strip.css'
+
   type FieldLogProps = {
     active?: boolean
     paused?: boolean
-    signal_color: string
     visible: boolean
   }
   type FieldRecord = {
@@ -22,12 +23,7 @@
   const max_records = 3
 
   /* oxlint-disable prefer-const -- props react to live observatory state. */
-  let {
-    active = false,
-    paused = false,
-    signal_color,
-    visible,
-  }: FieldLogProps = $props()
+  let { active = false, paused = false, visible }: FieldLogProps = $props()
 
   // MARK: - typewriter
   let records = $state<FieldRecord[]>([{ id: 1, text: '' }])
@@ -240,11 +236,10 @@
   class:active
   class:paused={at_pause_boundary}
   class:visible
-  class="strip field-log"
-  style:--field-signal={signal_color}
+  class="observatory-strip field-log"
 >
-  <span class="field-meta">AP-02</span>
-  <span class="field-readout">EL 19</span>
+  <span class="observatory-strip__meta field-meta">AP-02</span>
+  <span class="observatory-strip__readout field-readout">EL 19</span>
 
   <div class="field-paper">
     <span class="field-heading">FIELD NOTE // 02</span>
@@ -289,57 +284,22 @@
 
 <style>
   .field-log {
-    --field-fill: var(--strip-fill);
     --field-line: color-mix(in oklab, var(--color-rule) 76%, transparent);
     --field-card: color-mix(in oklab, var(--color-paper) 14%, transparent);
-    position: relative;
-    min-width: 0;
-    overflow: hidden;
-    contain: paint;
-    border-inline: 1px solid var(--field-line);
-    clip-path: inset(0 100% 0 0);
-    background: var(--field-fill);
-    animation: strip-reveal 640ms var(--ease-in-out) 120ms both;
-    transition:
-      background-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
-      border-color 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    --observatory-strip-label-z-index: 2;
+    --observatory-strip-fill: var(--strip-fill);
+    --observatory-strip-line: var(--field-line);
+    --observatory-strip-reveal-delay: 120ms;
   }
 
-  .field-log::before {
-    position: absolute;
-    pointer-events: none;
-    content: '';
-  }
-
-  .field-log::before {
-    inset: 0.7rem 0.35rem;
-    border-block: 1px solid
-      color-mix(in oklab, var(--color-rule) 58%, transparent);
-  }
-
-  .field-meta,
-  .field-readout,
   .field-heading {
-    position: absolute;
-    z-index: 2;
-    color: var(--color-muted);
+    color: color-mix(in oklab, var(--color-ink) 60%, var(--color-muted));
     font-family: var(--font-stack-sans);
-    font-size: clamp(0.375rem, 0.5vw, 0.5rem);
+    font-size: clamp(0.4rem, 0.55vw, 0.56rem);
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.08em;
     line-height: 1;
     transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .field-meta {
-    top: 0.28rem;
-    left: 0.35rem;
-  }
-
-  .field-readout {
-    right: 0.35rem;
-    bottom: 0.28rem;
-    text-align: right;
   }
 
   .field-paper {
@@ -357,11 +317,8 @@
     opacity: 1;
   }
 
-  .field-heading {
-    position: static;
+  .field-paper .field-heading {
     flex: 0 0 auto;
-    color: color-mix(in oklab, var(--color-ink) 60%, var(--color-muted));
-    font-size: clamp(0.4rem, 0.55vw, 0.56rem);
   }
 
   .field-feed {
@@ -436,7 +393,7 @@
     background: repeating-linear-gradient(
       to bottom,
       transparent 0 0.6rem,
-      color-mix(in oklab, var(--field-signal) 32%, transparent) 0.6rem
+      color-mix(in oklab, var(--observatory-signal) 32%, transparent) 0.6rem
         0.64rem,
       transparent 0.64rem 1.1rem
     );
@@ -448,7 +405,7 @@
     right: 0;
     left: 0;
     height: 1px;
-    background: var(--field-signal);
+    background: var(--observatory-signal);
     transform: translateX(-100%);
   }
 
@@ -513,34 +470,23 @@
     opacity: 0.62;
   }
 
-  .field-log.active {
-    border-color: color-mix(
-      in oklab,
-      var(--field-signal) 54%,
-      var(--field-line)
-    );
-    background: color-mix(
-      in oklab,
-      var(--field-signal) 5%,
-      var(--field-fill)
-    );
-  }
-
-  .field-log.active .field-meta,
-  .field-log.active .field-readout,
   .field-log.active .field-heading {
-    color: color-mix(in oklab, var(--field-signal) 74%, var(--color-muted));
+    color: color-mix(
+      in oklab,
+      var(--observatory-signal) 74%,
+      var(--color-muted)
+    );
   }
 
   .field-log.active .field-entry.current {
     border-color: color-mix(
       in oklab,
-      var(--field-signal) 58%,
+      var(--observatory-signal) 58%,
       var(--field-line)
     );
     background: color-mix(
       in oklab,
-      var(--field-signal) 6%,
+      var(--observatory-signal) 6%,
       var(--field-card)
     );
   }
@@ -567,7 +513,11 @@
 
   .field-log.active .field-entry.current .entry-header,
   .field-log.active .field-entry.current .entry-copy {
-    color: color-mix(in oklab, var(--field-signal) 72%, var(--color-muted));
+    color: color-mix(
+      in oklab,
+      var(--observatory-signal) 72%,
+      var(--color-muted)
+    );
   }
 
   .field-log.active .field-entry.current .entry-copy {
@@ -575,7 +525,7 @@
   }
 
   .field-log.active .field-entry.current .caret {
-    background: var(--field-signal);
+    background: var(--observatory-signal);
   }
 
   .field-log.active .field-entry.current::before {
@@ -591,9 +541,10 @@
   }
 
   .field-log.active .entry-corruption {
-    color: var(--field-signal);
+    color: var(--observatory-signal);
     text-shadow:
-      0.08rem 0 color-mix(in oklab, var(--field-signal) 56%, transparent),
+      0.08rem 0
+        color-mix(in oklab, var(--observatory-signal) 56%, transparent),
       -0.08rem 0 color-mix(in oklab, var(--color-accent) 42%, transparent);
     animation: glyph-glitch 2.1s steps(1, end) infinite;
   }
@@ -623,7 +574,7 @@
     background: linear-gradient(
       to bottom,
       transparent,
-      color-mix(in oklab, var(--field-signal) 24%, transparent) 48%,
+      color-mix(in oklab, var(--observatory-signal) 24%, transparent) 48%,
       transparent 54%,
       transparent
     );
@@ -638,8 +589,8 @@
     background: repeating-linear-gradient(
       to bottom,
       transparent 0 1.15rem,
-      color-mix(in oklab, var(--field-signal) 72%, transparent) 1.15rem
-        1.2rem,
+      color-mix(in oklab, var(--observatory-signal) 72%, transparent)
+        1.15rem 1.2rem,
       transparent 1.2rem 2rem
     );
   }
@@ -678,15 +629,6 @@
   }
 
   @media (max-width: 38rem) {
-    .field-log::before {
-      inset: 0.4rem 0.2rem;
-    }
-
-    .field-meta,
-    .field-readout {
-      display: none;
-    }
-
     .field-paper {
       inset: 0.8rem 0.45rem;
     }
@@ -719,14 +661,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .field-log {
-      animation: none;
-      clip-path: none;
-    }
-
-    .field-log,
-    .field-meta,
-    .field-readout,
     .field-heading,
     .field-entry,
     .entry-copy,
@@ -752,12 +686,6 @@
     .field-scan,
     .field-crash {
       opacity: 0;
-    }
-  }
-
-  @keyframes strip-reveal {
-    to {
-      clip-path: inset(0);
     }
   }
 
@@ -868,14 +796,16 @@
     88% {
       opacity: 0.86;
       text-shadow:
-        0.06rem 0 color-mix(in oklab, var(--field-signal) 58%, transparent),
+        0.06rem 0
+          color-mix(in oklab, var(--observatory-signal) 58%, transparent),
         -0.05rem 0 color-mix(in oklab, var(--color-accent) 38%, transparent);
       transform: translateX(-0.04rem);
     }
     91% {
       opacity: 0.92;
       text-shadow:
-        -0.05rem 0 color-mix(in oklab, var(--field-signal) 48%, transparent),
+        -0.05rem 0
+          color-mix(in oklab, var(--observatory-signal) 48%, transparent),
         0.04rem 0 color-mix(in oklab, var(--color-accent) 34%, transparent);
       transform: translateX(0.05rem);
     }

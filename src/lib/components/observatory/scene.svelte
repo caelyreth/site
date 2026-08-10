@@ -7,8 +7,7 @@
     TRANSMISSION_COLORS,
   } from '$lib/graphics/observatory/signal-colors'
   import type {
-    SkyMapLayerMotionStatus,
-    SkyMapPulseStatus,
+    SkyMapEngineEvent,
     SkyMapRollerMotionStatus,
     SkyMapViewStatus,
   } from '$lib/graphics/observatory/types'
@@ -30,23 +29,46 @@
 
   const { on_progress }: SceneProps = $props()
 
+  type WindowPhase = 'expanded' | 'contracting' | 'returning'
+  type PulseVisualEvent = Extract<
+    SkyMapEngineEvent,
+    {
+      type:
+        | 'foreground_contract_start'
+        | 'foreground_return_start'
+        | 'roller_motion'
+        | 'view_change'
+    }
+  >
+  type ObservatoryVisualState = {
+    shutters_loaded: boolean
+    field: 'hidden' | 'visible'
+    pulse: {
+      active: boolean
+      phase: WindowPhase
+      typing_paused: boolean
+      roller_motion: SkyMapRollerMotionStatus
+      scale_duration: number
+      signal_color_index: number
+    }
+  }
+
   let transmission_sequence = $state(1)
   let transmissions = $state<
     Array<{ color_index: number; sequence: number }>
   >([])
-  let spreading = $state(false)
-  let sky_map_visible = $state(false)
-  let shutters_loaded = $state(false)
-  let typing_paused = $state(false)
-  let window_compact = $state(false)
-  let window_returning = $state(false)
-  let roller_motion = $state<SkyMapRollerMotionStatus>({
-    direction: 1,
-    duration: 0,
-    sequence: 0,
+  const visual = $state<ObservatoryVisualState>({
+    shutters_loaded: false,
+    field: 'hidden',
+    pulse: {
+      active: false,
+      phase: 'expanded',
+      typing_paused: false,
+      roller_motion: { direction: 1, duration: 0, sequence: 0 },
+      scale_duration: 1000,
+      signal_color_index: 0,
+    },
   })
-  let window_scale_duration = $state(1000)
-  let spread_color_index = $state(0)
   let view_status = $state<SkyMapViewStatus>({
     declination: 42,
     right_ascension: 322,
@@ -64,17 +86,33 @@
     void preload_sky_map_engine().catch(() => {})
   })
 
-  // MARK: - sky map callbacks
+  // MARK: - sky map events
+
+  function handle_canvas_event(event: SkyMapEngineEvent) {
+    if (event.type === 'destination_arrival') {
+      visual.pulse.typing_paused = false
+      return
+    }
+    if (event.type === 'spread_start') {
+      begin_spread(event.status)
+      return
+    }
+    if (event.type === 'spread_end') {
+      end_spread()
+      return
+    }
+    handle_pulse_update(event)
+  }
 
   function begin_spread({
     color_index,
     roller_direction,
-  }: SkyMapPulseStatus) {
-    roller_motion.direction = roller_direction
-    spread_color_index = color_index
-    spreading = true
-    typing_paused = true
-    window_returning = false
+  }: Extract<SkyMapEngineEvent, { type: 'spread_start' }>['status']) {
+    visual.pulse.active = true
+    visual.pulse.phase = 'expanded'
+    visual.pulse.typing_paused = true
+    visual.pulse.signal_color_index = color_index
+    visual.pulse.roller_motion.direction = roller_direction
     transmissions = [
       { color_index, sequence: transmission_sequence },
       ...transmissions,
@@ -83,39 +121,34 @@
   }
 
   function end_spread() {
-    spreading = false
-    typing_paused = false
-    window_returning = false
-    window_compact = false
+    visual.pulse.active = false
+    visual.pulse.phase = 'expanded'
+    visual.pulse.typing_paused = false
   }
 
-  function contract_window({ duration }: SkyMapLayerMotionStatus) {
-    window_scale_duration = duration
-    window_returning = false
-    window_compact = true
-  }
-
-  function return_window({ duration }: SkyMapLayerMotionStatus) {
-    window_scale_duration = duration
-    window_returning = true
-    window_compact = false
-  }
-
-  function update_roller_motion(next_motion: SkyMapRollerMotionStatus) {
-    roller_motion = next_motion
-  }
-
-  function resume_typing() {
-    typing_paused = false
+  function handle_pulse_update(event: PulseVisualEvent) {
+    if (event.type === 'foreground_contract_start') {
+      visual.pulse.scale_duration = event.status.duration
+      visual.pulse.phase = 'contracting'
+      return
+    }
+    if (event.type === 'foreground_return_start') {
+      visual.pulse.scale_duration = event.status.duration
+      visual.pulse.phase = 'returning'
+      return
+    }
+    if (event.type === 'roller_motion') {
+      visual.pulse.roller_motion = event.status
+      return
+    }
+    if (event.type === 'view_change') {
+      view_status = event.status
+    }
   }
 
   function reveal_sky_map() {
-    shutters_loaded = true
-    sky_map_visible = true
-  }
-
-  function reveal_sky_map_field() {
-    sky_map_visible = true
+    visual.shutters_loaded = true
+    visual.field = 'visible'
   }
 
   function transmission_color(color_index: number) {
@@ -124,10 +157,6 @@
 
   function transmission_label(color_index: number) {
     return SIGNAL_STATUS_LABELS[color_index] ?? SIGNAL_STATUS_LABELS[0]
-  }
-
-  function update_view_status(next_status: SkyMapViewStatus) {
-    view_status = next_status
   }
 
   function format_coordinate(value: number, signed = false) {
@@ -163,29 +192,20 @@
 <div class="capture" {@attach observe_fallback_progress}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
-      {#if shutters_loaded}
-        <Canvas
-          on_destination_arrival={resume_typing}
-          on_fade_in_start={reveal_sky_map_field}
-          on_foreground_contract_start={contract_window}
-          on_foreground_return_start={return_window}
-          on_roller_motion={update_roller_motion}
-          on_spread_end={end_spread}
-          on_spread_start={begin_spread}
-          on_view_change={update_view_status}
-        />
+      {#if visual.shutters_loaded}
+        <Canvas on_event={handle_canvas_event} />
       {/if}
       <div class="window-stage">
         <Window
-          active={spreading}
-          compact={window_compact}
+          active={visual.pulse.active}
+          compact={visual.pulse.phase === 'contracting'}
           on_load_complete={reveal_sky_map}
-          returning={window_returning}
-          {roller_motion}
-          roller_visible={sky_map_visible}
-          scale_duration={window_scale_duration}
-          signal_color={transmission_color(spread_color_index)}
-          {typing_paused}
+          returning={visual.pulse.phase === 'returning'}
+          roller_motion={visual.pulse.roller_motion}
+          roller_visible={visual.field === 'visible'}
+          scale_duration={visual.pulse.scale_duration}
+          signal_color={transmission_color(visual.pulse.signal_color_index)}
+          typing_paused={visual.pulse.typing_paused}
         />
       </div>
       <Boundary side="left" inScene reveal />
@@ -194,9 +214,11 @@
         >Caelyreth / Observatory</span
       >
       <span
-        class:spreading
+        class:spreading={visual.pulse.active}
         class="label corner corner-right label-top view-status"
-        style:--view-signal-color={transmission_color(spread_color_index)}
+        style:--view-signal-color={transmission_color(
+          visual.pulse.signal_color_index,
+        )}
         ><span class="view-status-key">RA</span>
         {format_coordinate(view_status.right_ascension)} /
         <span class="view-status-key">DEC</span>
@@ -309,10 +331,6 @@
     transform: scale(calc(1 - var(--observatory-progress) * 0.2));
     transform-origin: center;
     will-change: transform;
-  }
-
-  .window-stage :global(.window) {
-    width: 100%;
   }
 
   .label {

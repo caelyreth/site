@@ -2,6 +2,7 @@
   import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/types'
   import { onMount } from 'svelte'
 
+  import './aperture-strip.css'
   import FieldLog from './field-log.svelte'
   import Roller from './roller.svelte'
 
@@ -66,30 +67,30 @@
   class:returning={is_returning}
   class="window"
   style:--window-scale-duration={`${scale_duration}ms`}
-  style:--shutter-signal={signal_color}
+  style:--observatory-signal={signal_color}
 >
   <div class="frame" onanimationend={handle_frame_animation_end}>
     <div class="strips">
-      <section class="strip">
-        <span class="shutter-meta">AP-01</span>
-        <span class="shutter-readout">NW 07</span>
+      <section
+        class:active={is_active}
+        class="observatory-strip shutter-strip"
+      >
+        <span class="observatory-strip__meta">AP-01</span>
+        <span class="observatory-strip__readout">NW 07</span>
       </section>
       <FieldLog
         active={is_active}
         paused={typing_paused}
-        {signal_color}
         visible={roller_visible}
       />
-      <section class="strip">
-        <span class="shutter-meta">AP-03</span>
-        <span class="shutter-readout">RA 32</span>
+      <section
+        class:active={is_active}
+        class="observatory-strip shutter-strip"
+      >
+        <span class="observatory-strip__meta">AP-03</span>
+        <span class="observatory-strip__readout">RA 32</span>
       </section>
-      <Roller
-        active={is_active}
-        motion={roller_motion}
-        {roller_visible}
-        {signal_color}
-      />
+      <Roller active={is_active} motion={roller_motion} {roller_visible} />
     </div>
     <span class="tick tick-top-left"></span>
     <span class="tick tick-top-right"></span>
@@ -131,92 +132,22 @@
     grid-template-columns: 2.5fr 4fr 2fr 1fr;
   }
 
-  .strip {
-    position: relative;
-    min-width: 0;
-    overflow: hidden;
-    border-inline: 1px solid
-      color-mix(in oklab, var(--color-rule) 72%, transparent);
-    clip-path: inset(0 100% 0 0);
-    background-color: var(--strip-fill);
-    animation: strip-reveal 640ms var(--ease-in-out) both;
-    transition:
-      border-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
-      background-color 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  .shutter-strip:nth-child(3) {
+    --observatory-strip-reveal-delay: 240ms;
   }
 
-  .strip:nth-child(2) {
-    animation-delay: 120ms;
-  }
-
-  .strip:nth-child(3) {
-    animation-delay: 240ms;
-  }
-
-  .strip::before,
-  .strip::after {
+  .shutter-strip::after {
     position: absolute;
     pointer-events: none;
     content: '';
   }
 
-  .strip::before {
-    inset: 0.7rem 0.35rem;
-    border-block: 1px solid
-      color-mix(in oklab, var(--color-rule) 58%, transparent);
-  }
-
-  .strip::after {
+  .shutter-strip::after {
     top: 0.7rem;
     bottom: 0.7rem;
     left: 50%;
     width: 1px;
     background: color-mix(in oklab, var(--color-rule) 58%, transparent);
-  }
-
-  .shutter-meta,
-  .shutter-readout {
-    position: absolute;
-    z-index: 1;
-    color: var(--color-muted);
-    font-size: clamp(0.375rem, 0.5vw, 0.5rem);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.08em;
-    line-height: 1;
-    transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .shutter-meta {
-    top: 0.28rem;
-    left: 0.35rem;
-  }
-
-  .shutter-readout {
-    right: 0.35rem;
-    bottom: 0.28rem;
-    text-align: right;
-  }
-
-  .window.active .strip {
-    border-color: color-mix(
-      in oklab,
-      var(--shutter-signal) 54%,
-      var(--color-rule)
-    );
-    background-color: color-mix(
-      in oklab,
-      var(--shutter-signal) 5%,
-      var(--strip-fill)
-    );
-  }
-
-  .window.active .shutter-meta,
-  .window.active .shutter-readout {
-    color: color-mix(
-      in oklab,
-      var(--shutter-signal) 74%,
-      var(--color-muted)
-    );
   }
 
   .tick {
@@ -255,42 +186,23 @@
   }
 
   @media (max-width: 38rem) {
-    .strip::before {
-      inset: 0.35rem 0.18rem;
+    .shutter-strip {
+      --observatory-strip-frame-inset: 0.35rem 0.18rem;
     }
 
-    .strip::after {
+    .shutter-strip::after {
       top: 0.35rem;
       bottom: 0.35rem;
-    }
-
-    .shutter-meta,
-    .shutter-readout {
-      display: none;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .frame,
-    .strip {
+    .frame {
       animation: none;
     }
 
-    .strip {
-      clip-path: none;
-    }
-
-    .strip,
-    .window,
-    .shutter-meta,
-    .shutter-readout {
+    .window {
       transition: none;
-    }
-  }
-
-  @keyframes strip-reveal {
-    to {
-      clip-path: inset(0);
     }
   }
 

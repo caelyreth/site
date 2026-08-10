@@ -3,36 +3,17 @@
   import { load_sky_map_engine } from '$lib/graphics/observatory/load-engine'
   import type {
     SkyMapEngine,
-    SkyMapLayerMotionStatus,
-    SkyMapPulseStatus,
-    SkyMapRollerMotionStatus,
-    SkyMapViewStatus,
+    SkyMapEngineEvent,
   } from '$lib/graphics/observatory/types'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
 
   type CanvasProps = {
-    on_destination_arrival?: () => void
-    on_fade_in_start?: () => void
-    on_foreground_contract_start?: (status: SkyMapLayerMotionStatus) => void
-    on_foreground_return_start?: (status: SkyMapLayerMotionStatus) => void
-    on_roller_motion?: (status: SkyMapRollerMotionStatus) => void
-    on_spread_end?: () => void
-    on_spread_start?: (status: SkyMapPulseStatus) => void
-    on_view_change?: (status: SkyMapViewStatus) => void
+    on_event?: (event: SkyMapEngineEvent) => void
   }
 
   /* oxlint-disable prefer-const -- props react to parent callbacks. */
-  let {
-    on_destination_arrival,
-    on_fade_in_start,
-    on_foreground_contract_start,
-    on_foreground_return_start,
-    on_roller_motion,
-    on_spread_end,
-    on_spread_start,
-    on_view_change,
-  }: CanvasProps = $props()
+  let { on_event }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
   let engine = $state<SkyMapEngine>()
@@ -78,15 +59,7 @@
           canvas,
           sky_data,
           theme.resolvedTheme === 'dark',
-          {
-            on_destination_arrival,
-            on_foreground_contract_start,
-            on_foreground_return_start,
-            on_roller_motion,
-            on_spread_end,
-            on_spread_start,
-            on_view_change,
-          },
+          { on_event },
         )
         sync_activity()
         reveal_frame = requestAnimationFrame(() => {
@@ -94,7 +67,6 @@
           reveal_frame = requestAnimationFrame(() => {
             reveal_frame = undefined
             field_ready = true
-            on_fade_in_start?.()
           })
         })
       })

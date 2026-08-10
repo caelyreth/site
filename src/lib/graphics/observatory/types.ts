@@ -30,14 +30,17 @@ export type SkyMapRollerMotionStatus = {
   sequence: number
 }
 
+export type SkyMapEngineEvent =
+  | { type: 'destination_arrival' }
+  | { type: 'foreground_contract_start'; status: SkyMapLayerMotionStatus }
+  | { type: 'foreground_return_start'; status: SkyMapLayerMotionStatus }
+  | { type: 'roller_motion'; status: SkyMapRollerMotionStatus }
+  | { type: 'spread_end' }
+  | { type: 'spread_start'; status: SkyMapPulseStatus }
+  | { type: 'view_change'; status: SkyMapViewStatus }
+
 export type SkyMapEngineCallbacks = {
-  on_destination_arrival?: () => void
-  on_foreground_contract_start?: (status: SkyMapLayerMotionStatus) => void
-  on_foreground_return_start?: (status: SkyMapLayerMotionStatus) => void
-  on_roller_motion?: (status: SkyMapRollerMotionStatus) => void
-  on_spread_end?: () => void
-  on_spread_start?: (status: SkyMapPulseStatus) => void
-  on_view_change?: (status: SkyMapViewStatus) => void
+  on_event?: (event: SkyMapEngineEvent) => void
 }
 
 export type DecodedSkyMap = {

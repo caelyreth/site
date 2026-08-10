@@ -2,18 +2,18 @@
   import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/types'
   import { fly } from 'svelte/transition'
 
+  import './aperture-strip.css'
+
   type IndexRollerProps = {
     active: boolean
     motion: SkyMapRollerMotionStatus
     roller_visible: boolean
-    signal_color: string
   }
 
   const index_perforations = Array.from({ length: 44 })
 
   /* oxlint-disable prefer-const -- props react to live roller state. */
-  let { active, motion, roller_visible, signal_color }: IndexRollerProps =
-    $props()
+  let { active, motion, roller_visible }: IndexRollerProps = $props()
   let continuity_position = $state(67)
   let was_active = false
 
@@ -30,8 +30,7 @@
   class:rollerDown={motion.direction > 0}
   class:rollerUp={motion.direction < 0}
   class:rollerVisible={roller_visible}
-  class="strip strip-index"
-  style:--aperture-signal={signal_color}
+  class="observatory-strip roller-strip"
   style:--continuity-position={`${continuity_position}%`}
   style:--roller-duration={`${motion.duration}ms`}
   style:--roller-cycle={motion.direction > 0 ? '3.19rem' : '-3.19rem'}
@@ -53,8 +52,8 @@
     <span class="material-exposure"></span>
   </div>
 
-  <span class="roller-meta">AP-04</span>
-  <span class="roller-readout">
+  <span class="observatory-strip__meta roller-meta">AP-04</span>
+  <span class="observatory-strip__readout roller-readout">
     {#if motion.direction > 0}
       <span
         class="roller-readout-value"
@@ -74,47 +73,28 @@
 </section>
 
 <style>
-  .strip {
-    --aperture-fill: var(--strip-fill);
-    --aperture-line: color-mix(
+  .roller-strip {
+    --observatory-strip-fill: var(--strip-fill);
+    --observatory-strip-line: color-mix(
       in oklab,
       var(--color-rule) 76%,
       transparent
     );
+    --observatory-strip-frame-line: var(--observatory-strip-line);
+    --observatory-strip-frame-inset: 0.75rem 0.4rem;
+    --observatory-strip-frame-z-index: 3;
+    --observatory-strip-label-z-index: 4;
+    --observatory-strip-reveal-delay: 360ms;
+    --observatory-strip-active-line-mix: 56%;
     --aperture-print: color-mix(
       in oklab,
       var(--color-ink) 72%,
       transparent
     );
-    --plate-delay: 360ms;
     --signal-delay: 150ms;
-    position: relative;
-    min-width: 0;
-    overflow: hidden;
-    contain: paint;
-    border-inline: 1px solid var(--aperture-line);
-    clip-path: inset(0 100% 0 0);
-    background-color: var(--aperture-fill);
-    animation: strip-reveal 640ms var(--ease-in-out) var(--plate-delay) both;
-    transition:
-      border-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
-      background-color 600ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .strip::before,
-  .strip::after {
-    position: absolute;
-    z-index: 3;
-    pointer-events: none;
-    content: '';
-  }
-
-  .strip::before {
-    inset: 0.75rem 0.4rem;
-    border-block: 1px solid var(--aperture-line);
-  }
-
-  .strip::after {
+  .roller-strip::after {
     top: 0.75rem;
     bottom: 0.75rem;
     left: 0.4rem;
@@ -141,29 +121,9 @@
       transform 960ms var(--ease-in-out);
   }
 
-  .roller-meta,
   .roller-readout {
-    position: absolute;
-    z-index: 4;
-    color: var(--color-muted);
-    font-size: clamp(0.375rem, 0.5vw, 0.5rem);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.08em;
-    line-height: 1;
-    transition: color 480ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .roller-meta {
-    top: 0.28rem;
-    left: 0.35rem;
-  }
-
-  .roller-readout {
-    right: 0.35rem;
-    bottom: 0.28rem;
     width: 3rem;
     height: 0.5rem;
-    text-align: right;
   }
 
   .roller-readout-value {
@@ -181,7 +141,7 @@
     left: 0;
     height: 1px;
     opacity: 0;
-    background: var(--aperture-line);
+    background: var(--observatory-strip-line);
     transform: scaleX(0.72);
     transform-origin: left;
     transition:
@@ -195,7 +155,7 @@
     right: 11%;
     width: 0.32rem;
     height: 0.32rem;
-    border: 1px solid var(--aperture-line);
+    border: 1px solid var(--observatory-strip-line);
     content: '';
     transform: rotate(45deg);
     transition:
@@ -208,7 +168,7 @@
     inset: 0 auto auto 0;
     width: 30%;
     height: 1px;
-    background: var(--aperture-signal);
+    background: var(--observatory-signal);
     content: '';
     opacity: 0;
     transform: translateX(-140%) scaleX(0.35);
@@ -288,28 +248,28 @@
     animation: roller-cycle var(--roller-duration) var(--ease-in-out) both;
   }
 
-  .strip.rollerVisible .index-perforation-track,
-  .strip.rollerVisible .index-roller {
+  .roller-strip.rollerVisible .index-perforation-track,
+  .roller-strip.rollerVisible .index-roller {
     opacity: 1;
   }
 
-  .strip-index .material-exposure {
+  .roller-strip .material-exposure {
     top: auto;
     right: 0.5rem;
     bottom: 15%;
     left: 0.82rem;
     height: 24%;
     opacity: 0;
-    background: var(--aperture-signal);
+    background: var(--observatory-signal);
     transform: scaleY(0.22);
     transform-origin: bottom;
   }
 
-  .strip.rollerDown .material-exposure {
+  .roller-strip.rollerDown .material-exposure {
     transform-origin: top;
   }
 
-  .strip.rollerUp .material-exposure {
+  .roller-strip.rollerUp .material-exposure {
     transform-origin: bottom;
   }
 
@@ -320,7 +280,7 @@
     bottom: 1.1rem;
     width: 0.42rem;
     height: 0.42rem;
-    border: 1px solid var(--aperture-line);
+    border: 1px solid var(--observatory-strip-line);
     background: transparent;
     transition:
       background-color 520ms var(--ease-out),
@@ -328,65 +288,43 @@
       transform 720ms var(--ease-out);
   }
 
-  .strip.active {
-    border-color: color-mix(
-      in oklab,
-      var(--aperture-signal) 56%,
-      var(--color-rule)
-    );
-    background-color: color-mix(
-      in oklab,
-      var(--aperture-signal) 5%,
-      var(--aperture-fill)
-    );
-  }
-
-  .strip.active .continuity-line {
+  .roller-strip.active .continuity-line {
     background: color-mix(
       in oklab,
-      var(--aperture-signal) 64%,
-      var(--color-rule)
+      var(--observatory-signal) 64%,
+      var(--observatory-strip-line)
     );
     animation: continuity-lightup 1.04s var(--ease-out) both;
   }
 
-  .strip.active .roller-meta,
-  .strip.active .roller-readout {
-    color: color-mix(
-      in oklab,
-      var(--aperture-signal) 74%,
-      var(--color-muted)
-    );
-  }
-
-  .strip.active .continuity-line::after {
-    border-color: var(--aperture-signal);
+  .roller-strip.active .continuity-line::after {
+    border-color: var(--observatory-signal);
     transform: translateX(-0.38rem) rotate(135deg);
     transition-delay: var(--signal-delay);
   }
 
-  .strip.active .continuity-line::before {
+  .roller-strip.active .continuity-line::before {
     animation: signal-traverse 1.28s cubic-bezier(0.46, 0, 0.22, 1)
       var(--signal-delay) both;
   }
 
-  .strip.active .material-exposure {
+  .roller-strip.active .material-exposure {
     opacity: 0.18;
     transform: scaleY(1);
   }
 
-  .strip.active .signal-swatch {
-    border-color: var(--aperture-signal);
-    background: var(--aperture-signal);
+  .roller-strip.active .signal-swatch {
+    border-color: var(--observatory-signal);
+    background: var(--observatory-signal);
     transform: rotate(45deg);
   }
 
   @media (max-width: 38rem) {
-    .strip::before {
-      inset: 0.4rem 0.2rem;
+    .roller-strip {
+      --observatory-strip-frame-inset: 0.4rem 0.2rem;
     }
 
-    .strip::after {
+    .roller-strip::after {
       top: 0.4rem;
       bottom: 0.4rem;
       left: 0.2rem;
@@ -399,25 +337,14 @@
       width: 0.3rem;
       height: 0.3rem;
     }
-
-    .roller-meta,
-    .roller-readout {
-      display: none;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .strip,
-    .strip.active .continuity-line::before,
+    .roller-strip.active .continuity-line::before,
     .index-roller-track.is-moving {
       animation: none;
     }
 
-    .strip {
-      clip-path: none;
-    }
-
-    .strip,
     .material-exposure,
     .continuity-line,
     .continuity-line::before,
@@ -426,12 +353,6 @@
     .index-roller,
     .signal-swatch {
       transition-duration: 0ms;
-    }
-  }
-
-  @keyframes strip-reveal {
-    to {
-      clip-path: inset(0);
     }
   }
 
