@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/field'
+  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/types'
   import { fly } from 'svelte/transition'
 
   type IndexRollerProps = {
@@ -12,12 +12,8 @@
   const index_perforations = Array.from({ length: 44 })
 
   /* oxlint-disable prefer-const -- props react to live roller state. */
-  let {
-    active,
-    motion,
-    roller_visible,
-    signal_color,
-  }: IndexRollerProps = $props()
+  let { active, motion, roller_visible, signal_color }: IndexRollerProps =
+    $props()
   let continuity_position = $state(67)
   let was_active = false
 
@@ -63,15 +59,13 @@
       <span
         class="roller-readout-value"
         in:fly={{ y: -4, duration: 240 }}
-        out:fly={{ y: 4, duration: 180 }}
-        >DEC DN</span
+        out:fly={{ y: 4, duration: 180 }}>DEC DN</span
       >
     {:else}
       <span
         class="roller-readout-value"
         in:fly={{ y: 4, duration: 240 }}
-        out:fly={{ y: -4, duration: 180 }}
-        >DEC UP</span
+        out:fly={{ y: -4, duration: 180 }}>DEC UP</span
       >
     {/if}
   </span>
@@ -433,7 +427,6 @@
     .signal-swatch {
       transition-duration: 0ms;
     }
-
   }
 
   @keyframes strip-reveal {

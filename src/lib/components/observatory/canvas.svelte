@@ -1,16 +1,16 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
+  import { load_sky_map_engine } from '$lib/graphics/observatory/load-engine'
   import type {
-    create_sky_map_field,
+    SkyMapEngine,
     SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
     SkyMapRollerMotionStatus,
     SkyMapViewStatus,
-  } from '$lib/graphics/observatory/field'
+  } from '$lib/graphics/observatory/types'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
 
-  type SkyMapController = ReturnType<typeof create_sky_map_field>
   type CanvasProps = {
     on_destination_arrival?: () => void
     on_fade_in_start?: () => void
@@ -35,7 +35,7 @@
   }: CanvasProps = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
-  let controller = $state<SkyMapController>()
+  let engine = $state<SkyMapEngine>()
   let scene_visible = $state(false)
   let page_visible = $state(true)
   let field_ready = $state(false)
@@ -43,7 +43,7 @@
   // MARK: - lifecycle
 
   function sync_activity() {
-    controller?.set_active(scene_visible && page_visible)
+    engine?.set_active(scene_visible && page_visible)
   }
 
   onMount(() => {
@@ -71,13 +71,10 @@
     document.addEventListener('visibilitychange', handle_visibility)
     page_visible = document.visibilityState === 'visible'
 
-    void Promise.all([
-      import('$lib/graphics/observatory/field'),
-      import('$lib/data/sky-map-data.generated'),
-    ])
-      .then(([runtime, sky_data]) => {
+    void load_sky_map_engine()
+      .then(({ create_engine, sky_data }) => {
         if (disposed || !canvas) return
-        controller = runtime.create_sky_map_field(
+        engine = create_engine(
           canvas,
           sky_data,
           theme.resolvedTheme === 'dark',
@@ -115,15 +112,15 @@
       if (reveal_frame !== undefined) cancelAnimationFrame(reveal_frame)
       observer?.disconnect()
       document.removeEventListener('visibilitychange', handle_visibility)
-      controller?.destroy()
-      controller = undefined
+      engine?.destroy()
+      engine = undefined
       field_ready = false
     }
   })
 
   $effect(() => {
-    controller?.set_theme(theme.resolvedTheme === 'dark')
-    controller?.set_active(scene_visible && page_visible)
+    engine?.set_theme(theme.resolvedTheme === 'dark')
+    engine?.set_active(scene_visible && page_visible)
   })
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/field'
+  import type { SkyMapRollerMotionStatus } from '$lib/graphics/observatory/types'
   import { onMount } from 'svelte'
 
   import FieldLog from './field-log.svelte'
@@ -16,12 +16,6 @@
     signal_color: string
     typing_paused: boolean
   }
-
-  const shutters = [
-    { code: 'AP-01', readout: 'NW 07' },
-    { code: 'AP-02', readout: 'EL 19' },
-    { code: 'AP-03', readout: 'RA 32' },
-  ] as const
 
   /* oxlint-disable prefer-const -- props react to the live spread state. */
   let {
@@ -76,21 +70,20 @@
 >
   <div class="frame" onanimationend={handle_frame_animation_end}>
     <div class="strips">
-      {#each shutters as shutter (shutter.code)}
-        {#if shutter.code === 'AP-02'}
-          <FieldLog
-            active={is_active}
-            paused={typing_paused}
-            {signal_color}
-            visible={roller_visible}
-          />
-        {:else}
-          <section class="strip">
-            <span class="shutter-meta">{shutter.code}</span>
-            <span class="shutter-readout">{shutter.readout}</span>
-          </section>
-        {/if}
-      {/each}
+      <section class="strip">
+        <span class="shutter-meta">AP-01</span>
+        <span class="shutter-readout">NW 07</span>
+      </section>
+      <FieldLog
+        active={is_active}
+        paused={typing_paused}
+        {signal_color}
+        visible={roller_visible}
+      />
+      <section class="strip">
+        <span class="shutter-meta">AP-03</span>
+        <span class="shutter-readout">RA 32</span>
+      </section>
       <Roller
         active={is_active}
         motion={roller_motion}

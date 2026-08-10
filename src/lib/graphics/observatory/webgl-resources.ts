@@ -33,7 +33,10 @@ import {
   TRAIL_MAX_LENGTH,
 } from './constants'
 import { decode_sky_map } from './decoder'
-import { brightness_for_magnitude, map_scale_for_view_radius } from './motion'
+import {
+  brightness_for_magnitude,
+  map_scale_for_view_radius,
+} from './motion'
 import {
   background_fragment_shader,
   background_vertex_shader,
@@ -104,7 +107,7 @@ function create_ribbon_geometry(segment_count: number) {
   return { indices, ribbon }
 }
 
-export function create_sky_map_renderer(
+export function create_sky_map_render_resources(
   target: HTMLCanvasElement,
   sky_data: SkyMapPayload,
   initial_dark = false,
@@ -155,20 +158,34 @@ export function create_sky_map_renderer(
     uAspect: { value: 1 },
     uMapScale: { value: map_scale_for_view_radius(BASE_VIEW_RADIUS) },
     uRight: {
-      value: new Vector3(SKY_VIEW_BASIS[0], SKY_VIEW_BASIS[1], SKY_VIEW_BASIS[2]),
+      value: new Vector3(
+        SKY_VIEW_BASIS[0],
+        SKY_VIEW_BASIS[1],
+        SKY_VIEW_BASIS[2],
+      ),
     },
     uUp: {
-      value: new Vector3(SKY_VIEW_BASIS[3], SKY_VIEW_BASIS[4], SKY_VIEW_BASIS[5]),
+      value: new Vector3(
+        SKY_VIEW_BASIS[3],
+        SKY_VIEW_BASIS[4],
+        SKY_VIEW_BASIS[5],
+      ),
     },
     uForward: {
-      value: new Vector3(SKY_VIEW_BASIS[6], SKY_VIEW_BASIS[7], SKY_VIEW_BASIS[8]),
+      value: new Vector3(
+        SKY_VIEW_BASIS[6],
+        SKY_VIEW_BASIS[7],
+        SKY_VIEW_BASIS[8],
+      ),
     },
     uHalfWidth: { value: 1.32 },
     uPulseDistance: { value: 0 },
     uRoutePulseDistance: { value: 0 },
     uPulseActive: { value: 0 },
     uTargetDistance: { value: 0 },
-    uDestinationConstellationLead: { value: DESTINATION_CONSTELLATION_LEAD },
+    uDestinationConstellationLead: {
+      value: DESTINATION_CONSTELLATION_LEAD,
+    },
     uSourceActivation: { value: 0 },
     uHeadWidth: { value: PULSE_HEAD_WIDTH },
     uTailWidth: { value: 0.46 },
@@ -196,13 +213,25 @@ export function create_sky_map_renderer(
     uTrailMaxLength: { value: TRAIL_MAX_LENGTH },
     uTrailOpacity: { value: 0 },
     uTrailRight: {
-      value: new Vector3(SKY_VIEW_BASIS[0], SKY_VIEW_BASIS[1], SKY_VIEW_BASIS[2]),
+      value: new Vector3(
+        SKY_VIEW_BASIS[0],
+        SKY_VIEW_BASIS[1],
+        SKY_VIEW_BASIS[2],
+      ),
     },
     uTrailUp: {
-      value: new Vector3(SKY_VIEW_BASIS[3], SKY_VIEW_BASIS[4], SKY_VIEW_BASIS[5]),
+      value: new Vector3(
+        SKY_VIEW_BASIS[3],
+        SKY_VIEW_BASIS[4],
+        SKY_VIEW_BASIS[5],
+      ),
     },
     uTrailForward: {
-      value: new Vector3(SKY_VIEW_BASIS[6], SKY_VIEW_BASIS[7], SKY_VIEW_BASIS[8]),
+      value: new Vector3(
+        SKY_VIEW_BASIS[6],
+        SKY_VIEW_BASIS[7],
+        SKY_VIEW_BASIS[8],
+      ),
     },
   }
   const material_options = {
@@ -238,24 +267,33 @@ export function create_sky_map_renderer(
     vertexShader: trail_vertex_shader,
   })
 
-  const { indices: edge_indices, ribbon: edge_ribbon } = create_ribbon_geometry(4)
-  const { indices: route_indices, ribbon: route_ribbon } = create_ribbon_geometry(
-    ROUTE_RIBBON_SEGMENTS,
-  )
+  const { indices: edge_indices, ribbon: edge_ribbon } =
+    create_ribbon_geometry(4)
+  const { indices: route_indices, ribbon: route_ribbon } =
+    create_ribbon_geometry(ROUTE_RIBBON_SEGMENTS)
   const edge_count = sky_map.edge_nodes.length / 2
   const starts = new Float32Array(edge_count * 3)
   const ends = new Float32Array(edge_count * 3)
   for (let index = 0; index < edge_count; index += 1) {
     const start_node = sky_map.edge_nodes[index * 2] * 3
     const end_node = sky_map.edge_nodes[index * 2 + 1] * 3
-    starts.set(sky_map.directions.subarray(start_node, start_node + 3), index * 3)
+    starts.set(
+      sky_map.directions.subarray(start_node, start_node + 3),
+      index * 3,
+    )
     ends.set(sky_map.directions.subarray(end_node, end_node + 3), index * 3)
   }
 
   const edge_geometry = new InstancedBufferGeometry()
-  edge_geometry.setAttribute('position', new Float32BufferAttribute(edge_ribbon, 3))
+  edge_geometry.setAttribute(
+    'position',
+    new Float32BufferAttribute(edge_ribbon, 3),
+  )
   edge_geometry.setIndex(edge_indices)
-  edge_geometry.setAttribute('aStart', new InstancedBufferAttribute(starts, 3))
+  edge_geometry.setAttribute(
+    'aStart',
+    new InstancedBufferAttribute(starts, 3),
+  )
   edge_geometry.setAttribute('aEnd', new InstancedBufferAttribute(ends, 3))
   edge_geometry.setAttribute(
     'aDistanceStart',
@@ -273,7 +311,10 @@ export function create_sky_map_renderer(
     'aTargetDistanceEnd',
     new InstancedBufferAttribute(new Float32Array(edge_count), 1),
   )
-  edge_geometry.setAttribute('aWeight', new InstancedBufferAttribute(sky_map.edge_weights, 1))
+  edge_geometry.setAttribute(
+    'aWeight',
+    new InstancedBufferAttribute(sky_map.edge_weights, 1),
+  )
   edge_geometry.setAttribute(
     'aConstellation',
     new InstancedBufferAttribute(sky_map.edge_groups, 1),
@@ -281,7 +322,10 @@ export function create_sky_map_renderer(
   edge_geometry.instanceCount = edge_count
 
   const route_geometry = new BufferGeometry()
-  route_geometry.setAttribute('position', new Float32BufferAttribute(route_ribbon, 3))
+  route_geometry.setAttribute(
+    'position',
+    new Float32BufferAttribute(route_ribbon, 3),
+  )
   route_geometry.setIndex(route_indices)
 
   const trail_geometry = new InstancedBufferGeometry()
@@ -307,12 +351,21 @@ export function create_sky_map_renderer(
   const background_geometry = new BufferGeometry()
   background_geometry.setAttribute(
     'position',
-    new Float32BufferAttribute([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1], 2),
+    new Float32BufferAttribute(
+      [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1],
+      2,
+    ),
   )
 
   const star_geometry = new BufferGeometry()
-  star_geometry.setAttribute('position', new BufferAttribute(sky_map.directions, 3))
-  star_geometry.setAttribute('aBrightness', new BufferAttribute(star_brightnesses, 1))
+  star_geometry.setAttribute(
+    'position',
+    new BufferAttribute(sky_map.directions, 3),
+  )
+  star_geometry.setAttribute(
+    'aBrightness',
+    new BufferAttribute(star_brightnesses, 1),
+  )
   star_geometry.setAttribute(
     'aDistance',
     new BufferAttribute(new Float32Array(sky_map.magnitudes.length), 1),
@@ -325,7 +378,10 @@ export function create_sky_map_renderer(
     'aLocator',
     new BufferAttribute(new Float32Array(sky_map.magnitudes.length), 1),
   )
-  star_geometry.setAttribute('aConstellation', new BufferAttribute(sky_map.node_groups, 1))
+  star_geometry.setAttribute(
+    'aConstellation',
+    new BufferAttribute(sky_map.node_groups, 1),
+  )
 
   const scene = new Scene()
   const camera = new Camera()
@@ -353,7 +409,13 @@ export function create_sky_map_renderer(
   }
 
   function dispose() {
-    scene.remove(background_mesh, edge_mesh, route_mesh, trail_mesh, star_points)
+    scene.remove(
+      background_mesh,
+      edge_mesh,
+      route_mesh,
+      trail_mesh,
+      star_points,
+    )
     background_geometry.dispose()
     edge_geometry.dispose()
     route_geometry.dispose()
@@ -378,7 +440,3 @@ export function create_sky_map_renderer(
     uniforms,
   }
 }
-
-export type SkyMapRendererResources = NonNullable<
-  ReturnType<typeof create_sky_map_renderer>
->

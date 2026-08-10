@@ -64,29 +64,29 @@ import {
   trail_release_opacity,
   zoom_envelope,
 } from './motion'
-import { create_sky_map_renderer } from './renderer'
 import { SIGNAL_PALETTES } from './signal-colors'
 import type {
   RouteCandidate,
-  SkyMapController,
-  SkyMapControllerCallbacks,
+  SkyMapEngine,
+  SkyMapEngineCallbacks,
   SkyMapPayload,
 } from './types'
+import { create_sky_map_render_resources } from './webgl-resources'
 
-export function create_sky_map_controller(
+export function create_sky_map_engine(
   target: HTMLCanvasElement,
   sky_data: SkyMapPayload,
   initial_dark = false,
-  callbacks: SkyMapControllerCallbacks = {},
-): SkyMapController {
+  callbacks: SkyMapEngineCallbacks = {},
+): SkyMapEngine {
   // MARK: - setup
 
-  const sky_map_renderer = create_sky_map_renderer(
+  const sky_map_resources = create_sky_map_render_resources(
     target,
     sky_data,
     initial_dark,
   )
-  if (!sky_map_renderer) {
+  if (!sky_map_resources) {
     return { destroy: () => {}, set_active: () => {}, set_theme: () => {} }
   }
 
@@ -98,10 +98,12 @@ export function create_sky_map_controller(
     sky_map,
     star_geometry,
     uniforms,
-  } = sky_map_renderer
+  } = sky_map_resources
   const { SKY_SOURCE_NODES } = sky_data
   const node_distances = new Float32Array(sky_map.magnitudes.length)
-  const reduced_motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const reduced_motion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  )
   const base_right = uniforms.uRight.value.clone().normalize()
   const base_up = uniforms.uUp.value.clone().normalize()
   const base_forward = uniforms.uForward.value.clone().normalize()
@@ -167,7 +169,10 @@ export function create_sky_map_controller(
 
   const recent_constellation_groups: number[] = []
 
-  function angular_distance_from_node(source_offset: number, node_index: number) {
+  function angular_distance_from_node(
+    source_offset: number,
+    node_index: number,
+  ) {
     const node_offset = node_index * 3
     const cosine =
       sky_map.directions[source_offset] * sky_map.directions[node_offset] +
@@ -185,11 +190,17 @@ export function create_sky_map_controller(
     return angular_distance_from_node(first_index * 3, second_index)
   }
 
-  function angular_distance_between_directions(first: Vector3, second: Vector3) {
+  function angular_distance_between_directions(
+    first: Vector3,
+    second: Vector3,
+  ) {
     return Math.acos(Math.max(-1, Math.min(1, first.dot(second))))
   }
 
-  function set_node_direction(node_index: number, direction_target: Vector3) {
+  function set_node_direction(
+    node_index: number,
+    direction_target: Vector3,
+  ) {
     const node_offset = node_index * 3
     direction_target.set(
       sky_map.directions[node_offset],
@@ -232,11 +243,15 @@ export function create_sky_map_controller(
     return Math.min(difference, 8 - difference)
   }
 
-  function route_candidate_for(node_index: number): RouteCandidate | undefined {
+  function route_candidate_for(
+    node_index: number,
+  ): RouteCandidate | undefined {
     if (sky_map.magnitudes[node_index] > ROUTE_CANDIDATE_MAGNITUDE) return
     if (sky_map.node_groups[node_index] < 0) return
     const projected = project_node(node_index)
-    if (projected.depth < 0.12 || projected.radius < ROUTE_CENTER_RADIUS) return
+    if (projected.depth < 0.12 || projected.radius < ROUTE_CENTER_RADIUS) {
+      return
+    }
     const angle = Math.atan2(
       projected.y - 0.5,
       (projected.x - 0.5) * uniforms.uAspect.value,
@@ -269,12 +284,20 @@ export function create_sky_map_controller(
     if (angle < 0.0001) return direction_target.copy(first)
     const denominator = Math.sin(angle)
     if (Math.abs(denominator) < 0.0001) {
-      return direction_target.copy(first).lerp(second, clamped_progress).normalize()
+      return direction_target
+        .copy(first)
+        .lerp(second, clamped_progress)
+        .normalize()
     }
     return direction_target
       .copy(first)
-      .multiplyScalar(Math.sin((1 - clamped_progress) * angle) / denominator)
-      .addScaledVector(second, Math.sin(clamped_progress * angle) / denominator)
+      .multiplyScalar(
+        Math.sin((1 - clamped_progress) * angle) / denominator,
+      )
+      .addScaledVector(
+        second,
+        Math.sin(clamped_progress * angle) / denominator,
+      )
       .normalize()
   }
 
@@ -286,9 +309,11 @@ export function create_sky_map_controller(
     const visible_sources = candidates.filter(
       (candidate) => candidate.radius <= ROUTE_SOURCE_MAX_RADIUS,
     )
-    const source_pool = visible_sources.length > 0 ? visible_sources : candidates
+    const source_pool =
+      visible_sources.length > 0 ? visible_sources : candidates
     let source = target_index
-    const carried_constellation = source >= 0 ? sky_map.node_groups[source] : -1
+    const carried_constellation =
+      source >= 0 ? sky_map.node_groups[source] : -1
     const carried_sources = source_pool.filter(
       (candidate) =>
         sky_map.node_groups[candidate.index] === carried_constellation &&
@@ -299,14 +324,19 @@ export function create_sky_map_controller(
         ? carried_sources
         : source_pool.filter(
             (candidate) =>
-              sky_map.node_groups[candidate.index] === carried_constellation,
+              sky_map.node_groups[candidate.index] ===
+              carried_constellation,
           )
     let source_candidate =
       carried_pool[Math.floor(Math.random() * carried_pool.length)] ??
       (source >= 0 ? route_candidate_for(source) : undefined)
     if (source_candidate) source = source_candidate.index
-    if (!source_candidate || source_candidate.radius > ROUTE_SOURCE_MAX_RADIUS) {
-      source_candidate = source_pool[Math.floor(Math.random() * source_pool.length)]
+    if (
+      !source_candidate ||
+      source_candidate.radius > ROUTE_SOURCE_MAX_RADIUS
+    ) {
+      source_candidate =
+        source_pool[Math.floor(Math.random() * source_pool.length)]
       source = source_candidate.index
     }
 
@@ -317,7 +347,8 @@ export function create_sky_map_controller(
         ? sky_map.node_groups[previous_route_source_index]
         : -1
     const has_incoming_direction =
-      previous_route_source_index >= 0 && previous_route_source_index !== source
+      previous_route_source_index >= 0 &&
+      previous_route_source_index !== source
     if (has_incoming_direction) {
       set_node_direction(
         previous_route_source_index,
@@ -335,7 +366,10 @@ export function create_sky_map_controller(
       if (candidate.index === source) return []
       const target_group = sky_map.node_groups[candidate.index]
       if (target_group === source_group) return []
-      const distance = angular_distance_between_nodes(source, candidate.index)
+      const distance = angular_distance_between_nodes(
+        source,
+        candidate.index,
+      )
       const camera_rotation = Math.max(
         0,
         candidate.view_distance - ROUTE_TARGET_VISIBLE_OFFSET,
@@ -394,14 +428,16 @@ export function create_sky_map_controller(
         return []
       }
       const distance_score =
-        (distance - ROUTE_MIN_DISTANCE) / (ROUTE_MAX_DISTANCE - ROUTE_MIN_DISTANCE)
+        (distance - ROUTE_MIN_DISTANCE) /
+        (ROUTE_MAX_DISTANCE - ROUTE_MIN_DISTANCE)
       const rotation_score = Math.max(
         0,
         1 -
           Math.abs(camera_rotation - ROUTE_PREFERRED_CAMERA_ROTATION) /
             ROUTE_PREFERRED_CAMERA_ROTATION,
       )
-      const direction_score = sector_gap(source_candidate.sector, candidate.sector) / 4
+      const direction_score =
+        sector_gap(source_candidate.sector, candidate.sector) / 4
       const continuation_score = (1 - backtrack_dot) * 0.5
       const source_exit_score = Math.min(
         1,
@@ -437,7 +473,8 @@ export function create_sky_map_controller(
         target_group !== previous_source_group,
     )
     const fresh_candidates = non_reversing_candidates.filter(
-      ({ target_group }) => !recent_constellation_groups.includes(target_group),
+      ({ target_group }) =>
+        !recent_constellation_groups.includes(target_group),
     )
     const diverse_candidates =
       fresh_candidates.length > 0
@@ -447,7 +484,8 @@ export function create_sky_map_controller(
           : scored_candidates
     const directionally_separated = diverse_candidates.filter(
       ({ candidate }) =>
-        sector_gap(source_candidate.sector, candidate.sector) >= ROUTE_MIN_SECTOR_GAP,
+        sector_gap(source_candidate.sector, candidate.sector) >=
+        ROUTE_MIN_SECTOR_GAP,
     )
     const route_pool =
       directionally_separated.length > 0
@@ -504,7 +542,8 @@ export function create_sky_map_controller(
       uniforms.uTrailUp.value,
       uniforms.uTrailForward.value,
     )
-    uniforms.uTrailMapScale.value = map_scale_for_view_radius(trail_view_radius)
+    uniforms.uTrailMapScale.value =
+      map_scale_for_view_radius(trail_view_radius)
   }
 
   function sync_trail_view() {
@@ -527,7 +566,8 @@ export function create_sky_map_controller(
       if (uniforms.uTrailOpacity.value > 0) sync_trail_view()
       return
     }
-    const response = 1 - Math.exp((-TRAIL_RESPONSE * delta_milliseconds) / 1000)
+    const response =
+      1 - Math.exp((-TRAIL_RESPONSE * delta_milliseconds) / 1000)
     trail_orientation.slerp(view_orientation, response)
     trail_view_radius += (view_radius - trail_view_radius) * response
     apply_trail_state()
@@ -552,10 +592,14 @@ export function create_sky_map_controller(
 
   function configure_route_timing(camera_rotation: number) {
     const nominal_camera_duration = camera_rotation / CAMERA_ANGULAR_SPEED
-    const rotation_range = ROUTE_MAX_CAMERA_ROTATION - ROUTE_MIN_CAMERA_ROTATION
+    const rotation_range =
+      ROUTE_MAX_CAMERA_ROTATION - ROUTE_MIN_CAMERA_ROTATION
     const rotation_ratio = Math.min(
       1,
-      Math.max(0, (camera_rotation - ROUTE_MIN_CAMERA_ROTATION) / rotation_range),
+      Math.max(
+        0,
+        (camera_rotation - ROUTE_MIN_CAMERA_ROTATION) / rotation_range,
+      ),
     )
     route_wide_view_radius =
       BASE_VIEW_RADIUS +
@@ -580,12 +624,15 @@ export function create_sky_map_controller(
       CAMERA_MAX_ROUTE_LEAD,
       Math.max(CAMERA_MIN_ROUTE_LEAD, nominal_camera_start),
     )
-    camera_duration = target_arrival_time + CAMERA_CAPTURE_LAG - camera_start_delay
+    camera_duration =
+      target_arrival_time + CAMERA_CAPTURE_LAG - camera_start_delay
     const camera_apex_time =
       camera_start_delay + camera_duration * CAMERA_VELOCITY_APEX
     foreground_contract_start = FOREGROUND_CONTRACT_DELAY
     const desired_contract_duration =
-      camera_apex_time - foreground_contract_start - FOREGROUND_CONTRACT_APEX_LEAD
+      camera_apex_time -
+      foreground_contract_start -
+      FOREGROUND_CONTRACT_APEX_LEAD
     const contract_duration = Math.min(
       FOREGROUND_CONTRACT_MAX_DURATION,
       Math.max(FOREGROUND_CONTRACT_MIN_DURATION, desired_contract_duration),
@@ -594,10 +641,14 @@ export function create_sky_map_controller(
     foreground_return_start = camera_apex_time + FOREGROUND_RETURN_LAG
     foreground_return_end =
       camera_start_delay + camera_duration + FOREGROUND_SETTLE_LAG
-    trail_release_start = camera_start_delay + camera_duration * TRAIL_RELEASE_PROGRESS
+    trail_release_start =
+      camera_start_delay + camera_duration * TRAIL_RELEASE_PROGRESS
     trail_release_duration = Math.max(
       1,
-      camera_start_delay + camera_duration - TRAIL_CAPTURE_LEAD - trail_release_start,
+      camera_start_delay +
+        camera_duration -
+        TRAIL_CAPTURE_LEAD -
+        trail_release_start,
     )
   }
 
@@ -608,7 +659,9 @@ export function create_sky_map_controller(
 
   function set_route(source: number, route_target: number) {
     last_camera_progress = -1
-    const star_distance = star_geometry.getAttribute('aDistance') as BufferAttribute
+    const star_distance = star_geometry.getAttribute(
+      'aDistance',
+    ) as BufferAttribute
     const star_target_distance = star_geometry.getAttribute(
       'aTargetDistance',
     ) as BufferAttribute
@@ -624,7 +677,9 @@ export function create_sky_map_controller(
     const edge_target_end_distance = edge_geometry.getAttribute(
       'aTargetDistanceEnd',
     ) as InstancedBufferAttribute
-    const locator = star_geometry.getAttribute('aLocator') as BufferAttribute
+    const locator = star_geometry.getAttribute(
+      'aLocator',
+    ) as BufferAttribute
     const previous_source = source_index
     source_index = source
     target_index = route_target
@@ -716,7 +771,8 @@ export function create_sky_map_controller(
         target_constellation_radius +
         SIGNAL_CONTINUATION_DISTANCE,
     )
-    signal_travel_distance = signal_fade_start_distance + SIGNAL_FADE_DISTANCE
+    signal_travel_distance =
+      signal_fade_start_distance + SIGNAL_FADE_DISTANCE
     route_start_orientation.copy(view_orientation)
     route_view_start_forward.copy(uniforms.uForward.value)
     set_node_direction(target_index, route_target_direction)
@@ -726,7 +782,9 @@ export function create_sky_map_controller(
     )
     const camera_rotation = camera_rotation_for_target(target_view_distance)
     const target_view_progress =
-      target_view_distance > 0.0001 ? camera_rotation / target_view_distance : 0
+      target_view_distance > 0.0001
+        ? camera_rotation / target_view_distance
+        : 0
     interpolate_direction(
       route_view_start_forward,
       route_target_direction,
@@ -772,8 +830,10 @@ export function create_sky_map_controller(
   }
 
   function hold_current_constellations() {
-    uniforms.uHeldSourceConstellation.value = uniforms.uSourceConstellation.value
-    uniforms.uHeldTargetConstellation.value = uniforms.uTargetConstellation.value
+    uniforms.uHeldSourceConstellation.value =
+      uniforms.uSourceConstellation.value
+    uniforms.uHeldTargetConstellation.value =
+      uniforms.uTargetConstellation.value
   }
 
   // MARK: - rendering
@@ -808,15 +868,15 @@ export function create_sky_map_controller(
       }
       signal_color_index = next
     }
-    uniforms.uSignalInk.value.setHex(palette[signal_color_index], SRGBColorSpace)
+    uniforms.uSignalInk.value.setHex(
+      palette[signal_color_index],
+      SRGBColorSpace,
+    )
   }
 
   function update_theme(dark: boolean) {
     dark_mode = dark
-    uniforms.uInk.value.setHex(
-      dark ? 0xe6e6e6 : 0x1b3851,
-      SRGBColorSpace,
-    )
+    uniforms.uInk.value.setHex(dark ? 0xe6e6e6 : 0x1b3851, SRGBColorSpace)
     uniforms.uBaseAlpha.value = dark ? 0.18 : 0.26
     uniforms.uBackgroundAlpha.value = dark ? 2 : 0.24
     uniforms.uBackgroundInk.value.setHex(
@@ -834,7 +894,10 @@ export function create_sky_map_controller(
     const pixel_ratio = choose_pixel_ratio(width, height)
     renderer.setPixelRatio(pixel_ratio)
     renderer.setSize(width, height, false)
-    uniforms.uResolution.value.set(width * pixel_ratio, height * pixel_ratio)
+    uniforms.uResolution.value.set(
+      width * pixel_ratio,
+      height * pixel_ratio,
+    )
     uniforms.uPixelRatio.value = pixel_ratio
     uniforms.uAspect.value = width / height
     uniforms.uHalfWidth.value = 1.32 * pixel_ratio
@@ -896,7 +959,10 @@ export function create_sky_map_controller(
     sync_trail_view()
     render()
     if (active && !disposed) {
-      idle_timer = window.setTimeout(begin_pulse, 2600 + Math.random() * 3000)
+      idle_timer = window.setTimeout(
+        begin_pulse,
+        2600 + Math.random() * 3000,
+      )
     }
   }
 
@@ -922,7 +988,8 @@ export function create_sky_map_controller(
       )
       uniforms.uLocatorProgress.value = locator_progress
       uniforms.uLocatorScale.value =
-        LOCATOR_INITIAL_SCALE + (1 - LOCATOR_INITIAL_SCALE) * locator_progress
+        LOCATOR_INITIAL_SCALE +
+        (1 - LOCATOR_INITIAL_SCALE) * locator_progress
       render()
       if (phase_elapsed < LOCATOR_DURATION) {
         frame = requestAnimationFrame(animate)
@@ -956,9 +1023,9 @@ export function create_sky_map_controller(
       uniforms.uLocatorScale.value = 1
       uniforms.uPulseActive.value = 1
       spreading = true
-        callbacks.on_spread_start?.({
-          color_index: signal_color_index,
-          roller_direction,
+      callbacks.on_spread_start?.({
+        color_index: signal_color_index,
+        roller_direction,
       })
       frame = requestAnimationFrame(animate)
       return
@@ -969,7 +1036,8 @@ export function create_sky_map_controller(
       return
     }
     const timeline_progress = pulse_elapsed / signal_duration
-    const pulse_distance = signal_travel_distance * signal_progress(timeline_progress)
+    const pulse_distance =
+      signal_travel_distance * signal_progress(timeline_progress)
     const route_pulse_distance =
       signal_travel_distance * route_progress(timeline_progress)
     const source_release = critically_damped_progress(
@@ -1000,17 +1068,26 @@ export function create_sky_map_controller(
     uniforms.uRetireProgress.value = critically_damped_progress(
       pulse_elapsed / CONSTELLATION_RETIRE_DURATION,
     )
-    if (!current_constellations_held && pulse_distance >= signal_fade_start_distance) {
+    if (
+      !current_constellations_held &&
+      pulse_distance >= signal_fade_start_distance
+    ) {
       hold_current_constellations()
       current_constellations_held = true
     }
-    if (!foreground_contract_started && pulse_elapsed >= foreground_contract_start) {
+    if (
+      !foreground_contract_started &&
+      pulse_elapsed >= foreground_contract_start
+    ) {
       foreground_contract_started = true
       callbacks.on_foreground_contract_start?.({
         duration: Math.max(0, foreground_contract_end - pulse_elapsed),
       })
     }
-    if (!foreground_return_started && pulse_elapsed >= foreground_return_start) {
+    if (
+      !foreground_return_started &&
+      pulse_elapsed >= foreground_return_start
+    ) {
       foreground_return_started = true
       callbacks.on_foreground_return_start?.({
         duration: Math.max(0, foreground_return_end - pulse_elapsed),
@@ -1025,7 +1102,8 @@ export function create_sky_map_controller(
     uniforms.uPulseDistance.value = pulse_distance
     uniforms.uRoutePulseDistance.value = route_pulse_distance
     uniforms.uPulseActive.value = 1 - fade_progress
-    uniforms.uSourceActivation.value = source_activation_at_spread * (1 - source_release)
+    uniforms.uSourceActivation.value =
+      source_activation_at_spread * (1 - source_release)
     render()
     frame = requestAnimationFrame(animate)
   }

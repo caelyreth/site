@@ -1,25 +1,22 @@
 <script lang="ts">
+  import { scroll_progress } from '$lib/attachments/scroll-progress'
   import Boundary from '$lib/components/station/boundary.svelte'
-  import { get_station_state } from '$lib/context/station'
+  import { preload_sky_map_engine } from '$lib/graphics/observatory/load-engine'
+  import {
+    SIGNAL_STATUS_LABELS,
+    TRANSMISSION_COLORS,
+  } from '$lib/graphics/observatory/signal-colors'
   import type {
     SkyMapLayerMotionStatus,
     SkyMapPulseStatus,
     SkyMapRollerMotionStatus,
     SkyMapViewStatus,
-  } from '$lib/graphics/observatory/field'
-  import {
-    SIGNAL_STATUS_LABELS,
-    TRANSMISSION_COLORS,
-  } from '$lib/graphics/observatory/signal-colors'
+  } from '$lib/graphics/observatory/types'
   import {
     text_refresh_in,
     text_refresh_out,
   } from '$lib/motion/text-refresh'
-  import {
-    observatory_scroll_restoration,
-    persist_scroll_position,
-    restore_scroll_position,
-  } from '$lib/scroll-restoration'
+  import { onMount } from 'svelte'
   import { useTheme as use_theme } from 'svelte-themes'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
@@ -27,9 +24,12 @@
   import Canvas from './canvas.svelte'
   import Window from './window.svelte'
 
-  let capture: HTMLElement | undefined
-  let initial_sync_frame: number | undefined
-  let scroll_frame: number | undefined
+  type SceneProps = {
+    on_progress?: (progress: number) => void
+  }
+
+  const { on_progress }: SceneProps = $props()
+
   let transmission_sequence = $state(1)
   let transmissions = $state<
     Array<{ color_index: number; sequence: number }>
@@ -52,14 +52,17 @@
     right_ascension: 322,
     scale: 0.48,
   })
-  const station = get_station_state()
   const theme = use_theme()
   const transmission_colors = $derived(
     theme.resolvedTheme === 'dark'
       ? TRANSMISSION_COLORS.dark
       : TRANSMISSION_COLORS.light,
   )
-  const window_scale = $derived(1 - station.scroll_progress * 0.2)
+
+  onMount(() => {
+    // Download the lazy renderer while the shutter animation is running.
+    void preload_sky_map_engine().catch(() => {})
+  })
 
   // MARK: - sky map callbacks
 
@@ -139,82 +142,25 @@
     return `${sign}${String(degrees).padStart(3, '0')}D ${String(minutes).padStart(2, '0')}M`
   }
 
-  // MARK: - scroll tracking
-
-  function update_progress() {
-    scroll_frame = undefined
-    if (!capture) return
-
-    const travel = Math.max(capture.offsetHeight - window.innerHeight, 1)
-    const next_progress = -capture.getBoundingClientRect().top / travel
-    station.scroll_progress = Math.min(1, Math.max(0, next_progress))
-  }
-
-  function persist_current_scroll_position() {
-    persist_scroll_position(observatory_scroll_restoration)
-  }
-
-  function schedule_progress_update() {
-    if (scroll_frame !== undefined) return
-    scroll_frame = requestAnimationFrame(update_progress)
-  }
-
-  function handle_scroll() {
-    persist_current_scroll_position()
-    schedule_progress_update()
-  }
-
-  function cancel_progress_update() {
-    if (scroll_frame === undefined) return
-    cancelAnimationFrame(scroll_frame)
-    scroll_frame = undefined
-  }
-
-  function cancel_initial_sync() {
-    if (initial_sync_frame === undefined) return
-    cancelAnimationFrame(initial_sync_frame)
-    initial_sync_frame = undefined
-  }
-
-  function sync_initial_progress() {
-    cancel_initial_sync()
-    restore_scroll_position(observatory_scroll_restoration)
-    update_progress()
-    initial_sync_frame = requestAnimationFrame(() => {
-      initial_sync_frame = requestAnimationFrame(() => {
-        initial_sync_frame = undefined
-        update_progress()
-        station.is_ready = true
-      })
-    })
-  }
-
-  function observe_capture(node: HTMLElement) {
-    capture = node
-    station.is_ready = false
-    cancel_progress_update()
-    sync_initial_progress()
-
-    return () => {
-      if (capture === node) capture = undefined
-      cancel_initial_sync()
-      cancel_progress_update()
-      document.documentElement.style.removeProperty(
-        '--observatory-initial-progress',
-      )
-      station.is_ready = false
-      station.scroll_progress = 0
-    }
-  }
+  const observe_fallback_progress = scroll_progress({
+    fallback_only: true,
+    get_progress(capture) {
+      const scene = capture.querySelector<HTMLElement>('.scene')
+      if (!scene) return 0
+      const travel = Math.max(capture.offsetHeight - scene.offsetHeight, 1)
+      return -capture.getBoundingClientRect().top / travel
+    },
+    observed_elements(capture) {
+      const scene = capture.querySelector<HTMLElement>('.scene')
+      return scene ? [scene] : []
+    },
+    on_progress(progress) {
+      on_progress?.(progress)
+    },
+  })
 </script>
 
-<svelte:window
-  onpagehide={persist_current_scroll_position}
-  onscroll={handle_scroll}
-  onresize={schedule_progress_update}
-/>
-
-<div class="capture" {@attach observe_capture}>
+<div class="capture" {@attach observe_fallback_progress}>
   <section class="scene" aria-labelledby="scene-label">
     <div class="foreground">
       {#if shutters_loaded}
@@ -229,7 +175,7 @@
           on_view_change={update_view_status}
         />
       {/if}
-      <div class="window-stage" style:transform={`scale(${window_scale})`}>
+      <div class="window-stage">
         <Window
           active={spreading}
           compact={window_compact}
@@ -360,6 +306,7 @@
     position: relative;
     z-index: 1;
     width: min(92vw, 56rem);
+    transform: scale(calc(1 - var(--observatory-progress) * 0.2));
     transform-origin: center;
     will-change: transform;
   }

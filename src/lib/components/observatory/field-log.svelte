@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { flip } from 'svelte/animate'
   import { onDestroy, onMount } from 'svelte'
+  import { flip } from 'svelte/animate'
 
   type FieldLogProps = {
     active?: boolean
@@ -19,6 +19,7 @@
     'The return signal arrives clean. Mark the change, wait for the dust to clear, and begin the next observation. Three distant points remain aligned after the route is gone; their order is unchanged.',
   ]
   const corruption_glyphs = ['//', '::', '++', '..', 'XX', '00', '<>']
+  const max_records = 3
 
   /* oxlint-disable prefer-const -- props react to live observatory state. */
   let {
@@ -30,6 +31,7 @@
 
   // MARK: - typewriter
   let records = $state<FieldRecord[]>([{ id: 1, text: '' }])
+  let next_record_id = $state(2)
   let entry_index = $state(0)
   let character_index = $state(0)
   let phase = $state<'typing' | 'holding'>('typing')
@@ -69,7 +71,11 @@
   }
 
   function can_advance() {
-    return visible && !reduced_motion && (!paused || should_finish_current_word())
+    return (
+      visible &&
+      !reduced_motion &&
+      (!paused || should_finish_current_word())
+    )
   }
 
   function clear_timer() {
@@ -91,16 +97,19 @@
 
   function schedule_corruption(is_active: boolean) {
     if (!can_schedule_corruption()) return
-    corruption_timer = setTimeout(() => {
-      corruption_timer = undefined
-      corruption =
-        corruption_glyphs[
-          Math.floor(Math.random() * corruption_glyphs.length)
-        ]
-      corruption_x = 34 + Math.random() * 50
-      corruption_y = 18 + Math.random() * 68
-      schedule_corruption(active)
-    }, is_active ? 900 + Math.random() * 700 : 420 + Math.random() * 400)
+    corruption_timer = setTimeout(
+      () => {
+        corruption_timer = undefined
+        corruption =
+          corruption_glyphs[
+            Math.floor(Math.random() * corruption_glyphs.length)
+          ]
+        corruption_x = 34 + Math.random() * 50
+        corruption_y = 18 + Math.random() * 68
+        schedule_corruption(active)
+      },
+      is_active ? 900 + Math.random() * 700 : 420 + Math.random() * 400,
+    )
   }
 
   function can_schedule_typewriter() {
@@ -146,7 +155,10 @@
 
   function begin_next_record() {
     entry_index = (entry_index + 1) % entries.length
-    records.push({ id: records.length + 1, text: '' })
+    records = [...records, { id: next_record_id, text: '' }].slice(
+      -max_records,
+    )
+    next_record_id += 1
     character_index = 0
     phase = 'typing'
     schedule(280 + Math.random() * 320)
@@ -194,7 +206,9 @@
   })
 
   onMount(() => {
-    const media_query = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const media_query = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    )
     const handle_reduced_motion = () => {
       reduced_motion = media_query.matches
       if (!reduced_motion) return
@@ -245,7 +259,11 @@
           >
             <header class="entry-header">
               <span>REC-{String(record.id).padStart(3, '0')}</span>
-              <span>{index === records.length - 1 ? status_label : 'FILED'}</span>
+              <span
+                >{index === records.length - 1
+                  ? status_label
+                  : 'FILED'}</span
+              >
             </header>
             <p class="entry-copy">
               {record.text}{#if index === records.length - 1}
@@ -257,8 +275,7 @@
                 aria-hidden="true"
                 class="entry-corruption"
                 style:--corruption-x={`${corruption_x}%`}
-                style:--corruption-y={`${corruption_y}%`}
-                >{corruption}</span
+                style:--corruption-y={`${corruption_y}%`}>{corruption}</span
               >
             {/if}
           </article>
@@ -399,7 +416,11 @@
   }
 
   .field-entry.current {
-    border-color: color-mix(in oklab, var(--color-ink) 36%, var(--field-line));
+    border-color: color-mix(
+      in oklab,
+      var(--color-ink) 36%,
+      var(--field-line)
+    );
   }
 
   .field-entry.current::before,
@@ -415,7 +436,8 @@
     background: repeating-linear-gradient(
       to bottom,
       transparent 0 0.6rem,
-      color-mix(in oklab, var(--field-signal) 32%, transparent) 0.6rem 0.64rem,
+      color-mix(in oklab, var(--field-signal) 32%, transparent) 0.6rem
+        0.64rem,
       transparent 0.64rem 1.1rem
     );
     mix-blend-mode: screen;
@@ -497,7 +519,11 @@
       var(--field-signal) 54%,
       var(--field-line)
     );
-    background: color-mix(in oklab, var(--field-signal) 5%, var(--field-fill));
+    background: color-mix(
+      in oklab,
+      var(--field-signal) 5%,
+      var(--field-fill)
+    );
   }
 
   .field-log.active .field-meta,
@@ -507,8 +533,16 @@
   }
 
   .field-log.active .field-entry.current {
-    border-color: color-mix(in oklab, var(--field-signal) 58%, var(--field-line));
-    background: color-mix(in oklab, var(--field-signal) 6%, var(--field-card));
+    border-color: color-mix(
+      in oklab,
+      var(--field-signal) 58%,
+      var(--field-line)
+    );
+    background: color-mix(
+      in oklab,
+      var(--field-signal) 6%,
+      var(--field-card)
+    );
   }
 
   .field-log:not(.active) .field-entry.current::before {
@@ -604,7 +638,8 @@
     background: repeating-linear-gradient(
       to bottom,
       transparent 0 1.15rem,
-      color-mix(in oklab, var(--field-signal) 72%, transparent) 1.15rem 1.2rem,
+      color-mix(in oklab, var(--field-signal) 72%, transparent) 1.15rem
+        1.2rem,
       transparent 1.2rem 2rem
     );
   }
@@ -635,7 +670,8 @@
     background: repeating-linear-gradient(
       to bottom,
       transparent 0 1.15rem,
-      color-mix(in oklab, var(--color-accent) 62%, transparent) 1.15rem 1.2rem,
+      color-mix(in oklab, var(--color-accent) 62%, transparent) 1.15rem
+        1.2rem,
       transparent 1.2rem 2rem
     );
     animation: horizontal-crash 8.5s steps(1, end) infinite;

@@ -3,13 +3,7 @@ import type * as SkyDataModule from '$lib/data/sky-map-data.generated'
 
 export type SkyMapPayload = typeof SkyDataModule
 
-export type SkyMapFieldController = {
-  destroy: () => void
-  set_active: (active: boolean) => void
-  set_theme: (dark: boolean) => void
-}
-
-export type SkyMapController = {
+export type SkyMapEngine = {
   destroy: () => void
   set_active: (active: boolean) => void
   set_theme: (dark: boolean) => void
@@ -36,17 +30,7 @@ export type SkyMapRollerMotionStatus = {
   sequence: number
 }
 
-export type SkyMapFieldCallbacks = {
-  on_destination_arrival?: () => void
-  on_foreground_contract_start?: (status: SkyMapLayerMotionStatus) => void
-  on_foreground_return_start?: (status: SkyMapLayerMotionStatus) => void
-  on_roller_motion?: (status: SkyMapRollerMotionStatus) => void
-  on_spread_end?: () => void
-  on_spread_start?: (status: SkyMapPulseStatus) => void
-  on_view_change?: (status: SkyMapViewStatus) => void
-}
-
-export type SkyMapControllerCallbacks = {
+export type SkyMapEngineCallbacks = {
   on_destination_arrival?: () => void
   on_foreground_contract_start?: (status: SkyMapLayerMotionStatus) => void
   on_foreground_return_start?: (status: SkyMapLayerMotionStatus) => void
