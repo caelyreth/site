@@ -20,7 +20,7 @@
 </script>
 
 {#snippet footer_label(text: string)}
-  <p class="label">{text}</p>
+  <p class="micro-label footer-label">{text}</p>
 {/snippet}
 
 <div class="deck station-inner footer-deck">
@@ -35,21 +35,22 @@
     </p>
   </div>
   <div class="grid">
-    <section class="module">
+    <section class="footer-module">
       {@render footer_label('Site map')}
       <ul class="sitemap" aria-label="Placeholder site map">
         {#each placeholder_map as item}<li>{item}</li>{/each}
       </ul>
       <p class="detail">Placeholder index only</p>
     </section>
-    <section class="module">
+    <section class="footer-module">
       {@render footer_label('Archive marker')}
       <div aria-hidden="true" class="barcode">
-        {#each barcode_bars as width}<span style:--bar-width={width}></span>{/each}
+        {#each barcode_bars as width}<span style:--bar-width={width}
+          ></span>{/each}
       </div>
       <p class="detail">RBK / 2026 / YU</p>
     </section>
-    <div aria-hidden="true" class="module base-module">
+    <div aria-hidden="true" class="footer-module base-module">
       <svg class="base-asterisk" viewBox="0 0 48 48" fill="none"
         ><path
           d="M24 3v42M3 24h42M9.15 9.15l29.7 29.7M38.85 9.15 9.15 38.85"
@@ -57,7 +58,9 @@
         /></svg
       >
     </div>
-    <FooterSignalMonitor is_active={is_footer_visible} />
+    <section class="footer-module">
+      <FooterSignalMonitor is_active={is_footer_visible} />
+    </section>
   </div>
   <div class="tail">
     <span>© 2026 Yu</span><span>Rainbook program - Caelyreth relay</span
@@ -79,14 +82,10 @@
     padding-bottom: 1.5rem;
   }
 
-  .footer-deck :global(.label) {
+  .footer-label {
     margin: 0;
     color: var(--color-muted);
-    font-size: 0.625rem;
-    font-weight: 500;
     letter-spacing: 0.12em;
-    line-height: 1.2;
-    text-transform: uppercase;
   }
 
   .title {
@@ -111,7 +110,7 @@
     border-block: 1px solid var(--color-rule);
   }
 
-  .footer-deck :global(.module) {
+  .footer-module {
     --primary: var(--color-ink);
     --secondary: var(--color-ink-prime);
     --muted: var(--color-muted);
@@ -129,11 +128,11 @@
       color var(--dur-long) var(--ease-out);
   }
 
-  .footer-deck :global(.module + .module) {
+  .footer-module + .footer-module {
     border-top: 1px solid var(--color-rule);
   }
 
-  .footer-deck :global(.module .label) {
+  .footer-module .footer-label {
     color: var(--muted);
     transition: color var(--dur-long) var(--ease-out);
   }
@@ -206,7 +205,7 @@
   }
 
   @media (hover: hover) {
-    .footer-deck :global(.module:hover) {
+    .footer-module:hover {
       --primary: var(--color-paper);
       --secondary: var(--color-paper);
       --muted: color-mix(in oklab, var(--color-paper) 68%, transparent);
@@ -229,32 +228,32 @@
       grid-template-columns: 1.1fr 1.25fr 0.85fr 1.25fr;
     }
 
-    .footer-deck :global(.module) {
+    .footer-module {
       padding: 1.25rem 1rem;
     }
 
-    .footer-deck :global(.module:first-child) {
+    .footer-module:first-child {
       padding-left: 0;
       box-shadow: -1.5rem 0 0 transparent;
     }
 
-    .footer-deck :global(.module:last-child) {
+    .footer-module:last-child {
       padding-right: 0;
       box-shadow: 1.5rem 0 0 transparent;
     }
 
-    .footer-deck :global(.module + .module) {
+    .footer-module + .footer-module {
       border-top: 0;
       border-inline-start: 1px solid var(--color-rule);
     }
   }
 
   @media (hover: hover) and (min-width: 48rem) {
-    .footer-deck :global(.module:first-child:hover) {
+    .footer-module:first-child:hover {
       box-shadow: -1.5rem 0 0 var(--color-ink);
     }
 
-    .footer-deck :global(.module:last-child:hover) {
+    .footer-module:last-child:hover {
       box-shadow: 1.5rem 0 0 var(--color-ink);
     }
   }

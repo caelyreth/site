@@ -1,38 +1,16 @@
 <script lang="ts">
   import { useTheme as use_theme } from 'svelte-themes'
 
+  import { drifts, menu_items, theme_slip_layout } from './menu-layout'
   import ThemeToggle from './theme-toggle.svelte'
 
   interface Props {
+    is_closing: boolean
+    is_open: boolean
     on_select: () => void
   }
 
-  const { on_select }: Props = $props()
-
-  const menu_items = [
-    { code: 'OBS / 001', title: 'Observation', detail: 'Window retained' },
-    { code: 'DIR / 044', title: 'Directory', detail: 'Archive pending' },
-    {
-      code: 'SIG / 007',
-      title: 'Transmission',
-      detail: 'Carrier available',
-    },
-  ] as const
-
-  const drifts = [
-    { position: 'back', text: 'RBK // 044' },
-    { position: 'left-back', text: 'FIELD / 044' },
-    { position: 'top-left', text: 'FIELD NOTES / 001' },
-    { position: 'mid', text: 'CAELYRETH' },
-    { position: 'left-mid', text: 'ORBIT / 001' },
-    { position: 'front', text: 'TRANSMISSION / RETURN / 001' },
-    { position: 'line', text: 'SIGNAL / HOLD' },
-    { position: 'right-low', text: 'RELAY / ACTIVE' },
-    { position: 'bottom-right', text: 'ARCHIVE / HELD' },
-    { position: 'core-one', text: 'OBSERVATION / RETAINED' },
-    { position: 'core-two', text: 'VIEWING PLANE / 01' },
-    { position: 'core-three', text: 'CAELYRETH / IN ORBIT' },
-  ] as const
+  const { is_closing, is_open, on_select }: Props = $props()
 
   const theme = use_theme()
   const theme_label = $derived(
@@ -42,7 +20,7 @@
   )
 </script>
 
-<div class="stage">
+<div class:is-closing={is_closing} class:is-open={is_open} class="stage">
   <svg
     aria-hidden="true"
     class="orbits"
@@ -59,40 +37,80 @@
         ry="204"
         transform="rotate(-14 796 454)"
       />
-      <path class="orbit orbit-arc" d="M178 566C462 730 1055 743 1438 459" />
+      <path
+        class="orbit orbit-arc"
+        d="M178 566C462 730 1055 743 1438 459"
+      />
     </g>
   </svg>
 
-  {#each drifts as drift (drift.position)}
-    <span aria-hidden="true" class={`drift drift-${drift.position}`}
+  {#each drifts as drift (drift.text)}
+    <span
+      aria-hidden="true"
+      class="drift"
+      style:--drift-bottom={drift.layout.bottom}
+      style:--drift-blur={drift.layout.blur}
+      style:--drift-enter-delay={drift.layout.enter_delay}
+      style:--drift-left={drift.layout.left}
+      style:--drift-opacity={drift.layout.opacity}
+      style:--drift-right={drift.layout.right}
+      style:--drift-rotation={drift.layout.rotation}
+      style:--drift-top={drift.layout.top}
+      style:--drift-bottom-compact={drift.layout.compact?.bottom}
+      style:--drift-left-compact={drift.layout.compact?.left}
+      style:--drift-right-compact={drift.layout.compact?.right}
+      style:--drift-top-compact={drift.layout.compact?.top}
       >{drift.text}</span
     >
   {/each}
 
   <nav class="primary" aria-label="Station menu options">
-    {#each menu_items as item, index}
+    {#each menu_items as item}
       <!-- svelte-ignore a11y_autofocus: The first choice receives focus only when the dialog opens. -->
       <button
         type="button"
-        class={`slip slip-${index + 1}`}
-        autofocus={index === 0}
+        class="slip"
+        autofocus={item === menu_items[0]}
         onpointerdown={on_select}
         onclick={on_select}
+        style:--slip-bottom={item.layout.bottom}
+        style:--slip-enter-delay={item.layout.enter_delay}
+        style:--slip-enter-x={item.layout.enter_x}
+        style:--slip-enter-y={item.layout.enter_y}
+        style:--slip-left={item.layout.left}
+        style:--slip-right={item.layout.right}
+        style:--slip-rotation={item.layout.rotation}
+        style:--slip-top={item.layout.top}
+        style:--slip-bottom-compact={item.layout.compact?.bottom}
+        style:--slip-left-compact={item.layout.compact?.left}
+        style:--slip-right-compact={item.layout.compact?.right}
+        style:--slip-top-compact={item.layout.compact?.top}
       >
-        <span class="slip-code">{item.code}</span>
+        <span class="micro-label slip-code">{item.code}</span>
         <span class="slip-title font-serif">{item.title}</span>
-        <span class="slip-detail">{item.detail}</span>
+        <span class="micro-label slip-detail">{item.detail}</span>
       </button>
     {/each}
   </nav>
 
-  <section class="theme-slip" aria-label="Display mode">
-    <span class="slip-code">SHIFT / 002</span>
-    <span class="theme-label">{theme_label}</span>
+  <section
+    class="theme-slip"
+    aria-label="Display mode"
+    style:--slip-bottom={theme_slip_layout.bottom}
+    style:--slip-enter-delay={theme_slip_layout.enter_delay}
+    style:--slip-enter-x={theme_slip_layout.enter_x}
+    style:--slip-enter-y={theme_slip_layout.enter_y}
+    style:--slip-right={theme_slip_layout.right}
+    style:--slip-rotation={theme_slip_layout.rotation}
+    style:--slip-bottom-compact={theme_slip_layout.compact.bottom}
+    style:--slip-right-compact={theme_slip_layout.compact.right}
+  >
+    <span class="micro-label slip-code">SHIFT / 002</span>
+    <span class="micro-label theme-label">{theme_label}</span>
     <ThemeToggle />
   </section>
 
-  <p class="field-note">Caelyreth relay / viewing plane 01</p>
+  <p class="micro-label field-note">Caelyreth relay / viewing plane 01</p>
 </div>
 
 <style>
@@ -149,6 +167,10 @@
   .slip,
   .theme-slip {
     position: absolute;
+    top: var(--slip-top);
+    right: var(--slip-right);
+    bottom: var(--slip-bottom);
+    left: var(--slip-left);
     display: flex;
     width: max-content;
     max-width: calc(100vw - 2rem);
@@ -166,16 +188,13 @@
   .slip {
     cursor: pointer;
     pointer-events: auto;
-    transform: rotate(var(--slip-rotate));
+    transform: rotate(var(--slip-rotation));
     transition:
       color var(--dur-micro) var(--ease-out),
       transform var(--dur-micro) var(--ease-out);
   }
 
   .slip-code {
-    font-size: 0.625rem;
-    font-weight: 500;
-    line-height: 1.2;
     letter-spacing: 0.11em;
     opacity: 0.7;
   }
@@ -192,79 +211,47 @@
   .slip-detail,
   .theme-label,
   .field-note {
-    font-size: 0.625rem;
     line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
   }
 
   .slip-detail {
     opacity: 0.65;
   }
 
-  .slip-1 {
-    top: 22%;
-    left: 25%;
-    --slip-rotate: -13deg;
-    --slip-enter-x: -2rem;
-    --slip-enter-y: 1rem;
-  }
-
-  .slip-2 {
-    top: 29%;
-    left: 57%;
-    --slip-rotate: 11deg;
-    --slip-enter-x: 1.75rem;
-    --slip-enter-y: -1rem;
-  }
-
-  .slip-3 {
-    top: 56%;
-    left: 34%;
-    --slip-rotate: -7deg;
-    --slip-enter-x: -1.5rem;
-    --slip-enter-y: 1.25rem;
-  }
-
   .theme-slip {
+    --theme-toggle-size: 2.5rem;
+    --toggle-rule: color-mix(in oklab, var(--slip-ink) 45%, transparent);
+    --toggle-ink: var(--slip-ink);
+    --toggle-active-ink: var(--slip-surface);
+
     box-sizing: border-box;
-    right: 22%;
-    bottom: 15%;
     width: 10.5rem;
     min-height: 7.5rem;
     justify-content: space-between;
-    --slip-rotate: 16deg;
-    --slip-enter-x: 1.5rem;
-    --slip-enter-y: 1rem;
-    transform: rotate(var(--slip-rotate));
+    transform: rotate(var(--slip-rotation));
   }
 
   .theme-label {
     width: 100%;
   }
 
-  .theme-slip :global(.theme-toggle) {
-    --toggle-rule: color-mix(in oklab, var(--slip-ink) 45%, transparent);
-    --toggle-ink: var(--slip-ink);
-    --toggle-active-ink: var(--slip-surface);
-
-    height: 2.5rem;
-    grid-auto-columns: 2.5rem;
-  }
-
   @media (hover: hover) {
     .slip:hover {
       color: var(--color-accent);
-      transform: translateY(-2px) rotate(calc(var(--slip-rotate) + 1deg));
+      transform: translateY(-2px) rotate(calc(var(--slip-rotation) + 1deg));
     }
   }
 
   .slip:active {
-    transform: translateY(1px) rotate(var(--slip-rotate));
+    transform: translateY(1px) rotate(var(--slip-rotation));
   }
 
   .drift {
     position: absolute;
+    top: var(--drift-top);
+    right: var(--drift-right);
+    bottom: var(--drift-bottom);
+    left: var(--drift-left);
     z-index: 2;
     display: grid;
     width: max-content;
@@ -273,7 +260,8 @@
     overflow: hidden;
     color: var(--slip-ink);
     background: var(--slip-surface);
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    filter: blur(var(--drift-blur));
+    font-family: var(--font-stack-sans);
     font-size: clamp(0.75rem, 1.4vw, 1.1rem);
     font-style: normal;
     font-weight: 500;
@@ -282,93 +270,10 @@
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
+    opacity: var(--drift-opacity);
     pointer-events: none;
+    transform: rotate(var(--drift-rotation));
     user-select: none;
-  }
-
-  .drift-back {
-    top: 12%;
-    right: 14%;
-    opacity: 0.26;
-    filter: blur(11px);
-    transform: rotate(-42deg);
-  }
-  .drift-left-back {
-    top: 19%;
-    left: -3%;
-    opacity: 0.3;
-    filter: blur(9px);
-    transform: rotate(34deg);
-  }
-  .drift-top-left {
-    top: 10%;
-    left: 16%;
-    opacity: 0.23;
-    filter: blur(12px);
-    transform: rotate(-18deg);
-  }
-  .drift-mid {
-    top: 45%;
-    right: 1%;
-    opacity: 0.36;
-    filter: blur(5px);
-    transform: rotate(-38deg);
-  }
-  .drift-left-mid {
-    bottom: 25%;
-    left: 9%;
-    opacity: 0.42;
-    filter: blur(3px);
-    transform: rotate(-55deg);
-  }
-  .drift-front {
-    bottom: 11%;
-    left: -2%;
-    opacity: 0.35;
-    filter: blur(13px);
-    transform: rotate(14deg);
-  }
-  .drift-line {
-    bottom: 17%;
-    left: 27%;
-    opacity: 0.4;
-    filter: blur(4px);
-    transform: rotate(61deg);
-  }
-  .drift-right-low {
-    right: -1%;
-    bottom: 26%;
-    opacity: 0.25;
-    filter: blur(10px);
-    transform: rotate(27deg);
-  }
-  .drift-bottom-right {
-    right: 7%;
-    bottom: 8%;
-    opacity: 0.3;
-    filter: blur(9px);
-    transform: rotate(-18deg);
-  }
-  .drift-core-one {
-    top: 38%;
-    left: 19%;
-    opacity: 0.24;
-    filter: blur(8px);
-    transform: rotate(6deg);
-  }
-  .drift-core-two {
-    top: 50%;
-    left: 29%;
-    opacity: 0.29;
-    filter: blur(6px);
-    transform: rotate(-10deg);
-  }
-  .drift-core-three {
-    top: 61%;
-    left: 42%;
-    opacity: 0.2;
-    filter: blur(10px);
-    transform: rotate(8deg);
   }
 
   .field-note {
@@ -385,11 +290,11 @@
     from {
       opacity: 0;
       transform: translate3d(var(--slip-enter-x), var(--slip-enter-y), 0)
-        rotate(var(--slip-rotate));
+        rotate(var(--slip-rotation));
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) rotate(var(--slip-rotate));
+      transform: translate3d(0, 0, 0) rotate(var(--slip-rotation));
     }
   }
 
@@ -397,7 +302,7 @@
     to {
       opacity: 0;
       transform: translate3d(var(--slip-enter-x), var(--slip-enter-y), 0)
-        rotate(var(--slip-rotate));
+        rotate(var(--slip-rotation));
     }
   }
 
@@ -413,78 +318,41 @@
     }
   }
 
-  :global(.menu[open]:not(.is-closing)) .slip,
-  :global(.menu[open]:not(.is-closing)) .theme-slip {
-    animation: slip-enter var(--dur-long) var(--ease-out) backwards;
+  .stage.is-open:not(.is-closing) .slip,
+  .stage.is-open:not(.is-closing) .theme-slip {
+    animation: slip-enter var(--dur-long) var(--ease-out)
+      var(--slip-enter-delay) backwards;
   }
-
-  :global(.menu[open]:not(.is-closing)) .slip-1 {
-    animation-delay: 80ms;
+  .stage.is-open:not(.is-closing) .drift {
+    animation: drift-enter var(--dur-long) var(--ease-out)
+      var(--drift-enter-delay, 0ms) backwards;
   }
-  :global(.menu[open]:not(.is-closing)) .slip-2 {
-    animation-delay: 140ms;
-  }
-  :global(.menu[open]:not(.is-closing)) .slip-3 {
-    animation-delay: 200ms;
-  }
-  :global(.menu[open]:not(.is-closing)) .theme-slip {
-    animation-delay: 240ms;
-  }
-  :global(.menu[open]:not(.is-closing)) .drift {
-    animation: drift-enter var(--dur-long) var(--ease-out) backwards;
-  }
-  :global(.menu[open]:not(.is-closing)) .orbits {
+  .stage.is-open:not(.is-closing) .orbits {
     animation: drift-enter var(--dur-long) var(--ease-out) 70ms backwards;
   }
-  :global(.menu[open]:not(.is-closing)) .drift-back {
-    animation-delay: 30ms;
-  }
-  :global(.menu[open]:not(.is-closing)) .drift-mid {
-    animation-delay: 100ms;
-  }
-  :global(.menu[open]:not(.is-closing)) .drift-front {
-    animation-delay: 160ms;
-  }
-  :global(.menu[open]:not(.is-closing)) .drift-line {
-    animation-delay: 220ms;
-  }
-  :global(.menu.is-closing) .slip,
-  :global(.menu.is-closing) .theme-slip {
+  .stage.is-closing .slip,
+  .stage.is-closing .theme-slip {
     animation: slip-leave var(--dur-long) var(--ease-out) both;
   }
-  :global(.menu.is-closing) .drift,
-  :global(.menu.is-closing) .orbits {
+  .stage.is-closing .drift,
+  .stage.is-closing .orbits {
     animation: drift-leave var(--dur-long) var(--ease-out) both;
   }
 
   @media (max-width: 40rem) {
-    .slip-1 {
-      top: 22%;
-      left: 8%;
-    }
-    .slip-2 {
-      top: 32%;
-      left: 38%;
-    }
-    .slip-3 {
-      top: 58%;
-      left: 10%;
-    }
+    .slip,
     .theme-slip {
-      right: 10%;
-      bottom: 8%;
+      top: var(--slip-top-compact, var(--slip-top));
+      right: var(--slip-right-compact, var(--slip-right));
+      bottom: var(--slip-bottom-compact, var(--slip-bottom));
+      left: var(--slip-left-compact, var(--slip-left));
     }
-    .drift-core-one {
-      top: 35%;
-      left: -11%;
-    }
-    .drift-core-two {
-      top: 50%;
-      left: 8%;
-    }
-    .drift-core-three {
-      top: 64%;
-      left: 0;
+
+    .drift {
+      top: var(--drift-top-compact, var(--drift-top));
+      right: var(--drift-right-compact, var(--drift-right));
+      bottom: var(--drift-bottom-compact, var(--drift-bottom));
+      left: var(--drift-left-compact, var(--drift-left));
     }
     .field-note {
       right: 0.75rem;
@@ -493,10 +361,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :global(.menu[open]) .slip,
-    :global(.menu[open]) .theme-slip,
-    :global(.menu[open]) .drift,
-    :global(.menu[open]) .orbits {
+    .stage.is-open .slip,
+    .stage.is-open .theme-slip,
+    .stage.is-open .drift,
+    .stage.is-open .orbits {
       animation: none;
     }
   }

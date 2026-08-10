@@ -1,18 +1,42 @@
 :root {
   /* light color palette */
-  --color-paper: oklch(96.5% 0 0);
-  --color-paper-prime: oklch(93.5% 0 0);
-  --color-field: oklch(93.5% 0 0);
-  --color-hatch: oklch(92% 0 0);
-  --color-deco: oklch(90.5% 0 0);
-  --color-rule: oklch(89.5% 0 0);
-  --color-muted: oklch(48% 0 0);
-  --color-ink: oklch(19% 0 0);
-  --color-ink-prime: oklch(34% 0 0);
-  --color-accent: oklch(51.5% 0.125 260);
-  --color-focus: oklch(58% 0.165 260);
+  --color-paper-light: oklch(96.5% 0 0);
+  --color-paper-prime-light: oklch(93.5% 0 0);
+  --color-field-light: oklch(93.5% 0 0);
+  --color-hatch-light: oklch(92% 0 0);
+  --color-deco-light: oklch(90.5% 0 0);
+  --color-rule-light: oklch(89.5% 0 0);
+  --color-muted-light: oklch(48% 0 0);
+  --color-ink-light: oklch(19% 0 0);
+  --color-ink-prime-light: oklch(34% 0 0);
+  --color-accent-light: oklch(51.5% 0.125 260);
+  --color-focus-light: oklch(58% 0.165 260);
+  --color-paper-dark: oklch(15% 0 0);
+  --color-paper-prime-dark: oklch(18.5% 0 0);
+  --color-field-dark: oklch(13% 0 0);
+  --color-hatch-dark: oklch(27% 0 0);
+  --color-deco-dark: oklch(25% 0 0);
+  --color-rule-dark: oklch(27% 0 0);
+  --color-muted-dark: oklch(63% 0 0);
+  --color-ink-dark: oklch(93% 0 0);
+  --color-ink-prime-dark: oklch(76% 0 0);
+  --color-accent-dark: oklch(78.5% 0.115 274.713);
+  --color-focus-dark: oklch(67.3% 0.182 276.935);
+  --color-paper: var(--color-paper-light);
+  --color-paper-prime: var(--color-paper-prime-light);
+  --color-field: var(--color-field-light);
+  --color-hatch: var(--color-hatch-light);
+  --color-deco: var(--color-deco-light);
+  --color-rule: var(--color-rule-light);
+  --color-muted: var(--color-muted-light);
+  --color-ink: var(--color-ink-light);
+  --color-ink-prime: var(--color-ink-prime-light);
+  --color-accent: var(--color-accent-light);
+  --color-focus: var(--color-focus-light);
   --font-stack-sans: ui-sans-serif, system-ui, sans-serif;
   --font-stack-serif: ui-serif, Georgia, serif;
+  --font-stack-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* layout control */
   --half-measure: 24rem;
@@ -24,6 +48,8 @@
 
   /* texture */
   --noise-tile: url('./lib/assets/noise-tile.webp');
+  --noise-size: 96px;
+  --noise-opacity: 0.4;
 
   /* motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -33,21 +59,29 @@
   --dur-micro: 128ms;
   --dur-short: 224ms;
   --dur-long: 432ms;
+  --dur-observatory-reveal: 640ms;
+  --dur-observatory-content: 480ms;
+  --dur-observatory-surface: 520ms;
+  --dur-observatory-travel: 720ms;
+  --dur-observatory-fade: 1000ms;
+  --ease-observatory-state: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-observatory-traverse: cubic-bezier(0.46, 0, 0.22, 1);
+  --ease-observatory-return: cubic-bezier(0.4, 0, 0.18, 1);
 }
 
 .dark {
   /* dark color palette */
-  --color-paper: oklch(15% 0 0);
-  --color-paper-prime: oklch(18.5% 0 0);
-  --color-field: oklch(13% 0 0);
-  --color-hatch: oklch(27% 0 0);
-  --color-deco: oklch(25% 0 0);
-  --color-rule: oklch(27% 0 0);
-  --color-muted: oklch(63% 0 0);
-  --color-ink: oklch(93% 0 0);
-  --color-ink-prime: oklch(76% 0 0);
-  --color-accent: oklch(78.5% 0.115 274.713);
-  --color-focus: oklch(67.3% 0.182 276.935);
+  --color-paper: var(--color-paper-dark);
+  --color-paper-prime: var(--color-paper-prime-dark);
+  --color-field: var(--color-field-dark);
+  --color-hatch: var(--color-hatch-dark);
+  --color-deco: var(--color-deco-dark);
+  --color-rule: var(--color-rule-dark);
+  --color-muted: var(--color-muted-dark);
+  --color-ink: var(--color-ink-dark);
+  --color-ink-prime: var(--color-ink-prime-dark);
+  --color-accent: var(--color-accent-dark);
+  --color-focus: var(--color-focus-dark);
 }
 
 html,
@@ -56,7 +90,7 @@ body {
   overflow-x: clip;
 }
 
-html.station-scroll-locked {
+html.page-scroll-locked {
   overflow: hidden;
 }
 
@@ -81,7 +115,17 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: var(--noise-opacity);
   background-image: var(--noise-tile);
-  background-size: 96px;
+  background-size: var(--noise-size);
+}
+
+.micro-label {
+  font-family: var(--font-stack-sans);
+  font-size: 0.625rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }

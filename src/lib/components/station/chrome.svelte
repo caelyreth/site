@@ -8,6 +8,8 @@
 
 <style>
   .hatch {
+    --noise-size: 128px;
+
     position: fixed;
     inset: 0;
     z-index: 0;
@@ -19,6 +21,6 @@
         var(--color-hatch) 7px 8px
       ),
       var(--noise-tile);
-    background-size: auto, 128px;
+    background-size: auto, var(--noise-size);
   }
 </style>

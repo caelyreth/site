@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { lock_page_scroll } from '$lib/scroll/page-lock'
   import { flushSync as flush_sync } from 'svelte'
 
   import MenuStage from './menu-stage.svelte'
@@ -66,22 +67,10 @@
     dialog?.close()
   }
 
-  // MARK: - scroll lock
+  // Keep the page fixed for the full modal lifecycle, including its exit.
   $effect(() => {
     if (!menu_open) return
-
-    const root = document.documentElement
-    const previous_padding_right = root.style.paddingRight
-    const scrollbar_width = window.innerWidth - root.clientWidth
-    if (scrollbar_width > 0) {
-      root.style.paddingRight = `${scrollbar_width}px`
-    }
-    root.classList.add('station-scroll-locked')
-
-    return () => {
-      root.classList.remove('station-scroll-locked')
-      root.style.paddingRight = previous_padding_right
-    }
+    return lock_page_scroll()
   })
 </script>
 
@@ -118,7 +107,11 @@
     onclick={request_close}
   ></button>
 
-  <MenuStage on_select={request_close} />
+  <MenuStage
+    is_closing={closing}
+    is_open={menu_open}
+    on_select={request_close}
+  />
 </dialog>
 
 <style>
@@ -156,7 +149,7 @@
     border-inline: 1px solid var(--trigger-rule);
   }
 
-  .trigger :global(span) {
+  .trigger span {
     position: relative;
     z-index: 1;
     width: 1.125rem;
@@ -190,7 +183,7 @@
     );
   }
 
-  .trigger:active :global(span) {
+  .trigger:active span {
     transform: translateY(1px);
   }
 
@@ -239,7 +232,7 @@
   .menu::before {
     opacity: 0.15;
     background-image: var(--noise-tile);
-    background-size: 96px;
+    background-size: var(--noise-size);
   }
 
   .menu::after {

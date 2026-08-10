@@ -1,71 +1,60 @@
 <script lang="ts">
   type Material = {
-    name: string
     token: `--${string}`
-    light: string
-    dark: string
+    light: `--${string}`
+    dark: `--${string}`
   }
 
   const materials = [
     {
-      name: 'paper',
       token: '--color-paper',
-      light: 'oklch(96.5% 0 0)',
-      dark: 'oklch(15% 0 0)',
+      light: '--color-paper-light',
+      dark: '--color-paper-dark',
     },
     {
-      name: 'paper-prime',
       token: '--color-paper-prime',
-      light: 'oklch(93.5% 0 0)',
-      dark: 'oklch(18.5% 0 0)',
+      light: '--color-paper-prime-light',
+      dark: '--color-paper-prime-dark',
     },
     {
-      name: 'field',
       token: '--color-field',
-      light: 'oklch(93.5% 0 0)',
-      dark: 'oklch(13% 0 0)',
+      light: '--color-field-light',
+      dark: '--color-field-dark',
     },
     {
-      name: 'hatch',
       token: '--color-hatch',
-      light: 'oklch(92% 0 0)',
-      dark: 'oklch(27% 0 0)',
+      light: '--color-hatch-light',
+      dark: '--color-hatch-dark',
     },
     {
-      name: 'deco',
       token: '--color-deco',
-      light: 'oklch(90.5% 0 0)',
-      dark: 'oklch(25% 0 0)',
+      light: '--color-deco-light',
+      dark: '--color-deco-dark',
     },
     {
-      name: 'rule',
       token: '--color-rule',
-      light: 'oklch(89.5% 0 0)',
-      dark: 'oklch(27% 0 0)',
+      light: '--color-rule-light',
+      dark: '--color-rule-dark',
     },
     {
-      name: 'muted',
       token: '--color-muted',
-      light: 'oklch(48% 0 0)',
-      dark: 'oklch(63% 0 0)',
+      light: '--color-muted-light',
+      dark: '--color-muted-dark',
     },
     {
-      name: 'ink-prime',
       token: '--color-ink-prime',
-      light: 'oklch(34% 0 0)',
-      dark: 'oklch(76% 0 0)',
+      light: '--color-ink-prime-light',
+      dark: '--color-ink-prime-dark',
     },
     {
-      name: 'ink',
       token: '--color-ink',
-      light: 'oklch(19% 0 0)',
-      dark: 'oklch(93% 0 0)',
+      light: '--color-ink-light',
+      dark: '--color-ink-dark',
     },
     {
-      name: 'accent',
       token: '--color-accent',
-      light: 'oklch(57% 0.17 40)',
-      dark: 'oklch(65% 0.15 40)',
+      light: '--color-accent-light',
+      dark: '--color-accent-dark',
     },
   ] as const satisfies readonly Material[]
 </script>
@@ -117,7 +106,6 @@
   <table>
     <thead>
       <tr>
-        <th scope="col" aria-label="Color sample"></th>
         <th scope="col">token</th>
         <th scope="col">day</th>
         <th scope="col" class="night-column">night</th>
@@ -126,16 +114,21 @@
     <tbody>
       {#each materials as material (material.token)}
         <tr>
+          <td>{material.token}</td>
           <td>
             <span
-              aria-hidden="true"
               class="material-swatch"
-              style:background={`var(${material.token})`}
+              title={material.light}
+              style:background={`var(${material.light})`}
             ></span>
           </td>
-          <td>{material.name}</td>
-          <td>{material.light}</td>
-          <td class="night-column">{material.dark}</td>
+          <td class="night-column">
+            <span
+              class="material-swatch"
+              title={material.dark}
+              style:background={`var(${material.dark})`}
+            ></span>
+          </td>
         </tr>
       {/each}
     </tbody>
@@ -271,10 +264,6 @@
 
   .specifications th {
     font-size: 0.75rem;
-  }
-
-  .specifications td:nth-child(2) {
-    color: var(--color-ink);
   }
 
   .material-swatch {

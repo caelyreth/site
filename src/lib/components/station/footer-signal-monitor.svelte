@@ -27,8 +27,7 @@
   function next_transmission() {
     const code = Array.from(
       { length: 3 },
-      () =>
-        signal_glyphs[Math.floor(Math.random() * signal_glyphs.length)],
+      () => signal_glyphs[Math.floor(Math.random() * signal_glyphs.length)],
     ).join('')
     const sequence = String(Math.floor(Math.random() * 10_000)).padStart(
       4,
@@ -56,9 +55,9 @@
   })
 </script>
 
-<section class="module">
+<div class="signal-monitor">
   <div class="module-head">
-    <p class="label">Signal monitor</p>
+    <p class="micro-label signal-label">Signal monitor</p>
     <button
       type="button"
       class="signal-toggle"
@@ -74,7 +73,8 @@
       {#if transmission_paused}<span
           class="i-ri-play-fill"
           aria-hidden="true"
-        ></span>{:else}<span class="i-ri-pause-fill" aria-hidden="true"></span>{/if}
+        ></span>{:else}<span class="i-ri-pause-fill" aria-hidden="true"
+        ></span>{/if}
     </button>
   </div>
   <p class="status">Carrier retained</p>
@@ -89,7 +89,7 @@
       >
     {/each}
   </div>
-</section>
+</div>
 
 <style>
   .module-head {
@@ -98,6 +98,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
+  }
+
+  .signal-label {
+    margin: 0;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    transition: color var(--dur-long) var(--ease-out);
   }
 
   .status {
@@ -147,7 +154,7 @@
       transform var(--dur-micro) var(--ease-out);
   }
 
-  .signal-toggle :global(span) {
+  .signal-toggle span {
     width: 0.75rem;
     height: 0.75rem;
   }

@@ -321,7 +321,7 @@
     content: '';
     opacity: 0.25;
     background-image: var(--noise-tile);
-    background-size: 96px;
+    background-size: var(--noise-size);
   }
 
   .window-stage {
