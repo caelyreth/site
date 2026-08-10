@@ -1,6 +1,5 @@
 /* oxlint-disable complexity, typescript/prefer-readonly-parameter-types -- WebGL setup and pulse state share one lifecycle. */
-import { Quaternion, SRGBColorSpace, Vector3 } from 'three'
-import type { BufferAttribute, InstancedBufferAttribute } from 'three'
+import { Quaternion, Vector3 } from 'three'
 
 import {
   BASE_VIEW_RADIUS,
@@ -14,10 +13,10 @@ import {
   ROUTE_TARGET_VISIBLE_OFFSET,
   SIGNAL_CONTINUATION_DISTANCE,
   SIGNAL_FADE_DISTANCE,
-  TRAIL_MAX_LENGTH,
   TRAIL_RESPONSE,
   VIEW_STATUS_INTERVAL,
 } from './constants'
+import { decode_sky_map } from './decoder'
 import {
   camera_motion_progress,
   choose_pixel_ratio,
@@ -38,7 +37,7 @@ import type {
   SkyMapEngineCallbacks,
   SkyMapPayload,
 } from './types'
-import { create_sky_map_render_resources } from './webgl-resources'
+import { create_sky_map_renderer } from './webgl-resources'
 
 export function create_sky_map_engine(
   target: HTMLCanvasElement,
@@ -48,32 +47,37 @@ export function create_sky_map_engine(
 ): SkyMapEngine {
   // MARK: - setup
 
-  const sky_map_resources = create_sky_map_render_resources(
+  const sky_map = decode_sky_map(sky_data)
+  const { SKY_SOURCE_NODES, SKY_VIEW_BASIS } = sky_data
+  const maybe_sky_map_renderer = create_sky_map_renderer(
     target,
-    sky_data,
+    sky_map,
+    SKY_VIEW_BASIS,
     initial_dark,
   )
-  if (!sky_map_resources) {
+  if (!maybe_sky_map_renderer) {
     return { destroy: () => {}, set_active: () => {}, set_theme: () => {} }
   }
+  const sky_map_renderer = maybe_sky_map_renderer
 
-  const {
-    dispose,
-    draw,
-    edge_geometry,
-    renderer,
-    sky_map,
-    star_geometry,
-    uniforms,
-  } = sky_map_resources
-  const { SKY_SOURCE_NODES } = sky_data
-  const node_distances = new Float32Array(sky_map.magnitudes.length)
   const reduced_motion = window.matchMedia(
     '(prefers-reduced-motion: reduce)',
   )
-  const base_right = uniforms.uRight.value.clone().normalize()
-  const base_up = uniforms.uUp.value.clone().normalize()
-  const base_forward = uniforms.uForward.value.clone().normalize()
+  const base_right = new Vector3(
+    SKY_VIEW_BASIS[0],
+    SKY_VIEW_BASIS[1],
+    SKY_VIEW_BASIS[2],
+  ).normalize()
+  const base_up = new Vector3(
+    SKY_VIEW_BASIS[3],
+    SKY_VIEW_BASIS[4],
+    SKY_VIEW_BASIS[5],
+  ).normalize()
+  const base_forward = new Vector3(
+    SKY_VIEW_BASIS[6],
+    SKY_VIEW_BASIS[7],
+    SKY_VIEW_BASIS[8],
+  ).normalize()
   const view_orientation = new Quaternion()
   const trail_orientation = new Quaternion()
   const route_start_orientation = new Quaternion()
@@ -82,6 +86,12 @@ export function create_sky_map_engine(
   const route_view_start_forward = new Vector3()
   const route_view_end_forward = new Vector3()
   const route_target_direction = new Vector3()
+  const view_right = base_right.clone()
+  const view_up = base_up.clone()
+  const view_forward = base_forward.clone()
+  const trail_right = base_right.clone()
+  const trail_up = base_up.clone()
+  const trail_forward = base_forward.clone()
 
   let requested_active = false
   let active = false
@@ -112,26 +122,14 @@ export function create_sky_map_engine(
   let spreading = false
   let last_view_status_at = -Infinity
   let last_view_status_key = ''
+  let view_aspect = 1
   let view_radius = BASE_VIEW_RADIUS
   let trail_view_radius = BASE_VIEW_RADIUS
+  let trail_opacity = 0
 
   // MARK: - route state
 
   const recent_constellation_groups: number[] = []
-
-  function angular_distance_from_node(
-    source_offset: number,
-    node_index: number,
-  ) {
-    const node_offset = node_index * 3
-    const cosine =
-      sky_map.directions[source_offset] * sky_map.directions[node_offset] +
-      sky_map.directions[source_offset + 1] *
-        sky_map.directions[node_offset + 1] +
-      sky_map.directions[source_offset + 2] *
-        sky_map.directions[node_offset + 2]
-    return Math.acos(Math.max(-1, Math.min(1, cosine)))
-  }
 
   function angular_distance_between_directions(
     first: Vector3,
@@ -187,11 +185,11 @@ export function create_sky_map_engine(
 
   function choose_route() {
     const view = {
-      aspect: uniforms.uAspect.value,
-      forward: vector_components(uniforms.uForward.value),
-      map_scale: uniforms.uMapScale.value,
-      right: vector_components(uniforms.uRight.value),
-      up: vector_components(uniforms.uUp.value),
+      aspect: view_aspect,
+      forward: vector_components(view_forward),
+      map_scale: map_scale_for_view_radius(view_radius),
+      right: vector_components(view_right),
+      up: vector_components(view_up),
     }
     return select_route({
       candidates: collect_route_candidates(sky_map, view),
@@ -226,29 +224,41 @@ export function create_sky_map_engine(
   function apply_view_state() {
     set_basis_from_orientation(
       view_orientation,
-      uniforms.uRight.value,
-      uniforms.uUp.value,
-      uniforms.uForward.value,
+      view_right,
+      view_up,
+      view_forward,
     )
-    uniforms.uMapScale.value = map_scale_for_view_radius(view_radius)
+    sky_map_renderer.set_view({
+      forward: view_forward,
+      right: view_right,
+      up: view_up,
+      view_radius,
+    })
   }
 
   function apply_trail_state() {
     set_basis_from_orientation(
       trail_orientation,
-      uniforms.uTrailRight.value,
-      uniforms.uTrailUp.value,
-      uniforms.uTrailForward.value,
+      trail_right,
+      trail_up,
+      trail_forward,
     )
-    uniforms.uTrailMapScale.value =
-      map_scale_for_view_radius(trail_view_radius)
+    sky_map_renderer.set_trail_view(
+      {
+        forward: trail_forward,
+        right: trail_right,
+        up: trail_up,
+        view_radius: trail_view_radius,
+      },
+      trail_opacity,
+    )
   }
 
   function sync_trail_view() {
     trail_orientation.copy(view_orientation)
     trail_view_radius = view_radius
+    trail_opacity = 0
     apply_trail_state()
-    uniforms.uTrailOpacity.value = 0
   }
 
   function update_trail_view(
@@ -257,23 +267,24 @@ export function create_sky_map_engine(
     camera_progress: number,
   ) {
     if (camera_progress <= 0) {
-      uniforms.uTrailOpacity.value = 0
+      trail_opacity = 0
+      apply_trail_state()
       return
     }
     if (release_opacity <= 0) {
-      if (uniforms.uTrailOpacity.value > 0) sync_trail_view()
+      if (trail_opacity > 0) sync_trail_view()
       return
     }
     const response =
       1 - Math.exp((-TRAIL_RESPONSE * delta_milliseconds) / 1000)
     trail_orientation.slerp(view_orientation, response)
     trail_view_radius += (view_radius - trail_view_radius) * response
-    apply_trail_state()
     const angular_lag = trail_orientation.angleTo(view_orientation)
     const radius_lag = Math.abs(view_radius - trail_view_radius)
-    uniforms.uTrailOpacity.value =
+    trail_opacity =
       Math.min(1, Math.max(0, (angular_lag + radius_lag * 0.7) / 0.008)) *
       release_opacity
+    apply_trail_state()
   }
 
   function update_route_view(progress: number) {
@@ -291,116 +302,21 @@ export function create_sky_map_engine(
   }
 
   function configure_roller_direction() {
-    const vertical_pan = route_view_end_forward.dot(uniforms.uUp.value)
+    const vertical_pan = route_view_end_forward.dot(view_up)
     roller_direction = vertical_pan >= 0 ? -1 : 1
   }
 
   function set_route(source: number, route_target: number) {
     last_camera_progress = -1
-    const star_distance = star_geometry.getAttribute(
-      'aDistance',
-    ) as BufferAttribute
-    const star_target_distance = star_geometry.getAttribute(
-      'aTargetDistance',
-    ) as BufferAttribute
-    const edge_start_distance = edge_geometry.getAttribute(
-      'aDistanceStart',
-    ) as InstancedBufferAttribute
-    const edge_end_distance = edge_geometry.getAttribute(
-      'aDistanceEnd',
-    ) as InstancedBufferAttribute
-    const edge_target_start_distance = edge_geometry.getAttribute(
-      'aTargetDistanceStart',
-    ) as InstancedBufferAttribute
-    const edge_target_end_distance = edge_geometry.getAttribute(
-      'aTargetDistanceEnd',
-    ) as InstancedBufferAttribute
-    const locator = star_geometry.getAttribute(
-      'aLocator',
-    ) as BufferAttribute
-    const previous_source = source_index
     source_index = source
     target_index = route_target
-    uniforms.uSourceConstellation.value = sky_map.node_groups[source_index]
-    uniforms.uTargetConstellation.value = sky_map.node_groups[target_index]
-    set_node_direction(source_index, uniforms.uRouteStart.value)
-    set_node_direction(target_index, uniforms.uRouteEnd.value)
-    uniforms.uRouteBend.value.crossVectors(
-      uniforms.uRouteStart.value,
-      uniforms.uRouteEnd.value,
-    )
-    if (uniforms.uRouteBend.value.lengthSq() < 0.0001) {
-      uniforms.uRouteBend.value.copy(uniforms.uUp.value)
-    } else {
-      uniforms.uRouteBend.value.normalize()
-      if (uniforms.uRouteBend.value.dot(uniforms.uUp.value) < 0) {
-        uniforms.uRouteBend.value.multiplyScalar(-1)
-      }
-    }
-    if (previous_source !== source_index) {
-      if (previous_source >= 0) locator.setX(previous_source, 0)
-      locator.setX(source_index, 1)
-      locator.needsUpdate = true
-    }
-    const source_offset = source_index * 3
-    const target_node_offset = target_index * 3
-    const source_constellation = sky_map.node_groups[source_index]
-    const target_constellation = sky_map.node_groups[target_index]
-    let constellation_reveal_distance = 0
-    let target_constellation_radius = 0
-    for (let index = 0; index < sky_map.magnitudes.length; index += 1) {
-      const distance = angular_distance_from_node(source_offset, index)
-      const target_distance_for_node = angular_distance_from_node(
-        target_node_offset,
-        index,
-      )
-      node_distances[index] = distance
-      star_distance.setX(index, distance)
-      star_target_distance.setX(index, target_distance_for_node)
-      if (
-        sky_map.node_groups[index] === source_constellation ||
-        sky_map.node_groups[index] === target_constellation
-      ) {
-        constellation_reveal_distance = Math.max(
-          constellation_reveal_distance,
-          distance,
-        )
-      }
-      if (sky_map.node_groups[index] === target_constellation) {
-        target_constellation_radius = Math.max(
-          target_constellation_radius,
-          target_distance_for_node,
-        )
-      }
-    }
-    const edge_count = sky_map.edge_nodes.length / 2
-    for (let index = 0; index < edge_count; index += 1) {
-      edge_start_distance.setX(
-        index,
-        node_distances[sky_map.edge_nodes[index * 2]],
-      )
-      edge_end_distance.setX(
-        index,
-        node_distances[sky_map.edge_nodes[index * 2 + 1]],
-      )
-      edge_target_start_distance.setX(
-        index,
-        star_target_distance.getX(sky_map.edge_nodes[index * 2]),
-      )
-      edge_target_end_distance.setX(
-        index,
-        star_target_distance.getX(sky_map.edge_nodes[index * 2 + 1]),
-      )
-    }
-    star_distance.needsUpdate = true
-    star_target_distance.needsUpdate = true
-    edge_start_distance.needsUpdate = true
-    edge_end_distance.needsUpdate = true
-    edge_target_start_distance.needsUpdate = true
-    edge_target_end_distance.needsUpdate = true
-    target_distance = node_distances[target_index]
-    uniforms.uTargetDistance.value = target_distance
-    uniforms.uRouteLength.value = target_distance
+    const {
+      constellation_reveal_distance,
+      target_constellation,
+      target_constellation_radius,
+      target_distance: next_target_distance,
+    } = sky_map_renderer.set_route(source_index, target_index)
+    target_distance = next_target_distance
     const signal_fade_start_distance = Math.max(
       target_distance + SIGNAL_CONTINUATION_DISTANCE,
       constellation_reveal_distance + SIGNAL_CONTINUATION_DISTANCE,
@@ -412,7 +328,7 @@ export function create_sky_map_engine(
     const signal_travel_distance =
       signal_fade_start_distance + SIGNAL_FADE_DISTANCE
     route_start_orientation.copy(view_orientation)
-    route_view_start_forward.copy(uniforms.uForward.value)
+    route_view_start_forward.copy(view_forward)
     set_node_direction(target_index, route_target_direction)
     const target_view_distance = angular_distance_between_directions(
       route_view_start_forward,
@@ -459,24 +375,14 @@ export function create_sky_map_engine(
   }
 
   function retire_previous_constellation() {
-    const source_group = sky_map.node_groups[source_index]
-    const target_group = sky_map.node_groups[target_index]
-    const held_source_group = uniforms.uHeldSourceConstellation.value
-    const held_target_group = uniforms.uHeldTargetConstellation.value
-    const retiring_group =
-      [held_source_group, held_target_group].find(
-        (group) =>
-          group >= 0 && group !== source_group && group !== target_group,
-      ) ?? -1
-    uniforms.uRetiringConstellation.value = retiring_group
-    uniforms.uRetireProgress.value = retiring_group < 0 ? 1 : 0
+    sky_map_renderer.retire_previous_constellation(
+      sky_map.node_groups[source_index],
+      sky_map.node_groups[target_index],
+    )
   }
 
   function hold_current_constellations() {
-    uniforms.uHeldSourceConstellation.value =
-      uniforms.uSourceConstellation.value
-    uniforms.uHeldTargetConstellation.value =
-      uniforms.uTargetConstellation.value
+    sky_map_renderer.hold_current_constellations()
   }
 
   // MARK: - rendering
@@ -485,11 +391,11 @@ export function create_sky_map_engine(
     if (!callbacks.on_view_change) return
     const now = performance.now()
     if (now - last_view_status_at < VIEW_STATUS_INTERVAL) return
-    const forward = uniforms.uForward.value
+    const forward = view_forward
     const right_ascension =
       ((Math.atan2(forward.z, forward.x) * 180) / Math.PI + 360) % 360
     const declination = (Math.asin(forward.y) * 180) / Math.PI
-    const scale = uniforms.uMapScale.value
+    const scale = map_scale_for_view_radius(view_radius)
     const status_key = `${right_ascension.toFixed(2)}:${declination.toFixed(2)}:${scale.toFixed(3)}`
     if (status_key === last_view_status_key) return
     last_view_status_at = now
@@ -499,7 +405,7 @@ export function create_sky_map_engine(
 
   function render() {
     publish_view_status()
-    draw(publish_view_status)
+    sky_map_renderer.draw()
   }
 
   function update_signal_color(select_new_color = false) {
@@ -511,22 +417,12 @@ export function create_sky_map_engine(
       }
       signal_color_index = next
     }
-    uniforms.uSignalInk.value.setHex(
-      palette[signal_color_index],
-      SRGBColorSpace,
-    )
+    sky_map_renderer.set_signal_color(palette[signal_color_index])
   }
 
   function update_theme(dark: boolean) {
     dark_mode = dark
-    uniforms.uInk.value.setHex(dark ? 0xe6e6e6 : 0x1b3851, SRGBColorSpace)
-    uniforms.uBaseAlpha.value = dark ? 0.18 : 0.26
-    uniforms.uBackgroundAlpha.value = dark ? 2 : 0.24
-    uniforms.uBackgroundInk.value.setHex(
-      dark ? 0xe6e6e6 : 0x294c67,
-      SRGBColorSpace,
-    )
-    uniforms.uSurveyMode.value = dark ? 0 : 1
+    sky_map_renderer.set_theme(dark)
     update_signal_color()
   }
 
@@ -535,16 +431,8 @@ export function create_sky_map_engine(
     const width = Math.max(1, bounds.width)
     const height = Math.max(1, bounds.height)
     const pixel_ratio = choose_pixel_ratio(width, height)
-    renderer.setPixelRatio(pixel_ratio)
-    renderer.setSize(width, height, false)
-    uniforms.uResolution.value.set(
-      width * pixel_ratio,
-      height * pixel_ratio,
-    )
-    uniforms.uPixelRatio.value = pixel_ratio
-    uniforms.uAspect.value = width / height
-    uniforms.uHalfWidth.value = 1.32 * pixel_ratio
-    uniforms.uTrailMaxLength.value = TRAIL_MAX_LENGTH * pixel_ratio
+    view_aspect = width / height
+    sky_map_renderer.resize(width, height, pixel_ratio)
     if (source_index < 0 || target_index < 0) {
       const [source, route_target] = choose_route()
       set_route(source, route_target)
@@ -582,15 +470,7 @@ export function create_sky_map_engine(
     stop_frame()
     if (!current_constellations_held) hold_current_constellations()
     current_constellations_held = true
-    uniforms.uRetiringConstellation.value = -1
-    uniforms.uRetireProgress.value = 1
-    uniforms.uPulseActive.value = 0
-    uniforms.uSourceActivation.value = 0
-    uniforms.uPulseDistance.value = 0
-    uniforms.uRoutePulseDistance.value = 0
-    uniforms.uLocatorProgress.value = 0
-    uniforms.uLocatorScale.value = 1
-    uniforms.uTrailOpacity.value = 0
+    sky_map_renderer.reset_pulse(1)
     end_spread()
     if (target_index >= 0) {
       update_route_view(1)
@@ -629,10 +509,11 @@ export function create_sky_map_engine(
       const locator_progress = critically_damped_progress(
         phase_elapsed / LOCATOR_DURATION,
       )
-      uniforms.uLocatorProgress.value = locator_progress
-      uniforms.uLocatorScale.value =
+      sky_map_renderer.set_locator(
+        locator_progress,
         LOCATOR_INITIAL_SCALE +
-        (1 - LOCATOR_INITIAL_SCALE) * locator_progress
+          (1 - LOCATOR_INITIAL_SCALE) * locator_progress,
+      )
       render()
       if (phase_elapsed < LOCATOR_DURATION) {
         frame = requestAnimationFrame(animate)
@@ -640,8 +521,7 @@ export function create_sky_map_engine(
       }
       signal_phase = 'collapsing'
       phase_started_at = now
-      uniforms.uLocatorProgress.value = 1
-      uniforms.uLocatorScale.value = 1
+      sky_map_renderer.set_locator(1, 1)
       frame = requestAnimationFrame(animate)
       return
     }
@@ -650,9 +530,8 @@ export function create_sky_map_engine(
         phase_elapsed / LOCATOR_COLLAPSE_DURATION,
       )
       const locator_scale = 1 - collapse_progress
-      uniforms.uLocatorProgress.value = 1
-      uniforms.uLocatorScale.value = locator_scale
-      uniforms.uSourceActivation.value = collapse_progress
+      sky_map_renderer.set_locator(1, locator_scale)
+      sky_map_renderer.set_pulse(0, 0, 0, collapse_progress)
       render()
       if (locator_scale > LOCATOR_DOT_SCALE) {
         frame = requestAnimationFrame(animate)
@@ -662,9 +541,8 @@ export function create_sky_map_engine(
       phase_started_at = now
       signal_started_at = now
       source_activation_at_spread = collapse_progress
-      uniforms.uLocatorProgress.value = 0
-      uniforms.uLocatorScale.value = 1
-      uniforms.uPulseActive.value = 1
+      sky_map_renderer.set_locator(0, 1)
+      sky_map_renderer.set_pulse(1, 0, 0, source_activation_at_spread)
       spreading = true
       callbacks.on_spread_start?.({
         color_index: signal_color_index,
@@ -691,7 +569,7 @@ export function create_sky_map_engine(
         sequence: roller_motion_sequence,
       })
     }
-    uniforms.uRetireProgress.value = pulse_frame.retire_progress
+    sky_map_renderer.set_retire_progress(pulse_frame.retire_progress)
     if (
       !current_constellations_held &&
       pulse_frame.pulse_distance >=
@@ -734,11 +612,12 @@ export function create_sky_map_engine(
       pulse_frame.trail_opacity,
       pulse_frame.camera_progress,
     )
-    uniforms.uPulseDistance.value = pulse_frame.pulse_distance
-    uniforms.uRoutePulseDistance.value = pulse_frame.route_pulse_distance
-    uniforms.uPulseActive.value = 1 - pulse_frame.fade_progress
-    uniforms.uSourceActivation.value =
-      source_activation_at_spread * (1 - pulse_frame.source_release)
+    sky_map_renderer.set_pulse(
+      1 - pulse_frame.fade_progress,
+      pulse_frame.pulse_distance,
+      pulse_frame.route_pulse_distance,
+      source_activation_at_spread * (1 - pulse_frame.source_release),
+    )
     render()
     frame = requestAnimationFrame(animate)
   }
@@ -757,12 +636,7 @@ export function create_sky_map_engine(
     destination_arrived = false
     source_activation_at_spread = 0
     current_constellations_held = false
-    uniforms.uPulseActive.value = 0
-    uniforms.uSourceActivation.value = 0
-    uniforms.uPulseDistance.value = 0
-    uniforms.uRoutePulseDistance.value = 0
-    uniforms.uLocatorProgress.value = 0
-    uniforms.uLocatorScale.value = LOCATOR_INITIAL_SCALE
+    sky_map_renderer.reset_pulse(LOCATOR_INITIAL_SCALE)
     sync_trail_view()
     update_signal_color(true)
     const [source, route_target] = choose_route()
@@ -781,12 +655,7 @@ export function create_sky_map_engine(
       begin_pulse()
       return
     }
-    uniforms.uPulseActive.value = 0
-    uniforms.uSourceActivation.value = 0
-    uniforms.uPulseDistance.value = 0
-    uniforms.uRoutePulseDistance.value = 0
-    uniforms.uLocatorProgress.value = 0
-    uniforms.uLocatorScale.value = 1
+    sky_map_renderer.reset_pulse(1)
     view_radius = BASE_VIEW_RADIUS
     apply_view_state()
     sync_trail_view()
@@ -799,6 +668,8 @@ export function create_sky_map_engine(
   }
 
   update_theme(initial_dark)
+  apply_view_state()
+  sync_trail_view()
   resize_observer.observe(target)
   reduced_motion.addEventListener('change', handle_reduced_motion)
   resize()
@@ -818,7 +689,7 @@ export function create_sky_map_engine(
       stop()
       resize_observer.disconnect()
       reduced_motion.removeEventListener('change', handle_reduced_motion)
-      dispose()
+      sky_map_renderer.dispose()
     },
   }
 }
