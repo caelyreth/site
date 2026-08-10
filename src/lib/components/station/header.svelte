@@ -32,65 +32,43 @@
 
 <style>
   .header {
-    --opening-ink: var(--color-ink);
-    --opening-muted: var(--color-muted);
-    --header-ink: color-mix(
-      in oklab,
-      var(--opening-ink),
-      var(--color-ink) calc(var(--observatory-progress) * 100%)
-    );
-    --header-muted: color-mix(
-      in oklab,
-      var(--opening-muted),
-      var(--color-muted) calc(var(--observatory-progress) * 100%)
-    );
-    --header-rule: color-mix(
+    --header-ink: var(--color-ink);
+    --header-muted: var(--color-muted);
+    --header-rule: var(--color-rule);
+    --header-surface: color-mix(
       in oklab,
       transparent,
-      var(--color-rule) calc(var(--observatory-progress) * 100%)
+      var(--color-paper-prime) calc(var(--observatory-progress) * 100%)
     );
     position: fixed;
     top: 0;
     left: 50%;
     z-index: 50;
-    width: 100%;
-    max-width: calc(
-      var(--frame-measure) + (100vw - var(--frame-measure)) *
-        var(--observatory-opening)
-    );
+    box-sizing: border-box;
+    width: min(100%, var(--frame-measure));
+    border-inline: 1px solid transparent;
     color: var(--header-ink);
-    background-color: color-mix(
-      in oklab,
-      transparent,
-      var(--color-paper) calc(var(--observatory-progress) * 100%)
-    );
+    background-color: var(--header-surface);
+    background-clip: padding-box;
     transform: translateX(-50%);
   }
 
-  .header::before,
   .header::after {
     position: absolute;
-    top: 0;
+    right: 0;
     bottom: 0;
-    width: 1px;
+    left: 0;
+    height: 1px;
     pointer-events: none;
     content: '';
     background-color: var(--header-rule);
-  }
-
-  .header::before {
-    left: 0;
-  }
-
-  .header::after {
-    right: 0;
   }
 
   .inner {
     display: flex;
     width: 100%;
     height: var(--header-block-size);
-    padding-inline: var(--observatory-header-inset);
+    padding-inline: var(--inline-gutter);
     align-items: center;
     justify-content: space-between;
     gap: 1rem;

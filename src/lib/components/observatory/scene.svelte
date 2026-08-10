@@ -301,7 +301,7 @@
     display: grid;
     overflow: hidden;
     border: 1px solid var(--observatory-panel-rule);
-    border-block-color: var(--observatory-content-rule);
+    border-block-end-color: var(--observatory-content-rule);
     border-radius: var(--observatory-panel-radius);
     background-color: var(--color-paper-prime);
     clip-path: inset(
@@ -356,7 +356,8 @@
 
   .label-top {
     top: calc(
-      1.25rem + (var(--header-safe-inset) - 1.25rem) *
+      1.25rem +
+        (var(--header-safe-inset) - var(--header-block-size) - 1.25rem) *
         var(--observatory-progress)
     );
   }

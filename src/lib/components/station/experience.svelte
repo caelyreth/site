@@ -39,30 +39,26 @@
     --observatory-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
     --observatory-frame-radius: clamp(0.5rem, 1vw, 0.875rem);
     --observatory-progress: var(--observatory-fallback-progress, 0);
-    --observatory-opening: calc(1 - var(--observatory-progress));
+    --observatory-panel-opening: calc(1 - var(--observatory-progress));
+    --observatory-rail-seam: 1px;
     --observatory-panel-inset: calc(
-      var(--observatory-frame-inset) * var(--observatory-opening)
+      var(--observatory-frame-inset) * var(--observatory-panel-opening)
     );
     --observatory-panel-top: calc(
-      var(--header-block-size) * var(--observatory-opening)
+      var(--header-block-size) - var(--observatory-rail-seam)
     );
     --observatory-panel-radius: calc(
-      var(--observatory-frame-radius) * var(--observatory-opening)
+      var(--observatory-frame-radius) * var(--observatory-panel-opening)
     );
     --observatory-panel-rule: color-mix(
       in oklab,
-      var(--color-rule) calc(var(--observatory-opening) * 100%),
+      var(--color-rule) calc(var(--observatory-panel-opening) * 100%),
       transparent
     );
     --observatory-content-rule: color-mix(
       in oklab,
       var(--observatory-panel-rule),
       var(--color-rule) calc(var(--observatory-progress) * 100%)
-    );
-    --observatory-header-inset: calc(
-      var(--observatory-frame-inset) +
-        (var(--inline-gutter) - var(--observatory-frame-inset)) *
-        var(--observatory-progress)
     );
     position: relative;
     z-index: 10;
