@@ -273,10 +273,7 @@
   }
 
   .scene {
-    --scene-inline-inset: calc(
-      var(--inline-gutter) + max(0px, 50vw - var(--half-measure)) *
-        var(--observatory-progress)
-    );
+    --scene-inline-inset: var(--inline-gutter);
     position: sticky;
     top: 0;
     z-index: 21;
@@ -285,34 +282,22 @@
     height: 100dvh;
     margin-inline: calc(50% - 50vw);
     overflow: hidden;
-    clip-path: inset(
-      0
-        calc(
-          max(0px, 50vw - var(--half-measure)) * var(--observatory-progress)
-        )
-        0
-    );
+    clip-path: inset(0 var(--observatory-frame-clip-inset) 0);
     will-change: clip-path;
   }
 
   .foreground {
     position: absolute;
-    inset: var(--observatory-panel-top) var(--observatory-panel-inset)
-      var(--observatory-panel-inset);
+    inset: var(--observatory-panel-top)
+      var(--observatory-panel-inline-inset)
+      var(--observatory-panel-block-inset);
     z-index: 1;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     overflow: hidden;
-    border: 1px solid var(--observatory-panel-rule);
-    border-block-end-color: var(--observatory-content-rule);
+    border: 1px solid var(--observatory-content-rule);
     border-radius: var(--observatory-panel-radius);
     background-color: var(--color-paper-prime);
-    clip-path: inset(
-      0
-        calc(
-          max(0px, 50vw - var(--half-measure)) * var(--observatory-progress)
-        )
-        0
-    );
     place-items: center;
   }
 

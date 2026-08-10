@@ -41,8 +41,15 @@
     --observatory-progress: var(--observatory-fallback-progress, 0);
     --observatory-panel-opening: calc(1 - var(--observatory-progress));
     --observatory-rail-seam: 1px;
-    --observatory-panel-inset: calc(
+    --observatory-frame-clip-inset: calc(
+      max(0px, 50vw - var(--half-measure)) * var(--observatory-progress)
+    );
+    --observatory-panel-block-inset: calc(
       var(--observatory-frame-inset) * var(--observatory-panel-opening)
+    );
+    --observatory-panel-inline-inset: calc(
+      var(--observatory-frame-clip-inset) +
+        var(--observatory-panel-block-inset)
     );
     --observatory-panel-top: calc(
       var(--header-block-size) - var(--observatory-rail-seam)
