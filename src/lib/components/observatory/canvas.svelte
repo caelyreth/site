@@ -103,7 +103,10 @@
       })
       .catch((error: unknown) => {
         if (!disposed) {
-          console.error('Unable to initialize the observatory sky map.', error)
+          console.error(
+            'Unable to initialize the observatory sky map.',
+            error,
+          )
         }
       })
 
@@ -146,7 +149,7 @@
   }
 
   .canvas.is-ready {
-    opacity: max(0, calc(1 - var(--p, 0) * 1.25));
+    opacity: max(0, calc(1 - var(--observatory-progress) * 1.25));
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -155,7 +158,7 @@
     }
 
     .canvas.is-ready {
-      opacity: max(0, calc(0.72 - var(--p, 0) * 1.05));
+      opacity: max(0, calc(0.72 - var(--observatory-progress) * 1.05));
     }
   }
 </style>

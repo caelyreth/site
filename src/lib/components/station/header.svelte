@@ -143,10 +143,4 @@
       display: none;
     }
   }
-
-  :global(
-    html[data-observatory-pending='true'] .shell:not(.station-ready) .header
-  ) {
-    visibility: hidden;
-  }
 </style>

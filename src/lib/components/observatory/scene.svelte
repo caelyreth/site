@@ -15,6 +15,11 @@
     text_refresh_in,
     text_refresh_out,
   } from '$lib/motion/text-refresh'
+  import {
+    observatory_scroll_restoration,
+    persist_scroll_position,
+    restore_scroll_position,
+  } from '$lib/scroll-restoration'
   import { useTheme as use_theme } from 'svelte-themes'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
@@ -25,7 +30,6 @@
   let capture: HTMLElement | undefined
   let initial_sync_frame: number | undefined
   let scroll_frame: number | undefined
-  const scroll_storage_key = 'caelyreth:observatory-scroll-y'
   let transmission_sequence = $state(1)
   let transmissions = $state<
     Array<{ color_index: number; sequence: number }>
@@ -146,34 +150,18 @@
     station.scroll_progress = Math.min(1, Math.max(0, next_progress))
   }
 
-  function persist_scroll_position() {
-    sessionStorage.setItem(scroll_storage_key, String(window.scrollY))
-  }
-
-  function saved_scroll_position() {
-    const navigation = performance.getEntriesByType('navigation')[0] as
-      | PerformanceNavigationTiming
-      | undefined
-    if (navigation?.type !== 'reload') return
-
-    const saved_scroll_y = Number(
-      sessionStorage.getItem(scroll_storage_key),
-    )
-    if (!Number.isFinite(saved_scroll_y)) return
-
-    return Math.max(0, saved_scroll_y)
-  }
-
-  function restore_scroll_position() {
-    const saved_scroll_y = saved_scroll_position()
-    if (!saved_scroll_y || window.scrollY !== 0) return
-
-    window.scrollTo(0, saved_scroll_y)
+  function persist_current_scroll_position() {
+    persist_scroll_position(observatory_scroll_restoration)
   }
 
   function schedule_progress_update() {
     if (scroll_frame !== undefined) return
     scroll_frame = requestAnimationFrame(update_progress)
+  }
+
+  function handle_scroll() {
+    persist_current_scroll_position()
+    schedule_progress_update()
   }
 
   function cancel_progress_update() {
@@ -190,7 +178,7 @@
 
   function sync_initial_progress() {
     cancel_initial_sync()
-    restore_scroll_position()
+    restore_scroll_position(observatory_scroll_restoration)
     update_progress()
     initial_sync_frame = requestAnimationFrame(() => {
       initial_sync_frame = requestAnimationFrame(() => {
@@ -204,7 +192,6 @@
   function observe_capture(node: HTMLElement) {
     capture = node
     station.is_ready = false
-    document.documentElement.dataset.observatoryPending = 'true'
     cancel_progress_update()
     sync_initial_progress()
 
@@ -212,7 +199,9 @@
       if (capture === node) capture = undefined
       cancel_initial_sync()
       cancel_progress_update()
-      document.documentElement.removeAttribute('data-observatory-pending')
+      document.documentElement.style.removeProperty(
+        '--observatory-initial-progress',
+      )
       station.is_ready = false
       station.scroll_progress = 0
     }
@@ -220,8 +209,8 @@
 </script>
 
 <svelte:window
-  onpagehide={persist_scroll_position}
-  onscroll={schedule_progress_update}
+  onpagehide={persist_current_scroll_position}
+  onscroll={handle_scroll}
   onresize={schedule_progress_update}
 />
 
@@ -488,11 +477,5 @@
       font-size: 0.5625rem;
       letter-spacing: 0.08em;
     }
-  }
-
-  :global(
-    html[data-observatory-pending='true'] .shell:not(.station-ready) .scene
-  ) {
-    visibility: hidden;
   }
 </style>

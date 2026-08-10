@@ -5,9 +5,6 @@
 
 <svelte:head>
   <title>Caelyreth</title>
-  <script>
-    document.documentElement.dataset.observatoryPending = 'true'
-  </script>
 </svelte:head>
 
 <Scene />

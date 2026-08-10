@@ -22,9 +22,10 @@
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
   <div
-    class:station-ready={station.is_ready}
     class="shell"
-    style:--p={station.scroll_progress}
+    style:--observatory-live-progress={station.is_ready
+      ? station.scroll_progress
+      : undefined}
   >
     <Chrome />
     <Header />
@@ -37,7 +38,10 @@
 
 <style>
   .shell {
-    --observatory-progress: var(--p, 0);
+    --observatory-progress: var(
+      --observatory-live-progress,
+      var(--observatory-initial-progress, 0)
+    );
     --observatory-opening: calc(1 - var(--observatory-progress));
     --observatory-panel-inset: calc(
       var(--observatory-frame-inset) * var(--observatory-opening)
