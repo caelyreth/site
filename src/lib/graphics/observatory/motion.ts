@@ -86,7 +86,11 @@ export function signal_progress(value: number) {
 }
 
 export function route_progress(value: number) {
-  return impulse_progress(value, ROUTE_VELOCITY_APEX, ROUTE_TERMINAL_VELOCITY)
+  return impulse_progress(
+    value,
+    ROUTE_VELOCITY_APEX,
+    ROUTE_TERMINAL_VELOCITY,
+  )
 }
 
 export function camera_motion_progress(value: number) {

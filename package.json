@@ -16,6 +16,10 @@
     "preview": "vite start",
     "prepare": "pnpm run sync"
   },
+  "dependencies": {
+    "@comark/svelte": "^0.6.2",
+    "comark": "^0.6.2"
+  },
   "devDependencies": {
     "@iconify-json/ri": "catalog:f",
     "@oxc-node/cli": "catalog:x",

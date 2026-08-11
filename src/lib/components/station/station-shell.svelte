@@ -1,11 +1,35 @@
 <script lang="ts">
-  import Scene from '$lib/components/observatory/scene.svelte'
+  import type {
+    FooterDefinition,
+    ObservatoryGraphicDefinition,
+    RegionOptions,
+  } from '$lib/presentation/definitions'
+  import type { Snippet } from 'svelte'
 
   import Chrome from './chrome.svelte'
-  import Content from './content.svelte'
-  import Footer from './footer.svelte'
+  import ContentFrame from './content-frame.svelte'
+  import FooterFrame from './footer-frame.svelte'
   import Header from './header.svelte'
+  import ObservatoryFrame from './observatory-frame.svelte'
 
+  type SelectedGraphic = Readonly<{
+    definition: ObservatoryGraphicDefinition
+    options: RegionOptions
+  }>
+
+  type SelectedFooter = Readonly<{
+    definition: FooterDefinition
+    options: RegionOptions
+  }>
+
+  type Props = {
+    children?: Snippet
+    footer?: SelectedFooter
+    graphic?: SelectedGraphic
+  }
+
+  /* oxlint-disable prefer-const -- Shell regions update with route data. */
+  let { children, footer, graphic }: Props = $props()
   let fallback_progress = $state(0)
 
   function update_fallback_progress(progress: number) {
@@ -20,12 +44,20 @@
   <Chrome />
   <Header />
   <main>
-    <Scene on_progress={update_fallback_progress} />
-    <div class="deck station-content">
-      <Content />
-    </div>
+    {#if graphic}
+      <ObservatoryFrame
+        graphic={graphic.definition}
+        options={graphic.options}
+        on_progress={update_fallback_progress}
+      />
+    {/if}
+    <ContentFrame>
+      {@render children?.()}
+    </ContentFrame>
   </main>
-  <Footer />
+  {#if footer}
+    <FooterFrame footer={footer.definition} options={footer.options} />
+  {/if}
 </div>
 
 <style>
@@ -86,16 +118,7 @@
     position: relative;
     display: flex;
     flex: 1;
-    flex-direction: column;
     min-height: 100vh;
-  }
-
-  .station-content {
-    display: flex;
-    flex: 1;
-    width: 100%;
-    margin: 0 auto;
-    padding-inline: var(--inline-gutter);
     flex-direction: column;
   }
 

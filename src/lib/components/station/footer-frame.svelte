@@ -1,9 +1,19 @@
 <script lang="ts">
-  import FooterDeck from './footer-deck.svelte'
+  import type {
+    FooterDefinition,
+    RegionOptions,
+  } from '$lib/presentation/definitions'
 
+  type Props = {
+    footer: FooterDefinition
+    options: RegionOptions
+  }
+
+  /* oxlint-disable prefer-const -- Footer selection can update with the route. */
+  let { footer, options }: Props = $props()
+  const Footer = $derived(footer.component)
   let footer_visible = $state(false)
 
-  // MARK: - footer visibility
   function observe_footer(node: HTMLElement) {
     if (typeof IntersectionObserver === 'undefined') {
       footer_visible = true
@@ -13,7 +23,7 @@
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => (footer_visible = entry.isIntersecting),
+      ([entry]) => (footer_visible = entry?.isIntersecting ?? false),
       { rootMargin: '200px 0px' },
     )
     observer.observe(node)
@@ -25,7 +35,7 @@
 </script>
 
 <footer class="station-footer" {@attach observe_footer}>
-  <FooterDeck is_footer_visible={footer_visible} />
+  <Footer is_footer_visible={footer_visible} {options} />
 </footer>
 
 <style>

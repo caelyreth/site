@@ -1,11 +1,10 @@
 <script lang="ts">
-  import FooterSignalMonitor from './footer-signal-monitor.svelte'
+  import type { FooterProps } from '$lib/presentation/definitions'
 
-  interface Props {
-    is_footer_visible: boolean
-  }
+  import FooterSignalMonitor from './signal-monitor.svelte'
 
-  const { is_footer_visible }: Props = $props()
+  /* oxlint-disable prefer-const -- Visibility is owned by the footer frame. */
+  let { is_footer_visible }: FooterProps = $props()
 
   const barcode_bars = [
     1, 2, 1, 3, 1, 1, 2, 1, 3, 1, 2, 1, 1, 3, 2, 1, 2, 1, 3, 1, 1, 2, 1, 3,
