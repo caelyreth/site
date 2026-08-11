@@ -5,7 +5,7 @@ graphics: observatory
 footer: relay-station
 ---
 
-# Writing, making, and the space between. {#station}
+# Writing, making, and the space between {#station}
 
 ::lead
 A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.
