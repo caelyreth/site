@@ -145,6 +145,16 @@ body {
     color var(--dur-short) var(--ease-in-out);
 }
 
+::selection {
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+}
+
+::-moz-selection {
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+}
+
 /* reusable styles */
 
 .deck {
