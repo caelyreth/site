@@ -9,9 +9,8 @@
 
 <style>
   .lead {
-    max-width: 65ch;
     margin: 1.25rem 0 0;
-    color: var(--color-ink-prime);
+    color: var(--color-text-secondary);
     font-size: 1rem;
     line-height: 1.65;
   }

@@ -168,7 +168,7 @@
         var(--header-ink) 8%,
         transparent
       );
-      color: var(--color-accent);
+      color: var(--color-text-link);
     }
   }
 
@@ -210,7 +210,7 @@
     padding: 0;
     overflow: hidden;
     border: 0;
-    color: var(--color-ink);
+    color: var(--color-text);
     background-color: color-mix(
       in oklab,
       var(--color-paper) 88%,

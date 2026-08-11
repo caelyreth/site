@@ -237,7 +237,7 @@
 
   @media (hover: hover) {
     .slip:hover {
-      color: var(--color-accent);
+      color: var(--color-text-link);
       transform: translateY(-2px) rotate(calc(var(--slip-rotation) + 1deg));
     }
   }
@@ -282,7 +282,7 @@
     right: 1.5rem;
     bottom: 1.5rem;
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-secondary);
     pointer-events: none;
   }
 

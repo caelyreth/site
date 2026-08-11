@@ -1,4 +1,8 @@
-<hr />
+<script lang="ts">
+  const { ...attributes }: Record<string, unknown> = $props()
+</script>
+
+<hr {...attributes} />
 
 <style>
   hr {

@@ -32,8 +32,17 @@
 
 <style>
   .header {
-    --header-ink: var(--color-ink);
-    --header-muted: var(--color-muted);
+    --header-ink: color-mix(
+      in oklab,
+      var(--color-text-on-dark) calc((1 - var(--stage-progress)) * 100%),
+      var(--color-text) calc(var(--stage-progress) * 100%)
+    );
+    --header-muted: color-mix(
+      in oklab,
+      var(--color-text-on-dark-secondary)
+        calc((1 - var(--stage-progress)) * 100%),
+      var(--color-text-secondary) calc(var(--stage-progress) * 100%)
+    );
     --header-rule: var(--color-rule);
     --header-surface: color-mix(
       in oklab,

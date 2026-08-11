@@ -83,13 +83,13 @@
 
   .footer-label {
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-secondary);
     letter-spacing: 0.12em;
   }
 
   .title {
     margin: 0.5rem 0 0;
-    color: var(--color-ink);
+    color: var(--color-text);
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.1;
@@ -98,7 +98,7 @@
   .statement {
     max-width: 36ch;
     margin: 0;
-    color: var(--color-ink-prime);
+    color: var(--color-text-secondary);
     font-size: 0.75rem;
     line-height: 1.55;
   }
@@ -110,10 +110,10 @@
   }
 
   .footer-module {
-    --primary: var(--color-ink);
-    --secondary: var(--color-ink-prime);
-    --muted: var(--color-muted);
-    --accent: var(--color-accent);
+    --primary: var(--color-text);
+    --secondary: var(--color-text-secondary);
+    --muted: var(--color-text-secondary);
+    --accent: var(--color-text-link);
     --rule: var(--color-rule);
     display: flex;
     min-width: 0;
@@ -198,7 +198,7 @@
     flex-wrap: wrap;
     gap: 0.5rem 1.5rem;
     padding-top: 1rem;
-    color: var(--color-muted);
+    color: var(--color-text-secondary);
     font-size: 0.625rem;
     line-height: 1.3;
   }

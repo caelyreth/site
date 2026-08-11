@@ -75,7 +75,11 @@
   }
 
   .field-heading {
-    color: color-mix(in oklab, var(--color-ink) 60%, var(--color-muted));
+    color: color-mix(
+      in oklab,
+      var(--color-text-on-dark) 60%,
+      var(--color-text-on-dark-secondary)
+    );
     font-family: var(--font-stack-sans);
     font-size: clamp(0.4rem, 0.55vw, 0.56rem);
     font-variant-numeric: tabular-nums;
@@ -194,7 +198,7 @@
     display: flex;
     justify-content: space-between;
     gap: 0.4rem;
-    color: var(--color-muted);
+    color: var(--color-text-on-dark-secondary);
     font-family: var(--font-stack-sans);
     font-size: 0.42rem;
     font-variant-numeric: tabular-nums;
@@ -205,7 +209,11 @@
   .entry-copy {
     min-height: 1.5em;
     margin: 0.38rem 0 0;
-    color: color-mix(in oklab, var(--color-ink) 64%, var(--color-muted));
+    color: color-mix(
+      in oklab,
+      var(--color-text-on-dark) 64%,
+      var(--color-text-on-dark-secondary)
+    );
     font-family: var(--font-stack-mono);
     font-size: 0.78rem;
     line-height: 1.48;

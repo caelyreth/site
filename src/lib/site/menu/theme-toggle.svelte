@@ -84,7 +84,7 @@
     cursor: pointer;
     border: 0;
     border-left: 1px solid var(--toggle-rule, var(--color-rule));
-    color: var(--toggle-ink, var(--color-ink-prime));
+    color: var(--toggle-ink, var(--color-text));
     background: transparent;
     place-items: center;
     transition:
@@ -113,7 +113,7 @@
 
   @media (hover: hover) {
     .theme-toggle button:hover:not(.active) {
-      color: var(--color-accent);
+      color: var(--color-text-link);
     }
   }
 

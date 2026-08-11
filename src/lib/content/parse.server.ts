@@ -1,5 +1,5 @@
 /* oxlint-disable typescript/prefer-readonly-parameter-types -- Zod schemas and Comark nodes are used read-only, but their library types are mutable. */
-import { parseMarkdown, type Node } from 'comark'
+import { parseMarkdown, type ElementNode, type Node } from 'comark'
 import { z } from 'zod'
 
 import type { ContentDocument } from './schema'
@@ -14,6 +14,24 @@ const block_schemas = import.meta.glob('./blocks/*.schema.ts', {
   import: 'default',
 }) as Record<string, z.ZodType>
 
+const heading_depths: Readonly<Record<string, number>> = {
+  h1: 1,
+  h2: 2,
+  h3: 3,
+  h4: 4,
+  h5: 5,
+  h6: 6,
+}
+
+const alert_types = [
+  'note',
+  'tip',
+  'important',
+  'warning',
+  'caution',
+] as const
+type AlertType = (typeof alert_types)[number]
+
 async function source_for(content_id: string) {
   const source_path = `content/${content_id}.md`
   const load_source = content_sources[`../../../${source_path}`]
@@ -22,6 +40,43 @@ async function source_for(content_id: string) {
   }
 
   return { source: await load_source(), source_path }
+}
+
+function is_alert_type(value: unknown): value is AlertType {
+  return (
+    typeof value === 'string' &&
+    (alert_types as readonly string[]).includes(value)
+  )
+}
+
+function annotate_heading(tag: string, attributes: ElementNode[1]) {
+  const depth = heading_depths[tag]
+  if (depth !== undefined) attributes.depth = depth
+}
+
+function promote_alert(node: ElementNode) {
+  const [tag, attributes] = node
+  if (tag !== 'blockquote' || !is_alert_type(attributes.as)) return
+
+  // The Svelte manifest resolves tags, while Comark alerts identify their type in `as`.
+  node[0] = `alert-${attributes.as}`
+  delete attributes.as
+}
+
+function prepare_element(node: ElementNode) {
+  const [tag, attributes, ...children] = node
+  annotate_heading(tag, attributes)
+  promote_alert(node)
+  prepare_nodes(children)
+}
+
+function prepare_node(node: Node) {
+  if (typeof node === 'string' || node[0] === null) return
+  prepare_element(node)
+}
+
+function prepare_nodes(nodes: readonly Node[]) {
+  for (const node of nodes) prepare_node(node)
 }
 
 function validate_attributes(
@@ -70,6 +125,7 @@ export async function parse_content<
 ): Promise<ContentDocument<Frontmatter>> {
   const { source, source_path } = await source_for(content_id)
   const document = await parseMarkdown(source)
+  prepare_nodes(document.nodes)
   validate_blocks(document.nodes, source_path)
 
   return {

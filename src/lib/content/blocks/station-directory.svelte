@@ -36,12 +36,12 @@
   }
 
   .directory-name {
-    color: var(--color-ink);
+    color: var(--color-text);
     font-weight: 700;
   }
 
   .directory-detail {
-    color: var(--color-muted);
+    color: var(--color-text-secondary);
     font-size: 0.875rem;
     text-align: right;
   }

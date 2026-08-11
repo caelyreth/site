@@ -97,7 +97,7 @@
     margin-top: 1rem;
     border-collapse: collapse;
     border-top: 1px solid var(--color-rule);
-    color: var(--color-muted);
+    color: var(--color-text-secondary);
     font-size: 0.875rem;
     font-variant-numeric: tabular-nums;
   }

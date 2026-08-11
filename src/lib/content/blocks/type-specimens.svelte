@@ -16,24 +16,24 @@
     margin: 0.5rem 0 0;
   }
   .serif-sample {
-    color: var(--color-ink);
+    color: var(--color-text);
     font-size: 1.5rem;
     font-weight: 700;
   }
   .sans-sample {
-    color: var(--color-ink);
+    color: var(--color-text);
     font-size: 1.125rem;
   }
   small {
     margin-left: 0.5rem;
-    color: var(--color-muted);
+    color: var(--color-text-secondary);
     font-family: var(--font-stack-sans);
     font-size: 0.875rem;
     font-weight: 400;
   }
   .figures-sample {
     margin-top: 1rem;
-    color: var(--color-ink);
+    color: var(--color-text);
     font-size: 1.25rem;
     letter-spacing: 0.12em;
   }

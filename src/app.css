@@ -11,6 +11,16 @@
   --color-ink-prime-light: oklch(34% 0 0);
   --color-accent-light: oklch(51.5% 0.125 260);
   --color-focus-light: oklch(58% 0.165 260);
+  --color-text-light: oklch(19% 0 0);
+  --color-text-secondary-light: oklch(40% 0 0);
+  --color-text-link-light: oklch(40% 0.12 260);
+  --color-text-on-dark: oklch(93% 0 0);
+  --color-text-on-dark-secondary: oklch(80% 0 0);
+  --color-alert-note-light: oklch(39% 0.13 255);
+  --color-alert-tip-light: oklch(37% 0.115 155);
+  --color-alert-important-light: oklch(40% 0.14 315);
+  --color-alert-warning-light: oklch(39% 0.12 85);
+  --color-alert-caution-light: oklch(40% 0.16 28);
   --color-paper-dark: oklch(15% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
   --color-field-dark: oklch(13% 0 0);
@@ -22,6 +32,14 @@
   --color-ink-prime-dark: oklch(76% 0 0);
   --color-accent-dark: oklch(78.5% 0.115 274.713);
   --color-focus-dark: oklch(67.3% 0.182 276.935);
+  --color-text-dark: oklch(93% 0 0);
+  --color-text-secondary-dark: oklch(80% 0 0);
+  --color-text-link-dark: oklch(75% 0.115 274.713);
+  --color-alert-note-dark: oklch(74% 0.13 255);
+  --color-alert-tip-dark: oklch(72% 0.13 155);
+  --color-alert-important-dark: oklch(75% 0.14 315);
+  --color-alert-warning-dark: oklch(77% 0.13 85);
+  --color-alert-caution-dark: oklch(75% 0.16 28);
   --color-paper: var(--color-paper-light);
   --color-paper-prime: var(--color-paper-prime-light);
   --color-field: var(--color-field-light);
@@ -33,6 +51,19 @@
   --color-ink-prime: var(--color-ink-prime-light);
   --color-accent: var(--color-accent-light);
   --color-focus: var(--color-focus-light);
+  --color-text: var(--color-text-light);
+  --color-text-secondary: var(--color-text-secondary-light);
+  --color-text-link: var(--color-text-link-light);
+  --color-prose-surface: color-mix(
+    in oklab,
+    var(--color-deco) 40%,
+    var(--color-paper-prime)
+  );
+  --color-alert-note: var(--color-alert-note-light);
+  --color-alert-tip: var(--color-alert-tip-light);
+  --color-alert-important: var(--color-alert-important-light);
+  --color-alert-warning: var(--color-alert-warning-light);
+  --color-alert-caution: var(--color-alert-caution-light);
   --font-stack-sans: ui-sans-serif, system-ui, sans-serif;
   --font-stack-serif: ui-serif, Georgia, serif;
   --font-stack-mono:
@@ -74,6 +105,14 @@
   --color-ink-prime: var(--color-ink-prime-dark);
   --color-accent: var(--color-accent-dark);
   --color-focus: var(--color-focus-dark);
+  --color-text: var(--color-text-dark);
+  --color-text-secondary: var(--color-text-secondary-dark);
+  --color-text-link: var(--color-text-link-dark);
+  --color-alert-note: var(--color-alert-note-dark);
+  --color-alert-tip: var(--color-alert-tip-dark);
+  --color-alert-important: var(--color-alert-important-dark);
+  --color-alert-warning: var(--color-alert-warning-dark);
+  --color-alert-caution: var(--color-alert-caution-dark);
 }
 
 html,
@@ -88,7 +127,7 @@ html.page-scroll-locked {
 
 body {
   background-color: var(--color-field);
-  color: var(--color-ink);
+  color: var(--color-text);
   transition:
     background-color var(--dur-short) var(--ease-in-out),
     color var(--dur-short) var(--ease-in-out);
@@ -98,6 +137,7 @@ body {
 
 .deck {
   position: relative;
+  isolation: isolate;
   max-width: var(--frame-measure);
   background-color: var(--color-paper);
 }
@@ -106,6 +146,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: -1;
   pointer-events: none;
   opacity: var(--noise-opacity);
   background-image: var(--noise-tile);

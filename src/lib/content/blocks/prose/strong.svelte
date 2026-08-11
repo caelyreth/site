@@ -1,0 +1,18 @@
+<script lang="ts">
+  import type { Snippet } from 'svelte'
+
+  type Props = { children?: Snippet } & Record<string, unknown>
+
+  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
+  let { children, ...attributes }: Props = $props()
+</script>
+
+<strong {...attributes}>{@render children?.()}</strong>
+
+<style>
+  strong {
+    color: var(--color-text);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+</style>

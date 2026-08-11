@@ -9,7 +9,8 @@
 
 <style>
   .accent {
-    color: var(--color-accent);
+    color: var(--color-text-link);
     font-weight: 500;
+    overflow-wrap: anywhere;
   }
 </style>
