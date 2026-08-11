@@ -7,7 +7,6 @@
     "fmt": "oxfmt",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "test": "vitest run",
     "check": "svelte-check --incremental",
     "generate:sky": "oxnode scripts/build-sky-map.ts",
     "sync": "svelte-kit sync",
@@ -37,8 +36,7 @@
     "three": "catalog:f",
     "typescript": "catalog:x",
     "unocss": "catalog:f",
-    "vite": "catalog:f",
-    "vitest": "catalog:f"
+    "vite": "catalog:f"
   },
   "devEngines": {
     "packageManager": {

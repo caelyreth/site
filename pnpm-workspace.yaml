@@ -16,7 +16,6 @@ catalogs:
     'three': ^0.185.1
     'unocss': ^66.7.5
     'vite': ^8.1.5
-    'vitest': ^4.0.18
   t:
     '@types/node': ^26.1.2
     '@types/three': ^0.185.1
