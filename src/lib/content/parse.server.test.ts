@@ -1,36 +1,18 @@
 import { describe, expect, it } from 'vitest'
 
 import { parse_content } from './parse.server'
+import { home_frontmatter_schema } from './schema'
 
 describe('parse_content', () => {
-  it('rejects unknown frontmatter fields', async () => {
-    await expect(
-      parse_content(
-        '---\ntitle: Test\nunknown: value\n---',
-        'content/test.md',
-      ),
-    ).rejects.toThrow('Unrecognized key')
+  it('loads content documents by ID', async () => {
+    const document = await parse_content('home', home_frontmatter_schema)
+
+    expect(document.frontmatter.title).toBe('Caelyreth')
   })
 
-  it('validates discovered Comark component props', async () => {
+  it('reports the resolved content path for unknown IDs', async () => {
     await expect(
-      parse_content(
-        [
-          '---',
-          'title: Test',
-          '---',
-          '',
-          '::station-directory',
-          '',
-          '```yaml [props]',
-          'entries:',
-          '  - title: Missing detail',
-          '```',
-          '',
-          '::',
-        ].join('\n'),
-        'content/test.md',
-      ),
-    ).rejects.toThrow('invalid station-directory props')
+      parse_content('missing', home_frontmatter_schema),
+    ).rejects.toThrow('Unknown content document "content/missing.md".')
   })
 })

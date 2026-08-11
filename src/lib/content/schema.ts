@@ -6,15 +6,26 @@ export const presentation_id_schema = z
 
 const options_schema = z.record(z.string(), z.unknown())
 
-export const page_frontmatter_schema = z
-  .object({
-    description: z.string().optional(),
-    footer: presentation_id_schema.optional(),
-    footer_options: options_schema.optional(),
-    graphics: presentation_id_schema.optional(),
-    graphics_options: options_schema.optional(),
-    title: z.string(),
-  })
+export const document_frontmatter_schema = z.object({
+  description: z.string().optional(),
+  title: z.string(),
+})
+
+export const presentation_frontmatter_schema = z.object({
+  footer: presentation_id_schema.optional(),
+  footer_options: options_schema.optional(),
+  graphics: presentation_id_schema.optional(),
+  graphics_options: options_schema.optional(),
+})
+
+export const home_frontmatter_schema = document_frontmatter_schema
+  .extend(presentation_frontmatter_schema.shape)
   .strict()
 
-export type PageFrontmatter = z.infer<typeof page_frontmatter_schema>
+export type DocumentFrontmatter = z.infer<
+  typeof document_frontmatter_schema
+>
+export type PresentationFrontmatter = z.infer<
+  typeof presentation_frontmatter_schema
+>
+export type HomeFrontmatter = z.infer<typeof home_frontmatter_schema>

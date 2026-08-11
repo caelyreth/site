@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import type { ContentPage } from '$lib/content/types'
+  import type { PresentationSelection } from '$lib/presentation/contract'
   import { resolve_presentation } from '$lib/presentation/registry'
   import Article from '$lib/site/article.svelte'
   import Backdrop from '$lib/site/backdrop.svelte'
@@ -9,11 +9,12 @@
   import Stage from '$lib/site/stage.svelte'
 
   const { children } = $props()
-  const content = $derived(
-    (page.data as Readonly<{ content?: ContentPage }>).content,
-  )
   const presentation = $derived(
-    content ? resolve_presentation(content.presentation) : undefined,
+    (page.data as Readonly<{ presentation?: PresentationSelection }>)
+      .presentation,
+  )
+  const resolved_presentation = $derived(
+    presentation ? resolve_presentation(presentation) : undefined,
   )
   let fallback_progress = $state(0)
 
@@ -26,22 +27,22 @@
   <Backdrop />
   <Header />
   <main>
-    {#if presentation?.stage}
+    {#if resolved_presentation?.stage}
       {#key page.url.pathname}
         <Stage
-          component={presentation.stage.component}
-          options={presentation.stage.options}
+          component={resolved_presentation.stage.component}
+          options={resolved_presentation.stage.options}
           on_progress={update_stage_progress}
         />
       {/key}
     {/if}
     <Article>{@render children()}</Article>
   </main>
-  {#if presentation?.footer}
+  {#if resolved_presentation?.footer}
     {#key page.url.pathname}
       <Footer
-        component={presentation.footer.component}
-        options={presentation.footer.options}
+        component={resolved_presentation.footer.component}
+        options={resolved_presentation.footer.options}
       />
     {/key}
   {/if}

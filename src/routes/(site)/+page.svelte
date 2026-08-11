@@ -8,13 +8,13 @@
 </script>
 
 <svelte:head>
-  <title>{data.content.document.frontmatter.title}</title>
-  {#if data.content.document.frontmatter.description}
+  <title>{data.document.frontmatter.title}</title>
+  {#if data.document.frontmatter.description}
     <meta
       name="description"
-      content={data.content.document.frontmatter.description}
+      content={data.document.frontmatter.description}
     />
   {/if}
 </svelte:head>
 
-<Document document={data.content.document} />
+<Document document={data.document} />

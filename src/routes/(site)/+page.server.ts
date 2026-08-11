@@ -1,9 +1,5 @@
-import { load_content_page } from '$lib/content/repository.server'
+import { load_home_page } from '$lib/content/home.server'
 
 export const prerender = true
 
-export async function load() {
-  return {
-    content: await load_content_page('home'),
-  }
-}
+export const load = load_home_page

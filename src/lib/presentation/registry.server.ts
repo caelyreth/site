@@ -1,4 +1,4 @@
-import type { PageFrontmatter } from '$lib/content/schema'
+import type { PresentationFrontmatter } from '$lib/content/schema'
 import { z } from 'zod'
 /* oxlint-disable typescript/prefer-readonly-parameter-types -- Inputs are parsed without mutation. */
 
@@ -93,7 +93,7 @@ const footers = create_registry<FooterDefinition>(
 )
 
 export function select_presentation(
-  frontmatter: Readonly<PageFrontmatter>,
+  frontmatter: Readonly<PresentationFrontmatter>,
 ): PresentationSelection {
   return {
     footer: frontmatter.footer
