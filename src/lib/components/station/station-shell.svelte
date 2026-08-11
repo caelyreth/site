@@ -1,10 +1,10 @@
 <script lang="ts">
   import type {
-    FooterDefinition,
-    ObservatoryGraphicDefinition,
+    FooterProps,
     RegionOptions,
-  } from '$lib/presentation/definitions'
-  import type { Snippet } from 'svelte'
+    StageProps,
+  } from '$lib/presentation/contract'
+  import type { Component, Snippet } from 'svelte'
 
   import Chrome from './chrome.svelte'
   import ContentFrame from './content-frame.svelte'
@@ -13,12 +13,12 @@
   import ObservatoryFrame from './observatory-frame.svelte'
 
   type SelectedGraphic = Readonly<{
-    definition: ObservatoryGraphicDefinition
+    component: Component<StageProps>
     options: RegionOptions
   }>
 
   type SelectedFooter = Readonly<{
-    definition: FooterDefinition
+    component: Component<FooterProps>
     options: RegionOptions
   }>
 
@@ -46,7 +46,7 @@
   <main>
     {#if graphic}
       <ObservatoryFrame
-        graphic={graphic.definition}
+        graphic={graphic.component}
         options={graphic.options}
         on_progress={update_fallback_progress}
       />
@@ -56,7 +56,7 @@
     </ContentFrame>
   </main>
   {#if footer}
-    <FooterFrame footer={footer.definition} options={footer.options} />
+    <FooterFrame footer={footer.component} options={footer.options} />
   {/if}
 </div>
 

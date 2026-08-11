@@ -1,7 +1,7 @@
 import {
   content_ids,
   has_content,
-  load_content,
+  load_content_page,
 } from '$lib/content/repository.server'
 /* oxlint-disable typescript/prefer-readonly-parameter-types -- SvelteKit owns the mutable load event. */
 import { error } from '@sveltejs/kit'
@@ -22,6 +22,6 @@ export const load: PageServerLoad = async ({ params }) => {
   }
 
   return {
-    document: await load_content(params.content),
+    content: await load_content_page(params.content),
   }
 }

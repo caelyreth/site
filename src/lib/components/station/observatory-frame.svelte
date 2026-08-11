@@ -1,25 +1,26 @@
 <script lang="ts">
   import { scroll_progress } from '$lib/attachments/scroll-progress'
   import type {
-    ObservatoryFrameSignal,
-    ObservatoryGraphicDefinition,
     RegionOptions,
-  } from '$lib/presentation/definitions'
+    StageProps,
+    StageSignal,
+  } from '$lib/presentation/contract'
+  import type { Component } from 'svelte'
 
   import Boundary from './boundary.svelte'
 
   type Props = {
-    graphic: ObservatoryGraphicDefinition
+    graphic: Component<StageProps>
     on_progress?: (progress: number) => void
     options: RegionOptions
   }
 
   /* oxlint-disable prefer-const -- Graphic selection can update with the route. */
   let { graphic, on_progress, options }: Props = $props()
-  const Graphic = $derived(graphic.component)
-  let frame_signal = $state<ObservatoryFrameSignal | undefined>()
+  const Graphic = $derived(graphic)
+  let frame_signal = $state<StageSignal | undefined>()
 
-  function update_frame_signal(signal: ObservatoryFrameSignal | undefined) {
+  function update_frame_signal(signal: StageSignal | undefined) {
     frame_signal = signal
   }
 
@@ -48,7 +49,7 @@
       class="foreground"
       style:--observatory-signal={frame_signal?.color ?? 'transparent'}
     >
-      <Graphic {options} on_frame_signal={update_frame_signal} />
+      <Graphic {options} on_signal={update_frame_signal} />
       <Boundary side="left" inScene reveal />
       <Boundary side="right" inScene reveal />
     </div>

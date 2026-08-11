@@ -1,17 +1,18 @@
 <script lang="ts">
   import type {
-    FooterDefinition,
+    FooterProps,
     RegionOptions,
-  } from '$lib/presentation/definitions'
+  } from '$lib/presentation/contract'
+  import type { Component } from 'svelte'
 
   type Props = {
-    footer: FooterDefinition
+    footer: Component<FooterProps>
     options: RegionOptions
   }
 
   /* oxlint-disable prefer-const -- Footer selection can update with the route. */
   let { footer, options }: Props = $props()
-  const Footer = $derived(footer.component)
+  const Footer = $derived(footer)
   let footer_visible = $state(false)
 
   function observe_footer(node: HTMLElement) {
@@ -35,7 +36,7 @@
 </script>
 
 <footer class="station-footer" {@attach observe_footer}>
-  <Footer is_footer_visible={footer_visible} {options} />
+  <Footer visible={footer_visible} {options} />
 </footer>
 
 <style>

@@ -7,4 +7,4 @@
   let { data }: { data: PageData } = $props()
 </script>
 
-<ContentPage document={data.document} />
+<ContentPage content={data.content} />

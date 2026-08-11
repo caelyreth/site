@@ -1,5 +1,8 @@
-import { parse_content } from './parse'
-import type { ContentDocument } from './types'
+/* oxlint-disable typescript/prefer-readonly-parameter-types -- Content IDs are primitive route parameters. */
+import { select_presentation } from '$lib/presentation/registry.server'
+
+import { parse_content } from './parse.server'
+import type { ContentDocument, ContentPage } from './types'
 
 const content_sources = import.meta.glob('../../../content/**/*.md', {
   eager: true,
@@ -8,6 +11,7 @@ const content_sources = import.meta.glob('../../../content/**/*.md', {
 }) as Record<string, string>
 
 const document_cache = new Map<string, Promise<ContentDocument>>()
+const page_cache = new Map<string, Promise<ContentPage>>()
 const content_id_pattern = /^[a-z0-9]+(?:[/-][a-z0-9]+)*$/
 
 function source_path_for(content_id: string) {
@@ -47,4 +51,18 @@ export function load_content(content_id: string): Promise<ContentDocument> {
     document_cache.set(content_id, document)
   }
   return document
+}
+
+export function load_content_page(
+  content_id: string,
+): Promise<ContentPage> {
+  let page = page_cache.get(content_id)
+  if (!page) {
+    page = load_content(content_id).then((document) => ({
+      document,
+      presentation: select_presentation(document.frontmatter),
+    }))
+    page_cache.set(content_id, page)
+  }
+  return page
 }

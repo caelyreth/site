@@ -13,7 +13,7 @@
     text_refresh_in,
     text_refresh_out,
   } from '$lib/motion/text-refresh'
-  import type { ObservatoryGraphicProps } from '$lib/presentation/definitions'
+  import type { StageProps } from '$lib/presentation/contract'
   import { onDestroy, onMount } from 'svelte'
   import { useTheme as use_theme } from 'svelte-themes'
   import { flip } from 'svelte/animate'
@@ -23,7 +23,7 @@
   import Window from './window.svelte'
 
   /* oxlint-disable prefer-const -- Frame controller can update with its host. */
-  let { on_frame_signal }: ObservatoryGraphicProps = $props()
+  let { on_signal }: StageProps = $props()
 
   type WindowPhase = 'expanded' | 'contracting' | 'returning'
   type PulseVisualEvent = Extract<
@@ -83,14 +83,14 @@
   })
 
   $effect(() => {
-    on_frame_signal?.(
+    on_signal?.(
       visual.pulse.active
         ? { color: transmission_color(visual.pulse.signal_color_index) }
         : undefined,
     )
   })
 
-  onDestroy(() => on_frame_signal?.(undefined))
+  onDestroy(() => on_signal?.(undefined))
 
   // MARK: - sky map events
 

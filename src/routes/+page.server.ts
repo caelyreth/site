@@ -1,9 +1,9 @@
-import { load_content } from '$lib/content/repository.server'
+import { load_content_page } from '$lib/content/repository.server'
 
 export const prerender = true
 
 export async function load() {
   return {
-    document: await load_content('home'),
+    content: await load_content_page('home'),
   }
 }
