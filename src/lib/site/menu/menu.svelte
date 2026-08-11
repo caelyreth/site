@@ -229,7 +229,7 @@
   }
 
   .menu::before {
-    opacity: 0.15;
+    opacity: var(--noise-menu-opacity);
     background-image: var(--noise-tile);
     background-size: var(--noise-size);
   }

@@ -78,9 +78,15 @@
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
 
   /* texture */
-  --noise-tile: url('./lib/assets/noise-tile.webp');
+  --noise-tile-light: url('./lib/assets/noise-tile.webp');
+  --noise-tile-dark: url('./lib/assets/noise-tile-dark.webp');
+  --noise-tile: var(--noise-tile-light);
   --noise-size: 96px;
-  --noise-opacity: 0.4;
+  --noise-content-opacity: 0.4;
+  --noise-stage-opacity: 0.25;
+  --noise-menu-opacity: 0.15;
+  --noise-hatch-size: 128px;
+  --noise-hatch-opacity: 1;
 
   /* motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -113,6 +119,12 @@
   --color-alert-important: var(--color-alert-important-dark);
   --color-alert-warning: var(--color-alert-warning-dark);
   --color-alert-caution: var(--color-alert-caution-dark);
+  --noise-tile: var(--noise-tile-dark);
+  --noise-content-opacity: 0.56;
+  --noise-stage-opacity: 0.18;
+  --noise-menu-opacity: 0.12;
+  --noise-hatch-size: 192px;
+  --noise-hatch-opacity: 0.68;
 }
 
 html,
@@ -148,7 +160,7 @@ body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: var(--noise-opacity);
+  opacity: var(--noise-content-opacity);
   background-image: var(--noise-tile);
   background-size: var(--noise-size);
 }

@@ -96,7 +96,7 @@
     inset: 0;
     pointer-events: none;
     content: '';
-    opacity: 0.25;
+    opacity: var(--noise-stage-opacity);
     background-image: var(--noise-tile);
     background-size: var(--noise-size);
   }
