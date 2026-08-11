@@ -8,12 +8,12 @@ import type {
   StageProps,
 } from './contract'
 
-const stage_components = import.meta.glob('../graphics/*/scene.svelte', {
+const stage_components = import.meta.glob('./stages/*/view.svelte', {
   eager: true,
   import: 'default',
 }) as Record<string, Component<StageProps>>
 
-const footer_components = import.meta.glob('../footers/*/footer.svelte', {
+const footer_components = import.meta.glob('./footers/*/view.svelte', {
   eager: true,
   import: 'default',
 }) as Record<string, Component<FooterProps>>
@@ -47,7 +47,7 @@ export function resolve_presentation(
       ? {
           component: component_for(
             footer_components,
-            `../footers/${selection.footer.id}/footer.svelte`,
+            `./footers/${selection.footer.id}/view.svelte`,
             'footer',
           ),
           options: selection.footer.options,
@@ -57,7 +57,7 @@ export function resolve_presentation(
       ? {
           component: component_for(
             stage_components,
-            `../graphics/${selection.stage.id}/scene.svelte`,
+            `./stages/${selection.stage.id}/view.svelte`,
             'stage',
           ),
           options: selection.stage.options,

@@ -1,4 +1,4 @@
-import { validate_content_components } from '$lib/comark/validate.server'
+import { validate_content_components } from '$lib/content/validate.server'
 import { parseMarkdown } from 'comark'
 import { z } from 'zod'
 

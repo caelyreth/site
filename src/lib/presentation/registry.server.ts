@@ -9,15 +9,18 @@ import type {
   StageDefinition,
 } from './contract'
 
-const stage_modules = import.meta.glob('../graphics/*/loader.ts', {
+const stage_modules = import.meta.glob('./stages/*/definition.server.ts', {
   eager: true,
   import: 'default',
 }) as Record<string, unknown>
 
-const footer_modules = import.meta.glob('../footers/*/loader.ts', {
-  eager: true,
-  import: 'default',
-}) as Record<string, unknown>
+const footer_modules = import.meta.glob(
+  './footers/*/definition.server.ts',
+  {
+    eager: true,
+    import: 'default',
+  },
+) as Record<string, unknown>
 
 type RegionDefinition = StageDefinition | FooterDefinition
 
@@ -54,9 +57,10 @@ function is_definition(value: unknown): value is RegionDefinition {
 function create_registry<Definition extends RegionDefinition>(
   region: string,
   modules: Readonly<Record<string, unknown>>,
+  path_for: (id: string) => string,
 ): RegionRegistry<Definition> {
   function get(id: string) {
-    const definition = modules[`../${region}s/${id}/loader.ts`]
+    const definition = modules[path_for(id)]
     if (!is_definition(definition) || definition.id !== id) {
       throw new Error(
         `Unknown ${region} "${id}". Available ${region}s: ${module_ids(modules).join(', ') || 'none'}.`,
@@ -77,8 +81,16 @@ function create_registry<Definition extends RegionDefinition>(
   return { get, parse }
 }
 
-const stages = create_registry<StageDefinition>('graphic', stage_modules)
-const footers = create_registry<FooterDefinition>('footer', footer_modules)
+const stages = create_registry<StageDefinition>(
+  'stage',
+  stage_modules,
+  (id) => `./stages/${id}/definition.server.ts`,
+)
+const footers = create_registry<FooterDefinition>(
+  'footer',
+  footer_modules,
+  (id) => `./footers/${id}/definition.server.ts`,
+)
 
 export function select_presentation(
   frontmatter: Readonly<PageFrontmatter>,
