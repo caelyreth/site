@@ -1,3 +1,4 @@
+import type { MarkdownDocument } from 'comark'
 import { z } from 'zod'
 
 export const presentation_id_schema = z
@@ -22,10 +23,11 @@ export const home_frontmatter_schema = document_frontmatter_schema
   .extend(presentation_frontmatter_schema.shape)
   .strict()
 
-export type DocumentFrontmatter = z.infer<
-  typeof document_frontmatter_schema
->
 export type PresentationFrontmatter = z.infer<
   typeof presentation_frontmatter_schema
 >
 export type HomeFrontmatter = z.infer<typeof home_frontmatter_schema>
+
+export type ContentDocument<
+  Frontmatter extends Record<string, unknown> = Record<string, unknown>,
+> = MarkdownDocument<Record<string, unknown>, Frontmatter>

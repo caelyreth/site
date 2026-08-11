@@ -1,8 +1,17 @@
+import type { PresentationSelection } from '$lib/presentation/contract'
 import { select_presentation } from '$lib/presentation/registry.server'
 
 import { parse_content } from './parse.server'
-import { home_frontmatter_schema } from './schema'
-import type { HomePage } from './types'
+import {
+  home_frontmatter_schema,
+  type ContentDocument,
+  type HomeFrontmatter,
+} from './schema'
+
+type HomePage = Readonly<{
+  document: ContentDocument<HomeFrontmatter>
+  presentation: PresentationSelection
+}>
 
 let home_page: Promise<HomePage> | undefined
 
