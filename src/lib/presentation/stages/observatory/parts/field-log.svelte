@@ -70,7 +70,6 @@
     --field-line: color-mix(in oklab, var(--color-rule) 76%, transparent);
     --field-card: color-mix(in oklab, var(--color-paper) 14%, transparent);
     --strip-label-z-index: 2;
-    --strip-fill: var(--strip-fill);
     --strip-line: var(--field-line);
     --strip-reveal-delay: 120ms;
   }

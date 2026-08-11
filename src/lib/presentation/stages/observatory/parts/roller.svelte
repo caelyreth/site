@@ -74,7 +74,6 @@
 
 <style>
   .roller-strip {
-    --strip-fill: var(--strip-fill);
     --strip-line: color-mix(in oklab, var(--color-rule) 76%, transparent);
     --strip-frame-line: var(--strip-line);
     --strip-frame-inset: 0.75rem 0.4rem;

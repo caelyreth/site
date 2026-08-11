@@ -16,6 +16,7 @@
     width: 100%;
     max-width: var(--frame-measure);
     margin: 0 auto;
+    padding-block: clamp(3rem, 7vw, 5rem);
     padding-inline: var(--inline-gutter);
     flex-direction: column;
   }

@@ -123,7 +123,7 @@
   .aperture {
     position: relative;
     z-index: 1;
-    width: min(92vw, 56rem);
+    width: min(100%, 92vw, 56rem);
     transform: scale(calc(1 - var(--stage-progress) * 0.2));
     transform-origin: center;
     will-change: transform;
