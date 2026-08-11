@@ -57,7 +57,7 @@
 .aperture-strip__readout {
   position: absolute;
   z-index: var(--strip-label-z-index);
-  color: var(--color-text-on-dark-secondary);
+  color: var(--color-stage-ink-secondary);
   font-family: var(--font-stack-sans);
   font-size: clamp(0.375rem, 0.5vw, 0.5rem);
   font-variant-numeric: tabular-nums;
@@ -82,7 +82,7 @@
   color: color-mix(
     in oklab,
     var(--signal) 74%,
-    var(--color-text-on-dark-secondary)
+    var(--color-stage-ink-secondary)
   );
 }
 

@@ -133,7 +133,7 @@
     position: absolute;
     z-index: 2;
     margin: 0;
-    color: var(--color-text-on-dark-secondary);
+    color: var(--color-stage-ink-secondary);
     font-size: 0.625rem;
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -163,7 +163,7 @@
   }
 
   .descent {
-    color: var(--color-text-on-dark-secondary);
+    color: var(--color-stage-ink-secondary);
     text-decoration-color: var(--color-rule);
     text-underline-offset: 0.15em;
     transition:
@@ -178,7 +178,7 @@
   }
 
   .view-status-key {
-    color: var(--color-text-on-dark-secondary);
+    color: var(--color-stage-ink-secondary);
     transition: color var(--dur-long) var(--ease-out);
   }
 
@@ -210,7 +210,7 @@
   }
 
   .transmission-empty {
-    color: var(--color-text-on-dark-secondary);
+    color: var(--color-stage-ink-secondary);
     opacity: 1;
   }
 
@@ -225,8 +225,8 @@
 
   @media (hover: hover) {
     .descent:hover {
-      color: var(--color-text-on-dark);
-      text-decoration-color: var(--color-text-on-dark);
+      color: var(--color-stage-ink);
+      text-decoration-color: var(--color-stage-ink);
     }
   }
 

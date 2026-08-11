@@ -50,10 +50,11 @@
       <p class="detail">RBK / 2026 / YU</p>
     </section>
     <div aria-hidden="true" class="footer-module base-module">
-      <svg class="base-asterisk" viewBox="0 0 48 48" fill="none"
+      <svg class="base-mark" viewBox="0 0 512 512" fill="none"
         ><path
-          d="M24 3v42M3 24h42M9.15 9.15l29.7 29.7M38.85 9.15 9.15 38.85"
+          d="M256 32v448M32 256h448M97.6 97.6l316.8 316.8m0-316.8L97.6 414.4"
           stroke="currentColor"
+          stroke-width="48"
         /></svg
       >
     </div>
@@ -179,7 +180,7 @@
     color: var(--secondary);
   }
 
-  .base-asterisk {
+  .base-mark {
     width: 2.75rem;
     height: 2.75rem;
   }

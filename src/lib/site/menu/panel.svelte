@@ -223,6 +223,7 @@
     --toggle-rule: color-mix(in oklab, var(--slip-ink) 45%, transparent);
     --toggle-ink: var(--slip-ink);
     --toggle-active-ink: var(--slip-surface);
+    --toggle-hover-ink: var(--menu-highlight);
 
     box-sizing: border-box;
     width: 10.5rem;
@@ -237,7 +238,7 @@
 
   @media (hover: hover) {
     .slip:hover {
-      color: var(--color-text-link);
+      color: var(--menu-highlight);
       transform: translateY(-2px) rotate(calc(var(--slip-rotation) + 1deg));
     }
   }

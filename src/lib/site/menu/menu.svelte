@@ -75,7 +75,6 @@
 
 <button
   type="button"
-  class:is-open={menu_open}
   class="trigger"
   aria-controls="site-menu"
   aria-expanded={menu_open}
@@ -84,7 +83,8 @@
   title={menu_open ? 'Close menu' : 'Open menu'}
   onclick={open_menu}
 >
-  <span class="i-ri-menu-4-line" aria-hidden="true"></span>
+  <span class="label">Index</span>
+  <span class="i-ri-menu-line" aria-hidden="true"></span>
 </button>
 
 <dialog
@@ -115,75 +115,49 @@
 
 <style>
   .trigger {
-    --trigger-rule: color-mix(in oklab, var(--header-ink) 28%, transparent);
-    --trigger-surface: color-mix(
-      in oklab,
-      var(--header-ink) 4%,
-      transparent
-    );
-
     position: relative;
-    display: grid;
-    width: 2.75rem;
-    height: 1.75rem;
+    display: inline-flex;
+    min-width: 4.75rem;
+    height: var(--header-block-size);
     flex: none;
-    padding: 0;
+    padding-inline: 0.75rem;
     cursor: pointer;
     border: 0;
-    border-block: 1px solid var(--trigger-rule);
+    border-inline-start: 1px solid var(--header-latch-rule);
     color: var(--header-ink);
-    background-color: var(--trigger-surface);
-    place-items: center;
-    transition:
-      background-color var(--dur-micro) var(--ease-out),
-      border-color var(--dur-micro) var(--ease-out),
-      color var(--dur-micro) var(--ease-out);
-  }
-
-  .trigger::before {
-    position: absolute;
-    inset: 0.3125rem 0.375rem;
-    pointer-events: none;
-    content: '';
-    border-inline: 1px solid var(--trigger-rule);
+    background-color: transparent;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    transition: background-color var(--dur-micro) var(--ease-out);
   }
 
   .trigger span {
-    position: relative;
-    z-index: 1;
-    width: 1.125rem;
-    height: 1.125rem;
-    transition: transform var(--dur-micro) var(--ease-out);
+    flex: none;
+  }
+
+  .label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .trigger .i-ri-menu-line {
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.72;
+    transition: opacity var(--dur-micro) var(--ease-out);
   }
 
   @media (hover: hover) {
     .trigger:hover {
-      --trigger-rule: color-mix(
-        in oklab,
-        var(--header-ink) 58%,
-        transparent
-      );
-      --trigger-surface: color-mix(
-        in oklab,
-        var(--header-ink) 8%,
-        transparent
-      );
-      color: var(--color-text-link);
+      background-color: var(--header-latch-hover);
     }
-  }
 
-  .trigger.is-open,
-  .trigger:active {
-    --trigger-rule: var(--header-ink);
-    --trigger-surface: color-mix(
-      in oklab,
-      var(--header-ink) 12%,
-      transparent
-    );
-  }
-
-  .trigger:active span {
-    transform: translateY(1px);
+    .trigger:hover .i-ri-menu-line {
+      opacity: 1;
+    }
   }
 
   .trigger:focus-visible {
@@ -192,6 +166,7 @@
   }
 
   .menu {
+    --menu-highlight: var(--color-text-link-dark);
     --slip-surface: var(--color-ink);
     --slip-ink: var(--color-paper);
     --drift-ink: var(--color-ink);
@@ -217,6 +192,10 @@
       transparent
     );
     backdrop-filter: blur(5px);
+  }
+
+  :global(.dark) .menu {
+    --menu-highlight: var(--color-text-link-light);
   }
 
   .menu::before,

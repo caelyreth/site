@@ -23,8 +23,7 @@
       </svg>
       <span class="brand-name font-serif">Caelyreth</span>
     </a>
-    <div class="actions">
-      <span class="sol">SOL ---</span>
+    <div class="menu-slot">
       <Menu />
     </div>
   </div>
@@ -34,20 +33,24 @@
   .header {
     --header-ink: color-mix(
       in oklab,
-      var(--color-text-on-dark) calc((1 - var(--stage-progress)) * 100%),
+      var(--color-stage-ink) calc((1 - var(--stage-progress)) * 100%),
       var(--color-text) calc(var(--stage-progress) * 100%)
-    );
-    --header-muted: color-mix(
-      in oklab,
-      var(--color-text-on-dark-secondary)
-        calc((1 - var(--stage-progress)) * 100%),
-      var(--color-text-secondary) calc(var(--stage-progress) * 100%)
     );
     --header-rule: var(--color-rule);
     --header-surface: color-mix(
       in oklab,
       transparent,
       var(--color-paper-prime) calc(var(--stage-progress) * 100%)
+    );
+    --header-latch-rule: color-mix(
+      in oklab,
+      transparent,
+      var(--color-rule) calc(var(--stage-progress) * 100%)
+    );
+    --header-latch-hover: color-mix(
+      in oklab,
+      transparent,
+      var(--header-ink) calc(var(--stage-progress) * 6%)
     );
     position: fixed;
     top: 0;
@@ -84,7 +87,7 @@
   }
 
   .brand,
-  .actions {
+  .menu-slot {
     display: inline-flex;
     min-width: 0;
     align-items: center;
@@ -114,20 +117,7 @@
     line-height: 1;
   }
 
-  .actions {
-    gap: 1.25rem;
-  }
-
-  .sol {
-    color: var(--header-muted);
-    font-size: 0.625rem;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.35;
-  }
-
-  @media (max-width: 38rem) {
-    .sol {
-      display: none;
-    }
+  .menu-slot {
+    margin-right: calc(-1 * var(--inline-gutter));
   }
 </style>

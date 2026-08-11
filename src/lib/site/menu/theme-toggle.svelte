@@ -113,7 +113,7 @@
 
   @media (hover: hover) {
     .theme-toggle button:hover:not(.active) {
-      color: var(--color-text-link);
+      color: var(--toggle-hover-ink, var(--color-text-link));
     }
   }
 

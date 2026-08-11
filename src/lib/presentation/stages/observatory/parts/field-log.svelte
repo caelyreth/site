@@ -77,8 +77,8 @@
   .field-heading {
     color: color-mix(
       in oklab,
-      var(--color-text-on-dark) 60%,
-      var(--color-text-on-dark-secondary)
+      var(--color-stage-ink) 60%,
+      var(--color-stage-ink-secondary)
     );
     font-family: var(--font-stack-sans);
     font-size: clamp(0.4rem, 0.55vw, 0.56rem);
@@ -198,7 +198,7 @@
     display: flex;
     justify-content: space-between;
     gap: 0.4rem;
-    color: var(--color-text-on-dark-secondary);
+    color: var(--color-stage-ink-secondary);
     font-family: var(--font-stack-sans);
     font-size: 0.42rem;
     font-variant-numeric: tabular-nums;
@@ -211,8 +211,8 @@
     margin: 0.38rem 0 0;
     color: color-mix(
       in oklab,
-      var(--color-text-on-dark) 64%,
-      var(--color-text-on-dark-secondary)
+      var(--color-stage-ink) 64%,
+      var(--color-stage-ink-secondary)
     );
     font-family: var(--font-stack-mono);
     font-size: 0.78rem;
