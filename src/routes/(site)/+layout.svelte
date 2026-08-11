@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import { listen_for_content_updates } from '$lib/content/live-updates.client'
   import type { PresentationSelection } from '$lib/presentation/contract'
   import { resolve_presentation } from '$lib/presentation/registry'
   import Article from '$lib/site/article.svelte'
@@ -7,6 +8,7 @@
   import Footer from '$lib/site/footer.svelte'
   import Header from '$lib/site/header.svelte'
   import Stage from '$lib/site/stage.svelte'
+  import { onMount } from 'svelte'
 
   const { children } = $props()
   const presentation = $derived(
@@ -21,6 +23,8 @@
   function update_stage_progress(progress: number) {
     fallback_progress = progress
   }
+
+  onMount(listen_for_content_updates)
 </script>
 
 <div class="site" style:--stage-fallback-progress={fallback_progress}>
