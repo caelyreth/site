@@ -12,9 +12,6 @@
 
   function resolve_component(name: string) {
     if (/^h[1-6]$/.test(name)) return Heading
-    if (name.startsWith('alert-')) {
-      return components[`./blocks/prose/alerts/${name.slice(6)}.svelte`]
-    }
 
     return (
       components[`./blocks/prose/${name}.svelte`] ??

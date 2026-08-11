@@ -3,10 +3,21 @@ import { describe, expect, it } from 'vitest'
 import { parse_content } from './parse.server'
 import { home_frontmatter_schema } from './schema'
 
-function tags_in(nodes: readonly unknown[]): string[] {
+function attributes_for(
+  nodes: readonly unknown[],
+  tag: string,
+): readonly Readonly<Record<string, unknown>>[] {
   return nodes.flatMap((node) => {
-    if (!Array.isArray(node) || typeof node[0] !== 'string') return []
-    return [node[0], ...tags_in(node.slice(2))]
+    if (!Array.isArray(node)) return []
+    const attributes: Readonly<Record<string, unknown>> =
+      typeof node[1] === 'object' && node[1] !== null
+        ? (node[1] as Record<string, unknown>)
+        : {}
+    const children = node.slice(2)
+    return [
+      ...(node[0] === tag ? [attributes] : []),
+      ...attributes_for(children, tag),
+    ]
   })
 }
 
@@ -17,16 +28,18 @@ describe('parse_content', () => {
     expect(document.frontmatter.title).toBe('Caelyreth')
   })
 
-  it('promotes default alerts to their renderer tags', async () => {
+  it('preserves default alert types on blockquotes', async () => {
     const document = await parse_content('home', home_frontmatter_schema)
 
-    expect(tags_in(document.nodes)).toEqual(
+    expect(
+      attributes_for(document.nodes, 'blockquote').map(({ as }) => as),
+    ).toEqual(
       expect.arrayContaining([
-        'alert-note',
-        'alert-tip',
-        'alert-important',
-        'alert-warning',
-        'alert-caution',
+        'note',
+        'tip',
+        'important',
+        'warning',
+        'caution',
       ]),
     )
   })

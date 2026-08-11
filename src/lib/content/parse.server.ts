@@ -23,15 +23,6 @@ const heading_depths: Readonly<Record<string, number>> = {
   h6: 6,
 }
 
-const alert_types = [
-  'note',
-  'tip',
-  'important',
-  'warning',
-  'caution',
-] as const
-type AlertType = (typeof alert_types)[number]
-
 async function source_for(content_id: string) {
   const source_path = `content/${content_id}.md`
   const load_source = content_sources[`../../../${source_path}`]
@@ -42,31 +33,14 @@ async function source_for(content_id: string) {
   return { source: await load_source(), source_path }
 }
 
-function is_alert_type(value: unknown): value is AlertType {
-  return (
-    typeof value === 'string' &&
-    (alert_types as readonly string[]).includes(value)
-  )
-}
-
 function annotate_heading(tag: string, attributes: ElementNode[1]) {
   const depth = heading_depths[tag]
   if (depth !== undefined) attributes.depth = depth
 }
 
-function promote_alert(node: ElementNode) {
-  const [tag, attributes] = node
-  if (tag !== 'blockquote' || !is_alert_type(attributes.as)) return
-
-  // The Svelte manifest resolves tags, while Comark alerts identify their type in `as`.
-  node[0] = `alert-${attributes.as}`
-  delete attributes.as
-}
-
 function prepare_element(node: ElementNode) {
   const [tag, attributes, ...children] = node
   annotate_heading(tag, attributes)
-  promote_alert(node)
   prepare_nodes(children)
 }
 
