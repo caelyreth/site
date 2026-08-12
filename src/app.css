@@ -30,7 +30,7 @@
   --color-ink-dark: oklch(93% 0 0);
   --color-ink-prime-dark: oklch(76% 0 0);
   --color-accent-dark: oklch(78.5% 0.115 274.713);
-  --color-footer-surface-dark: oklch(64% 0.105 274.713);
+  --color-footer-surface-dark: oklch(69% 0.06 274.713);
   --color-focus-dark: oklch(67.3% 0.182 276.935);
   --color-text-dark: oklch(93% 0 0);
   --color-text-secondary-dark: oklch(80% 0 0);
@@ -167,14 +167,14 @@ body {
 
 /* reusable styles */
 
-.deck {
-  position: relative;
+.deck,
+.paper-surface {
   isolation: isolate;
-  max-width: var(--frame-measure);
   background-color: var(--color-paper);
 }
 
-.deck::before {
+.deck::before,
+.paper-surface::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -183,6 +183,41 @@ body {
   opacity: var(--noise-content-opacity);
   background-image: var(--noise-tile);
   background-size: var(--noise-size);
+}
+
+.deck {
+  position: relative;
+  max-width: var(--frame-measure);
+}
+
+.field-surface {
+  isolation: isolate;
+  background-color: var(--color-field);
+}
+
+.field-surface::before,
+.field-surface::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: '';
+}
+
+.field-surface::before {
+  opacity: var(--noise-hatch-opacity);
+  background-image: var(--noise-tile);
+  background-size: var(--noise-hatch-size);
+  background-attachment: fixed;
+}
+
+.field-surface::after {
+  background-image: repeating-linear-gradient(
+    -55deg,
+    transparent 0 7px,
+    var(--color-hatch) 7px 8px
+  );
+  background-attachment: fixed;
 }
 
 .micro-label {

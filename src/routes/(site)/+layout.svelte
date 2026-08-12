@@ -64,6 +64,11 @@
   .site {
     --paper-edge-depth: 0.85rem;
     --paper-seam-gap: clamp(0.375rem, 0.6vw, 0.5rem);
+    --paper-seam-guide-offset: 0.875rem;
+    --paper-seam-guide-inset: var(--inline-gutter);
+    --paper-seam-upper-height: calc(
+      var(--paper-edge-depth) + var(--paper-seam-guide-offset) + 1px
+    );
     --paper-edge-top-clip: polygon(
       0 0,
       2% var(--paper-edge-depth),

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { FooterProps } from '$lib/presentation/contract'
-  import PaperEdge from '$lib/site/paper-edge.svelte'
+  import PaperSeam from '$lib/site/paper-seam.svelte'
 
   import FooterSignalMonitor from './signal-monitor.svelte'
 
@@ -24,7 +24,7 @@
 {/snippet}
 
 <div class="deck footer-inner footer-deck">
-  <PaperEdge side="top" />
+  <PaperSeam placement="top" />
   <div class="heading">
     <div>
       {@render footer_label('Archive transmission')}
