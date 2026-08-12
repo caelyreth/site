@@ -20,12 +20,12 @@
   --color-alert-important-light: oklch(40% 0.14 315);
   --color-alert-warning-light: oklch(39% 0.12 85);
   --color-alert-caution-light: oklch(40% 0.16 28);
-  --color-paper-dark: oklch(15% 0 0);
+  --color-paper-dark: oklch(18% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
-  --color-field-dark: oklch(13% 0 0);
+  --color-field-dark: oklch(10.5% 0 0);
   --color-hatch-dark: oklch(27% 0 0);
   --color-deco-dark: oklch(25% 0 0);
-  --color-rule-dark: oklch(27% 0 0);
+  --color-rule-dark: oklch(31% 0 0);
   --color-muted-dark: oklch(63% 0 0);
   --color-ink-dark: oklch(93% 0 0);
   --color-ink-prime-dark: oklch(76% 0 0);
