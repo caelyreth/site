@@ -9,7 +9,7 @@
 
   import Guide from './guide.svelte'
 
-  type Props = {
+  interface Props {
     component: Component<StageProps>
     on_progress?: (progress: number) => void
     options: RegionOptions

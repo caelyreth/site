@@ -11,16 +11,18 @@ import type {
   SkyMapViewStatus,
 } from './runtime/types'
 
-type Transmission = Readonly<{
+interface Transmission {
   color_index: number
   sequence: number
-}>
+}
 
-type PresentationState = {
-  pulse: {
-    active: boolean
-    signal_color_index: number
-  }
+interface SignalState {
+  active: boolean
+  signal_color_index: number
+}
+
+interface PresentationState {
+  pulse: SignalState
   transmissions: Transmission[]
   view_status: SkyMapViewStatus
 }

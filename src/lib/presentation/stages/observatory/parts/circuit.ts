@@ -2,20 +2,20 @@ export const CIRCUIT_SIDES = ['bottom', 'left', 'right', 'top'] as const
 
 export type CircuitSide = (typeof CIRCUIT_SIDES)[number]
 
-export type CircuitNode = Readonly<{
+export interface CircuitNode {
   delay: number
   kind: 'pad' | 'smd' | 'via'
   side: CircuitSide
   turn?: number
   x: number
   y: number
-}>
+}
 
-export type CircuitTrace = Readonly<{
+export interface CircuitTrace {
   d: string
   side: CircuitSide
   weight: 'pair' | 'power' | 'signal'
-}>
+}
 
 export const circuit_traces: readonly CircuitTrace[] = [
   { d: 'M1.6 0.92H29.8', side: 'top', weight: 'power' },

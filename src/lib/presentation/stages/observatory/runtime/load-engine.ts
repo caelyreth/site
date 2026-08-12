@@ -1,10 +1,10 @@
 import type { create_sky_map_engine } from './engine'
 import type { SkyMapPayload } from './types'
 
-type SkyMapEngineLoad = Readonly<{
+interface SkyMapEngineLoad {
   create_engine: typeof create_sky_map_engine
   sky_data: SkyMapPayload
-}>
+}
 
 let pending_engine_load: Promise<SkyMapEngineLoad> | undefined
 

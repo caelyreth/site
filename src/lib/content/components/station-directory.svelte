@@ -1,5 +1,5 @@
 <script lang="ts">
-  type DirectoryEntry = {
+  interface DirectoryEntry {
     detail: string
     title: string
   }

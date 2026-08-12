@@ -1,7 +1,7 @@
 <script lang="ts">
   import PaperEdge from './paper-edge.svelte'
 
-  type Props = {
+  interface Props {
     placement?: 'flow' | 'top' | 'bottom'
   }
 

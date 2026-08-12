@@ -50,19 +50,19 @@ import {
 } from './shaders'
 import type { DecodedSkyMap } from './types'
 
-export type SkyMapRendererView = Readonly<{
+export interface SkyMapRendererView {
   forward: Vector3
   right: Vector3
   up: Vector3
   view_radius: number
-}>
+}
 
-export type SkyMapRouteMetrics = Readonly<{
+export interface SkyMapRouteMetrics {
   constellation_reveal_distance: number
   target_constellation: number
   target_constellation_radius: number
   target_distance: number
-}>
+}
 
 function create_backdrop_texture() {
   const pixels = new Uint8Array(BACKDROP_SIZE * BACKDROP_SIZE * 4)

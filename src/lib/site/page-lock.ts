@@ -1,14 +1,14 @@
-export type PageScrollLockRoot = Readonly<{
+export interface PageScrollLockRoot {
   classList: Pick<DOMTokenList, 'add' | 'remove'>
   clientWidth: number
   style: Pick<CSSStyleDeclaration, 'paddingRight'>
-}>
+}
 
-export type PageScrollLockViewport = Readonly<{
+export interface PageScrollLockViewport {
   innerWidth: number
-}>
+}
 
-type LockState = {
+interface LockState {
   count: number
   padding_right: string
 }

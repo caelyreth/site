@@ -26,7 +26,7 @@
 
   type FilamentPhase = 'cool' | 'heat' | 'hold'
 
-  type Props = {
+  interface Props {
     active?: boolean
   }
 

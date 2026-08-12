@@ -1,5 +1,5 @@
 <script lang="ts">
-  type Material = {
+  interface Material {
     dark: `--${string}`
     light: `--${string}`
     token: `--${string}`

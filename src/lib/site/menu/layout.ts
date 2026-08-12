@@ -1,17 +1,17 @@
-type Position = Readonly<{
+interface Position {
   bottom?: string
   left?: string
   right?: string
   top?: string
-}>
+}
 
-type EnteringLayout = Readonly<{
+interface EnteringLayout {
   enter_delay: string
   enter_x: string
   enter_y: string
-}>
+}
 
-export type MenuItem = Readonly<{
+export interface MenuItem {
   code: string
   detail: string
   layout: Position &
@@ -20,9 +20,9 @@ export type MenuItem = Readonly<{
       rotation: string
     }
   title: string
-}>
+}
 
-export type Drift = Readonly<{
+export interface Drift {
   layout: Position &
     Partial<EnteringLayout> & {
       blur: string
@@ -31,7 +31,7 @@ export type Drift = Readonly<{
       rotation: string
     }
   text: string
-}>
+}
 
 export const menu_items: readonly MenuItem[] = [
   {

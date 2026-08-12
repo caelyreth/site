@@ -10,11 +10,12 @@
   import Stage from '$lib/site/stage.svelte'
   import { onMount } from 'svelte'
 
+  interface SitePageData {
+    presentation?: PresentationSelection
+  }
+
   const { children } = $props()
-  const presentation = $derived(
-    (page.data as Readonly<{ presentation?: PresentationSelection }>)
-      .presentation,
-  )
+  const presentation = $derived((page.data as SitePageData).presentation)
   const resolved_presentation = $derived(
     presentation ? resolve_presentation(presentation) : undefined,
   )

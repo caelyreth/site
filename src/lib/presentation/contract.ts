@@ -4,46 +4,46 @@ import type { GenericSchema } from 'valibot'
 export type RegionOptions = Record<string, unknown>
 export type RegionSchema = GenericSchema<unknown, RegionOptions>
 
-export type StageSignal = Readonly<{
+export interface StageSignal {
   color: string
-}>
+}
 
-export type StageProps = {
+export interface StageProps {
   on_signal?: (signal: StageSignal | undefined) => void
   options: RegionOptions
 }
 
-export type StageDefinition = Readonly<{
+export interface StageDefinition {
   component: Component<StageProps>
   id: string
   options: RegionSchema
-}>
+}
 
-export type FooterProps = {
+export interface FooterProps {
   options: RegionOptions
   visible: boolean
 }
 
-export type FooterDefinition = Readonly<{
+export interface FooterDefinition {
   component: Component<FooterProps>
   id: string
   options: RegionSchema
-}>
+}
 
-export type RegionSelection = Readonly<{
+export interface RegionSelection {
   id: string
   options: RegionOptions
-}>
+}
 
-export type PresentationSelection = Readonly<{
+export interface PresentationSelection {
   footer?: RegionSelection
   stage?: RegionSelection
-}>
+}
 
-export function define_stage(definition: Readonly<StageDefinition>) {
+export function define_stage(definition: StageDefinition) {
   return definition
 }
 
-export function define_footer(definition: Readonly<FooterDefinition>) {
+export function define_footer(definition: FooterDefinition) {
   return definition
 }

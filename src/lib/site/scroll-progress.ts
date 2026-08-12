@@ -2,14 +2,12 @@ import type { Attachment } from 'svelte/attachments'
 
 const scroll_timeline_feature = 'animation-timeline: scroll(root block)'
 
-export type ScrollProgressOptions = Readonly<{
+export interface ScrollProgressOptions {
   fallback_only?: boolean
-  get_progress: (element: Readonly<HTMLElement>) => number
-  observed_elements?: (
-    element: Readonly<HTMLElement>,
-  ) => Iterable<HTMLElement>
+  get_progress: (element: HTMLElement) => number
+  observed_elements?: (element: HTMLElement) => Iterable<HTMLElement>
   on_progress: (progress: number) => void
-}>
+}
 
 export function supports_scroll_timelines() {
   return typeof CSS !== 'undefined' && CSS.supports(scroll_timeline_feature)
@@ -42,8 +40,8 @@ function create_frame_scheduler(update: () => void) {
 }
 
 function observe_resize_targets(
-  resize_observer: Readonly<ResizeObserver> | undefined,
-  element: Readonly<HTMLElement>,
+  resize_observer: ResizeObserver | undefined,
+  element: HTMLElement,
   observed_elements: ScrollProgressOptions['observed_elements'],
 ) {
   if (!resize_observer) return
@@ -59,7 +57,7 @@ function observe_resize_targets(
  * scrolling.
  */
 export function scroll_progress(
-  options: Readonly<ScrollProgressOptions>,
+  options: ScrollProgressOptions,
 ): Attachment<HTMLElement> {
   return (element) => {
     if (options.fallback_only && supports_scroll_timelines()) return

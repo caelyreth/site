@@ -3,7 +3,7 @@
 
   import PaperSeam from './paper-seam.svelte'
 
-  type Props = {
+  interface Props {
     children?: Snippet
     has_footer?: boolean
   }

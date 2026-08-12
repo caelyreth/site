@@ -1,7 +1,7 @@
 export const VFD_GLYPH_COLS = 5
 export const VFD_GLYPH_ROWS = 7
 
-export type VfdLayout = Readonly<{
+export interface VfdLayout {
   idle_inset: number
   idle_radius: number
   idle_size: number
@@ -9,13 +9,13 @@ export type VfdLayout = Readonly<{
   pixel_radius: number
   pixel_size: number
   word_y: number
-}>
+}
 
-export type VfdPaths = Readonly<{
+export interface VfdPaths {
   idle: string
   matrix: string
   steady: string
-}>
+}
 
 export const VFD_LAYOUT: VfdLayout = {
   idle_inset: 0.13,
@@ -37,7 +37,7 @@ const BLANK = [
   '00000',
 ] as const
 
-const VFD_GLYPHS: Readonly<Record<string, readonly string[]>> = {
+const VFD_GLYPHS: Record<string, readonly string[]> = {
   ' ': BLANK,
   '!': ['00100', '00100', '00100', '00100', '00100', '00000', '00100'],
   '#': ['01010', '01010', '11111', '01010', '11111', '01010', '01010'],

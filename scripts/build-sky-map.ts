@@ -5,16 +5,24 @@ import { fileURLToPath } from 'node:url'
 
 type Coordinate = [number, number]
 type Direction = [number, number, number]
-type PointFeature = {
+interface PointFeature {
   geometry: { coordinates: Coordinate }
   properties?: { mag?: number }
 }
-type LineFeature = {
+
+interface LineFeature {
   geometry: { coordinates: Coordinate[][] }
   properties?: { rank?: number }
 }
-type FeatureCollection<Feature> = { features: Feature[] }
-type Source = { url: string; sha256: string }
+
+interface FeatureCollection<Feature> {
+  features: Feature[]
+}
+
+interface Source {
+  url: string
+  sha256: string
+}
 
 const REVISION = '7e720a3de062059d4c5400a379146a601d9010e0'
 const SOURCE_ROOT = `https://raw.githubusercontent.com/ofrohn/d3-celestial/${REVISION}/data`

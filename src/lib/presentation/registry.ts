@@ -17,19 +17,23 @@ const footer_components = import.meta.glob('./footers/*/view.svelte', {
   import: 'default',
 }) as Record<string, Component<FooterProps>>
 
-export type ResolvedPresentation = Readonly<{
-  footer?: Readonly<{
-    component: Component<FooterProps>
-    options: RegionOptions
-  }>
-  stage?: Readonly<{
-    component: Component<StageProps>
-    options: RegionOptions
-  }>
-}>
+interface ResolvedFooter {
+  component: Component<FooterProps>
+  options: RegionOptions
+}
+
+interface ResolvedStage {
+  component: Component<StageProps>
+  options: RegionOptions
+}
+
+export interface ResolvedPresentation {
+  footer?: ResolvedFooter
+  stage?: ResolvedStage
+}
 
 function component_for<ComponentType>(
-  components: Readonly<Record<string, ComponentType>>,
+  components: Record<string, ComponentType>,
   path: string,
   region: string,
 ) {
@@ -39,7 +43,7 @@ function component_for<ComponentType>(
 }
 
 export function resolve_presentation(
-  selection: Readonly<PresentationSelection>,
+  selection: PresentationSelection,
 ): ResolvedPresentation {
   return {
     footer: selection.footer

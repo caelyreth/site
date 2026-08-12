@@ -7,10 +7,10 @@ export type ReducedMotionMediaQuery = Pick<
   'addEventListener' | 'matches' | 'removeEventListener'
 >
 
-export type ReducedMotionPreference = Readonly<{
+export interface ReducedMotionPreference {
   current: boolean
   subscribe: (listener: (matches: boolean) => void) => () => void
-}>
+}
 
 function browser_media_query() {
   if (typeof window === 'undefined') return undefined

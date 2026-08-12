@@ -24,12 +24,12 @@ const footer_modules = import.meta.glob(
 
 type RegionDefinition = StageDefinition | FooterDefinition
 
-type RegionRegistry<Definition extends RegionDefinition> = Readonly<{
+interface RegionRegistry<Definition extends RegionDefinition> {
   get: (id: string) => Definition
   parse: (id: string, value: unknown) => RegionSelection
-}>
+}
 
-function module_ids(modules: Readonly<Record<string, unknown>>) {
+function module_ids(modules: Record<string, unknown>) {
   return Object.keys(modules)
     .map((path) => path.split('/').at(-2))
     .filter((id): id is string => id !== undefined)
@@ -61,7 +61,7 @@ function is_definition(value: unknown): value is RegionDefinition {
 
 function create_registry<Definition extends RegionDefinition>(
   region: string,
-  modules: Readonly<Record<string, unknown>>,
+  modules: Record<string, unknown>,
   path_for: (id: string) => string,
 ): RegionRegistry<Definition> {
   function get(id: string) {
@@ -98,7 +98,7 @@ const footers = create_registry<FooterDefinition>(
 )
 
 export function select_presentation(
-  frontmatter: Readonly<PresentationFrontmatter>,
+  frontmatter: PresentationFrontmatter,
 ): PresentationSelection {
   return {
     footer: frontmatter.footer

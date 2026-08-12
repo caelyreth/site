@@ -25,7 +25,7 @@ import {
   trail_release_opacity,
 } from './motion'
 
-export type PulseTimeline = Readonly<{
+export interface PulseTimeline {
   camera_duration: number
   camera_start_delay: number
   route_wide_view_radius: number
@@ -34,9 +34,9 @@ export type PulseTimeline = Readonly<{
   signal_travel_distance: number
   trail_release_duration: number
   trail_release_start: number
-}>
+}
 
-export type PulseFrame = Readonly<{
+export interface PulseFrame {
   camera_progress: number
   fade_progress: number
   pulse_distance: number
@@ -44,7 +44,7 @@ export type PulseFrame = Readonly<{
   route_pulse_distance: number
   source_release: number
   trail_opacity: number
-}>
+}
 
 function clamp_progress(progress: number) {
   return Math.min(1, Math.max(0, progress))

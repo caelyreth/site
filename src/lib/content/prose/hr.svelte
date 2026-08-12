@@ -1,7 +1,9 @@
 <script lang="ts">
   import PaperSeam from '$lib/site/paper-seam.svelte'
 
-  type Props = { class?: string } & Record<string, unknown>
+  interface Props extends Record<string, unknown> {
+    class?: string
+  }
 
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { class: class_name, ...attributes }: Props = $props()

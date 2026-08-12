@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
-  type Props = {
+  interface Props extends Record<string, unknown> {
     children?: Snippet
     depth?: number
     id?: string
-  } & Record<string, unknown>
+  }
 
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { children, depth = 2, id, ...attributes }: Props = $props()

@@ -20,15 +20,15 @@ import type { DecodedSkyMap, RouteCandidate } from './types'
 
 type Direction = readonly [number, number, number]
 
-export type SkyMapViewProjection = Readonly<{
+export interface SkyMapViewProjection {
   aspect: number
   forward: Direction
   map_scale: number
   right: Direction
   up: Direction
-}>
+}
 
-type RouteSelectionOptions = Readonly<{
+interface RouteSelectionOptions {
   candidates: readonly RouteCandidate[]
   fallback: readonly [number, number]
   forward: Direction
@@ -37,23 +37,23 @@ type RouteSelectionOptions = Readonly<{
   recent_constellation_groups: readonly number[]
   sky_map: Pick<DecodedSkyMap, 'directions' | 'node_groups'>
   target_index: number
-}>
+}
 
-type RouteMetrics = Readonly<{
+interface RouteMetrics {
   backtrack_dot: number
   camera_rotation: number
   candidate: RouteCandidate
   distance: number
   final_source_distance: number
   target_group: number
-}>
+}
 
-type ScoredRouteCandidate = Readonly<{
+interface ScoredRouteCandidate {
   backtrack_dot: number
   candidate: RouteCandidate
   score: number
   target_group: number
-}>
+}
 
 function clamp_unit(value: number) {
   return Math.min(1, Math.max(-1, value))

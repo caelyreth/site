@@ -5,7 +5,7 @@
   } from '$lib/presentation/contract'
   import type { Component } from 'svelte'
 
-  type Props = {
+  interface Props {
     component: Component<FooterProps>
     options: RegionOptions
   }

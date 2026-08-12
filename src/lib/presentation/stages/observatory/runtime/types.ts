@@ -2,32 +2,32 @@ import type * as SkyDataModule from '$lib/data/sky-map-data.generated'
 
 export type SkyMapPayload = typeof SkyDataModule
 
-export type SkyMapEngine = {
+export interface SkyMapEngine {
   destroy: () => void
   set_active: (active: boolean) => void
   set_theme: (dark: boolean) => void
 }
 
-export type SkyMapViewStatus = Readonly<{
+export interface SkyMapViewStatus {
   declination: number
   right_ascension: number
   scale: number
-}>
+}
 
-export type SkyMapSignalStatus = Readonly<{
+export interface SkyMapSignalStatus {
   color_index: number
-}>
+}
 
 export type SkyMapRuntimeEvent =
-  | Readonly<{ type: 'signal_end' }>
-  | Readonly<{ type: 'signal_start'; status: SkyMapSignalStatus }>
-  | Readonly<{ type: 'view_change'; status: SkyMapViewStatus }>
+  | { type: 'signal_end' }
+  | { type: 'signal_start'; status: SkyMapSignalStatus }
+  | { type: 'view_change'; status: SkyMapViewStatus }
 
-export type SkyMapEngineCallbacks = Readonly<{
+export interface SkyMapEngineCallbacks {
   on_event?: (event: SkyMapRuntimeEvent) => void
-}>
+}
 
-export type DecodedSkyMap = {
+export interface DecodedSkyMap {
   directions: Float32Array
   magnitudes: Float32Array
   edge_nodes: Uint16Array
@@ -36,7 +36,7 @@ export type DecodedSkyMap = {
   node_groups: Int16Array
 }
 
-export type RouteCandidate = {
+export interface RouteCandidate {
   index: number
   radius: number
   sector: number

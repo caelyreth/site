@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
-  const alert_labels: Readonly<Record<string, string>> = {
+  const alert_labels: Record<string, string> = {
     caution: 'Caution',
     important: 'Important',
     note: 'Note',
@@ -9,10 +9,10 @@
     warning: 'Warning',
   }
 
-  type Props = {
+  interface Props extends Record<string, unknown> {
     as?: string
     children?: Snippet
-  } & Record<string, unknown>
+  }
 
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { as: alert_type, children, ...attributes }: Props = $props()
