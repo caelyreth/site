@@ -208,7 +208,6 @@ body {
   opacity: var(--noise-hatch-opacity);
   background-image: var(--noise-tile);
   background-size: var(--noise-hatch-size);
-  background-attachment: fixed;
 }
 
 .field-surface::after {
@@ -217,7 +216,6 @@ body {
     transparent 0 7px,
     var(--color-hatch) 7px 8px
   );
-  background-attachment: fixed;
 }
 
 .micro-label {
