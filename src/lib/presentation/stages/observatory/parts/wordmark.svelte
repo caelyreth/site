@@ -65,12 +65,19 @@
     fit_vfd_text(tube_readings[reading_index] ?? 'CAELYRETH', tube_slots),
   )
   const lit = $derived(build_vfd_lit(reading, VFD_LAYOUT))
-  let change_timer = 0
-  let boot_timer = 0
+  let display_timer = 0
 
-  function clear_change_timer() {
-    if (change_timer) window.clearTimeout(change_timer)
-    change_timer = 0
+  function clear_display_timer() {
+    if (display_timer) window.clearTimeout(display_timer)
+    display_timer = 0
+  }
+
+  function schedule_display_change(callback: () => void, delay: number) {
+    clear_display_timer()
+    display_timer = window.setTimeout(() => {
+      display_timer = 0
+      callback()
+    }, delay)
   }
 
   function finish_heat() {
@@ -86,7 +93,7 @@
   function advance_reading() {
     show_next_reading()
     phase = 'heat'
-    change_timer = window.setTimeout(finish_heat, WORDMARK_BOOT_DURATION)
+    schedule_display_change(finish_heat, WORDMARK_BOOT_DURATION)
   }
 
   function begin_reading_change() {
@@ -98,10 +105,7 @@
       return
     }
     phase = 'cool'
-    change_timer = window.setTimeout(
-      advance_reading,
-      WORDMARK_COOL_DURATION,
-    )
+    schedule_display_change(advance_reading, WORDMARK_COOL_DURATION)
   }
 
   $effect.pre(() => {
@@ -117,13 +121,12 @@
       phase = 'hold'
       return
     }
-    boot_timer = window.setTimeout(
+    schedule_display_change(
       finish_heat,
       WORDMARK_LIGHT_DELAY + WORDMARK_BOOT_DURATION,
     )
     return () => {
-      if (boot_timer) window.clearTimeout(boot_timer)
-      clear_change_timer()
+      clear_display_timer()
     }
   })
 </script>

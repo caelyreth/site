@@ -105,13 +105,12 @@
     top: 50%;
     left: 50%;
     z-index: 3;
-    width: min(72vw, 46rem);
+    width: min(64vw, 40rem);
     pointer-events: none;
-    opacity: max(0, calc(1 - var(--stage-progress) * 1.05));
     transform: translate(-50%, -50%)
       scale(calc(1 - var(--stage-progress) * 0.12));
     transform-origin: center;
-    will-change: transform, opacity;
+    will-change: transform;
   }
 
   .label {
@@ -259,7 +258,7 @@
     }
 
     .wordmark-layer {
-      width: min(90vw, 34rem);
+      width: min(84vw, 30rem);
     }
   }
 </style>

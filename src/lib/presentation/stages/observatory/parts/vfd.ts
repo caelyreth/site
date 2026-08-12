@@ -100,7 +100,7 @@ export function vfd_word_width(
 }
 
 export function fit_vfd_text(value: string, slots: number) {
-  const glyphs = marks_of(value.toUpperCase()).map((mark) =>
+  const glyphs = marks_of(value).map((mark) =>
     mark in VFD_GLYPHS ? mark : ' ',
   )
   if (glyphs.length > slots) return glyphs.slice(0, slots).join('')
