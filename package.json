@@ -33,8 +33,8 @@
     "three": "catalog:f",
     "typescript": "catalog:x",
     "unocss": "catalog:f",
-    "vite": "catalog:f",
-    "zod": "catalog:f"
+    "valibot": "catalog:f",
+    "vite": "catalog:f"
   },
   "devEngines": {
     "packageManager": {

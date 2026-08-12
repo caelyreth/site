@@ -17,8 +17,8 @@ catalogs:
     'svelte-themes': ^2.0.10
     'three': ^0.185.1
     'unocss': ^66.7.5
+    'valibot': ^1.4.2
     'vite': ^8.1.5
-    'zod': ^4.4.3
   t:
     '@types/node': ^26.1.2
     '@types/three': ^0.185.1

@@ -1,16 +1,13 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 
-export default z
-  .object({
-    entries: z
-      .array(
-        z
-          .object({
-            detail: z.string(),
-            title: z.string(),
-          })
-          .strict(),
-      )
-      .min(1),
-  })
-  .strict()
+export default v.strictObject({
+  entries: v.pipe(
+    v.array(
+      v.strictObject({
+        detail: v.string(),
+        title: v.string(),
+      }),
+    ),
+    v.minLength(1),
+  ),
+})

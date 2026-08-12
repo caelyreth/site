@@ -1,5 +1,5 @@
 import { createMarkdownParser, type Node } from 'comark'
-import { z } from 'zod'
+import * as v from 'valibot'
 
 import type { ContentDocument } from './schema'
 
@@ -11,7 +11,7 @@ const content_sources = import.meta.glob('../../../content/**/*.md', {
 const component_schemas = import.meta.glob('./components/*.schema.ts', {
   eager: true,
   import: 'default',
-}) as Record<string, z.ZodType>
+}) as Record<string, v.GenericSchema>
 
 const parse_markdown = createMarkdownParser()
 
@@ -33,10 +33,10 @@ function validate_attributes(
   const schema = component_schemas[`./components/${tag}.schema.ts`]
   if (!schema) return
 
-  const result = schema.safeParse(attributes)
+  const result = v.safeParse(schema, attributes)
   if (!result.success) {
     throw new Error(
-      `${source_path}: invalid ${tag} props: ${z.prettifyError(result.error)}`,
+      `${source_path}: invalid ${tag} props: ${v.summarize(result.issues)}`,
     )
   }
 }
@@ -56,18 +56,18 @@ function validate_components(nodes: readonly Node[], source_path: string) {
 function parse_frontmatter<Frontmatter extends Record<string, unknown>>(
   value: unknown,
   source_path: string,
-  schema: Readonly<z.ZodType<Frontmatter>>,
+  schema: v.GenericSchema<unknown, Frontmatter>,
 ) {
-  const result = schema.safeParse(value)
-  if (result.success) return result.data
-  throw new Error(`${source_path}: ${z.prettifyError(result.error)}`)
+  const result = v.safeParse(schema, value)
+  if (result.success) return result.output
+  throw new Error(`${source_path}: ${v.summarize(result.issues)}`)
 }
 
 export async function load_content<
   Frontmatter extends Record<string, unknown>,
 >(
   content_id: string,
-  frontmatter_schema: Readonly<z.ZodType<Frontmatter>>,
+  frontmatter_schema: v.GenericSchema<unknown, Frontmatter>,
 ): Promise<ContentDocument<Frontmatter>> {
   const { source_path, load_source } = source_for(content_id)
   const document = await parse_markdown(await load_source())

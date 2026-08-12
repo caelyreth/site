@@ -235,12 +235,12 @@ catalogs:
     unocss:
       specifier: ^66.7.5
       version: 66.7.5
+    valibot:
+      specifier: ^1.4.2
+      version: 1.4.2
     vite:
       specifier: ^8.1.5
       version: 8.1.5
-    zod:
-      specifier: ^4.4.3
-      version: 4.4.3
   t:
     '@types/node':
       specifier: ^26.1.2
@@ -320,12 +320,12 @@ importers:
       unocss:
         specifier: catalog:f
         version: 66.7.5(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0))
+      valibot:
+        specifier: catalog:f
+        version: 1.4.2(typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2)
       vite:
         specifier: catalog:f
         version: 8.1.5(@types/node@26.1.2)(jiti@2.7.0)
-      zod:
-        specifier: catalog:f
-        version: 4.4.3
 
 packages:
 
@@ -1673,6 +1673,14 @@ packages:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
 
+  valibot@1.4.2:
+    resolution: {integrity: sha512-gjdCvJ6d3RyHAneqxMYMW9QMCwYMb3jpOO0IyHZV1bnRHFBHrX3VkIILt5XYR0WhwHiH7Mty8ovuPZ/O3gamrg==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   vite@8.1.5:
     resolution: {integrity: sha512-7ULLwsCdYx/nRyrpiEwvqb5TFHrMVZyBt+rg/OAXT7rgj/z+DtTDyKFeLAdDkubDVDKD8jOsndmy7m55XcfUsw==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -1729,9 +1737,6 @@ packages:
 
   zimmerframe@1.1.4:
     resolution: {integrity: sha512-B58NGBEoc8Y9MWWCQGl/gq9xBCe4IiKM0a2x7GZdQKOW5Exr8S1W24J6OgM1njK8xCRGvAJIL/MxXHf6SkmQKQ==}
-
-  zod@4.4.3:
-    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
 
@@ -2913,6 +2918,10 @@ snapshots:
       picomatch: 4.0.5
       webpack-virtual-modules: 0.6.2
 
+  valibot@1.4.2(typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2):
+    optionalDependencies:
+      typescript: typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2
+
   vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0):
     dependencies:
       lightningcss: 1.33.0
@@ -2932,5 +2941,3 @@ snapshots:
   webpack-virtual-modules@0.6.2: {}
 
   zimmerframe@1.1.4: {}
-
-  zod@4.4.3: {}

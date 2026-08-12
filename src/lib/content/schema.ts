@@ -1,32 +1,42 @@
 import type { MarkdownDocument } from 'comark'
-import { z } from 'zod'
+import * as v from 'valibot'
 
-export const presentation_id_schema = z
-  .string()
-  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'must be lowercase kebab-case')
+export const presentation_id_schema = v.pipe(
+  v.string(),
+  v.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'must be lowercase kebab-case'),
+)
 
-const options_schema = z.record(z.string(), z.unknown())
+const options_schema = v.record(v.string(), v.unknown())
 
-export const document_frontmatter_schema = z.object({
-  description: z.string().optional(),
-  title: z.string(),
+const document_frontmatter_entries = {
+  description: v.optional(v.string()),
+  title: v.string(),
+}
+
+const presentation_frontmatter_entries = {
+  footer: v.optional(presentation_id_schema),
+  footer_options: v.optional(options_schema),
+  graphics: v.optional(presentation_id_schema),
+  graphics_options: v.optional(options_schema),
+}
+
+export const document_frontmatter_schema = v.object(
+  document_frontmatter_entries,
+)
+
+export const presentation_frontmatter_schema = v.object(
+  presentation_frontmatter_entries,
+)
+
+export const home_frontmatter_schema = v.strictObject({
+  ...document_frontmatter_entries,
+  ...presentation_frontmatter_entries,
 })
 
-export const presentation_frontmatter_schema = z.object({
-  footer: presentation_id_schema.optional(),
-  footer_options: options_schema.optional(),
-  graphics: presentation_id_schema.optional(),
-  graphics_options: options_schema.optional(),
-})
-
-export const home_frontmatter_schema = document_frontmatter_schema
-  .extend(presentation_frontmatter_schema.shape)
-  .strict()
-
-export type PresentationFrontmatter = z.infer<
+export type PresentationFrontmatter = v.InferOutput<
   typeof presentation_frontmatter_schema
 >
-export type HomeFrontmatter = z.infer<typeof home_frontmatter_schema>
+export type HomeFrontmatter = v.InferOutput<typeof home_frontmatter_schema>
 
 export type ContentDocument<
   Frontmatter extends Record<string, unknown> = Record<string, unknown>,

@@ -1,10 +1,11 @@
 import type { PresentationFrontmatter } from '$lib/content/schema'
-import { z } from 'zod'
+import * as v from 'valibot'
 
 import type {
   FooterDefinition,
   PresentationSelection,
   RegionSelection,
+  RegionSchema,
   StageDefinition,
 } from './contract'
 
@@ -39,8 +40,13 @@ function is_record(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
-function has_options_schema(value: unknown) {
-  return is_record(value) && 'safeParse' in value
+function is_options_schema(value: unknown): value is RegionSchema {
+  return (
+    is_record(value) &&
+    value.kind === 'schema' &&
+    value.async === false &&
+    typeof value['~run'] === 'function'
+  )
 }
 
 function is_definition(value: unknown): value is RegionDefinition {
@@ -49,7 +55,7 @@ function is_definition(value: unknown): value is RegionDefinition {
   return (
     typeof definition.id === 'string' &&
     typeof definition.component === 'function' &&
-    has_options_schema(definition.options)
+    is_options_schema(definition.options)
   )
 }
 
@@ -70,10 +76,10 @@ function create_registry<Definition extends RegionDefinition>(
 
   function parse(id: string, value: unknown) {
     const definition = get(id)
-    const result = definition.options.safeParse(value)
-    if (result.success) return { id, options: result.data }
+    const result = v.safeParse(definition.options, value)
+    if (result.success) return { id, options: result.output }
     throw new Error(
-      `Invalid options for ${region} "${id}": ${z.prettifyError(result.error)}`,
+      `Invalid options for ${region} "${id}": ${v.summarize(result.issues)}`,
     )
   }
 

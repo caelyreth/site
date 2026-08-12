@@ -1,8 +1,8 @@
 import type { Component } from 'svelte'
-import type { z } from 'zod'
+import type { GenericSchema } from 'valibot'
 
 export type RegionOptions = Record<string, unknown>
-export type RegionSchema = z.ZodType<RegionOptions>
+export type RegionSchema = GenericSchema<unknown, RegionOptions>
 
 export type StageSignal = Readonly<{
   color: string
