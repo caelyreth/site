@@ -63,6 +63,7 @@
 
   .site {
     --paper-edge-depth: 0.85rem;
+    --paper-seam-gap: clamp(0.375rem, 0.6vw, 0.5rem);
     --paper-edge-top-clip: polygon(
       0 0,
       2% var(--paper-edge-depth),

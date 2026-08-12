@@ -72,10 +72,30 @@
 
 <style>
   .footer-inner {
+    --footer-hover-outset: 1.5rem;
+    --footer-surface: var(--color-footer-surface);
+    --footer-ink: var(--color-paper);
+    --footer-secondary: color-mix(
+      in oklab,
+      var(--footer-ink) 78%,
+      var(--footer-surface)
+    );
+    --footer-muted: color-mix(
+      in oklab,
+      var(--footer-ink) 62%,
+      var(--footer-surface)
+    );
+    --footer-rule: color-mix(
+      in oklab,
+      var(--footer-ink) 42%,
+      var(--footer-surface)
+    );
     width: 100%;
     margin: 0 auto;
     padding: calc(1.5rem + var(--paper-edge-depth)) var(--inline-gutter)
       1.25rem;
+    color: var(--footer-ink);
+    background-color: var(--footer-surface);
     clip-path: var(--paper-edge-top-clip);
   }
 
@@ -88,13 +108,13 @@
 
   .footer-label {
     margin: 0;
-    color: var(--color-text-secondary);
+    color: var(--footer-secondary);
     letter-spacing: 0.12em;
   }
 
   .title {
     margin: 0.5rem 0 0;
-    color: var(--color-text);
+    color: var(--footer-ink);
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.1;
@@ -103,7 +123,7 @@
   .statement {
     max-width: 36ch;
     margin: 0;
-    color: var(--color-text-secondary);
+    color: var(--footer-secondary);
     font-size: 0.75rem;
     line-height: 1.55;
   }
@@ -111,15 +131,15 @@
   .grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    border-block: 1px solid var(--color-rule);
+    border-block: 1px solid var(--footer-rule);
   }
 
   .footer-module {
-    --primary: var(--color-text);
-    --secondary: var(--color-text-secondary);
-    --muted: var(--color-text-secondary);
-    --accent: var(--color-text-link);
-    --rule: var(--color-rule);
+    --primary: var(--footer-ink);
+    --secondary: var(--footer-secondary);
+    --muted: var(--footer-muted);
+    --accent: var(--footer-ink);
+    --rule: var(--footer-rule);
     display: flex;
     min-width: 0;
     min-height: 9.75rem;
@@ -133,7 +153,7 @@
   }
 
   .footer-module + .footer-module {
-    border-top: 1px solid var(--color-rule);
+    border-top: 1px solid var(--footer-rule);
   }
 
   .footer-module .footer-label {
@@ -203,20 +223,28 @@
     flex-wrap: wrap;
     gap: 0.5rem 1.5rem;
     padding-top: 1rem;
-    color: var(--color-text-secondary);
+    color: var(--footer-secondary);
     font-size: 0.625rem;
     line-height: 1.3;
   }
 
   @media (hover: hover) {
     .footer-module:hover {
-      --primary: var(--color-paper);
-      --secondary: var(--color-paper);
-      --muted: color-mix(in oklab, var(--color-paper) 68%, transparent);
-      --accent: var(--color-paper);
-      --rule: color-mix(in oklab, var(--color-paper) 65%, transparent);
-      color: var(--color-paper);
-      background: var(--color-ink);
+      --primary: var(--footer-surface);
+      --secondary: var(--footer-surface);
+      --muted: color-mix(
+        in oklab,
+        var(--footer-surface) 68%,
+        var(--footer-ink)
+      );
+      --accent: var(--footer-surface);
+      --rule: color-mix(
+        in oklab,
+        var(--footer-surface) 65%,
+        var(--footer-ink)
+      );
+      color: var(--footer-surface);
+      background: var(--footer-ink);
     }
   }
 
@@ -237,28 +265,64 @@
     }
 
     .footer-module:first-child {
+      position: relative;
       padding-left: 0;
-      box-shadow: -1.5rem 0 0 transparent;
+      box-shadow: calc(-1 * var(--footer-hover-outset)) 0 0 transparent;
     }
 
     .footer-module:last-child {
+      position: relative;
       padding-right: 0;
-      box-shadow: 1.5rem 0 0 transparent;
+      box-shadow: var(--footer-hover-outset) 0 0 transparent;
     }
 
     .footer-module + .footer-module {
       border-top: 0;
-      border-inline-start: 1px solid var(--color-rule);
+      border-inline-start: 1px solid var(--footer-rule);
     }
   }
 
   @media (hover: hover) and (min-width: 48rem) {
     .footer-module:first-child:hover {
-      box-shadow: -1.5rem 0 0 var(--color-ink);
+      box-shadow: calc(-1 * var(--footer-hover-outset)) 0 0
+        var(--footer-ink);
+    }
+
+    .footer-module:first-child:hover::before,
+    .footer-module:first-child:hover::after,
+    .footer-module:last-child:hover::before,
+    .footer-module:last-child:hover::after {
+      position: absolute;
+      z-index: 1;
+      width: var(--footer-hover-outset);
+      height: 1px;
+      pointer-events: none;
+      content: '';
+      background-color: var(--footer-rule);
+    }
+
+    .footer-module:first-child:hover::before,
+    .footer-module:first-child:hover::after {
+      left: calc(-1 * var(--footer-hover-outset));
+    }
+
+    .footer-module:last-child:hover::before,
+    .footer-module:last-child:hover::after {
+      right: calc(-1 * var(--footer-hover-outset));
+    }
+
+    .footer-module:first-child:hover::before,
+    .footer-module:last-child:hover::before {
+      top: -1px;
+    }
+
+    .footer-module:first-child:hover::after,
+    .footer-module:last-child:hover::after {
+      bottom: -1px;
     }
 
     .footer-module:last-child:hover {
-      box-shadow: 1.5rem 0 0 var(--color-ink);
+      box-shadow: var(--footer-hover-outset) 0 0 var(--footer-ink);
     }
   }
 </style>

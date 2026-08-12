@@ -42,5 +42,6 @@
 <style>
   .site-footer {
     position: relative;
+    margin-top: var(--paper-seam-gap);
   }
 </style>
