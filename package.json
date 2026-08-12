@@ -15,18 +15,15 @@
     "preview": "vite start",
     "prepare": "pnpm run sync"
   },
-  "dependencies": {
-    "@comark/svelte": "^0.6.2",
-    "comark": "^0.6.2",
-    "zod": "^4.4.3"
-  },
   "devDependencies": {
+    "@comark/svelte": "^0.6.2",
     "@iconify-json/ri": "catalog:f",
     "@oxc-node/cli": "catalog:x",
     "@sveltejs/adapter-auto": "catalog:f",
     "@sveltejs/kit": "catalog:f",
     "@types/node": "catalog:t",
     "@types/three": "catalog:t",
+    "comark": "^0.6.2",
     "oxfmt": "catalog:x",
     "oxlint": "catalog:x",
     "oxlint-tsgolint": "catalog:x",
@@ -36,7 +33,8 @@
     "three": "catalog:f",
     "typescript": "catalog:x",
     "unocss": "catalog:f",
-    "vite": "catalog:f"
+    "vite": "catalog:f",
+    "zod": "^4.4.3"
   },
   "devEngines": {
     "packageManager": {

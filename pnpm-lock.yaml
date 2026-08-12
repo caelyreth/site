@@ -259,17 +259,10 @@ catalogs:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
       '@comark/svelte':
         specifier: ^0.6.2
         version: 0.6.2(svelte@5.56.8)
-      comark:
-        specifier: ^0.6.2
-        version: 0.6.2
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
-    devDependencies:
       '@iconify-json/ri':
         specifier: catalog:f
         version: 1.2.10
@@ -288,6 +281,9 @@ importers:
       '@types/three':
         specifier: catalog:t
         version: 0.185.1
+      comark:
+        specifier: ^0.6.2
+        version: 0.6.2
       oxfmt:
         specifier: catalog:x
         version: 0.61.0(svelte@5.56.8)
@@ -318,6 +314,9 @@ importers:
       vite:
         specifier: catalog:f
         version: 8.1.5(@types/node@26.1.2)(jiti@2.7.0)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
 packages:
 
