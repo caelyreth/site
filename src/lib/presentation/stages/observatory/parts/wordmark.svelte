@@ -1,6 +1,10 @@
 <script lang="ts">
+  import { reduced_motion } from '$lib/site/reduced-motion'
+  import { onMount } from 'svelte'
+
   import {
     WORDMARK_BOOT_DURATION,
+    WORDMARK_COOL_DURATION,
     WORDMARK_CRASH_DURATION,
     WORDMARK_CRASH_PIXEL_DURATION,
     WORDMARK_FADE_DURATION,
@@ -12,138 +16,115 @@
     circuit_traces,
     pick_circuit_side,
   } from './circuit'
+  import {
+    VFD_LAYOUT,
+    build_vfd_idle,
+    build_vfd_lit,
+    fit_vfd_text,
+    vfd_word_width,
+  } from './vfd'
 
-  type WordmarkPaths = Readonly<{
-    idle: string
-    matrix: string
-    steady: string
-  }>
-
-  type PathState = {
-    idle: string
-    matrix: string
-    steady: string
-  }
+  type FilamentPhase = 'cool' | 'heat' | 'hold'
 
   type Props = {
     active?: boolean
   }
 
-  const glyphs: Readonly<Record<string, readonly string[]>> = {
-    A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
-    C: ['01111', '10000', '10000', '10000', '10000', '10000', '01111'],
-    E: ['11111', '10000', '10000', '11110', '10000', '10000', '11111'],
-    H: ['10001', '10001', '10001', '11111', '10001', '10001', '10001'],
-    L: ['10000', '10000', '10000', '10000', '10000', '10000', '11111'],
-    R: ['11110', '10001', '10001', '11110', '10100', '10010', '10001'],
-    T: ['11111', '00100', '00100', '00100', '00100', '00100', '00100'],
-    Y: ['10001', '10001', '01010', '00100', '00100', '00100', '00100'],
-  }
+  const tube_slots = 9
+  const tube_readings = [
+    'CAELYRETH',
+    'STATION',
+    'NO UPLINK',
+    'FIELD LOG',
+    'MERIDIAN',
+  ]
   const crash_pixels = [
     { delay: 0, x: 3.2, y: 6.7 },
     { delay: 48, x: 19.8, y: 2.85 },
     { delay: 24, x: 35.8, y: 10.35 },
     { delay: 80, x: 52.6, y: 4.35 },
   ]
-  const word = 'CAELYRETH'
-  const word_y = 3.88
-  const letter_pitch = 6.5
-  const glyph_width = 5
-  const pixel_size = 0.84
-  const pixel_radius = 0.13
-  const idle_size = 0.58
-  const idle_radius = 0.1
-  const word_right = (word.length - 1) * letter_pitch + glyph_width
   const glass = {
     height: 8.28,
     radius: 0.4,
-    width: word_right + 3.2,
+    width: vfd_word_width(tube_slots) + 3.2,
     x: -1.6,
     y: 3.18,
   }
-  const paths = build_wordmark_paths()
-
-  function cell_path(x: number, y: number, size: number, radius: number) {
-    const inner_size = size - radius * 2
-    return [
-      `M${x + radius} ${y}`,
-      `h${inner_size}`,
-      `q${radius} 0 ${radius} ${radius}`,
-      `v${inner_size}`,
-      `q0 ${radius} -${radius} ${radius}`,
-      `h-${inner_size}`,
-      `q-${radius} 0 -${radius} -${radius}`,
-      `v-${inner_size}`,
-      `q0 -${radius} ${radius} -${radius}`,
-      'z',
-    ].join('')
-  }
-
-  function build_wordmark_paths(): WordmarkPaths {
-    const state: PathState = {
-      idle: '',
-      matrix: '',
-      steady: '',
-    }
-
-    for (let letter_index = 0; letter_index < word.length; letter_index += 1) {
-      const glyph = glyphs[word[letter_index]]
-      if (!glyph) continue
-      append_glyph_paths(state, glyph, letter_index)
-    }
-
-    return state
-  }
-
-  function append_glyph_paths(
-    state: PathState,
-    glyph: readonly string[],
-    letter_index: number,
-  ) {
-    for (let row_index = 0; row_index < glyph.length; row_index += 1) {
-      const row = glyph[row_index]
-      for (let column_index = 0; column_index < row.length; column_index += 1) {
-        append_cell(state, row, letter_index, row_index, column_index)
-      }
-    }
-  }
-
-  function append_cell(
-    state: PathState,
-    row: string,
-    letter_index: number,
-    row_index: number,
-    column_index: number,
-  ) {
-    const x = letter_index * letter_pitch + column_index
-    const y = word_y + row_index
-    state.idle += cell_path(x + 0.13, y + 0.13, idle_size, idle_radius)
-    if (row[column_index] !== '1') return
-
-    const path = cell_path(x, y, pixel_size, pixel_radius)
-    state.matrix += path
-    if (is_steady_pixel(letter_index, row_index, column_index)) {
-      state.steady += path
-    }
-  }
-
-  function is_steady_pixel(
-    letter_index: number,
-    row_index: number,
-    column_index: number,
-  ) {
-    return (letter_index * 5 + row_index * 3 + column_index) % 7 === 0
-  }
+  const idle = build_vfd_idle(tube_slots)
 
   /* oxlint-disable prefer-const -- The signal state updates from the stage. */
   let { active = false }: Props = $props()
   let live_side = $state<CircuitSide>()
   let was_active = false
+  let changing = false
+  let reading_index = $state(0)
+  let phase = $state<FilamentPhase>('heat')
+  let cycle = $state(0)
+  const reading = $derived(
+    fit_vfd_text(tube_readings[reading_index] ?? 'CAELYRETH', tube_slots),
+  )
+  const lit = $derived(build_vfd_lit(reading, VFD_LAYOUT))
+  let change_timer = 0
+  let boot_timer = 0
+
+  function clear_change_timer() {
+    if (change_timer) window.clearTimeout(change_timer)
+    change_timer = 0
+  }
+
+  function finish_heat() {
+    changing = false
+    phase = 'hold'
+  }
+
+  function show_next_reading() {
+    reading_index = (reading_index + 1) % tube_readings.length
+    cycle += 1
+  }
+
+  function advance_reading() {
+    show_next_reading()
+    phase = 'heat'
+    change_timer = window.setTimeout(finish_heat, WORDMARK_BOOT_DURATION)
+  }
+
+  function begin_reading_change() {
+    if (changing || phase === 'cool') return
+    changing = true
+    if (reduced_motion.current) {
+      show_next_reading()
+      finish_heat()
+      return
+    }
+    phase = 'cool'
+    change_timer = window.setTimeout(
+      advance_reading,
+      WORDMARK_COOL_DURATION,
+    )
+  }
 
   $effect.pre(() => {
     if (active === was_active) return
     was_active = active
-    if (active) live_side = pick_circuit_side()
+    if (!active) return
+    live_side = pick_circuit_side()
+    if (cycle > 0 || phase === 'hold') begin_reading_change()
+  })
+
+  onMount(() => {
+    if (reduced_motion.current) {
+      phase = 'hold'
+      return
+    }
+    boot_timer = window.setTimeout(
+      finish_heat,
+      WORDMARK_LIGHT_DELAY + WORDMARK_BOOT_DURATION,
+    )
+    return () => {
+      if (boot_timer) window.clearTimeout(boot_timer)
+      clear_change_timer()
+    }
   })
 </script>
 
@@ -158,6 +139,7 @@
   style:--fade-duration={`${WORDMARK_FADE_DURATION}ms`}
   style:--light-delay={`${WORDMARK_LIGHT_DELAY}ms`}
   style:--circuit-pulse={`${WORDMARK_CRASH_DURATION}ms`}
+  style:--cool-duration={`${WORDMARK_COOL_DURATION}ms`}
   viewBox="-4.8 0.2 68.4 14.2"
 >
   <defs>
@@ -259,7 +241,7 @@
     {#each circuit_nodes as node (`${node.side}:${node.x}:${node.y}`)}
       <g
         class:live={node.side === live_side}
-        class="circuit-node circuit-node-{node.kind}"
+        class="circuit-node"
         style:--pad-delay={`${node.delay}ms`}
         transform="translate({node.x} {node.y}) rotate({node.turn ?? 0})"
       >
@@ -267,7 +249,13 @@
           <circle class="via-ring" r="0.26" />
           <circle class="via-hole" r="0.08" />
         {:else if node.kind === 'smd'}
-          <rect class="smd-pad" x="-0.3" y="-0.15" width="0.6" height="0.3" />
+          <rect
+            class="smd-pad"
+            x="-0.3"
+            y="-0.15"
+            width="0.6"
+            height="0.3"
+          />
         {:else}
           <circle class="land-pad" r="0.18" />
         {/if}
@@ -276,27 +264,26 @@
   </g>
 
   <g class="filament" clip-path="url(#wordmark-glass-clip)">
-    <path class="filament-idle" d={paths.idle} />
+    <path class="filament-idle" d={idle} />
     <g class="letters">
-      <g class="filament-on">
-        <path class="boot-matrix" d={paths.matrix} />
-        <path class="boot-steady" d={paths.steady} />
-        <path class="boot-pulse" d={paths.matrix} />
-      </g>
+      {#key reading}
+        <g
+          class:cooling={phase === 'cool'}
+          class:heating={phase === 'heat'}
+          class:holding={phase === 'hold'}
+          class:initial={cycle === 0}
+          class="filament-on"
+        >
+          <path class="boot-matrix" d={lit.matrix} />
+          <path class="boot-steady" d={lit.steady} />
+          <path class="boot-pulse" d={lit.matrix} />
+        </g>
+      {/key}
     </g>
   </g>
 
   <g class="crash">
     {#each crash_pixels as pixel (pixel.x)}
-      <rect
-        class="boot-spark"
-        style:--spark-delay={`${pixel.delay + 160}ms`}
-        x={pixel.x}
-        y={pixel.y}
-        width="1.55"
-        height="0.8"
-        rx="0.1"
-      />
       <rect
         class="crash-pixel"
         style:--crash-delay={`${pixel.delay}ms`}
@@ -465,8 +452,6 @@
       var(--color-stage-ink-secondary) 22%,
       transparent
     );
-    animation: well-shiver calc(var(--light-delay) + var(--boot-duration))
-      linear both;
   }
 
   .letters {
@@ -477,8 +462,14 @@
   .filament-on {
     transform-box: fill-box;
     transform-origin: center;
-    animation: filament-drift var(--boot-duration) linear var(--light-delay)
-      both;
+  }
+
+  .filament-on.heating {
+    animation: filament-drift var(--boot-duration) linear both;
+  }
+
+  .filament-on.heating.initial {
+    animation-delay: var(--light-delay);
   }
 
   .boot-matrix,
@@ -489,41 +480,55 @@
   .boot-matrix {
     fill: var(--filament-dim);
     opacity: 0;
-    animation: filament-heat var(--boot-duration) var(--ease-phosphor)
-      var(--light-delay) both;
   }
 
-  .boot-steady {
-    fill: var(--filament);
-    opacity: 0;
-    animation: filament-hold calc(var(--boot-duration) * 0.55)
-      var(--ease-phosphor)
-      calc(var(--light-delay) + var(--boot-duration) * 0.52) both;
-  }
-
+  .boot-steady,
   .boot-pulse {
     fill: var(--filament);
     opacity: 0;
+  }
+
+  .filament-on.heating .boot-matrix {
+    animation: filament-heat var(--boot-duration) var(--ease-phosphor) both;
+  }
+
+  .filament-on.heating.initial .boot-matrix {
+    animation-delay: var(--light-delay);
+  }
+
+  .filament-on.heating .boot-steady {
+    animation: filament-hold calc(var(--boot-duration) * 0.55)
+      var(--ease-phosphor) calc(var(--boot-duration) * 0.52) both;
+  }
+
+  .filament-on.heating.initial .boot-steady {
+    animation-delay: calc(var(--light-delay) + var(--boot-duration) * 0.52);
+  }
+
+  .filament-on.heating .boot-pulse {
     animation: filament-strike calc(var(--boot-duration) * 0.7)
-      var(--ease-phosphor)
-      calc(var(--light-delay) + var(--boot-duration) * 0.42) both;
+      var(--ease-phosphor) calc(var(--boot-duration) * 0.42) both;
   }
 
-  .boot-spark,
-  .crash-pixel {
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
+  .filament-on.heating.initial .boot-pulse {
+    animation-delay: calc(var(--light-delay) + var(--boot-duration) * 0.42);
   }
 
-  .boot-spark {
-    fill: var(--filament);
-    animation: filament-spark 420ms var(--ease-phosphor)
-      calc(var(--light-delay) + var(--spark-delay)) both;
+  .filament-on.holding .boot-matrix,
+  .filament-on.holding .boot-steady {
+    opacity: 1;
+  }
+
+  .filament-on.cooling .boot-matrix,
+  .filament-on.cooling .boot-steady {
+    animation: filament-cool var(--cool-duration) var(--ease-phosphor) both;
   }
 
   .crash-pixel {
     fill: var(--signal);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   .wordmark.active {
@@ -614,35 +619,26 @@
     0% {
       opacity: 0;
     }
-    10% {
-      opacity: 0.2;
-    }
-    16% {
-      opacity: 0.08;
-    }
     28% {
-      opacity: 0.42;
+      opacity: 0.32;
     }
-    34% {
-      opacity: 0.22;
-    }
-    46% {
-      opacity: 0.64;
-    }
-    52% {
-      opacity: 0.4;
-    }
-    66% {
-      opacity: 0.9;
-    }
-    72% {
-      opacity: 0.62;
-    }
-    84% {
-      opacity: 1;
+    64% {
+      opacity: 0.78;
     }
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes filament-cool {
+    0% {
+      opacity: 1;
+    }
+    45% {
+      opacity: 0.48;
+    }
+    to {
+      opacity: 0;
     }
   }
 
@@ -651,39 +647,21 @@
     to {
       transform: translate(0);
     }
-    14% {
-      transform: translate(0.14px, -0.08px) skewX(0.18deg);
+    40% {
+      transform: translate(0.06px, -0.03px);
     }
-    27% {
-      transform: translate(-0.12px, 0.07px) skewX(-0.12deg);
-    }
-    41% {
-      transform: translate(0.1px, 0.05px);
-    }
-    58% {
-      transform: translate(-0.08px, -0.06px) skewX(0.1deg);
-    }
-    73% {
-      transform: translate(0.06px, 0.03px);
-    }
-    86% {
-      transform: translate(-0.03px, -0.02px);
+    72% {
+      transform: translate(-0.04px, 0.02px);
     }
   }
 
   @keyframes filament-strike {
     0%,
-    62% {
+    68% {
       opacity: 0;
     }
-    70% {
-      opacity: 0.2;
-    }
-    78% {
-      opacity: 0.08;
-    }
-    86% {
-      opacity: 0.28;
+    82% {
+      opacity: 0.14;
     }
     to {
       opacity: 0;
@@ -691,53 +669,8 @@
   }
 
   @keyframes filament-hold {
-    0% {
+    from {
       opacity: 0;
-    }
-    40% {
-      opacity: 0.55;
-    }
-    52% {
-      opacity: 0.28;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes filament-spark {
-    0%,
-    38%,
-    to {
-      opacity: 0;
-    }
-    46% {
-      opacity: 0.72;
-    }
-    58% {
-      opacity: 0.12;
-    }
-    70% {
-      opacity: 0.38;
-    }
-  }
-
-  @keyframes well-shiver {
-    0%,
-    18% {
-      opacity: 0.18;
-    }
-    26% {
-      opacity: 0.3;
-    }
-    38% {
-      opacity: 0.16;
-    }
-    54% {
-      opacity: 0.28;
-    }
-    70% {
-      opacity: 0.2;
     }
     to {
       opacity: 1;
@@ -793,11 +726,11 @@
     .wordmark,
     .wordmark.active .letters,
     .filament-on,
-    .filament-idle,
+    .filament-on.heating,
+    .filament-on.cooling,
     .boot-matrix,
     .boot-pulse,
     .boot-steady,
-    .boot-spark,
     .wordmark.active .crash-pixel,
     .wordmark.active .circuit-node.live .via-hole,
     .wordmark.active .circuit-node.live .land-pad,
