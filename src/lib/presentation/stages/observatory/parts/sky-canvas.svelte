@@ -114,7 +114,7 @@
 
 <style>
   .canvas {
-    --scene-reveal-duration: 720ms;
+    --scene-reveal-duration: 1100ms;
     position: absolute;
     top: 0;
     left: 50%;
