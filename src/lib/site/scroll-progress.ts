@@ -1,7 +1,5 @@
 import type { Attachment } from 'svelte/attachments'
 
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- attachments receive live DOM elements. */
-
 const scroll_timeline_feature = 'animation-timeline: scroll(root block)'
 
 export type ScrollProgressOptions = Readonly<{

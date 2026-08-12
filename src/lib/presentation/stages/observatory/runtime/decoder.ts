@@ -1,5 +1,4 @@
 /* oxlint-disable complexity -- Packed sky data decoding performs connected-component discovery in one pass. */
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- generated typed arrays are consumed as a shared payload. */
 import { EDGE_WEIGHT_BY_CLASS } from './constants'
 import type { DecodedSkyMap, SkyMapPayload } from './types'
 

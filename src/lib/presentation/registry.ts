@@ -1,5 +1,4 @@
 import type { Component } from 'svelte'
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- Selections are readonly data contracts. */
 
 import type {
   FooterProps,

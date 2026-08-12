@@ -1,4 +1,3 @@
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- Zod schemas and Comark nodes are inspected without mutation, but their library types are mutable. */
 import { createMarkdownParser, type Node } from 'comark'
 import { z } from 'zod'
 

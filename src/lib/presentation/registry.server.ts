@@ -1,6 +1,5 @@
 import type { PresentationFrontmatter } from '$lib/content/schema'
 import { z } from 'zod'
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- Inputs are parsed without mutation. */
 
 import type {
   FooterDefinition,

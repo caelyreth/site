@@ -1,4 +1,4 @@
-/* oxlint-disable max-depth, typescript/prefer-readonly-parameter-types -- The generator walks nested catalogue geometry and writes a typed payload. */
+/* oxlint-disable max-depth -- The generator walks nested catalogue geometry and writes a typed payload. */
 import { createHash } from 'node:crypto'
 import { writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'

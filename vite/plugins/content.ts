@@ -1,4 +1,3 @@
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- Vite hook parameters are mutable by contract. */
 import { normalizePath, type Plugin } from 'vite'
 
 import {

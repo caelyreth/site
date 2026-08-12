@@ -1,8 +1,6 @@
 import type { Component } from 'svelte'
 import type { z } from 'zod'
 
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- Definitions are readonly contracts. */
-
 export type RegionOptions = Record<string, unknown>
 export type RegionSchema = z.ZodType<RegionOptions>
 

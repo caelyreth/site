@@ -1,4 +1,4 @@
-/* oxlint-disable complexity, typescript/prefer-readonly-parameter-types -- WebGL resource construction must retain shared shader resources. */
+/* oxlint-disable complexity -- WebGL resource construction must retain shared shader resources. */
 import {
   BufferAttribute,
   BufferGeometry,

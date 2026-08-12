@@ -1,4 +1,4 @@
-/* oxlint-disable complexity, typescript/prefer-readonly-parameter-types -- route scoring evaluates all constraints in one selection pass. */
+/* oxlint-disable complexity -- route scoring evaluates all constraints in one selection pass. */
 import {
   ROUTE_CANDIDATE_MAGNITUDE,
   ROUTE_CENTER_RADIUS,

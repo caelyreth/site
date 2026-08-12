@@ -2,7 +2,7 @@ import {
   reduced_motion,
   type ReducedMotionPreference,
 } from '$lib/site/reduced-motion'
-/* oxlint-disable complexity, typescript/prefer-readonly-parameter-types -- WebGL setup and pulse state share one lifecycle. */
+/* oxlint-disable complexity -- WebGL setup and pulse state share one lifecycle. */
 import { Quaternion, Vector3 } from 'three'
 
 import {

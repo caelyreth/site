@@ -7,7 +7,6 @@ import type { PageServerLoad } from './$types'
 
 export const prerender = true
 
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- SvelteKit supplies the generated mutable load-event type. */
 export const load: PageServerLoad = async ({ depends }) => {
   depends(content_dependency('home'))
   const document = await load_content('home', home_frontmatter_schema)

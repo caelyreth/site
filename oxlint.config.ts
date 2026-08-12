@@ -38,7 +38,6 @@ export default defineConfig({
     'jsdoc/require-yields': 'warn',
     'jsdoc/require-yields-type': 'warn',
     'typescript/no-confusing-void-expression': 'warn',
-    'typescript/prefer-readonly-parameter-types': 'warn',
     // style
     'arrow-body-style': 'warn',
     'curly': ['warn', 'multi-line', 'consistent'],
