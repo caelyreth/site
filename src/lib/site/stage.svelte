@@ -13,10 +13,11 @@
     component: Component<StageProps>
     on_progress?: (progress: number) => void
     options: RegionOptions
+    progress?: number
   }
 
   /* oxlint-disable prefer-const -- Stage selection can update with the route. */
-  let { component, on_progress, options }: Props = $props()
+  let { component, on_progress, options, progress = 0 }: Props = $props()
   const StageContent = $derived(component)
   let signal = $state<StageSignal | undefined>()
 
@@ -47,7 +48,11 @@
   })
 </script>
 
-<div class="stage-capture" {@attach observe_stage_progress}>
+<div
+  class="stage-capture"
+  style:--stage-fallback-progress={progress}
+  {@attach observe_stage_progress}
+>
   <section class="stage-sticky" aria-label="Featured visual">
     <div
       class:active={signal !== undefined}
@@ -63,8 +68,44 @@
 
 <style>
   .stage-capture {
+    --stage-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
+    --stage-frame-radius: clamp(0.5rem, 1vw, 0.875rem);
+    --stage-progress: var(--stage-fallback-progress, 0);
+    --stage-opening: calc(1 - var(--stage-progress));
+    --stage-rail-seam: 1px;
+    --stage-clip-inset: calc(
+      max(0px, 50vw - var(--half-measure)) * var(--stage-progress)
+    );
+    --stage-block-inset: calc(
+      var(--stage-frame-inset) * var(--stage-opening)
+    );
+    --stage-inline-inset: calc(
+      var(--stage-clip-inset) + var(--stage-block-inset)
+    );
+    --stage-top: calc(var(--header-block-size) - var(--stage-rail-seam));
+    --stage-radius: calc(var(--stage-frame-radius) * var(--stage-opening));
+    --stage-rule: color-mix(
+      in oklab,
+      var(--color-rule) calc(var(--stage-opening) * 100%),
+      transparent
+    );
+    --stage-content-rule: color-mix(
+      in oklab,
+      var(--stage-rule),
+      var(--color-rule) calc(var(--stage-progress) * 100%)
+    );
+    --dur-stage-signal: 1800ms;
+    --ease-stage-signal: cubic-bezier(0.46, 0, 0.22, 1);
     height: 200svh;
     height: 200dvh;
+  }
+
+  @supports (animation-timeline: scroll(root block)) {
+    .stage-capture {
+      animation: stage-progress 1ms linear both;
+      animation-range: 0 100dvh;
+      animation-timeline: scroll(root block);
+    }
   }
 
   .stage-sticky {
@@ -89,6 +130,7 @@
     border: 1px solid var(--stage-content-rule);
     border-radius: var(--stage-radius);
     background-color: var(--color-paper-prime);
+    contain: layout paint;
   }
 
   .stage-frame::before {

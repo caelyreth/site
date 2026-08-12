@@ -126,6 +126,9 @@ export function create_sky_map_engine(
   let view_radius = BASE_VIEW_RADIUS
   let trail_view_radius = BASE_VIEW_RADIUS
   let trail_opacity = 0
+  let rendered_height = 0
+  let rendered_pixel_ratio = 0
+  let rendered_width = 0
 
   const recent_constellation_groups: number[] = []
 
@@ -430,6 +433,16 @@ export function create_sky_map_engine(
     const width = Math.max(1, bounds.width)
     const height = Math.max(1, bounds.height)
     const pixel_ratio = choose_pixel_ratio(width, height)
+    if (
+      width === rendered_width &&
+      height === rendered_height &&
+      pixel_ratio === rendered_pixel_ratio
+    ) {
+      return
+    }
+    rendered_width = width
+    rendered_height = height
+    rendered_pixel_ratio = pixel_ratio
     view_aspect = width / height
     sky_map_renderer.resize(width, height, pixel_ratio)
     if (source_index < 0 || target_index < 0) {

@@ -105,6 +105,18 @@
   --dur-long: 432ms;
 }
 
+@property --stage-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes stage-progress {
+  to {
+    --stage-progress: 1;
+  }
+}
+
 .dark {
   /* dark color palette */
   --color-paper: var(--color-paper-dark);

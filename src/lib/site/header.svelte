@@ -65,6 +65,14 @@
     transform: translateX(-50%);
   }
 
+  @supports (animation-timeline: scroll(root block)) {
+    .header {
+      animation: stage-progress 1ms linear both;
+      animation-range: 0 100dvh;
+      animation-timeline: scroll(root block);
+    }
+  }
+
   .header::after {
     position: absolute;
     right: 0;

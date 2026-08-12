@@ -105,13 +105,16 @@
 <style>
   .canvas {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 50%;
     z-index: 1;
     display: block;
-    width: 100%;
-    height: 100%;
+    width: calc(100vw - 2 * var(--stage-frame-inset));
+    height: calc(100dvh - var(--stage-top) - var(--stage-frame-inset));
     pointer-events: none;
     opacity: 0;
+    transform: translateX(-50%);
+    will-change: opacity;
     transition: opacity var(--dur-fade) var(--ease-out);
   }
 

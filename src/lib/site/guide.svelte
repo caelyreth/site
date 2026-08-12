@@ -31,6 +31,14 @@
     background: var(--color-rule);
   }
 
+  @supports (animation-timeline: scroll(root block)) {
+    .site {
+      animation: stage-progress 1ms linear both;
+      animation-range: 0 100dvh;
+      animation-timeline: scroll(root block);
+    }
+  }
+
   .guide::before {
     position: absolute;
     top: 0;
