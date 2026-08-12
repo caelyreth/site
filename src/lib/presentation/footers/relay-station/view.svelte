@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { FooterProps } from '$lib/presentation/contract'
+  import PaperEdge from '$lib/site/paper-edge.svelte'
 
   import FooterSignalMonitor from './signal-monitor.svelte'
 
@@ -23,6 +24,7 @@
 {/snippet}
 
 <div class="deck footer-inner footer-deck">
+  <PaperEdge side="top" />
   <div class="heading">
     <div>
       {@render footer_label('Archive transmission')}
@@ -72,7 +74,9 @@
   .footer-inner {
     width: 100%;
     margin: 0 auto;
-    padding: 1.5rem var(--inline-gutter) 1.25rem;
+    padding: calc(1.5rem + var(--paper-edge-depth)) var(--inline-gutter)
+      1.25rem;
+    clip-path: var(--paper-edge-top-clip);
   }
 
   .heading {

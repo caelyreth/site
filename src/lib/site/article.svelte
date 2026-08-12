@@ -1,12 +1,24 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
+  import PaperEdge from './paper-edge.svelte'
+
+  type Props = {
+    children?: Snippet
+    has_footer?: boolean
+  }
+
   /* oxlint-disable prefer-const -- Snippet props can update with the route. */
-  let { children }: { children?: Snippet } = $props()
+  let { children, has_footer = false }: Props = $props()
 </script>
 
-<article id="content" class="article deck">
+<article
+  class:has-paper-edge={has_footer}
+  id="content"
+  class="article deck"
+>
   {@render children?.()}
+  {#if has_footer}<PaperEdge side="bottom" />{/if}
 </article>
 
 <style>
@@ -19,5 +31,25 @@
     padding-block: clamp(3rem, 7vw, 5rem);
     padding-inline: var(--inline-gutter);
     flex-direction: column;
+  }
+
+  .article.has-paper-edge {
+    clip-path: var(--paper-edge-bottom-clip);
+  }
+
+  .article.has-paper-edge::after {
+    position: absolute;
+    right: var(--inline-gutter);
+    bottom: calc(var(--paper-edge-depth) + 0.875rem);
+    left: var(--inline-gutter);
+    z-index: 1;
+    height: 1px;
+    pointer-events: none;
+    content: '';
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--color-rule) 0 0.25rem,
+      transparent 0.25rem 0.5rem
+    );
   }
 </style>
