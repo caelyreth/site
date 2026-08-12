@@ -4,13 +4,13 @@ import { normalizePath, type Plugin } from 'vite'
 import {
   content_update_event,
   type ContentUpdate,
-} from '../../src/lib/content/updates'
+} from '../../src/lib/content/hmr'
 
-export function content_hmr(): Plugin {
+export function content_updates(): Plugin {
   let content_root = ''
 
   return {
-    name: 'content-hmr',
+    name: 'content-updates',
     apply: 'serve',
     configResolved(config) {
       content_root = normalizePath(`${config.root}/content/`)

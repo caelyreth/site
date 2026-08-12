@@ -9,12 +9,12 @@
 
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { children, depth = 2, id, ...attributes }: Props = $props()
-  const tag = $derived(`h${depth}`)
+  const tag = $derived(`h${Math.min(6, Math.max(1, depth))}`)
 </script>
 
-<svelte:element this={tag} {...attributes} {id} data-heading-depth={depth}
-  >{@render children?.()}</svelte:element
->
+<svelte:element this={tag} {...attributes} {id} data-heading-depth={depth}>
+  {@render children?.()}
+</svelte:element>
 
 <style>
   :global([data-heading-depth]) {
@@ -49,7 +49,6 @@
 
   :global([data-heading-depth='4']) {
     margin: 1.75rem 0 0;
-    color: var(--color-text);
     font-size: var(--prose-size);
     font-weight: 700;
     line-height: 1.35;
@@ -64,7 +63,6 @@
   }
 
   :global([data-heading-depth='5']) {
-    color: var(--color-text);
     font-weight: 600;
   }
 

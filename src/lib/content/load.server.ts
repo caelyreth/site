@@ -1,5 +1,5 @@
-/* oxlint-disable typescript/prefer-readonly-parameter-types -- Zod schemas and Comark nodes are used read-only, but their library types are mutable. */
-import { parseMarkdown, type ElementNode, type Node } from 'comark'
+/* oxlint-disable typescript/prefer-readonly-parameter-types -- Zod schemas and Comark nodes are inspected without mutation, but their library types are mutable. */
+import { createMarkdownParser, type Node } from 'comark'
 import { z } from 'zod'
 
 import type { ContentDocument } from './schema'
@@ -9,57 +9,29 @@ const content_sources = import.meta.glob('../../../content/**/*.md', {
   query: '?raw',
 }) as Record<string, () => Promise<string>>
 
-const block_schemas = import.meta.glob('./blocks/*.schema.ts', {
+const component_schemas = import.meta.glob('./components/*.schema.ts', {
   eager: true,
   import: 'default',
 }) as Record<string, z.ZodType>
 
-const heading_depths: Readonly<Record<string, number>> = {
-  h1: 1,
-  h2: 2,
-  h3: 3,
-  h4: 4,
-  h5: 5,
-  h6: 6,
-}
+const parse_markdown = createMarkdownParser()
 
-async function source_for(content_id: string) {
+function source_for(content_id: string) {
   const source_path = `content/${content_id}.md`
   const load_source = content_sources[`../../../${source_path}`]
-  if (load_source === undefined) {
+  if (!load_source) {
     throw new Error(`Unknown content document "${source_path}".`)
   }
 
-  return { source: await load_source(), source_path }
-}
-
-function annotate_heading(tag: string, attributes: ElementNode[1]) {
-  const depth = heading_depths[tag]
-  if (depth !== undefined) attributes.depth = depth
-}
-
-function prepare_element(node: ElementNode) {
-  const [tag, attributes, ...children] = node
-  annotate_heading(tag, attributes)
-  prepare_nodes(children)
-}
-
-function prepare_node(node: Node) {
-  if (typeof node === 'string' || node[0] === null) return
-  prepare_element(node)
-}
-
-function prepare_nodes(nodes: readonly Node[]) {
-  for (const node of nodes) prepare_node(node)
+  return { source_path, load_source }
 }
 
 function validate_attributes(
-  tag: unknown,
-  attributes: unknown,
+  tag: string,
+  attributes: Record<string, unknown>,
   source_path: string,
 ) {
-  if (typeof tag !== 'string') return
-  const schema = block_schemas[`./blocks/${tag}.schema.ts`]
+  const schema = component_schemas[`./components/${tag}.schema.ts`]
   if (!schema) return
 
   const result = schema.safeParse(attributes)
@@ -71,13 +43,14 @@ function validate_attributes(
 }
 
 function validate_node(node: Node, source_path: string) {
-  if (typeof node === 'string' || !Array.isArray(node)) return
-  const [tag, attributes = {}, ...children] = node
+  if (typeof node === 'string' || node[0] === null) return
+
+  const [tag, attributes, ...children] = node
   validate_attributes(tag, attributes, source_path)
   for (const child of children) validate_node(child, source_path)
 }
 
-function validate_blocks(nodes: readonly Node[], source_path: string) {
+function validate_components(nodes: readonly Node[], source_path: string) {
   for (const node of nodes) validate_node(node, source_path)
 }
 
@@ -91,16 +64,15 @@ function parse_frontmatter<Frontmatter extends Record<string, unknown>>(
   throw new Error(`${source_path}: ${z.prettifyError(result.error)}`)
 }
 
-export async function parse_content<
+export async function load_content<
   Frontmatter extends Record<string, unknown>,
 >(
   content_id: string,
   frontmatter_schema: Readonly<z.ZodType<Frontmatter>>,
 ): Promise<ContentDocument<Frontmatter>> {
-  const { source, source_path } = await source_for(content_id)
-  const document = await parseMarkdown(source)
-  prepare_nodes(document.nodes)
-  validate_blocks(document.nodes, source_path)
+  const { source_path, load_source } = source_for(content_id)
+  const document = await parse_markdown(await load_source())
+  validate_components(document.nodes, source_path)
 
   return {
     ...document,

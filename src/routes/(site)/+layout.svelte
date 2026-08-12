@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import { listen_for_content_updates } from '$lib/content/live-updates.client'
+  import { listen_for_content_updates } from '$lib/content/hmr.client'
   import type { PresentationSelection } from '$lib/presentation/contract'
   import { resolve_presentation } from '$lib/presentation/registry'
   import Article from '$lib/site/article.svelte'

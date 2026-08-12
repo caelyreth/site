@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Document from '$lib/content/document.svelte'
+  import Content from '$lib/content/render.svelte'
 
   import type { PageData } from './$types'
 
@@ -17,4 +17,4 @@
   {/if}
 </svelte:head>
 
-<Document document={data.document} />
+<Content document={data.document} />
