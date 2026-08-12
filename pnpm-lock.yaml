@@ -205,6 +205,9 @@ settings:
 
 catalogs:
   f:
+    '@comark/svelte':
+      specifier: ^0.6.2
+      version: 0.6.2
     '@iconify-json/ri':
       specifier: ^1.2.10
       version: 1.2.10
@@ -214,6 +217,9 @@ catalogs:
     '@sveltejs/kit':
       specifier: ^2.70.2
       version: 2.70.2
+    comark:
+      specifier: ^0.6.2
+      version: 0.6.2
     svelte:
       specifier: ^5.56.8
       version: 5.56.8
@@ -232,6 +238,9 @@ catalogs:
     vite:
       specifier: ^8.1.5
       version: 8.1.5
+    zod:
+      specifier: ^4.4.3
+      version: 4.4.3
   t:
     '@types/node':
       specifier: ^26.1.2
@@ -261,7 +270,7 @@ importers:
   .:
     devDependencies:
       '@comark/svelte':
-        specifier: ^0.6.2
+        specifier: catalog:f
         version: 0.6.2(svelte@5.56.8)
       '@iconify-json/ri':
         specifier: catalog:f
@@ -282,7 +291,7 @@ importers:
         specifier: catalog:t
         version: 0.185.1
       comark:
-        specifier: ^0.6.2
+        specifier: catalog:f
         version: 0.6.2
       oxfmt:
         specifier: catalog:x
@@ -315,7 +324,7 @@ importers:
         specifier: catalog:f
         version: 8.1.5(@types/node@26.1.2)(jiti@2.7.0)
       zod:
-        specifier: ^4.4.3
+        specifier: catalog:f
         version: 4.4.3
 
 packages:

@@ -16,14 +16,14 @@
     "prepare": "pnpm run sync"
   },
   "devDependencies": {
-    "@comark/svelte": "^0.6.2",
+    "@comark/svelte": "catalog:f",
     "@iconify-json/ri": "catalog:f",
     "@oxc-node/cli": "catalog:x",
     "@sveltejs/adapter-auto": "catalog:f",
     "@sveltejs/kit": "catalog:f",
     "@types/node": "catalog:t",
     "@types/three": "catalog:t",
-    "comark": "^0.6.2",
+    "comark": "catalog:f",
     "oxfmt": "catalog:x",
     "oxlint": "catalog:x",
     "oxlint-tsgolint": "catalog:x",
@@ -34,7 +34,7 @@
     "typescript": "catalog:x",
     "unocss": "catalog:f",
     "vite": "catalog:f",
-    "zod": "^4.4.3"
+    "zod": "catalog:f"
   },
   "devEngines": {
     "packageManager": {
