@@ -4,21 +4,16 @@
     text_refresh_in,
     text_refresh_out,
   } from '$lib/presentation/text-refresh'
-  import { onMount } from 'svelte'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
 
   import { create_observatory_controller } from './controller.svelte'
-  import Aperture from './parts/aperture.svelte'
   import SkyCanvas from './parts/sky-canvas.svelte'
+  import Wordmark from './parts/wordmark.svelte'
 
   /* oxlint-disable prefer-const -- Stage callback can update with its host. */
   let { on_signal }: StageProps = $props()
   const controller = create_observatory_controller(() => on_signal)
-
-  onMount(() => {
-    controller.preload()
-  })
 
   function format_coordinate(value: number, signed = false) {
     const absolute = Math.abs(value)
@@ -39,21 +34,16 @@
     controller.state.pulse.signal_color_index,
   )}
 >
-  {#if controller.state.shutters_loaded}
-    <SkyCanvas on_event={controller.handle_runtime_event} />
-  {/if}
-  <div class="aperture">
-    <Aperture
-      active={controller.state.pulse.active}
-      compact={controller.state.pulse.phase === 'contracting'}
-      on_load_complete={controller.reveal_sky_map}
-      returning={controller.state.pulse.phase === 'returning'}
-      roller_motion={controller.state.pulse.roller_motion}
-      roller_visible={controller.state.field_visible}
-      scale_duration={controller.state.pulse.scale_duration}
-      typing_paused={controller.state.pulse.typing_paused}
-    />
+  <SkyCanvas on_event={controller.handle_runtime_event} />
+  <div class="wordmark-layer">
+    <Wordmark active={controller.state.pulse.active} />
   </div>
+  <span aria-hidden="true" class="edge-label edge-label-left"
+    >Observation plate / open aperture</span
+  >
+  <span aria-hidden="true" class="edge-label edge-label-right"
+    >Epoch 2026.5 / meridian survey band</span
+  >
   <span class="label corner corner-left label-top"
     >Caelyreth / Observatory</span
   >
@@ -104,34 +94,28 @@
 
 <style>
   .observatory {
-    --dur-reveal: 640ms;
-    --dur-content: 480ms;
-    --dur-surface: 520ms;
-    --dur-travel: 720ms;
-    --dur-fade: 1000ms;
-    --ease-state: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-traverse: cubic-bezier(0.46, 0, 0.22, 1);
-    --ease-return: cubic-bezier(0.4, 0, 0.18, 1);
     --inline-inset: var(--inline-gutter);
     position: absolute;
     inset: 0;
-    display: grid;
     overflow: hidden;
-    place-items: center;
   }
 
-  .aperture {
-    position: relative;
-    z-index: 1;
-    width: min(100%, 92vw, 56rem);
-    transform: scale(calc(1 - var(--stage-progress) * 0.2));
+  .wordmark-layer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 3;
+    width: min(64vw, 40rem);
+    pointer-events: none;
+    transform: translate(-50%, -50%)
+      scale(calc(1 - var(--stage-progress) * 0.12));
     transform-origin: center;
     will-change: transform;
   }
 
   .label {
     position: absolute;
-    z-index: 2;
+    z-index: 4;
     margin: 0;
     color: var(--color-stage-ink-secondary);
     font-size: 0.625rem;
@@ -223,6 +207,35 @@
     text-align: right;
   }
 
+  .edge-label {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    color: color-mix(
+      in oklab,
+      var(--color-stage-ink-secondary) 68%,
+      transparent
+    );
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    pointer-events: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+  }
+
+  .edge-label-left {
+    left: 0.625rem;
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .edge-label-right {
+    right: 0.625rem;
+    transform: translateY(-50%);
+  }
+
   @media (hover: hover) {
     .descent:hover {
       color: var(--color-stage-ink);
@@ -238,6 +251,14 @@
     .label {
       font-size: 0.5625rem;
       letter-spacing: 0.08em;
+    }
+
+    .edge-label {
+      display: none;
+    }
+
+    .wordmark-layer {
+      width: min(84vw, 30rem);
     }
   }
 </style>

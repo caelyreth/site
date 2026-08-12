@@ -33,7 +33,6 @@ import { SIGNAL_PALETTES } from './signal-colors'
 import {
   create_pulse_timeline,
   pulse_frame_at,
-  route_motion_duration,
   type PulseTimeline,
 } from './timeline'
 import type {
@@ -112,12 +111,6 @@ export function create_sky_map_engine(
   let current_constellations_held = false
   let target_distance = Math.PI / 2
   let pulse_timeline: PulseTimeline | undefined
-  let route_motion_direction: -1 | 1 = 1
-  let route_motion_sequence = 0
-  let route_arrived = false
-  let focus_contract_started = false
-  let focus_return_started = false
-  let route_motion_started = false
   let last_camera_progress = -1
   let signal_active = false
   let last_view_status_at = -Infinity
@@ -302,11 +295,6 @@ export function create_sky_map_engine(
     apply_view_state()
   }
 
-  function configure_route_motion_direction() {
-    const vertical_pan = route_view_end_forward.dot(view_up)
-    route_motion_direction = vertical_pan >= 0 ? -1 : 1
-  }
-
   function set_route(source: number, route_target: number) {
     last_camera_progress = -1
     source_index = source
@@ -360,7 +348,6 @@ export function create_sky_map_engine(
       signal_travel_distance,
       camera_rotation,
     )
-    configure_route_motion_direction()
     previous_route_source_index = source_index
     const existing_target_group = recent_constellation_groups.indexOf(
       target_constellation,
@@ -482,13 +469,7 @@ export function create_sky_map_engine(
     current_constellations_held = true
     sky_map_renderer.reset_pulse(1)
     end_signal()
-    if (target_index >= 0) {
-      update_route_view(1)
-      if (!route_arrived) {
-        route_arrived = true
-        callbacks.on_event?.({ type: 'route_arrival' })
-      }
-    }
+    if (target_index >= 0) update_route_view(1)
     sync_trail_view()
     render()
     if (active && !disposed) {
@@ -556,10 +537,7 @@ export function create_sky_map_engine(
       signal_active = true
       callbacks.on_event?.({
         type: 'signal_start',
-        status: {
-          color_index: signal_color_index,
-          route_motion_direction,
-        },
+        status: { color_index: signal_color_index },
       })
       frame = requestAnimationFrame(animate)
       return
@@ -573,18 +551,6 @@ export function create_sky_map_engine(
       return
     }
     const pulse_frame = pulse_frame_at(pulse_timeline, pulse_elapsed)
-    if (!route_motion_started && pulse_frame.camera_progress > 0) {
-      route_motion_started = true
-      route_motion_sequence += 1
-      callbacks.on_event?.({
-        type: 'route_motion',
-        status: {
-          direction: route_motion_direction,
-          duration: route_motion_duration(pulse_timeline.camera_duration),
-          sequence: route_motion_sequence,
-        },
-      })
-    }
     sky_map_renderer.set_retire_progress(pulse_frame.retire_progress)
     if (
       !current_constellations_held &&
@@ -594,41 +560,7 @@ export function create_sky_map_engine(
       hold_current_constellations()
       current_constellations_held = true
     }
-    if (
-      !focus_contract_started &&
-      pulse_elapsed >= pulse_timeline.focus_contract_start
-    ) {
-      focus_contract_started = true
-      callbacks.on_event?.({
-        type: 'focus_contract_start',
-        status: {
-          duration: Math.max(
-            0,
-            pulse_timeline.focus_contract_end - pulse_elapsed,
-          ),
-        },
-      })
-    }
-    if (
-      !focus_return_started &&
-      pulse_elapsed >= pulse_timeline.focus_return_start
-    ) {
-      focus_return_started = true
-      callbacks.on_event?.({
-        type: 'focus_return_start',
-        status: {
-          duration: Math.max(
-            0,
-            pulse_timeline.focus_return_end - pulse_elapsed,
-          ),
-        },
-      })
-    }
     update_route_view(pulse_frame.camera_progress)
-    if (!route_arrived && pulse_frame.camera_progress >= 1) {
-      route_arrived = true
-      callbacks.on_event?.({ type: 'route_arrival' })
-    }
     update_trail_view(
       frame_delta,
       pulse_frame.trail_opacity,
@@ -652,10 +584,6 @@ export function create_sky_map_engine(
     previous_render_time = 0
     signal_phase = 'locating'
     phase_started_at = now
-    focus_contract_started = false
-    focus_return_started = false
-    route_motion_started = false
-    route_arrived = false
     source_activation_at_signal = 0
     current_constellations_held = false
     sky_map_renderer.reset_pulse(LOCATOR_INITIAL_SCALE)

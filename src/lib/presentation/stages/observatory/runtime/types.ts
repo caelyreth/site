@@ -16,30 +16,9 @@ export type SkyMapViewStatus = Readonly<{
 
 export type SkyMapSignalStatus = Readonly<{
   color_index: number
-  route_motion_direction: -1 | 1
-}>
-
-export type SkyMapFocusMotionStatus = Readonly<{
-  duration: number
-}>
-
-export type SkyMapRouteMotionStatus = Readonly<{
-  direction: -1 | 1
-  duration: number
-  sequence: number
 }>
 
 export type SkyMapRuntimeEvent =
-  | Readonly<{ type: 'route_arrival' }>
-  | Readonly<{
-      type: 'focus_contract_start'
-      status: SkyMapFocusMotionStatus
-    }>
-  | Readonly<{
-      type: 'focus_return_start'
-      status: SkyMapFocusMotionStatus
-    }>
-  | Readonly<{ type: 'route_motion'; status: SkyMapRouteMotionStatus }>
   | Readonly<{ type: 'signal_end' }>
   | Readonly<{ type: 'signal_start'; status: SkyMapSignalStatus }>
   | Readonly<{ type: 'view_change'; status: SkyMapViewStatus }>

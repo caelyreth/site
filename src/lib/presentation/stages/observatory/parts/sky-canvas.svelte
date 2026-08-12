@@ -1,12 +1,15 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
   import { load_sky_map_engine } from '$lib/presentation/stages/observatory/runtime/load-engine'
+  import { reduced_motion } from '$lib/site/reduced-motion'
   import type {
     SkyMapEngine,
     SkyMapRuntimeEvent,
   } from '$lib/presentation/stages/observatory/runtime/types'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
+
+  import { SKY_SCENE_START_DELAY } from '../intro'
 
   type CanvasProps = {
     on_event?: (event: SkyMapRuntimeEvent) => void
@@ -29,7 +32,8 @@
     if (!canvas) return
 
     let disposed = false
-    let reveal_frame: number | undefined
+    let reveal_timer: ReturnType<typeof setTimeout> | undefined
+    let scene_timer: ReturnType<typeof setTimeout> | undefined
     const observer =
       typeof IntersectionObserver === 'undefined'
         ? undefined
@@ -50,36 +54,42 @@
     document.addEventListener('visibilitychange', handle_visibility)
     page_visible = document.visibilityState === 'visible'
 
-    void load_sky_map_engine()
-      .then(({ create_engine, sky_data }) => {
-        if (disposed || !canvas) return
-        engine = create_engine(
-          canvas,
-          sky_data,
-          theme.resolvedTheme === 'dark',
-          { on_event },
-        )
-        sync_activity()
-        reveal_frame = requestAnimationFrame(() => {
-          if (disposed) return
-          reveal_frame = requestAnimationFrame(() => {
-            reveal_frame = undefined
-            field_ready = true
-          })
-        })
-      })
-      .catch((error: unknown) => {
-        if (!disposed) {
-          console.error(
-            'Unable to initialize the observatory sky map.',
-            error,
+    const start_scene = () => {
+      void load_sky_map_engine()
+        .then(({ create_engine, sky_data }) => {
+          if (disposed || !canvas) return
+          engine = create_engine(
+            canvas,
+            sky_data,
+            theme.resolvedTheme === 'dark',
+            { on_event },
           )
-        }
-      })
+          sync_activity()
+          reveal_timer = setTimeout(() => {
+            if (!disposed) {
+              field_ready = true
+            }
+          }, 32)
+        })
+        .catch((error: unknown) => {
+          if (!disposed) {
+            console.error(
+              'Unable to initialize the observatory sky map.',
+              error,
+            )
+          }
+        })
+    }
+
+    scene_timer = setTimeout(
+      start_scene,
+      reduced_motion.current ? 0 : SKY_SCENE_START_DELAY,
+    )
 
     return () => {
       disposed = true
-      if (reveal_frame !== undefined) cancelAnimationFrame(reveal_frame)
+      if (scene_timer !== undefined) clearTimeout(scene_timer)
+      if (reveal_timer !== undefined) clearTimeout(reveal_timer)
       observer?.disconnect()
       document.removeEventListener('visibilitychange', handle_visibility)
       engine?.destroy()
@@ -104,6 +114,7 @@
 
 <style>
   .canvas {
+    --scene-reveal-duration: 720ms;
     position: absolute;
     top: 0;
     left: 50%;
@@ -115,7 +126,7 @@
     opacity: 0;
     transform: translateX(-50%);
     will-change: opacity;
-    transition: opacity var(--dur-fade) var(--ease-out);
+    transition: opacity var(--scene-reveal-duration) var(--ease-out);
   }
 
   .canvas.is-ready {

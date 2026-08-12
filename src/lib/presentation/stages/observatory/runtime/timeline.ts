@@ -6,16 +6,7 @@ import {
   CAMERA_MAX_WIDENING,
   CAMERA_MIN_ROUTE_LEAD,
   CAMERA_MIN_WIDENING,
-  CAMERA_VELOCITY_APEX,
   CONSTELLATION_RETIRE_DURATION,
-  FOCUS_CONTRACT_APEX_LEAD,
-  FOCUS_CONTRACT_DELAY,
-  FOCUS_CONTRACT_MAX_DURATION,
-  FOCUS_CONTRACT_MIN_DURATION,
-  FOCUS_RETURN_LAG,
-  FOCUS_SETTLE_LAG,
-  ROUTE_MOTION_MAX_DURATION,
-  ROUTE_MOTION_MIN_DURATION,
   ROUTE_MAX_CAMERA_ROTATION,
   ROUTE_MIN_CAMERA_ROTATION,
   ROUTE_TERMINAL_VELOCITY,
@@ -37,10 +28,6 @@ import {
 export type PulseTimeline = Readonly<{
   camera_duration: number
   camera_start_delay: number
-  focus_contract_end: number
-  focus_contract_start: number
-  focus_return_end: number
-  focus_return_start: number
   route_wide_view_radius: number
   signal_duration: number
   signal_fade_start_distance: number
@@ -100,19 +87,6 @@ export function create_pulse_timeline(
   )
   const camera_duration =
     target_arrival_time + CAMERA_CAPTURE_LAG - camera_start_delay
-  const camera_apex_time =
-    camera_start_delay + camera_duration * CAMERA_VELOCITY_APEX
-  const focus_contract_start = FOCUS_CONTRACT_DELAY
-  const desired_contract_duration =
-    camera_apex_time - focus_contract_start - FOCUS_CONTRACT_APEX_LEAD
-  const contract_duration = Math.min(
-    FOCUS_CONTRACT_MAX_DURATION,
-    Math.max(FOCUS_CONTRACT_MIN_DURATION, desired_contract_duration),
-  )
-  const focus_contract_end = focus_contract_start + contract_duration
-  const focus_return_start = camera_apex_time + FOCUS_RETURN_LAG
-  const focus_return_end =
-    camera_start_delay + camera_duration + FOCUS_SETTLE_LAG
   const trail_release_start =
     camera_start_delay + camera_duration * TRAIL_RELEASE_PROGRESS
   const trail_release_duration = Math.max(
@@ -126,10 +100,6 @@ export function create_pulse_timeline(
   return {
     camera_duration,
     camera_start_delay,
-    focus_contract_end,
-    focus_contract_start,
-    focus_return_end,
-    focus_return_start,
     route_wide_view_radius,
     signal_duration,
     signal_fade_start_distance,
@@ -171,11 +141,4 @@ export function pulse_frame_at(
         timeline.trail_release_duration,
     ),
   }
-}
-
-export function route_motion_duration(camera_duration: number) {
-  return Math.min(
-    ROUTE_MOTION_MAX_DURATION,
-    Math.max(ROUTE_MOTION_MIN_DURATION, camera_duration * 0.72),
-  )
 }

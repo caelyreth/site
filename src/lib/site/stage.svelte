@@ -69,7 +69,7 @@
 <style>
   .stage-capture {
     --stage-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
-    --stage-frame-radius: clamp(0.5rem, 1vw, 0.875rem);
+    --stage-frame-radius: clamp(0.375rem, 0.75vw, 0.625rem);
     --stage-progress: var(--stage-fallback-progress, 0);
     --stage-opening: calc(1 - var(--stage-progress));
     --stage-rail-seam: 1px;
