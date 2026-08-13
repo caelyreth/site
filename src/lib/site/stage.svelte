@@ -1,9 +1,8 @@
 <script lang="ts">
   import type {
-    BackgroundProps,
-    ForegroundProps,
     RegionOptions,
-    PresentationSignal,
+    StageProps,
+    StageSignal,
   } from '$lib/presentation/contract'
   import { scroll_progress } from '$lib/site/scroll-progress'
   import type { Component } from 'svelte'
@@ -11,26 +10,18 @@
   import Guide from './guide.svelte'
 
   interface Props {
-    background?: Component<BackgroundProps>
-    background_options?: RegionOptions
-    foreground?: Component<ForegroundProps>
-    foreground_options?: RegionOptions
+    component: Component<StageProps>
     on_progress?: (progress: number) => void
+    options: RegionOptions
     progress?: number
   }
 
-  /* oxlint-disable prefer-const -- Region selection can update with the route. */
-  let {
-    background: Background,
-    background_options = {},
-    foreground: Foreground,
-    foreground_options = {},
-    on_progress,
-    progress = 0,
-  }: Props = $props()
-  let signal = $state<PresentationSignal | undefined>()
+  /* oxlint-disable prefer-const -- Stage selection can update with the route. */
+  let { component, on_progress, options, progress = 0 }: Props = $props()
+  const StageContent = $derived(component)
+  let signal = $state<StageSignal | undefined>()
 
-  function update_signal(next_signal: PresentationSignal | undefined) {
+  function update_signal(next_signal: StageSignal | undefined) {
     signal = next_signal
   }
 
@@ -68,15 +59,7 @@
       class="stage-frame"
       style:--stage-signal={signal?.color ?? 'transparent'}
     >
-      {#if Background}
-        <Background
-          options={background_options}
-          on_signal={update_signal}
-        />
-      {/if}
-      {#if Foreground}
-        <Foreground options={foreground_options} {signal} />
-      {/if}
+      <StageContent {options} on_signal={update_signal} />
       <Guide side="left" inStage reveal />
       <Guide side="right" inStage reveal />
     </div>

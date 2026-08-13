@@ -1,8 +1,7 @@
 +++
 title = "Caelyreth"
 description = "Field notes on architecture, geometry, and the philosophy of space."
-background = "observatory"
-foreground = "vfd-tube"
+stage = "observatory"
 footer = "relay-station"
 +++
 

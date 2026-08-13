@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { BackgroundProps } from '$lib/presentation/contract'
   import {
     text_refresh_in,
     text_refresh_out,
@@ -7,12 +6,11 @@
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
 
-  import { create_observatory_controller } from './controller.svelte'
+  import type { SkyMapSurfaceProps } from './contract'
   import SkyCanvas from './parts/sky-canvas.svelte'
 
-  /* oxlint-disable prefer-const -- Background callback can update with its host. */
-  let { on_signal }: BackgroundProps = $props()
-  const controller = create_observatory_controller(() => on_signal)
+  /* oxlint-disable prefer-const -- Surface props update with the stage. */
+  let { on_event, state }: SkyMapSurfaceProps = $props()
 
   function format_coordinate(value: number, signed = false) {
     const absolute = Math.abs(value)
@@ -27,13 +25,8 @@
   }
 </script>
 
-<div
-  class="observatory"
-  style:--signal={controller.color_for(
-    controller.state.pulse.signal_color_index,
-  )}
->
-  <SkyCanvas on_event={controller.handle_runtime_event} />
+<div class="sky-map" style:--signal={state.signal_color}>
+  <SkyCanvas {on_event} />
   <span aria-hidden="true" class="edge-label edge-label-left"
     >Observation plate / open aperture</span
   >
@@ -44,39 +37,36 @@
     >Caelyreth / Observatory</span
   >
   <span
-    class:spreading={controller.state.pulse.active}
+    class:spreading={state.signal_active}
     class="label corner corner-right label-top view-status"
     ><span class="view-status-key">RA</span>
-    {format_coordinate(controller.state.view_status.right_ascension)} /
+    {format_coordinate(state.view_status.right_ascension)} /
     <span class="view-status-key">DEC</span>
-    {format_coordinate(controller.state.view_status.declination, true)} /
+    {format_coordinate(state.view_status.declination, true)} /
     <span class="view-status-key">Z</span>
-    {controller.state.view_status.scale.toFixed(2)}</span
+    {state.view_status.scale.toFixed(2)}</span
   >
   <div
     aria-hidden="true"
     class="label corner corner-left label-bottom transmission-log"
   >
-    {#if controller.state.transmissions.length === 0}
+    {#if state.transmissions.length === 0}
       <span class="transmission transmission-empty"
         ><span class="transmission-name">No log</span><span
           class="transmission-sequence">000</span
         ></span
       >
     {:else}
-      {#each controller.state.transmissions as transmission, index (transmission.sequence)}
+      {#each state.transmissions as transmission (transmission.sequence)}
         <span
           animate:flip={{ duration: 360 }}
           class="transmission"
           in:fly={text_refresh_in}
           out:fly={text_refresh_out}
-          style:--transmission-color={controller.color_for(
-            transmission.color_index,
-          )}
-          style:--transmission-opacity={1 - index * 0.3}
-          ><span class="transmission-name"
-            >{controller.label_for(transmission.color_index)}</span
-          ><span class="transmission-sequence"
+          style:--transmission-color={transmission.color}
+          style:--transmission-opacity={transmission.opacity}
+          ><span class="transmission-name">{transmission.label}</span><span
+            class="transmission-sequence"
             >{String(transmission.sequence).padStart(3, '0')}</span
           ></span
         >
@@ -89,7 +79,7 @@
 </div>
 
 <style>
-  .observatory {
+  .sky-map {
     --inline-inset: var(--inline-gutter);
     position: absolute;
     inset: 0;

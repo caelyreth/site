@@ -1,14 +1,17 @@
 <script lang="ts">
-  import type { ForegroundProps } from '$lib/presentation/contract'
-
   import Wordmark from './parts/wordmark.svelte'
 
-  /* oxlint-disable prefer-const -- Signal props update with the background. */
-  let { signal }: ForegroundProps = $props()
+  interface Props {
+    active: boolean
+    color: string
+  }
+
+  /* oxlint-disable prefer-const -- Observatory pulse props update with the stage. */
+  let { active, color }: Props = $props()
 </script>
 
-<div class="tube-layer">
-  <Wordmark active={signal !== undefined} />
+<div class="tube-layer" style:--signal={color}>
+  <Wordmark {active} />
 </div>
 
 <style>

@@ -14,12 +14,10 @@ const document_frontmatter_entries = {
 }
 
 const presentation_frontmatter_entries = {
-  background: v.optional(presentation_id_schema),
-  background_options: v.optional(options_schema),
   footer: v.optional(presentation_id_schema),
   footer_options: v.optional(options_schema),
-  foreground: v.optional(presentation_id_schema),
-  foreground_options: v.optional(options_schema),
+  stage: v.optional(presentation_id_schema),
+  stage_options: v.optional(options_schema),
 }
 
 export const document_frontmatter_schema = v.object(

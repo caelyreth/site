@@ -1,10 +1,10 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
-  import { load_sky_map_engine } from '$lib/presentation/backgrounds/observatory/runtime/load-engine'
+  import { load_sky_map_engine } from '$lib/presentation/surfaces/sky-map/runtime/load-engine'
   import type {
     SkyMapEngine,
     SkyMapRuntimeEvent,
-  } from '$lib/presentation/backgrounds/observatory/runtime/types'
+  } from '$lib/presentation/surfaces/sky-map/runtime/types'
   import { reduced_motion } from '$lib/site/reduced-motion'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'
@@ -73,10 +73,7 @@
         })
         .catch((error: unknown) => {
           if (!disposed) {
-            console.error(
-              'Unable to initialize the observatory sky map.',
-              error,
-            )
+            console.error('Unable to initialize the sky map.', error)
           }
         })
     }
@@ -109,7 +106,7 @@
   bind:this={canvas}
   class:is-ready={field_ready}
   class="canvas"
-  data-observatory-canvas
+  data-sky-map-canvas
 ></canvas>
 
 <style>
