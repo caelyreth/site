@@ -14,9 +14,9 @@ interface EnteringLayout {
 export interface MenuItem {
   code: string
   detail: string
+  id: 'directory' | 'observation' | 'transmission'
   layout: Position &
     EnteringLayout & {
-      compact?: Position
       rotation: string
     }
   title: string
@@ -37,8 +37,8 @@ export const menu_items: readonly MenuItem[] = [
   {
     code: 'OBS / 001',
     detail: 'Window retained',
+    id: 'observation',
     layout: {
-      compact: { left: '8%', top: '22%' },
       enter_delay: '80ms',
       enter_x: '-2rem',
       enter_y: '1rem',
@@ -51,8 +51,8 @@ export const menu_items: readonly MenuItem[] = [
   {
     code: 'DIR / 044',
     detail: 'Archive pending',
+    id: 'directory',
     layout: {
-      compact: { left: '38%', top: '32%' },
       enter_delay: '140ms',
       enter_x: '1.75rem',
       enter_y: '-1rem',
@@ -65,8 +65,8 @@ export const menu_items: readonly MenuItem[] = [
   {
     code: 'SIG / 007',
     detail: 'Carrier available',
+    id: 'transmission',
     layout: {
-      compact: { left: '10%', top: '58%' },
       enter_delay: '200ms',
       enter_x: '-1.5rem',
       enter_y: '1.25rem',
@@ -210,11 +210,9 @@ export const drifts: readonly Drift[] = [
 
 export const theme_slip_layout = {
   bottom: '15%',
-  compact: { bottom: '8%', right: '10%' },
   enter_delay: '240ms',
   enter_x: '1.5rem',
   enter_y: '1rem',
   right: '22%',
   rotation: '16deg',
-} as const satisfies Position &
-  EnteringLayout & { compact: Position; rotation: string }
+} as const satisfies Position & EnteringLayout & { rotation: string }

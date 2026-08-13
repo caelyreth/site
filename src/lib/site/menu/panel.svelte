@@ -70,6 +70,9 @@
       <button
         type="button"
         class="slip"
+        class:directory={item.id === 'directory'}
+        class:observation={item.id === 'observation'}
+        class:transmission={item.id === 'transmission'}
         autofocus={item === menu_items[0]}
         onpointerdown={on_select}
         onclick={on_select}
@@ -81,10 +84,6 @@
         style:--slip-right={item.layout.right}
         style:--slip-rotation={item.layout.rotation}
         style:--slip-top={item.layout.top}
-        style:--slip-bottom-compact={item.layout.compact?.bottom}
-        style:--slip-left-compact={item.layout.compact?.left}
-        style:--slip-right-compact={item.layout.compact?.right}
-        style:--slip-top-compact={item.layout.compact?.top}
       >
         <span class="micro-label slip-code">{item.code}</span>
         <span class="slip-title font-serif">{item.title}</span>
@@ -102,8 +101,6 @@
     style:--slip-enter-y={theme_slip_layout.enter_y}
     style:--slip-right={theme_slip_layout.right}
     style:--slip-rotation={theme_slip_layout.rotation}
-    style:--slip-bottom-compact={theme_slip_layout.compact.bottom}
-    style:--slip-right-compact={theme_slip_layout.compact.right}
   >
     <span class="micro-label slip-code">SHIFT / 002</span>
     <span class="micro-label theme-label">{theme_label}</span>
@@ -115,6 +112,9 @@
 
 <style>
   .stage {
+    --menu-gutter: clamp(0.75rem, 4vw, 2rem);
+    --menu-inset-left: max(var(--menu-gutter), env(safe-area-inset-left));
+    --menu-inset-right: max(var(--menu-gutter), env(safe-area-inset-right));
     position: relative;
     z-index: 2;
     width: 100%;
@@ -173,7 +173,9 @@
     left: var(--slip-left);
     display: flex;
     width: max-content;
-    max-width: calc(100vw - 2rem);
+    max-width: calc(
+      100vw - var(--menu-inset-left) - var(--menu-inset-right)
+    );
     min-width: 0;
     flex-direction: column;
     align-items: flex-start;
@@ -188,7 +190,7 @@
   .slip {
     cursor: pointer;
     pointer-events: auto;
-    transform: rotate(var(--slip-rotation));
+    transform: rotate(var(--slip-effective-rotation, var(--slip-rotation)));
     transition:
       color var(--dur-micro) var(--ease-out),
       transform var(--dur-micro) var(--ease-out);
@@ -239,12 +241,16 @@
   @media (hover: hover) {
     .slip:hover {
       color: var(--menu-highlight);
-      transform: translateY(-2px) rotate(calc(var(--slip-rotation) + 1deg));
+      transform: translateY(-2px)
+        rotate(
+          calc(var(--slip-effective-rotation, var(--slip-rotation)) + 1deg)
+        );
     }
   }
 
   .slip:active {
-    transform: translateY(1px) rotate(var(--slip-rotation));
+    transform: translateY(1px)
+      rotate(var(--slip-effective-rotation, var(--slip-rotation)));
   }
 
   .drift {
@@ -280,8 +286,8 @@
   .field-note {
     position: absolute;
     z-index: 3;
-    right: 1.5rem;
-    bottom: 1.5rem;
+    right: var(--menu-gutter);
+    bottom: var(--menu-gutter);
     margin: 0;
     color: var(--color-text-secondary);
     pointer-events: none;
@@ -291,11 +297,12 @@
     from {
       opacity: 0;
       transform: translate3d(var(--slip-enter-x), var(--slip-enter-y), 0)
-        rotate(var(--slip-rotation));
+        rotate(var(--slip-effective-rotation, var(--slip-rotation)));
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0) rotate(var(--slip-rotation));
+      transform: translate3d(0, 0, 0)
+        rotate(var(--slip-effective-rotation, var(--slip-rotation)));
     }
   }
 
@@ -303,7 +310,7 @@
     to {
       opacity: 0;
       transform: translate3d(var(--slip-enter-x), var(--slip-enter-y), 0)
-        rotate(var(--slip-rotation));
+        rotate(var(--slip-effective-rotation, var(--slip-rotation)));
     }
   }
 
@@ -341,12 +348,54 @@
   }
 
   @media (max-width: 40rem) {
-    .slip,
+    .orbits {
+      inset: -14% -48%;
+      width: 196%;
+      height: 128%;
+      opacity: 0.1;
+    }
+
+    .slip {
+      --slip-effective-rotation: 0deg;
+
+      right: var(--menu-inset-right);
+      left: var(--menu-inset-left);
+      width: auto;
+      max-width: none;
+      min-height: 4.875rem;
+      padding: 0.75rem 0.875rem 0.875rem;
+      gap: 0.3rem;
+    }
+
+    .slip.observation {
+      top: max(18%, 5.5rem);
+      bottom: auto;
+    }
+
+    .slip.directory {
+      top: calc(max(18%, 5.5rem) + 5.625rem);
+      bottom: auto;
+    }
+
+    .slip.transmission {
+      top: calc(max(18%, 5.5rem) + 11.25rem);
+      bottom: auto;
+    }
+
+    .slip-title {
+      font-size: clamp(1.5rem, 7.5vw, 2.125rem);
+    }
+
     .theme-slip {
-      top: var(--slip-top-compact, var(--slip-top));
-      right: var(--slip-right-compact, var(--slip-right));
-      bottom: var(--slip-bottom-compact, var(--slip-bottom));
-      left: var(--slip-left-compact, var(--slip-left));
+      --slip-effective-rotation: 0deg;
+      --theme-toggle-size: 2.25rem;
+
+      right: var(--menu-inset-right);
+      bottom: max(var(--menu-gutter), env(safe-area-inset-bottom));
+      left: var(--menu-inset-left);
+      width: auto;
+      min-height: 5.625rem;
+      padding: 0.75rem 0.875rem;
     }
 
     .drift {
@@ -356,8 +405,35 @@
       left: var(--drift-left-compact, var(--drift-left));
     }
     .field-note {
-      right: 0.75rem;
-      bottom: 0.75rem;
+      display: none;
+    }
+  }
+
+  @media (max-height: 42rem) and (max-width: 40rem) {
+    .slip {
+      min-height: 0;
+      padding-block: 0.55rem 0.625rem;
+    }
+
+    .slip-detail {
+      display: none;
+    }
+
+    .slip.directory {
+      top: calc(max(15%, 4rem) + 4.5rem);
+    }
+
+    .slip.transmission {
+      top: calc(max(15%, 4rem) + 9rem);
+    }
+
+    .theme-slip {
+      min-height: 4.875rem;
+      gap: 0.35rem;
+    }
+
+    .theme-label {
+      display: none;
     }
   }
 

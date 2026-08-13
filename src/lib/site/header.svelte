@@ -128,4 +128,30 @@
   .menu-slot {
     margin-right: calc(-1 * var(--inline-gutter));
   }
+
+  @media (max-width: 24rem) {
+    .inner {
+      padding-inline: 0.75rem;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      gap: 0.625rem;
+    }
+
+    .brand-mark {
+      width: 2.5rem;
+      height: 1.25rem;
+    }
+
+    .menu-slot {
+      margin-right: -0.75rem;
+    }
+  }
+
+  @media (max-width: 20rem) {
+    .brand-name {
+      display: none;
+    }
+  }
 </style>
