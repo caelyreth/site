@@ -31,7 +31,7 @@
   --color-paper-dark: oklch(18% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
   --color-field-dark: oklch(10.5% 0 0);
-  --color-hatch-dark: oklch(27% 0 0);
+  --color-hatch-dark: oklch(21% 0 0);
   --color-deco-dark: oklch(25% 0 0);
   --color-rule-dark: oklch(31% 0 0);
   --color-muted-dark: oklch(63% 0 0);
@@ -96,13 +96,14 @@
   --inline-gutter: 1.5rem;
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
+  --stable-viewport-block: 100vh;
 
   /* texture */
   --noise-tile-light: url('./lib/assets/noise-tile.webp');
   --noise-tile-dark: url('./lib/assets/noise-tile-dark.webp');
   --noise-tile: var(--noise-tile-light);
   --noise-size: 96px;
-  --noise-content-opacity: 0.4;
+  --noise-content-opacity: 0.48;
   --noise-stage-opacity: 0.1;
   --noise-menu-opacity: 0.15;
   --noise-hatch-size: 128px;
@@ -159,11 +160,23 @@
   --color-alert-warning: var(--color-alert-warning-dark);
   --color-alert-caution: var(--color-alert-caution-dark);
   --noise-tile: var(--noise-tile-dark);
-  --noise-content-opacity: 0.56;
+  --noise-content-opacity: 0.36;
   --noise-stage-opacity: 0.18;
   --noise-menu-opacity: 0.12;
   --noise-hatch-size: 192px;
-  --noise-hatch-opacity: 0.68;
+  --noise-hatch-opacity: 0.52;
+}
+
+@supports (height: 100svh) {
+  :root {
+    --stable-viewport-block: 100svh;
+  }
+}
+
+@supports (height: 100lvh) {
+  :root {
+    --stable-viewport-block: 100lvh;
+  }
 }
 
 html,
