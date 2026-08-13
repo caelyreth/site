@@ -12,12 +12,10 @@
   let { children, has_footer = false }: Props = $props()
 </script>
 
-<article
-  class:has-paper-edge={has_footer}
-  id="content"
-  class="article deck"
->
-  {@render children?.()}
+<article id="content" class="article">
+  <div class="article-content deck">
+    {@render children?.()}
+  </div>
   {#if has_footer}<PaperEdge guide side="bottom" />{/if}
 </article>
 
@@ -28,12 +26,15 @@
     width: 100%;
     max-width: var(--frame-measure);
     margin: 0 auto;
-    padding-block: clamp(3rem, 7vw, 5rem);
-    padding-inline: var(--inline-gutter);
     flex-direction: column;
   }
 
-  .article.has-paper-edge {
-    clip-path: var(--paper-edge-bottom-clip);
+  .article-content {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    padding-block: clamp(3rem, 7vw, 5rem);
+    padding-inline: var(--inline-gutter);
+    flex-direction: column;
   }
 </style>

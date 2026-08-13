@@ -7,10 +7,11 @@
   interface Props {
     is_closing: boolean
     is_open: boolean
+    on_close: () => void
     on_select: () => void
   }
 
-  const { is_closing, is_open, on_select }: Props = $props()
+  const { is_closing, is_open, on_close, on_select }: Props = $props()
 
   const theme = use_theme()
   const theme_label = $derived(
@@ -102,7 +103,17 @@
     style:--slip-right={theme_slip_layout.right}
     style:--slip-rotation={theme_slip_layout.rotation}
   >
-    <span class="micro-label slip-code">SHIFT / 002</span>
+    <div class="theme-heading">
+      <span class="micro-label slip-code">SHIFT / 002</span>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close menu"
+        title="Close menu"
+        onclick={on_close}
+        ><span class="i-ri-close-line" aria-hidden="true"></span></button
+      >
+    </div>
     <span class="micro-label theme-label">{theme_label}</span>
     <ThemeToggle />
   </section>
@@ -232,6 +243,47 @@
     min-height: 7.5rem;
     justify-content: space-between;
     transform: rotate(var(--slip-effective-rotation, var(--slip-rotation)));
+  }
+
+  .theme-heading {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .close {
+    display: grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex: none;
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid var(--toggle-rule);
+    color: var(--toggle-ink);
+    background: transparent;
+    place-items: center;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .close span {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  @media (hover: hover) {
+    .close:hover {
+      color: var(--toggle-active-ink);
+      background-color: var(--toggle-ink);
+    }
+  }
+
+  .close:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
   }
 
   .theme-label {
@@ -397,6 +449,16 @@
       width: auto;
       min-height: 5.625rem;
       padding: 0.75rem 0.875rem;
+    }
+
+    .close {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .close span {
+      width: 1rem;
+      height: 1rem;
     }
 
     .drift {

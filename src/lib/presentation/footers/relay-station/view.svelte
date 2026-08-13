@@ -23,50 +23,52 @@
   <p class="micro-label footer-label">{text}</p>
 {/snippet}
 
-<div class="deck footer-inner footer-deck">
+<div class="footer-inner">
   <PaperEdge side="top" />
-  <div class="heading">
-    <div>
-      {@render footer_label('Archive transmission')}
-      <p class="title font-serif">Caelyreth relay station</p>
-    </div>
-    <p class="statement">
-      Field notes, status signals, and future paths held at the edge of the
-      station.
-    </p>
-  </div>
-  <div class="grid">
-    <section class="footer-module">
-      {@render footer_label('Site map')}
-      <ul class="sitemap" aria-label="Placeholder site map">
-        {#each placeholder_map as item}<li>{item}</li>{/each}
-      </ul>
-      <p class="detail">Placeholder index only</p>
-    </section>
-    <section class="footer-module">
-      {@render footer_label('Archive marker')}
-      <div aria-hidden="true" class="barcode">
-        {#each barcode_bars as width}<span style:--bar-width={width}
-          ></span>{/each}
+  <div class="deck footer-deck footer-content">
+    <div class="heading">
+      <div>
+        {@render footer_label('Archive transmission')}
+        <p class="title font-serif">Caelyreth relay station</p>
       </div>
-      <p class="detail">RBK / 2026 / YU</p>
-    </section>
-    <div aria-hidden="true" class="footer-module base-module">
-      <svg class="base-mark" viewBox="0 0 512 512" fill="none"
-        ><path
-          d="M256 32v448M32 256h448M97.6 97.6l316.8 316.8m0-316.8L97.6 414.4"
-          stroke="currentColor"
-          stroke-width="48"
-        /></svg
-      >
+      <p class="statement">
+        Field notes, status signals, and future paths held at the edge of
+        the station.
+      </p>
     </div>
-    <section class="footer-module">
-      <FooterSignalMonitor is_active={visible} />
-    </section>
-  </div>
-  <div class="tail">
-    <span>© 2026 Yu</span><span>Rainbook program - Caelyreth relay</span
-    ><span>Station log / no public uplink</span>
+    <div class="grid">
+      <section class="footer-module">
+        {@render footer_label('Site map')}
+        <ul class="sitemap" aria-label="Placeholder site map">
+          {#each placeholder_map as item}<li>{item}</li>{/each}
+        </ul>
+        <p class="detail">Placeholder index only</p>
+      </section>
+      <section class="footer-module">
+        {@render footer_label('Archive marker')}
+        <div aria-hidden="true" class="barcode">
+          {#each barcode_bars as width}<span style:--bar-width={width}
+            ></span>{/each}
+        </div>
+        <p class="detail">RBK / 2026 / YU</p>
+      </section>
+      <div aria-hidden="true" class="footer-module base-module">
+        <svg class="base-mark" viewBox="0 0 512 512" fill="none"
+          ><path
+            d="M256 32v448M32 256h448M97.6 97.6l316.8 316.8m0-316.8L97.6 414.4"
+            stroke="currentColor"
+            stroke-width="48"
+          /></svg
+        >
+      </div>
+      <section class="footer-module">
+        <FooterSignalMonitor is_active={visible} />
+      </section>
+    </div>
+    <div class="tail">
+      <span>© 2026 Yu</span><span>Rainbook program - Caelyreth relay</span
+      ><span>Station log / no public uplink</span>
+    </div>
   </div>
 </div>
 
@@ -90,13 +92,16 @@
       var(--footer-ink) 42%,
       var(--footer-surface)
     );
+    --paper-edge-surface: var(--footer-surface);
     width: 100%;
+    max-width: var(--frame-measure);
     margin: 0 auto;
-    padding: calc(1.5rem + var(--paper-edge-depth)) var(--inline-gutter)
-      1.25rem;
+  }
+
+  .footer-content {
+    padding: 1.5rem var(--inline-gutter) 1.25rem;
     color: var(--footer-ink);
     background-color: var(--footer-surface);
-    clip-path: var(--paper-edge-top-clip);
   }
 
   .heading {

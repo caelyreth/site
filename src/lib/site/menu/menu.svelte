@@ -8,6 +8,7 @@
   let menu_open = $state(false)
   let closing = $state(false)
   let close_timer: number | undefined
+  let dismiss_pointer_type: string | undefined
   const close_fallback = 500
 
   function clear_close_timer() {
@@ -66,6 +67,15 @@
     dialog?.close()
   }
 
+  function track_dismiss_pointer(event: PointerEvent) {
+    dismiss_pointer_type = event.pointerType
+  }
+
+  function dismiss_with_mouse() {
+    if (dismiss_pointer_type === 'mouse') request_close()
+    dismiss_pointer_type = undefined
+  }
+
   // Keep the page fixed for the full modal lifecycle, including its exit.
   $effect(() => {
     if (!menu_open) return
@@ -102,13 +112,14 @@
     class="dismiss"
     aria-label="Close menu"
     tabindex="-1"
-    onpointerdown={request_close}
-    onclick={request_close}
+    onpointerdown={track_dismiss_pointer}
+    onclick={dismiss_with_mouse}
   ></button>
 
   <MenuPanel
     is_closing={closing}
     is_open={menu_open}
+    on_close={request_close}
     on_select={request_close}
   />
 </dialog>

@@ -3,10 +3,11 @@
 </script>
 
 <div aria-hidden="true" class="field-surface paper-seam">
-  <div class="paper-surface upper-edge">
+  <div class="upper-edge">
+    <div class="paper-surface upper-body"></div>
     <PaperEdge guide side="bottom" />
   </div>
-  <div class="paper-surface lower-edge">
+  <div class="lower-edge">
     <PaperEdge side="top" />
   </div>
 </div>
@@ -28,17 +29,23 @@
     position: absolute;
     inset-inline: 0;
     z-index: 1;
-    height: var(--paper-edge-depth);
+  }
+
+  .upper-body {
+    top: 0;
+    height: calc(var(--paper-seam-guide-offset) + 1px);
   }
 
   .upper-edge {
+    position: absolute;
+    inset-inline: 0;
     top: 0;
     height: var(--paper-seam-upper-height);
-    clip-path: var(--paper-edge-bottom-clip);
   }
 
   .lower-edge {
+    position: absolute;
+    inset-inline: 0;
     bottom: 0;
-    clip-path: var(--paper-edge-top-clip);
   }
 </style>

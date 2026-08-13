@@ -40,6 +40,7 @@
         />
       {/key}
     {/if}
+    <div aria-hidden="true" class="mobile-stage-seam"></div>
     <Article has_footer={resolved_presentation?.footer !== undefined}>
       {@render children()}
     </Article>
@@ -69,5 +70,17 @@
     flex: 1;
     min-height: 100vh;
     flex-direction: column;
+  }
+
+  .mobile-stage-seam {
+    display: none;
+  }
+
+  @media (max-width: 40rem) {
+    .mobile-stage-seam {
+      display: block;
+      height: 1px;
+      background-color: var(--color-rule);
+    }
   }
 </style>
