@@ -17,6 +17,8 @@
   --color-text-light: oklch(19% 0 0);
   --color-text-secondary-light: oklch(40% 0 0);
   --color-text-link-light: oklch(40% 0.12 260);
+  --color-selection-surface-light: oklch(31% 0 0);
+  --color-selection-ink-light: oklch(97% 0 0);
   --color-alert-note-light: oklch(52% 0.14 255);
   --color-alert-tip-light: oklch(50% 0.125 155);
   --color-alert-important-light: oklch(53% 0.15 315);
@@ -31,7 +33,7 @@
   --color-paper-dark: oklch(18% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
   --color-field-dark: oklch(10.5% 0 0);
-  --color-hatch-dark: oklch(21% 0 0);
+  --color-hatch-dark: oklch(22% 0 0);
   --color-deco-dark: oklch(25% 0 0);
   --color-rule-dark: oklch(31% 0 0);
   --color-muted-dark: oklch(63% 0 0);
@@ -43,6 +45,8 @@
   --color-text-dark: oklch(93% 0 0);
   --color-text-secondary-dark: oklch(80% 0 0);
   --color-text-link-dark: oklch(75% 0.115 274.713);
+  --color-selection-surface-dark: oklch(78% 0 0);
+  --color-selection-ink-dark: oklch(17% 0 0);
   --color-alert-note-dark: oklch(68% 0.13 255);
   --color-alert-tip-dark: oklch(66% 0.13 155);
   --color-alert-important-dark: oklch(69% 0.14 315);
@@ -69,6 +73,8 @@
   --color-text: var(--color-text-light);
   --color-text-secondary: var(--color-text-secondary-light);
   --color-text-link: var(--color-text-link-light);
+  --color-selection-surface: var(--color-selection-surface-light);
+  --color-selection-ink: var(--color-selection-ink-light);
   --color-stage-surface: var(--color-stage-surface-light);
   --color-stage-wash: var(--color-stage-wash-light);
   --color-stage-glass-surface: var(--color-stage-glass-surface-light);
@@ -148,6 +154,8 @@
   --color-text: var(--color-text-dark);
   --color-text-secondary: var(--color-text-secondary-dark);
   --color-text-link: var(--color-text-link-dark);
+  --color-selection-surface: var(--color-selection-surface-dark);
+  --color-selection-ink: var(--color-selection-ink-dark);
   --color-stage-surface: var(--color-stage-surface-dark);
   --color-stage-wash: var(--color-stage-wash-dark);
   --color-stage-glass-surface: var(--color-stage-glass-surface-dark);
@@ -198,13 +206,13 @@ body {
 }
 
 ::selection {
-  color: var(--color-paper);
-  background-color: var(--color-ink);
+  color: var(--color-selection-ink);
+  background-color: var(--color-selection-surface);
 }
 
 ::-moz-selection {
-  color: var(--color-paper);
-  background-color: var(--color-ink);
+  color: var(--color-selection-ink);
+  background-color: var(--color-selection-surface);
 }
 
 /* reusable styles */
