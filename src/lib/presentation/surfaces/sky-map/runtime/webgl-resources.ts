@@ -36,6 +36,7 @@ import {
   brightness_for_magnitude,
   map_scale_for_view_radius,
 } from './motion'
+import { sky_map_scene_theme } from './scene-theme'
 import {
   background_fragment_shader,
   background_vertex_shader,
@@ -217,6 +218,8 @@ export function create_sky_map_renderer(
     uBackdrop: { value: backdrop_texture },
     uBackgroundAlpha: { value: 1 },
     uBackgroundInk: { value: new Color(0x000000) },
+    uBackgroundWashAlpha: { value: 0 },
+    uBackgroundWashInk: { value: new Color(0x000000) },
     uInk: { value: new Color(0xffffff) },
     uSignalInk: { value: new Color(0xffffff) },
     uBaseAlpha: { value: 0.2 },
@@ -619,14 +622,17 @@ export function create_sky_map_renderer(
   }
 
   function set_theme(dark: boolean) {
-    uniforms.uInk.value.setHex(dark ? 0xe6e6e6 : 0x1b3851, SRGBColorSpace)
-    uniforms.uBaseAlpha.value = dark ? 0.18 : 0.26
-    uniforms.uBackgroundAlpha.value = dark ? 2 : 0.24
-    uniforms.uBackgroundInk.value.setHex(
-      dark ? 0xe6e6e6 : 0x294c67,
+    const theme = sky_map_scene_theme(dark)
+    uniforms.uInk.value.setHex(theme.ink, SRGBColorSpace)
+    uniforms.uBaseAlpha.value = theme.star_alpha
+    uniforms.uBackgroundAlpha.value = theme.backdrop_alpha
+    uniforms.uBackgroundInk.value.setHex(theme.backdrop_ink, SRGBColorSpace)
+    uniforms.uBackgroundWashAlpha.value = theme.backdrop_wash_alpha
+    uniforms.uBackgroundWashInk.value.setHex(
+      theme.backdrop_wash_ink,
       SRGBColorSpace,
     )
-    uniforms.uSurveyMode.value = dark ? 0 : 1
+    uniforms.uSurveyMode.value = theme.survey_mode
   }
 
   function resize(width: number, height: number, pixel_ratio: number) {

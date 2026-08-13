@@ -315,7 +315,11 @@
   }
 
   .glass {
-    fill: color-mix(in oklab, var(--color-field) 12%, transparent);
+    fill: color-mix(
+      in oklab,
+      var(--color-stage-glass-surface) 12%,
+      transparent
+    );
   }
 
   .glass-dust {
@@ -347,7 +351,7 @@
   }
 
   .vignette-edge {
-    stop-color: var(--color-field);
+    stop-color: var(--color-stage-glass-surface);
     stop-opacity: 0.16;
   }
 

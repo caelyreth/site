@@ -36,7 +36,7 @@
       var(--color-stage-ink) calc((1 - var(--stage-progress)) * 100%),
       var(--color-text) calc(var(--stage-progress) * 100%)
     );
-    --header-rule: var(--color-rule);
+    --header-rule: var(--color-stage-rule);
     --header-surface: color-mix(
       in oklab,
       transparent,

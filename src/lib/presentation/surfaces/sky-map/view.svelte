@@ -121,7 +121,7 @@
 
   .descent {
     color: var(--color-stage-ink-secondary);
-    text-decoration-color: var(--color-rule);
+    text-decoration-color: var(--color-stage-rule);
     text-underline-offset: 0.15em;
     transition:
       color var(--dur-micro) var(--ease-out),

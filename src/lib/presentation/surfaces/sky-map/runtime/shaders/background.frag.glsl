@@ -3,6 +3,8 @@ precision highp float;
 uniform sampler2D uBackdrop;
 uniform vec3 uBackgroundInk;
 uniform float uBackgroundAlpha;
+uniform vec3 uBackgroundWashInk;
+uniform float uBackgroundWashAlpha;
 uniform float uAspect;
 uniform float uMapScale;
 uniform vec3 uRight;
@@ -30,9 +32,15 @@ void main() {
   );
   float nearby = texture2D(uBackdrop, fract(skyUv * vec2(11.0, 13.0))).r;
   float distant = texture2D(uBackdrop, fract(skyUv * vec2(7.33, 8.67))).r;
-  float alpha = (nearby * 0.24 + distant * 0.11) * uBackgroundAlpha;
+  float detailAlpha = (nearby * 0.24 + distant * 0.11) * uBackgroundAlpha;
+  float alpha = max(detailAlpha, uBackgroundWashAlpha);
+  vec3 ink = mix(
+    uBackgroundWashInk,
+    uBackgroundInk,
+    detailAlpha / max(alpha, 0.001)
+  );
 
   if (alpha < 0.002) discard;
-  gl_FragColor = vec4(uBackgroundInk, alpha);
+  gl_FragColor = vec4(ink, alpha);
   #include <colorspace_fragment>
 }

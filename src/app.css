@@ -3,8 +3,8 @@
 :root {
   /* light color palette */
   --color-paper-light: oklch(96.5% 0 0);
-  --color-paper-prime-light: oklch(93.5% 0 0);
-  --color-field-light: oklch(93.5% 0 0);
+  --color-paper-prime-light: oklch(94.5% 0 0);
+  --color-field-light: oklch(93% 0 0);
   --color-hatch-light: oklch(92% 0 0);
   --color-deco-light: oklch(90.5% 0 0);
   --color-rule-light: oklch(89.5% 0 0);
@@ -17,11 +17,17 @@
   --color-text-light: oklch(19% 0 0);
   --color-text-secondary-light: oklch(40% 0 0);
   --color-text-link-light: oklch(40% 0.12 260);
-  --color-alert-note-light: oklch(39% 0.13 255);
-  --color-alert-tip-light: oklch(37% 0.115 155);
-  --color-alert-important-light: oklch(40% 0.14 315);
-  --color-alert-warning-light: oklch(39% 0.12 85);
-  --color-alert-caution-light: oklch(40% 0.16 28);
+  --color-alert-note-light: oklch(37% 0.085 252);
+  --color-alert-tip-light: oklch(36% 0.075 165);
+  --color-alert-important-light: oklch(38% 0.08 315);
+  --color-alert-warning-light: oklch(40% 0.085 82);
+  --color-alert-caution-light: oklch(38% 0.1 30);
+  --color-stage-surface-light: oklch(90.5% 0 0);
+  --color-stage-wash-light: oklch(95.5% 0 0);
+  --color-stage-glass-surface-light: var(--color-stage-surface-light);
+  --color-stage-ink-light: oklch(31% 0.06 238);
+  --color-stage-ink-secondary-light: oklch(45% 0.048 238);
+  --color-stage-rule-light: oklch(83% 0.012 235);
   --color-paper-dark: oklch(18% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
   --color-field-dark: oklch(10.5% 0 0);
@@ -42,10 +48,12 @@
   --color-alert-important-dark: oklch(75% 0.14 315);
   --color-alert-warning-dark: oklch(77% 0.13 85);
   --color-alert-caution-dark: oklch(75% 0.16 28);
-  --color-stage-ink-light: var(--color-text-light);
-  --color-stage-ink-secondary-light: var(--color-text-secondary-light);
+  --color-stage-surface-dark: var(--color-paper-prime-dark);
+  --color-stage-wash-dark: var(--color-paper-prime-dark);
+  --color-stage-glass-surface-dark: var(--color-field-dark);
   --color-stage-ink-dark: var(--color-text-dark);
   --color-stage-ink-secondary-dark: var(--color-text-secondary-dark);
+  --color-stage-rule-dark: var(--color-rule-dark);
   --color-paper: var(--color-paper-light);
   --color-paper-prime: var(--color-paper-prime-light);
   --color-field: var(--color-field-light);
@@ -61,8 +69,12 @@
   --color-text: var(--color-text-light);
   --color-text-secondary: var(--color-text-secondary-light);
   --color-text-link: var(--color-text-link-light);
+  --color-stage-surface: var(--color-stage-surface-light);
+  --color-stage-wash: var(--color-stage-wash-light);
+  --color-stage-glass-surface: var(--color-stage-glass-surface-light);
   --color-stage-ink: var(--color-stage-ink-light);
   --color-stage-ink-secondary: var(--color-stage-ink-secondary-light);
+  --color-stage-rule: var(--color-stage-rule-light);
   --color-prose-surface: color-mix(
     in oklab,
     var(--color-deco) 40%,
@@ -82,7 +94,6 @@
   --half-measure: 24rem;
   --frame-measure: calc(var(--half-measure) * 2);
   --inline-gutter: 1.5rem;
-  --guide-outset: 13px;
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
 
@@ -92,7 +103,7 @@
   --noise-tile: var(--noise-tile-light);
   --noise-size: 96px;
   --noise-content-opacity: 0.4;
-  --noise-stage-opacity: 0.25;
+  --noise-stage-opacity: 0.1;
   --noise-menu-opacity: 0.15;
   --noise-hatch-size: 128px;
   --noise-hatch-opacity: 1;
@@ -136,8 +147,12 @@
   --color-text: var(--color-text-dark);
   --color-text-secondary: var(--color-text-secondary-dark);
   --color-text-link: var(--color-text-link-dark);
+  --color-stage-surface: var(--color-stage-surface-dark);
+  --color-stage-wash: var(--color-stage-wash-dark);
+  --color-stage-glass-surface: var(--color-stage-glass-surface-dark);
   --color-stage-ink: var(--color-stage-ink-dark);
   --color-stage-ink-secondary: var(--color-stage-ink-secondary-dark);
+  --color-stage-rule: var(--color-stage-rule-dark);
   --color-alert-note: var(--color-alert-note-dark);
   --color-alert-tip: var(--color-alert-tip-dark);
   --color-alert-important: var(--color-alert-important-dark);

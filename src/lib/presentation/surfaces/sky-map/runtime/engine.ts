@@ -30,7 +30,7 @@ import {
   zoom_envelope,
 } from './motion'
 import { collect_route_candidates, select_route } from './route-selection'
-import { SIGNAL_PALETTES } from './signal-colors'
+import { sky_map_scene_theme } from './scene-theme'
 import {
   create_pulse_timeline,
   pulse_frame_at,
@@ -398,7 +398,7 @@ export function create_sky_map_engine(
   }
 
   function update_signal_color(select_new_color = false) {
-    const palette = dark_mode ? SIGNAL_PALETTES.dark : SIGNAL_PALETTES.light
+    const palette = sky_map_scene_theme(dark_mode).signal_inks
     if (select_new_color || signal_color_index < 0) {
       let next = Math.floor(Math.random() * palette.length)
       if (next === signal_color_index && palette.length > 1) {

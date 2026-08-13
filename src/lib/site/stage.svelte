@@ -84,16 +84,7 @@
     );
     --stage-top: calc(var(--header-block-size) - var(--stage-rail-seam));
     --stage-radius: calc(var(--stage-frame-radius) * var(--stage-opening));
-    --stage-rule: color-mix(
-      in oklab,
-      var(--color-rule) calc(var(--stage-opening) * 100%),
-      transparent
-    );
-    --stage-content-rule: color-mix(
-      in oklab,
-      var(--stage-rule),
-      var(--color-rule) calc(var(--stage-progress) * 100%)
-    );
+    --stage-content-rule: var(--color-stage-rule);
     --dur-stage-signal: 1800ms;
     --ease-stage-signal: cubic-bezier(0.46, 0, 0.22, 1);
     height: 200svh;
@@ -129,7 +120,11 @@
     overflow: hidden;
     border: 1px solid var(--stage-content-rule);
     border-radius: var(--stage-radius);
-    background-color: var(--color-paper-prime);
+    background-color: color-mix(
+      in oklab,
+      var(--color-stage-surface) 88%,
+      var(--color-stage-wash)
+    );
     contain: layout paint;
   }
 

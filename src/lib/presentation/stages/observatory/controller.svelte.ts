@@ -1,8 +1,8 @@
 import type { StageProps } from '$lib/presentation/contract'
 import {
-  SIGNAL_STATUS_LABELS,
-  TRANSMISSION_COLORS,
-} from '$lib/presentation/surfaces/sky-map/runtime/signal-colors'
+  signal_status_labels,
+  sky_map_scene_theme,
+} from '$lib/presentation/surfaces/sky-map/runtime/scene-theme'
 import type {
   SkyMapRuntimeEvent,
   SkyMapSignalStatus,
@@ -45,10 +45,8 @@ export function create_observatory_controller(
       scale: 0.48,
     },
   })
-  const transmission_colors = $derived(
-    theme.resolvedTheme === 'dark'
-      ? TRANSMISSION_COLORS.dark
-      : TRANSMISSION_COLORS.light,
+  const scene_theme = $derived(
+    sky_map_scene_theme(theme.resolvedTheme === 'dark'),
   )
 
   $effect(() => {
@@ -88,11 +86,12 @@ export function create_observatory_controller(
   }
 
   function color_for(color_index: number) {
-    return transmission_colors[color_index] ?? transmission_colors[0]
+    const colors = scene_theme.signal_colors
+    return colors[color_index] ?? colors[0]
   }
 
   function label_for(color_index: number) {
-    return SIGNAL_STATUS_LABELS[color_index] ?? SIGNAL_STATUS_LABELS[0]
+    return signal_status_labels[color_index] ?? signal_status_labels[0]
   }
 
   return {
