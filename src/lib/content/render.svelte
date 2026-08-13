@@ -4,15 +4,18 @@
   import { pascalCase } from 'comark/utils'
   import type { Component } from 'svelte'
 
-  const custom_components = import.meta.glob('./components/*.svelte', {
-    eager: true,
-    import: 'default',
-  }) as Record<string, Component>
+  const custom_components = import.meta.glob<Component>(
+    './components/*.svelte',
+    {
+      eager: true,
+      import: 'default',
+    },
+  )
 
-  const prose_components = import.meta.glob('./prose/*.svelte', {
+  const prose_components = import.meta.glob<Component>('./prose/*.svelte', {
     eager: true,
     import: 'default',
-  }) as Record<string, Component>
+  })
 
   function component_name(path: string) {
     return path.slice(path.lastIndexOf('/') + 1, -'.svelte'.length)

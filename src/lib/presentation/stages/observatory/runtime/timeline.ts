@@ -18,6 +18,7 @@ import {
   TRAIL_RELEASE_PROGRESS,
 } from './constants'
 import {
+  clamp_unit,
   critically_damped_progress,
   inverse_impulse_progress,
   route_progress,
@@ -46,10 +47,6 @@ export interface PulseFrame {
   trail_opacity: number
 }
 
-function clamp_progress(progress: number) {
-  return Math.min(1, Math.max(0, progress))
-}
-
 export function create_pulse_timeline(
   target_distance: number,
   signal_fade_start_distance: number,
@@ -59,7 +56,7 @@ export function create_pulse_timeline(
   const nominal_camera_duration = camera_rotation / CAMERA_ANGULAR_SPEED
   const rotation_range =
     ROUTE_MAX_CAMERA_ROTATION - ROUTE_MIN_CAMERA_ROTATION
-  const rotation_ratio = clamp_progress(
+  const rotation_ratio = clamp_unit(
     (camera_rotation - ROUTE_MIN_CAMERA_ROTATION) / rotation_range,
   )
   const route_wide_view_radius =
@@ -118,7 +115,7 @@ export function pulse_frame_at(
     timeline.signal_travel_distance * signal_progress(timeline_progress)
   const route_pulse_distance =
     timeline.signal_travel_distance * route_progress(timeline_progress)
-  const camera_progress = clamp_progress(
+  const camera_progress = clamp_unit(
     (elapsed - timeline.camera_start_delay) / timeline.camera_duration,
   )
 

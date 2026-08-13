@@ -1,18 +1,12 @@
 import {
-  define_footer,
-  type RegionOptions,
+  empty_options_schema,
+  type FooterDefinition,
 } from '$lib/presentation/contract'
-import * as v from 'valibot'
 
 import RelayStationFooter from './view.svelte'
 
-const options = v.pipe(
-  v.undefined(),
-  v.transform((): RegionOptions => ({})),
-)
-
-export default define_footer({
+export default {
   id: 'relay-station',
   component: RelayStationFooter,
-  options,
-})
+  options: empty_options_schema,
+} satisfies FooterDefinition

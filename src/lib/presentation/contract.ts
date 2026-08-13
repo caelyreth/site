@@ -1,8 +1,8 @@
 import type { Component } from 'svelte'
-import type { GenericSchema } from 'valibot'
+import * as v from 'valibot'
 
 export type RegionOptions = Record<string, unknown>
-export type RegionSchema = GenericSchema<unknown, RegionOptions>
+export type RegionSchema = v.GenericSchema<unknown, RegionOptions>
 
 export interface StageSignal {
   color: string
@@ -40,10 +40,7 @@ export interface PresentationSelection {
   stage?: RegionSelection
 }
 
-export function define_stage(definition: StageDefinition) {
-  return definition
-}
-
-export function define_footer(definition: FooterDefinition) {
-  return definition
-}
+export const empty_options_schema = v.pipe(
+  v.undefined(),
+  v.transform((): RegionOptions => ({})),
+)

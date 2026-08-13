@@ -24,7 +24,3 @@ export function load_sky_map_engine() {
 
   return pending_engine_load
 }
-
-export function preload_sky_map_engine() {
-  return load_sky_map_engine()
-}

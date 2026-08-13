@@ -23,6 +23,7 @@ import {
 import { decode_sky_map } from './decoder'
 import {
   camera_motion_progress,
+  clamp_unit,
   choose_pixel_ratio,
   critically_damped_progress,
   map_scale_for_view_radius,
@@ -155,7 +156,7 @@ export function create_sky_map_engine(
     progress: number,
     direction_target: Vector3,
   ) {
-    const clamped_progress = Math.min(1, Math.max(0, progress))
+    const clamped_progress = clamp_unit(progress)
     const angle = angular_distance_between_directions(first, second)
     if (angle < 0.0001) return direction_target.copy(first)
     const denominator = Math.sin(angle)
@@ -276,8 +277,7 @@ export function create_sky_map_engine(
     const angular_lag = trail_orientation.angleTo(view_orientation)
     const radius_lag = Math.abs(view_radius - trail_view_radius)
     trail_opacity =
-      Math.min(1, Math.max(0, (angular_lag + radius_lag * 0.7) / 0.008)) *
-      release_opacity
+      clamp_unit((angular_lag + radius_lag * 0.7) / 0.008) * release_opacity
     apply_trail_state()
   }
 

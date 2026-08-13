@@ -1,4 +1,3 @@
-/* oxlint-disable complexity -- route scoring evaluates all constraints in one selection pass. */
 import {
   ROUTE_CANDIDATE_MAGNITUDE,
   ROUTE_CENTER_RADIUS,
@@ -16,6 +15,8 @@ import {
   ROUTE_TARGET_VISIBLE_OFFSET,
   TAU,
 } from './constants'
+/* oxlint-disable complexity -- route scoring evaluates all constraints in one selection pass. */
+import { clamp_unit } from './motion'
 import type { DecodedSkyMap, RouteCandidate } from './types'
 
 type Direction = readonly [number, number, number]
@@ -55,7 +56,7 @@ interface ScoredRouteCandidate {
   target_group: number
 }
 
-function clamp_unit(value: number) {
+function clamp_cosine(value: number) {
   return Math.min(1, Math.max(-1, value))
 }
 
@@ -76,7 +77,7 @@ function dot(first: Direction, second: Direction) {
 }
 
 function angular_distance(first: Direction, second: Direction) {
-  return Math.acos(clamp_unit(dot(first, second)))
+  return Math.acos(clamp_cosine(dot(first, second)))
 }
 
 function normalize(direction: Direction): Direction {
@@ -103,7 +104,7 @@ function interpolate_direction(
   second: Direction,
   progress: number,
 ): Direction {
-  const clamped_progress = Math.min(1, Math.max(0, progress))
+  const clamped_progress = clamp_unit(progress)
   const angle = angular_distance(first, second)
   if (angle < 0.0001) return first
   const denominator = Math.sin(angle)
@@ -171,7 +172,7 @@ export function collect_route_candidates(
       index,
       radius,
       sector: Math.floor((((angle + TAU) % TAU) / TAU) * 8),
-      view_distance: Math.acos(clamp_unit(forward)),
+      view_distance: Math.acos(clamp_cosine(forward)),
     })
   }
   return candidates

@@ -5,77 +5,55 @@ import type {
   FooterDefinition,
   PresentationSelection,
   RegionSelection,
-  RegionSchema,
   StageDefinition,
 } from './contract'
 
-const stage_modules = import.meta.glob('./stages/*/definition.server.ts', {
-  eager: true,
-  import: 'default',
-}) as Record<string, unknown>
+const stage_modules = import.meta.glob<StageDefinition>(
+  './stages/*/definition.server.ts',
+  {
+    eager: true,
+    import: 'default',
+  },
+)
 
-const footer_modules = import.meta.glob(
+const footer_modules = import.meta.glob<FooterDefinition>(
   './footers/*/definition.server.ts',
   {
     eager: true,
     import: 'default',
   },
-) as Record<string, unknown>
+)
 
 type RegionDefinition = StageDefinition | FooterDefinition
 
-interface RegionRegistry<Definition extends RegionDefinition> {
-  get: (id: string) => Definition
+interface RegionRegistry {
   parse: (id: string, value: unknown) => RegionSelection
 }
 
-function module_ids(modules: Record<string, unknown>) {
+function module_ids(modules: Record<string, RegionDefinition>) {
   return Object.keys(modules)
     .map((path) => path.split('/').at(-2))
     .filter((id): id is string => id !== undefined)
     .sort()
 }
 
-function is_record(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
-}
-
-function is_options_schema(value: unknown): value is RegionSchema {
-  return (
-    is_record(value) &&
-    value.kind === 'schema' &&
-    value.async === false &&
-    typeof value['~run'] === 'function'
-  )
-}
-
-function is_definition(value: unknown): value is RegionDefinition {
-  if (!is_record(value)) return false
-  const definition = value
-  return (
-    typeof definition.id === 'string' &&
-    typeof definition.component === 'function' &&
-    is_options_schema(definition.options)
-  )
-}
-
 function create_registry<Definition extends RegionDefinition>(
   region: string,
-  modules: Record<string, unknown>,
+  modules: Record<string, Definition>,
   path_for: (id: string) => string,
-): RegionRegistry<Definition> {
-  function get(id: string) {
+): RegionRegistry {
+  function definition_for(id: string) {
     const definition = modules[path_for(id)]
-    if (!is_definition(definition) || definition.id !== id) {
+    if (!definition || definition.id !== id) {
       throw new Error(
         `Unknown ${region} "${id}". Available ${region}s: ${module_ids(modules).join(', ') || 'none'}.`,
       )
     }
-    return definition as Definition
+    return definition
   }
 
   function parse(id: string, value: unknown) {
-    const definition = get(id)
+    const definition = definition_for(id)
     const result = v.safeParse(definition.options, value)
     if (result.success) return { id, options: result.output }
     throw new Error(
@@ -83,7 +61,7 @@ function create_registry<Definition extends RegionDefinition>(
     )
   }
 
-  return { get, parse }
+  return { parse }
 }
 
 const stages = create_registry<StageDefinition>(

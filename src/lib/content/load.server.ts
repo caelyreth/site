@@ -4,10 +4,13 @@ import * as v from 'valibot'
 
 import type { ContentDocument } from './schema'
 
-const content_sources = import.meta.glob('../../../content/**/*.md', {
-  import: 'default',
-  query: '?raw',
-}) as Record<string, () => Promise<string>>
+const content_sources = import.meta.glob<string>(
+  '../../../content/**/*.md',
+  {
+    import: 'default',
+    query: '?raw',
+  },
+)
 
 const parse_markdown = createMarkdownParser({ plugins: [toml()] })
 

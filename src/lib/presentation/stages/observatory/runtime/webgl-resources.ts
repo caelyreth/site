@@ -307,21 +307,31 @@ export function create_sky_map_renderer(
     new InstancedBufferAttribute(starts, 3),
   )
   edge_geometry.setAttribute('aEnd', new InstancedBufferAttribute(ends, 3))
-  edge_geometry.setAttribute(
-    'aDistanceStart',
-    new InstancedBufferAttribute(new Float32Array(edge_count), 1),
+  const edge_start_distances = new InstancedBufferAttribute(
+    new Float32Array(edge_count),
+    1,
   )
-  edge_geometry.setAttribute(
-    'aDistanceEnd',
-    new InstancedBufferAttribute(new Float32Array(edge_count), 1),
+  edge_geometry.setAttribute('aDistanceStart', edge_start_distances)
+  const edge_end_distances = new InstancedBufferAttribute(
+    new Float32Array(edge_count),
+    1,
+  )
+  edge_geometry.setAttribute('aDistanceEnd', edge_end_distances)
+  const edge_target_start_distances = new InstancedBufferAttribute(
+    new Float32Array(edge_count),
+    1,
   )
   edge_geometry.setAttribute(
     'aTargetDistanceStart',
-    new InstancedBufferAttribute(new Float32Array(edge_count), 1),
+    edge_target_start_distances,
+  )
+  const edge_target_end_distances = new InstancedBufferAttribute(
+    new Float32Array(edge_count),
+    1,
   )
   edge_geometry.setAttribute(
     'aTargetDistanceEnd',
-    new InstancedBufferAttribute(new Float32Array(edge_count), 1),
+    edge_target_end_distances,
   )
   edge_geometry.setAttribute(
     'aWeight',
@@ -378,18 +388,21 @@ export function create_sky_map_renderer(
     'aBrightness',
     new BufferAttribute(star_brightnesses, 1),
   )
-  star_geometry.setAttribute(
-    'aDistance',
-    new BufferAttribute(new Float32Array(sky_map.magnitudes.length), 1),
+  const star_distances = new BufferAttribute(
+    new Float32Array(sky_map.magnitudes.length),
+    1,
   )
-  star_geometry.setAttribute(
-    'aTargetDistance',
-    new BufferAttribute(new Float32Array(sky_map.magnitudes.length), 1),
+  star_geometry.setAttribute('aDistance', star_distances)
+  const star_target_distances = new BufferAttribute(
+    new Float32Array(sky_map.magnitudes.length),
+    1,
   )
-  star_geometry.setAttribute(
-    'aLocator',
-    new BufferAttribute(new Float32Array(sky_map.magnitudes.length), 1),
+  star_geometry.setAttribute('aTargetDistance', star_target_distances)
+  const star_locator = new BufferAttribute(
+    new Float32Array(sky_map.magnitudes.length),
+    1,
   )
+  star_geometry.setAttribute('aLocator', star_locator)
   star_geometry.setAttribute(
     'aConstellation',
     new BufferAttribute(sky_map.node_groups, 1),
@@ -433,27 +446,6 @@ export function create_sky_map_renderer(
     source_index: number,
     target_index: number,
   ): SkyMapRouteMetrics {
-    const star_distance = star_geometry.getAttribute(
-      'aDistance',
-    ) as BufferAttribute
-    const star_target_distance = star_geometry.getAttribute(
-      'aTargetDistance',
-    ) as BufferAttribute
-    const edge_start_distance = edge_geometry.getAttribute(
-      'aDistanceStart',
-    ) as InstancedBufferAttribute
-    const edge_end_distance = edge_geometry.getAttribute(
-      'aDistanceEnd',
-    ) as InstancedBufferAttribute
-    const edge_target_start_distance = edge_geometry.getAttribute(
-      'aTargetDistanceStart',
-    ) as InstancedBufferAttribute
-    const edge_target_end_distance = edge_geometry.getAttribute(
-      'aTargetDistanceEnd',
-    ) as InstancedBufferAttribute
-    const locator = star_geometry.getAttribute(
-      'aLocator',
-    ) as BufferAttribute
     const source_constellation = sky_map.node_groups[source_index]
     const target_constellation = sky_map.node_groups[target_index]
 
@@ -478,9 +470,11 @@ export function create_sky_map_renderer(
       }
     }
     if (previous_source_index !== source_index) {
-      if (previous_source_index >= 0) locator.setX(previous_source_index, 0)
-      locator.setX(source_index, 1)
-      locator.needsUpdate = true
+      if (previous_source_index >= 0) {
+        star_locator.setX(previous_source_index, 0)
+      }
+      star_locator.setX(source_index, 1)
+      star_locator.needsUpdate = true
       previous_source_index = source_index
     }
 
@@ -495,8 +489,8 @@ export function create_sky_map_renderer(
         index,
       )
       node_distances[index] = distance
-      star_distance.setX(index, distance)
-      star_target_distance.setX(index, target_distance_for_node)
+      star_distances.setX(index, distance)
+      star_target_distances.setX(index, target_distance_for_node)
       if (
         sky_map.node_groups[index] === source_constellation ||
         sky_map.node_groups[index] === target_constellation
@@ -515,29 +509,29 @@ export function create_sky_map_renderer(
     }
     const edge_count = sky_map.edge_nodes.length / 2
     for (let index = 0; index < edge_count; index += 1) {
-      edge_start_distance.setX(
+      edge_start_distances.setX(
         index,
         node_distances[sky_map.edge_nodes[index * 2]],
       )
-      edge_end_distance.setX(
+      edge_end_distances.setX(
         index,
         node_distances[sky_map.edge_nodes[index * 2 + 1]],
       )
-      edge_target_start_distance.setX(
+      edge_target_start_distances.setX(
         index,
-        star_target_distance.getX(sky_map.edge_nodes[index * 2]),
+        star_target_distances.getX(sky_map.edge_nodes[index * 2]),
       )
-      edge_target_end_distance.setX(
+      edge_target_end_distances.setX(
         index,
-        star_target_distance.getX(sky_map.edge_nodes[index * 2 + 1]),
+        star_target_distances.getX(sky_map.edge_nodes[index * 2 + 1]),
       )
     }
-    star_distance.needsUpdate = true
-    star_target_distance.needsUpdate = true
-    edge_start_distance.needsUpdate = true
-    edge_end_distance.needsUpdate = true
-    edge_target_start_distance.needsUpdate = true
-    edge_target_end_distance.needsUpdate = true
+    star_distances.needsUpdate = true
+    star_target_distances.needsUpdate = true
+    edge_start_distances.needsUpdate = true
+    edge_end_distances.needsUpdate = true
+    edge_target_start_distances.needsUpdate = true
+    edge_target_end_distances.needsUpdate = true
 
     const target_distance = node_distances[target_index]
     uniforms.uTargetDistance.value = target_distance

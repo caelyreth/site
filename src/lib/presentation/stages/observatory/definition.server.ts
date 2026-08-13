@@ -1,18 +1,12 @@
 import {
-  define_stage,
-  type RegionOptions,
+  empty_options_schema,
+  type StageDefinition,
 } from '$lib/presentation/contract'
-import * as v from 'valibot'
 
 import Observatory from './view.svelte'
 
-const options = v.pipe(
-  v.undefined(),
-  v.transform((): RegionOptions => ({})),
-)
-
-export default define_stage({
+export default {
   id: 'observatory',
   component: Observatory,
-  options,
-})
+  options: empty_options_schema,
+} satisfies StageDefinition
