@@ -81,9 +81,19 @@
 <style>
   .sky-map {
     --inline-inset: var(--inline-gutter);
+    --label-bottom-inset: max(1.25rem, env(safe-area-inset-bottom));
     position: absolute;
     inset: 0;
     overflow: hidden;
+  }
+
+  @supports (height: 100dvh) and (height: 100lvh) {
+    .sky-map {
+      --label-bottom-inset: calc(
+        max(1.25rem, env(safe-area-inset-bottom)) +
+          max(0px, 100lvh - 100dvh)
+      );
+    }
   }
 
   .label {
@@ -116,7 +126,8 @@
   }
 
   .label-bottom {
-    bottom: 1.25rem;
+    bottom: var(--label-bottom-inset);
+    transition: bottom var(--dur-long) var(--ease-out);
   }
 
   .descent {
@@ -124,6 +135,7 @@
     text-decoration-color: var(--color-stage-rule);
     text-underline-offset: 0.15em;
     transition:
+      bottom var(--dur-long) var(--ease-out),
       color var(--dur-micro) var(--ease-out),
       text-decoration-color var(--dur-micro) var(--ease-out);
   }
@@ -213,6 +225,13 @@
     .descent:hover {
       color: var(--color-stage-ink);
       text-decoration-color: var(--color-stage-ink);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .label-bottom,
+    .descent {
+      transition: none;
     }
   }
 

@@ -118,7 +118,9 @@
     z-index: 1;
     display: block;
     width: calc(100vw - 2 * var(--stage-frame-inset));
-    height: calc(100dvh - var(--stage-top) - var(--stage-frame-inset));
+    height: calc(
+      var(--stage-viewport) - var(--stage-top) - var(--stage-frame-inset)
+    );
     pointer-events: none;
     opacity: 0;
     transform: translateX(-50%);

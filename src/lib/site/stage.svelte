@@ -68,7 +68,8 @@
 
 <style>
   .stage-capture {
-    --stage-scroll-span: min(100dvh, max(18rem, 105vw));
+    --stage-viewport: var(--stable-viewport-block);
+    --stage-scroll-span: min(var(--stage-viewport), max(18rem, 105vw));
     --stage-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
     --stage-frame-radius: clamp(0.375rem, 0.75vw, 0.625rem);
     --stage-progress: var(--stage-fallback-progress, 0);
@@ -88,8 +89,7 @@
     --stage-content-rule: var(--color-stage-rule);
     --dur-stage-signal: 1800ms;
     --ease-stage-signal: cubic-bezier(0.46, 0, 0.22, 1);
-    height: calc(100svh + var(--stage-scroll-span));
-    height: calc(100dvh + var(--stage-scroll-span));
+    height: calc(var(--stage-viewport) + var(--stage-scroll-span));
   }
 
   @supports (animation-timeline: scroll(root block)) {
@@ -105,8 +105,7 @@
     top: 0;
     z-index: 21;
     width: 100vw;
-    height: 100svh;
-    height: 100dvh;
+    height: var(--stage-viewport);
     margin-inline: calc(50% - 50vw);
     overflow: hidden;
     clip-path: inset(0 var(--stage-clip-inset) 0);
@@ -162,10 +161,18 @@
     animation: stage-signal var(--dur-stage-signal) var(--ease-stage-signal);
   }
 
-  @media (max-width: 38rem) {
+  @media (max-width: 40rem) {
     .stage-capture {
-      --stage-frame-inset: 0.25rem;
-      --stage-frame-radius: 0.25rem;
+      --stage-frame-inset: 0px;
+      --stage-frame-radius: 0px;
+    }
+
+    .stage-frame {
+      border: 0;
+    }
+
+    .stage-frame::after {
+      display: none;
     }
   }
 

@@ -34,7 +34,7 @@
   @supports (animation-timeline: scroll(root block)) {
     .site {
       animation: stage-progress 1ms linear both;
-      animation-range: 0 100dvh;
+      animation-range: 0 var(--stable-viewport-block);
       animation-timeline: scroll(root block);
     }
   }
@@ -64,5 +64,11 @@
 
   .right {
     right: calc(50% - var(--half-measure));
+  }
+
+  @media (max-width: 40rem) {
+    .guide.stage {
+      display: none;
+    }
   }
 </style>

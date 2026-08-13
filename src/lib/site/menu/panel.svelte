@@ -231,7 +231,7 @@
     width: 10.5rem;
     min-height: 7.5rem;
     justify-content: space-between;
-    transform: rotate(var(--slip-rotation));
+    transform: rotate(var(--slip-effective-rotation, var(--slip-rotation)));
   }
 
   .theme-label {
@@ -390,6 +390,7 @@
       --slip-effective-rotation: 0deg;
       --theme-toggle-size: 2.25rem;
 
+      top: auto;
       right: var(--menu-inset-right);
       bottom: max(var(--menu-gutter), env(safe-area-inset-bottom));
       left: var(--menu-inset-left);

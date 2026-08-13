@@ -165,10 +165,18 @@
     outline-offset: -2px;
   }
 
+  @media (max-width: 40rem) {
+    .trigger {
+      min-width: 4.25rem;
+      padding-inline: var(--header-menu-optical-offset, 0.75rem);
+      border-inline-start: 0;
+    }
+  }
+
   @media (max-width: 24rem) {
     .trigger {
-      min-width: 3.5rem;
-      padding-inline: 0.75rem;
+      min-width: 3rem;
+      padding-inline: var(--header-menu-optical-offset, 0.625rem);
     }
 
     .label {
