@@ -18,6 +18,7 @@
   } from './circuit'
   import {
     VFD_LAYOUT,
+    VFD_GLYPH_ROWS,
     build_vfd_idle,
     build_vfd_lit,
     fit_vfd_text,
@@ -28,9 +29,11 @@
 
   interface Props {
     active?: boolean
+    readout?: string
   }
 
   const tube_slots = 9
+  const tube_lines = 2
   const tube_readings = [
     'CAELYRETH',
     'STATION',
@@ -43,18 +46,20 @@
     { delay: 48, x: 19.8, y: 2.85 },
     { delay: 24, x: 35.8, y: 10.35 },
     { delay: 80, x: 52.6, y: 4.35 },
+    { delay: 112, x: 27.2, y: 14.35 },
   ]
   const glass = {
-    height: 8.28,
+    height:
+      VFD_GLYPH_ROWS + VFD_LAYOUT.line_pitch * (tube_lines - 1) + 1.28,
     radius: 0.4,
     width: vfd_word_width(tube_slots) + 3.2,
     x: -1.6,
     y: 3.18,
   }
-  const idle = build_vfd_idle(tube_slots)
+  const idle = build_vfd_idle(tube_slots, tube_lines)
 
   /* oxlint-disable prefer-const -- The signal state updates from the stage. */
-  let { active = false }: Props = $props()
+  let { active = false, readout = 'R322*D+42' }: Props = $props()
   let live_side = $state<CircuitSide>()
   let was_active = false
   let changing = false
@@ -64,7 +69,10 @@
   const reading = $derived(
     fit_vfd_text(tube_readings[reading_index] ?? 'CAELYRETH', tube_slots),
   )
-  const lit = $derived(build_vfd_lit(reading, VFD_LAYOUT))
+  const secondary_reading = $derived(fit_vfd_text(readout, tube_slots))
+  const lit = $derived(
+    build_vfd_lit([reading, secondary_reading], VFD_LAYOUT),
+  )
   let display_timer = 0
 
   function clear_display_timer() {
@@ -143,7 +151,7 @@
   style:--light-delay={`${WORDMARK_LIGHT_DELAY}ms`}
   style:--circuit-pulse={`${WORDMARK_CRASH_DURATION}ms`}
   style:--cool-duration={`${WORDMARK_COOL_DURATION}ms`}
-  viewBox="-4.8 0.2 68.4 14.2"
+  viewBox="-4.8 0.2 68.4 22.2"
 >
   <defs>
     <clipPath id="wordmark-glass-clip">

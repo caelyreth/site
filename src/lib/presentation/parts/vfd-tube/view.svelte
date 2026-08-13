@@ -4,14 +4,15 @@
   interface Props {
     active: boolean
     color: string
+    readout: string
   }
 
   /* oxlint-disable prefer-const -- Observatory pulse props update with the stage. */
-  let { active, color }: Props = $props()
+  let { active, color, readout }: Props = $props()
 </script>
 
 <div class="tube-layer" style:--signal={color}>
-  <Wordmark {active} />
+  <Wordmark {active} {readout} />
 </div>
 
 <style>

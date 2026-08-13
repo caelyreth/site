@@ -12,6 +12,9 @@
   const signal_color = $derived(
     controller.color_for(controller.state.pulse.signal_color_index),
   )
+  const tube_readout = $derived(
+    format_tube_readout(controller.state.view_status),
+  )
   const surface_state = $derived<SkyMapSurfaceState>({
     signal_active: controller.state.pulse.active,
     signal_color,
@@ -25,6 +28,21 @@
     ),
     view_status: controller.state.view_status,
   })
+
+  function format_tube_readout({
+    declination,
+    right_ascension,
+  }: SkyMapSurfaceState['view_status']) {
+    const right_ascension_degrees = Math.round(right_ascension)
+      .toString()
+      .padStart(3, '0')
+    const declination_degrees = Math.round(declination)
+    const declination_sign = declination_degrees < 0 ? '-' : '+'
+    const declination_magnitude = Math.abs(declination_degrees)
+      .toString()
+      .padStart(2, '0')
+    return `R${right_ascension_degrees}*D${declination_sign}${declination_magnitude}`
+  }
 </script>
 
 <div class="observatory-stage">
@@ -32,7 +50,11 @@
     on_event={controller.handle_runtime_event}
     state={surface_state}
   />
-  <VfdTube active={surface_state.signal_active} color={signal_color} />
+  <VfdTube
+    active={surface_state.signal_active}
+    color={signal_color}
+    readout={tube_readout}
+  />
 </div>
 
 <style>

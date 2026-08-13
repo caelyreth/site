@@ -6,9 +6,10 @@ export interface VfdLayout {
   idle_radius: number
   idle_size: number
   letter_pitch: number
+  line_pitch: number
   pixel_radius: number
   pixel_size: number
-  word_y: number
+  line_y: number
 }
 
 export interface VfdPaths {
@@ -22,9 +23,10 @@ export const VFD_LAYOUT: VfdLayout = {
   idle_radius: 0.1,
   idle_size: 0.58,
   letter_pitch: 6.5,
+  line_pitch: 8,
   pixel_radius: 0.13,
   pixel_size: 0.84,
-  word_y: 3.88,
+  line_y: 3.88,
 }
 
 const BLANK = [
@@ -111,34 +113,48 @@ export function fit_vfd_text(value: string, slots: number) {
 
 export function build_vfd_idle(
   slots: number,
+  lines = 1,
   layout: VfdLayout = VFD_LAYOUT,
 ): string {
   let idle = ''
-  for (let slot = 0; slot < slots; slot += 1) {
-    idle += slot_idle(slot, layout)
+  for (let line = 0; line < lines; line += 1) {
+    for (let slot = 0; slot < slots; slot += 1) {
+      idle += slot_idle(slot, line, layout)
+    }
   }
   return idle
 }
 
 export function build_vfd_lit(
-  text: string,
+  lines: readonly string[],
   layout: VfdLayout = VFD_LAYOUT,
 ): Omit<VfdPaths, 'idle'> {
   const state = { matrix: '', steady: '' }
-  const marks = marks_of(text)
-  for (let slot = 0; slot < marks.length; slot += 1) {
-    append_lit(state, VFD_GLYPHS[marks[slot]] ?? BLANK, slot, layout)
+  for (let line = 0; line < lines.length; line += 1) {
+    append_line(state, lines[line] ?? '', line, layout)
   }
   return state
 }
 
-function slot_idle(slot: number, layout: VfdLayout) {
+function append_line(
+  state: { matrix: string; steady: string },
+  text: string,
+  line: number,
+  layout: VfdLayout,
+) {
+  const marks = marks_of(text)
+  for (let slot = 0; slot < marks.length; slot += 1) {
+    append_lit(state, VFD_GLYPHS[marks[slot]] ?? BLANK, line, slot, layout)
+  }
+}
+
+function slot_idle(slot: number, line: number, layout: VfdLayout) {
   let idle = ''
   for (let row = 0; row < VFD_GLYPH_ROWS; row += 1) {
     for (let column = 0; column < VFD_GLYPH_COLS; column += 1) {
       idle += cell_path(
         slot * layout.letter_pitch + column + layout.idle_inset,
-        layout.word_y + row + layout.idle_inset,
+        layout.line_y + line * layout.line_pitch + row + layout.idle_inset,
         layout.idle_size,
         layout.idle_radius,
       )
@@ -150,6 +166,7 @@ function slot_idle(slot: number, layout: VfdLayout) {
 function append_lit(
   state: { matrix: string; steady: string },
   glyph: readonly string[],
+  line: number,
   slot: number,
   layout: VfdLayout,
 ) {
@@ -159,7 +176,7 @@ function append_lit(
       if (cells[column] !== '1') continue
       const path = cell_path(
         slot * layout.letter_pitch + column,
-        layout.word_y + row,
+        layout.line_y + line * layout.line_pitch + row,
         layout.pixel_size,
         layout.pixel_radius,
       )
