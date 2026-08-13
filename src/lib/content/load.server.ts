@@ -1,4 +1,4 @@
-import { createMarkdownParser, type Node } from 'comark'
+import { createMarkdownParser } from 'comark'
 import toml from 'comark-toml'
 import * as v from 'valibot'
 
@@ -8,11 +8,6 @@ const content_sources = import.meta.glob('../../../content/**/*.md', {
   import: 'default',
   query: '?raw',
 }) as Record<string, () => Promise<string>>
-
-const component_schemas = import.meta.glob('./components/*.schema.ts', {
-  eager: true,
-  import: 'default',
-}) as Record<string, v.GenericSchema>
 
 const parse_markdown = createMarkdownParser({ plugins: [toml()] })
 
@@ -24,34 +19,6 @@ function source_for(content_id: string) {
   }
 
   return { source_path, load_source }
-}
-
-function validate_attributes(
-  tag: string,
-  attributes: Record<string, unknown>,
-  source_path: string,
-) {
-  const schema = component_schemas[`./components/${tag}.schema.ts`]
-  if (!schema) return
-
-  const result = v.safeParse(schema, attributes)
-  if (!result.success) {
-    throw new Error(
-      `${source_path}: invalid ${tag} props: ${v.summarize(result.issues)}`,
-    )
-  }
-}
-
-function validate_node(node: Node, source_path: string) {
-  if (typeof node === 'string' || node[0] === null) return
-
-  const [tag, attributes, ...children] = node
-  validate_attributes(tag, attributes, source_path)
-  for (const child of children) validate_node(child, source_path)
-}
-
-function validate_components(nodes: readonly Node[], source_path: string) {
-  for (const node of nodes) validate_node(node, source_path)
 }
 
 function parse_frontmatter<Frontmatter extends Record<string, unknown>>(
@@ -72,7 +39,6 @@ export async function load_content<
 ): Promise<ContentDocument<Frontmatter>> {
   const { source_path, load_source } = source_for(content_id)
   const document = await parse_markdown(await load_source())
-  validate_components(document.nodes, source_path)
 
   return {
     ...document,
