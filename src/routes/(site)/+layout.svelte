@@ -7,7 +7,7 @@
   import Backdrop from '$lib/site/backdrop.svelte'
   import Footer from '$lib/site/footer.svelte'
   import Header from '$lib/site/header.svelte'
-  import Stage from '$lib/site/stage.svelte'
+  import Presentation from '$lib/site/presentation.svelte'
   import { onMount } from 'svelte'
 
   interface SitePageData {
@@ -21,7 +21,7 @@
   )
   let fallback_progress = $state(0)
 
-  function update_stage_progress(progress: number) {
+  function update_presentation_progress(progress: number) {
     fallback_progress = progress
   }
 
@@ -34,12 +34,14 @@
     <Header />
   </div>
   <main>
-    {#if resolved_presentation?.stage}
+    {#if resolved_presentation?.background || resolved_presentation?.foreground}
       {#key page.url.pathname}
-        <Stage
-          component={resolved_presentation.stage.component}
-          options={resolved_presentation.stage.options}
-          on_progress={update_stage_progress}
+        <Presentation
+          background={resolved_presentation.background?.component}
+          background_options={resolved_presentation.background?.options}
+          foreground={resolved_presentation.foreground?.component}
+          foreground_options={resolved_presentation.foreground?.options}
+          on_progress={update_presentation_progress}
           progress={fallback_progress}
         />
       {/key}

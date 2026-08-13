@@ -2,14 +2,23 @@ import type { PresentationFrontmatter } from '$lib/content/schema'
 import * as v from 'valibot'
 
 import type {
+  BackgroundDefinition,
   FooterDefinition,
+  ForegroundDefinition,
   PresentationSelection,
   RegionSelection,
-  StageDefinition,
 } from './contract'
 
-const stage_modules = import.meta.glob<StageDefinition>(
-  './stages/*/definition.server.ts',
+const background_modules = import.meta.glob<BackgroundDefinition>(
+  './backgrounds/*/definition.server.ts',
+  {
+    eager: true,
+    import: 'default',
+  },
+)
+
+const foreground_modules = import.meta.glob<ForegroundDefinition>(
+  './foregrounds/*/definition.server.ts',
   {
     eager: true,
     import: 'default',
@@ -24,7 +33,10 @@ const footer_modules = import.meta.glob<FooterDefinition>(
   },
 )
 
-type RegionDefinition = StageDefinition | FooterDefinition
+type RegionDefinition =
+  | BackgroundDefinition
+  | FooterDefinition
+  | ForegroundDefinition
 
 interface RegionRegistry {
   parse: (id: string, value: unknown) => RegionSelection
@@ -64,10 +76,15 @@ function create_registry<Definition extends RegionDefinition>(
   return { parse }
 }
 
-const stages = create_registry<StageDefinition>(
-  'stage',
-  stage_modules,
-  (id) => `./stages/${id}/definition.server.ts`,
+const backgrounds = create_registry<BackgroundDefinition>(
+  'background',
+  background_modules,
+  (id) => `./backgrounds/${id}/definition.server.ts`,
+)
+const foregrounds = create_registry<ForegroundDefinition>(
+  'foreground',
+  foreground_modules,
+  (id) => `./foregrounds/${id}/definition.server.ts`,
 )
 const footers = create_registry<FooterDefinition>(
   'footer',
@@ -79,11 +96,20 @@ export function select_presentation(
   frontmatter: PresentationFrontmatter,
 ): PresentationSelection {
   return {
+    background: frontmatter.background
+      ? backgrounds.parse(
+          frontmatter.background,
+          frontmatter.background_options,
+        )
+      : undefined,
     footer: frontmatter.footer
       ? footers.parse(frontmatter.footer, frontmatter.footer_options)
       : undefined,
-    stage: frontmatter.graphics
-      ? stages.parse(frontmatter.graphics, frontmatter.graphics_options)
+    foreground: frontmatter.foreground
+      ? foregrounds.parse(
+          frontmatter.foreground,
+          frontmatter.foreground_options,
+        )
       : undefined,
   }
 }

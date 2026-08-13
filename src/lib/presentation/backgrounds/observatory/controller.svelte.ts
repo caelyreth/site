@@ -1,8 +1,8 @@
-import type { StageProps } from '$lib/presentation/contract'
 import {
   SIGNAL_STATUS_LABELS,
   TRANSMISSION_COLORS,
-} from '$lib/presentation/stages/observatory/runtime/signal-colors'
+} from '$lib/presentation/backgrounds/observatory/runtime/signal-colors'
+import type { BackgroundProps } from '$lib/presentation/contract'
 import { useTheme as use_theme } from 'svelte-themes'
 
 import type {
@@ -27,7 +27,7 @@ interface PresentationState {
   view_status: SkyMapViewStatus
 }
 
-type SignalCallback = StageProps['on_signal']
+type SignalCallback = BackgroundProps['on_signal']
 
 export function create_observatory_controller(
   get_on_signal: () => SignalCallback,

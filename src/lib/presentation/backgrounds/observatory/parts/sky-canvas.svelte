@@ -1,10 +1,10 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
-  import { load_sky_map_engine } from '$lib/presentation/stages/observatory/runtime/load-engine'
+  import { load_sky_map_engine } from '$lib/presentation/backgrounds/observatory/runtime/load-engine'
   import type {
     SkyMapEngine,
     SkyMapRuntimeEvent,
-  } from '$lib/presentation/stages/observatory/runtime/types'
+  } from '$lib/presentation/backgrounds/observatory/runtime/types'
   import { reduced_motion } from '$lib/site/reduced-motion'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'

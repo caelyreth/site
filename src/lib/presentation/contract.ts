@@ -4,17 +4,28 @@ import * as v from 'valibot'
 export type RegionOptions = Record<string, unknown>
 export type RegionSchema = v.GenericSchema<unknown, RegionOptions>
 
-export interface StageSignal {
+export interface PresentationSignal {
   color: string
 }
 
-export interface StageProps {
-  on_signal?: (signal: StageSignal | undefined) => void
+export interface BackgroundProps {
+  on_signal?: (signal: PresentationSignal | undefined) => void
   options: RegionOptions
 }
 
-export interface StageDefinition {
-  component: Component<StageProps>
+export interface BackgroundDefinition {
+  component: Component<BackgroundProps>
+  id: string
+  options: RegionSchema
+}
+
+export interface ForegroundProps {
+  options: RegionOptions
+  signal?: PresentationSignal
+}
+
+export interface ForegroundDefinition {
+  component: Component<ForegroundProps>
   id: string
   options: RegionSchema
 }
@@ -36,8 +47,9 @@ export interface RegionSelection {
 }
 
 export interface PresentationSelection {
+  background?: RegionSelection
   footer?: RegionSelection
-  stage?: RegionSelection
+  foreground?: RegionSelection
 }
 
 export const empty_options_schema = v.pipe(

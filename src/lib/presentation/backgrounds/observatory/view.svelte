@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { StageProps } from '$lib/presentation/contract'
+  import type { BackgroundProps } from '$lib/presentation/contract'
   import {
     text_refresh_in,
     text_refresh_out,
@@ -9,10 +9,9 @@
 
   import { create_observatory_controller } from './controller.svelte'
   import SkyCanvas from './parts/sky-canvas.svelte'
-  import Wordmark from './parts/wordmark.svelte'
 
-  /* oxlint-disable prefer-const -- Stage callback can update with its host. */
-  let { on_signal }: StageProps = $props()
+  /* oxlint-disable prefer-const -- Background callback can update with its host. */
+  let { on_signal }: BackgroundProps = $props()
   const controller = create_observatory_controller(() => on_signal)
 
   function format_coordinate(value: number, signed = false) {
@@ -35,9 +34,6 @@
   )}
 >
   <SkyCanvas on_event={controller.handle_runtime_event} />
-  <div class="wordmark-layer">
-    <Wordmark active={controller.state.pulse.active} />
-  </div>
   <span aria-hidden="true" class="edge-label edge-label-left"
     >Observation plate / open aperture</span
   >
@@ -98,19 +94,6 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
-  }
-
-  .wordmark-layer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 3;
-    width: min(64vw, 40rem);
-    pointer-events: none;
-    transform: translate(-50%, -50%)
-      scale(calc(1 - var(--stage-progress) * 0.12));
-    transform-origin: center;
-    will-change: transform;
   }
 
   .label {
@@ -255,10 +238,6 @@
 
     .edge-label {
       display: none;
-    }
-
-    .wordmark-layer {
-      width: min(84vw, 30rem);
     }
   }
 </style>

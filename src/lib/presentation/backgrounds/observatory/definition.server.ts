@@ -1,6 +1,6 @@
 import {
   empty_options_schema,
-  type StageDefinition,
+  type BackgroundDefinition,
 } from '$lib/presentation/contract'
 
 import Observatory from './view.svelte'
@@ -9,4 +9,4 @@ export default {
   id: 'observatory',
   component: Observatory,
   options: empty_options_schema,
-} satisfies StageDefinition
+} satisfies BackgroundDefinition
