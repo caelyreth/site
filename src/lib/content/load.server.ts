@@ -1,4 +1,5 @@
 import { createMarkdownParser, type Node } from 'comark'
+import toml from 'comark-toml'
 import * as v from 'valibot'
 
 import type { ContentDocument } from './schema'
@@ -13,7 +14,7 @@ const component_schemas = import.meta.glob('./components/*.schema.ts', {
   import: 'default',
 }) as Record<string, v.GenericSchema>
 
-const parse_markdown = createMarkdownParser()
+const parse_markdown = createMarkdownParser({ plugins: [toml()] })
 
 function source_for(content_id: string) {
   const source_path = `content/${content_id}.md`

@@ -1,9 +1,9 @@
----
-title: Caelyreth
-description: Field notes on architecture, geometry, and the philosophy of space.
-graphics: observatory
-footer: relay-station
----
++++
+title = "Caelyreth"
+description = "Field notes on architecture, geometry, and the philosophy of space."
+graphics = "observatory"
+footer = "relay-station"
++++
 
 # Writing, making, and the space between {#station}
 
@@ -17,14 +17,12 @@ A relay station on an isolated survey planet. Field notes on architecture, geome
 
 ::station-directory
 
-```yaml [props]
-entries:
-  - title: Field log
-    detail: notes on architecture, geometry, space - forthcoming
-  - title: Instruments
-    detail: things made, still running - forthcoming
-  - title: Manifest
-    detail: crew of one - forthcoming
+```toml [props]
+entries = [
+  { title = "Field log", detail = "notes on architecture, geometry, space - forthcoming" },
+  { title = "Instruments", detail = "things made, still running - forthcoming" },
+  { title = "Manifest", detail = "crew of one - forthcoming" },
+]
 ```
 
 ::

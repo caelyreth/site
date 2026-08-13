@@ -220,6 +220,9 @@ catalogs:
     comark:
       specifier: ^0.6.2
       version: 0.6.2
+    comark-toml:
+      specifier: ^0.1.2
+      version: 0.1.2
     svelte:
       specifier: ^5.56.8
       version: 5.56.8
@@ -293,6 +296,9 @@ importers:
       comark:
         specifier: catalog:f
         version: 0.6.2
+      comark-toml:
+        specifier: catalog:f
+        version: 0.1.2(comark@0.6.2)
       oxfmt:
         specifier: catalog:x
         version: 0.61.0(svelte@5.56.8)
@@ -1227,6 +1233,12 @@ packages:
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
 
+  comark-toml@0.1.2:
+    resolution: {integrity: sha512-KcA0brqn+BHg06aZ1/rGHaZuFu1uIQmKQE1+gwPnAZMyHY0hG1cGuVTfcy+cxMKLpi6bPz/xClR2qIjTqlx1LA==}
+    engines: {node: '>=22.18.0'}
+    peerDependencies:
+      comark: ^0.6.2
+
   comark@0.6.2:
     resolution: {integrity: sha512-hlWa7KlGPfRxovQavnHZlLlTUKrfwE7/o4ewCY0FzqFtRvVT8VdslrumQwELIiK9utsurpoSWCBFj1yVMtDOtw==}
     peerDependencies:
@@ -1584,6 +1596,10 @@ packages:
   sirv@3.0.2:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
     engines: {node: '>=18'}
+
+  smol-toml@1.8.0:
+    resolution: {integrity: sha512-kCZr2V3ch9i00x8zXRhjUNVcjG9ijES5dDudkXvUVCT5QlJNQWElSJdZqyPemffHoLNUYwOcou0Fy+ojN0uHSQ==}
+    engines: {node: '>= 18'}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -2439,6 +2455,11 @@ snapshots:
 
   colorette@2.0.20: {}
 
+  comark-toml@0.1.2(comark@0.6.2):
+    dependencies:
+      comark: 0.6.2
+      smol-toml: 1.8.0
+
   comark@0.6.2:
     dependencies:
       entities: 8.0.0
@@ -2796,6 +2817,8 @@ snapshots:
       '@polka/url': 1.0.0-next.29
       mrmime: 2.0.1
       totalist: 3.0.1
+
+  smol-toml@1.8.0: {}
 
   source-map-js@1.2.1: {}
 

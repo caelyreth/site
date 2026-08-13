@@ -24,6 +24,7 @@
     "@types/node": "catalog:t",
     "@types/three": "catalog:t",
     "comark": "catalog:f",
+    "comark-toml": "catalog:f",
     "oxfmt": "catalog:x",
     "oxlint": "catalog:x",
     "oxlint-tsgolint": "catalog:x",
