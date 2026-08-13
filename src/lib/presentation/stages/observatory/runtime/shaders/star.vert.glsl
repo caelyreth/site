@@ -125,6 +125,6 @@ void main() {
     uPixelRatio *
     mix(0.86, 1.0, depth);
   float basePointSize = mix(nightPointSize, surveyPointSize, uSurveyMode);
-  gl_PointSize = max(basePointSize, aLocator * 38.0 * uPixelRatio);
+  gl_PointSize = max(basePointSize, aLocator * 32.0 * uPixelRatio);
   vStarRadius = 0.72 * basePointSize / gl_PointSize;
 }
