@@ -34,7 +34,7 @@
   @supports (animation-timeline: scroll(root block)) {
     .site {
       animation: stage-progress 1ms linear both;
-      animation-range: 0 var(--stable-viewport-block);
+      animation-range: 0 var(--chrome-transition-span);
       animation-timeline: scroll(root block);
     }
   }

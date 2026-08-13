@@ -68,8 +68,17 @@
   @supports (animation-timeline: scroll(root block)) {
     .header {
       animation: stage-progress 1ms linear both;
-      animation-range: 0 var(--stable-viewport-block);
+      animation-range: 0 var(--chrome-transition-span);
       animation-timeline: scroll(root block);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .header {
+      --header-ink: var(--color-text);
+      --header-surface: var(--color-paper-prime);
+      --header-latch-rule: var(--color-rule);
+      animation: none;
     }
   }
 

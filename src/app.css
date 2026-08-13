@@ -103,6 +103,11 @@
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
   --stable-viewport-block: 100vh;
+  --stage-transition-span: min(
+    var(--stable-viewport-block),
+    max(18rem, 105vw)
+  );
+  --chrome-transition-span: var(--stable-viewport-block);
 
   /* texture */
   --noise-tile-light: url('./lib/assets/noise-tile.webp');
@@ -184,6 +189,13 @@
 @supports (height: 100lvh) {
   :root {
     --stable-viewport-block: 100lvh;
+  }
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --stage-transition-span: clamp(8rem, 24svh, 12rem);
+    --chrome-transition-span: var(--stage-transition-span);
   }
 }
 
