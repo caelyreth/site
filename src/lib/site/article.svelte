@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
-  import PaperSeam from './paper-seam.svelte'
+  import PaperEdge from './paper-edge.svelte'
 
   interface Props {
     children?: Snippet
@@ -18,7 +18,7 @@
   class="article deck"
 >
   {@render children?.()}
-  {#if has_footer}<PaperSeam placement="bottom" />{/if}
+  {#if has_footer}<PaperEdge guide side="bottom" />{/if}
 </article>
 
 <style>
