@@ -7,15 +7,14 @@ import {
 } from './hmr'
 
 export function listen_for_content_updates() {
-  const { hot } = import.meta
-  if (!hot) return
+  if (!import.meta.hot) return
 
   function invalidate_content({ content_id }: ContentUpdate) {
     void invalidate(content_dependency(content_id))
   }
 
-  hot.on(content_update_event, invalidate_content)
+  import.meta.hot.on(content_update_event, invalidate_content)
   return () => {
-    hot.off(content_update_event, invalidate_content)
+    import.meta.hot?.off(content_update_event, invalidate_content)
   }
 }

@@ -22,10 +22,16 @@ export function content_updates(): Plugin {
         content_id: file.slice(content_root.length, -'.md'.length),
       }
 
-      // The SSR graph refreshes the raw source; the client invalidates its load.
-      if (this.environment.name !== 'client') return
-      this.environment.hot.send(content_update_event, update)
-      return []
+      // Raw Markdown is imported only by SvelteKit's SSR environment.
+      if (this.environment.name !== 'ssr') return
+
+      options.server.ws.send({
+        data: update,
+        event: content_update_event,
+        type: 'custom',
+      })
+
+      // Leave Vite to invalidate the server module graph normally.
     },
   }
 }
