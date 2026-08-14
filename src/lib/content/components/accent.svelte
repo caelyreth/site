@@ -20,7 +20,8 @@
 <style>
   .accent {
     color: var(--color-text-link);
-    font-weight: 500;
+    font-family: var(--font-stack-serif);
+    font-weight: 400;
     overflow-wrap: anywhere;
   }
 </style>

@@ -24,6 +24,26 @@
     overflow-wrap: anywhere;
   }
 
+  :global([data-heading-depth])::after {
+    display: block;
+    height: 1px;
+    content: '';
+  }
+
+  :global([data-heading-depth='1'])::after,
+  :global([data-heading-depth='2'])::after,
+  :global([data-heading-depth='3'])::after {
+    margin-top: 0.7rem;
+    background: var(--color-rule);
+  }
+
+  :global([data-heading-depth='4'])::after,
+  :global([data-heading-depth='5'])::after,
+  :global([data-heading-depth='6'])::after {
+    margin-top: 0.45rem;
+    background-image: var(--paper-seam-dash);
+  }
+
   :global([data-heading-depth='1']) {
     max-width: 18ch;
     margin: 0;

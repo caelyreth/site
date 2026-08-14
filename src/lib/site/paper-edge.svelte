@@ -5,6 +5,9 @@
   }
 
   const { guide = false, side }: Props = $props()
+  const edge_width = 24
+  const edge_depth = 12
+  const edge_peak = edge_width / 2
   const pattern_id = $props.id()
 </script>
 
@@ -13,17 +16,26 @@
   <svg aria-hidden="true" focusable="false">
     <defs>
       <pattern
-        height="14"
+        height={edge_depth}
         id={pattern_id}
         patternUnits="userSpaceOnUse"
-        width="16"
+        width={edge_width}
       >
         {#if side === 'top'}
-          <path class="fill" d="M0 0 8 14 16 0v14H0z" />
+          <path
+            class="fill"
+            d={`M0 0 ${edge_peak} ${edge_depth} ${edge_width} 0v${edge_depth}H0z`}
+          />
         {:else}
-          <path class="fill" d="M0 0h16L8 14z" />
+          <path
+            class="fill"
+            d={`M0 0h${edge_width}L${edge_peak} ${edge_depth}z`}
+          />
         {/if}
-        <path class="outline" d="M0 0 8 14 16 0" />
+        <path
+          class="outline"
+          d={`M0 0 ${edge_peak} ${edge_depth} ${edge_width} 0`}
+        />
       </pattern>
     </defs>
     <rect fill={`url(#${pattern_id})`} height="100%" width="100%" />
@@ -55,11 +67,7 @@
     left: var(--paper-seam-guide-inset);
     z-index: 1;
     height: 1px;
-    background-image: repeating-linear-gradient(
-      to right,
-      var(--color-rule) 0 0.25rem,
-      transparent 0.25rem 0.5rem
-    );
+    background-image: var(--paper-seam-dash);
   }
 
   .fill {
