@@ -14,9 +14,9 @@
 <style>
   mark {
     padding-inline: 0.1em;
-    color: var(--color-text);
+    color: var(--color-text-secondary);
     overflow-wrap: anywhere;
-    background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+    background: var(--color-highlight-surface);
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }

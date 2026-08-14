@@ -18,6 +18,11 @@
   --color-text-light: oklch(19% 0 0);
   --color-text-secondary-light: oklch(40% 0 0);
   --color-text-link-light: oklch(40% 0.12 260);
+  --color-highlight-surface-light: color-mix(
+    in oklab,
+    var(--color-accent-light) 25%,
+    transparent
+  );
   --color-selection-surface-light: oklch(31% 0 0);
   --color-selection-ink-light: oklch(97% 0 0);
   --color-eclat-surface-light: oklch(92.5% 0 0);
@@ -58,6 +63,11 @@
   --color-text-dark: oklch(93% 0 0);
   --color-text-secondary-dark: oklch(80% 0 0);
   --color-text-link-dark: oklch(75% 0.115 274.713);
+  --color-highlight-surface-dark: color-mix(
+    in oklab,
+    var(--color-accent-dark) 26%,
+    transparent
+  );
   --color-selection-surface-dark: oklch(78% 0 0);
   --color-selection-ink-dark: oklch(17% 0 0);
   --color-eclat-surface-dark: #191919;
@@ -98,6 +108,7 @@
   --color-text: var(--color-text-light);
   --color-text-secondary: var(--color-text-secondary-light);
   --color-text-link: var(--color-text-link-light);
+  --color-highlight-surface: var(--color-highlight-surface-light);
   --color-selection-surface: var(--color-selection-surface-light);
   --color-selection-ink: var(--color-selection-ink-light);
   --color-stage-surface: var(--color-stage-surface-light);
@@ -186,6 +197,7 @@
   --color-text: var(--color-text-dark);
   --color-text-secondary: var(--color-text-secondary-dark);
   --color-text-link: var(--color-text-link-dark);
+  --color-highlight-surface: var(--color-highlight-surface-dark);
   --color-selection-surface: var(--color-selection-surface-dark);
   --color-selection-ink: var(--color-selection-ink-dark);
   --color-stage-surface: var(--color-stage-surface-dark);
