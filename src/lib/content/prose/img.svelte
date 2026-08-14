@@ -99,12 +99,12 @@
 
 <style>
   figure {
-    max-inline-size: min(100%, 22rem);
-    margin: var(--prose-block-gap) 0 0;
+    inline-size: min(100%, 22rem);
+    margin: var(--prose-block-gap) auto 0;
   }
 
   figure.wide {
-    max-inline-size: 100%;
+    inline-size: 100%;
   }
 
   .media-frame {
