@@ -32,7 +32,7 @@
     margin-inline-start: 0.16em;
     color: var(--color-muted);
     font-family: var(--font-stack-sans);
-    font-size: 0.75em;
+    font-size: 0.6875em;
     font-weight: 600;
     text-decoration: none;
     content: '\2197';
@@ -41,6 +41,10 @@
   a[href^='#fn']::after,
   a.footnote-backref::after {
     content: none;
+  }
+
+  a[href^='#fn'] {
+    text-decoration: none;
   }
 
   @media (hover: hover) {

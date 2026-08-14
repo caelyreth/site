@@ -46,7 +46,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    border: 1px solid var(--color-rule);
+    border: 1px solid var(--color-boundary);
     background: color-mix(
       in oklab,
       var(--color-prose-surface) 82%,

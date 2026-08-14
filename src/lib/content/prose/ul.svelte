@@ -36,7 +36,7 @@
     left: 0;
     width: 0.625rem;
     height: 1px;
-    background: var(--color-rule);
+    background: var(--color-boundary);
     content: '';
   }
 
@@ -47,7 +47,7 @@
   ul :global(ul) > :global(li)::before {
     width: 0.375rem;
     height: 0.375rem;
-    border: 1px solid var(--color-rule);
+    border: 1px solid var(--color-boundary);
     background: transparent;
     transform: translateY(-0.125rem) rotate(45deg);
   }
