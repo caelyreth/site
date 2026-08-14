@@ -8,16 +8,25 @@
   import type { Component } from 'svelte'
 
   import Guide from './guide.svelte'
+  import type { StageIntroContent } from './stage-intro'
+  import StageIntro from './stage-intro.svelte'
 
   interface Props {
     component: Component<StageProps>
+    intro: StageIntroContent
     on_progress?: (progress: number) => void
     options: RegionOptions
     progress?: number
   }
 
   /* oxlint-disable prefer-const -- Stage selection can update with the route. */
-  let { component, on_progress, options, progress = 0 }: Props = $props()
+  let {
+    component,
+    intro,
+    on_progress,
+    options,
+    progress = 0,
+  }: Props = $props()
   const StageContent = $derived(component)
   let signal = $state<StageSignal | undefined>()
 
@@ -64,13 +73,14 @@
   style:--stage-fallback-progress={progress}
   {@attach observe_stage_progress}
 >
-  <section class="stage-sticky" aria-label="Featured visual">
+  <section class="stage-sticky" aria-labelledby="stage-title">
     <div
       class:active={signal !== undefined}
       class="stage-frame"
       style:--stage-signal={signal?.color ?? 'transparent'}
     >
       <StageContent {options} on_signal={update_signal} />
+      <StageIntro {...intro} />
       <Guide side="left" inStage reveal />
       <Guide side="right" inStage reveal />
     </div>
@@ -98,6 +108,12 @@
     --stage-top: calc(var(--header-block-size) - var(--stage-rail-seam));
     --stage-radius: calc(var(--stage-frame-radius) * var(--stage-opening));
     --stage-content-rule: var(--color-boundary);
+    --stage-intro-inline-inset: max(
+      var(--inline-gutter),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
+    --stage-intro-bottom-inset: max(1.25rem, env(safe-area-inset-bottom));
     --dur-stage-signal: 1800ms;
     --ease-stage-signal: cubic-bezier(0.46, 0, 0.22, 1);
     height: calc(var(--stage-viewport) + var(--stage-scroll-span));
@@ -108,6 +124,15 @@
       animation: stage-progress 1ms linear both;
       animation-range: 0 var(--stage-scroll-span);
       animation-timeline: scroll(root block);
+    }
+  }
+
+  @supports (height: 100dvh) and (height: 100lvh) {
+    .stage-capture {
+      --stage-intro-bottom-inset: calc(
+        max(1.25rem, env(safe-area-inset-bottom)) +
+          max(0px, 100lvh - 100dvh)
+      );
     }
   }
 

@@ -18,14 +18,6 @@
   const surface_state = $derived<SkyMapSurfaceState>({
     signal_active: controller.state.pulse.active,
     signal_color,
-    transmissions: controller.state.transmissions.map(
-      (transmission, index) => ({
-        color: controller.color_for(transmission.color_index),
-        label: controller.label_for(transmission.color_index),
-        opacity: 1 - index * 0.3,
-        sequence: transmission.sequence,
-      }),
-    ),
     view_status: controller.state.view_status,
   })
 

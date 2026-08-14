@@ -1,11 +1,4 @@
 <script lang="ts">
-  import {
-    text_refresh_in,
-    text_refresh_out,
-  } from '$lib/presentation/text-refresh'
-  import { flip } from 'svelte/animate'
-  import { fly } from 'svelte/transition'
-
   import type { SkyMapSurfaceProps } from './contract'
   import SkyCanvas from './parts/sky-canvas.svelte'
 
@@ -44,33 +37,9 @@
       {state.view_status.scale.toFixed(2)}</span
     >
   </div>
-  <div class="label-rail label-rail-bottom">
-    <div aria-hidden="true" class="label transmission-log">
-      {#if state.transmissions.length === 0}
-        <span class="transmission transmission-empty"
-          ><span class="transmission-name">No log</span><span
-            class="transmission-sequence">000</span
-          ></span
-        >
-      {:else}
-        {#each state.transmissions as transmission (transmission.sequence)}
-          <span
-            animate:flip={{ duration: 360 }}
-            class="transmission"
-            in:fly={text_refresh_in}
-            out:fly={text_refresh_out}
-            style:--transmission-color={transmission.color}
-            style:--transmission-opacity={transmission.opacity}
-            ><span class="transmission-name">{transmission.label}</span
-            ><span class="transmission-sequence"
-              >{String(transmission.sequence).padStart(3, '0')}</span
-            ></span
-          >
-        {/each}
-      {/if}
-    </div>
-    <a class="label descent" href="#content">Descend to content</a>
-  </div>
+  <span aria-hidden="true" class="label descent-label"
+    >Descent to station</span
+  >
 </div>
 
 <style>
@@ -138,20 +107,13 @@
     white-space: nowrap;
   }
 
-  .label-rail-bottom {
-    grid-template-columns: minmax(0, 1fr) max-content;
+  .descent-label {
+    position: absolute;
+    right: var(--label-safe-right);
     bottom: var(--label-bottom-inset);
-    align-items: end;
-    transition: bottom var(--dur-long) var(--ease-out);
-  }
-
-  .descent {
-    color: var(--color-stage-ink-secondary);
-    text-decoration-color: var(--color-boundary);
-    text-underline-offset: 0.15em;
-    transition:
-      color var(--dur-micro) var(--ease-out),
-      text-decoration-color var(--dur-micro) var(--ease-out);
+    z-index: 4;
+    text-align: right;
+    white-space: nowrap;
   }
 
   .view-status {
@@ -167,42 +129,6 @@
 
   .view-status.spreading .view-status-key {
     color: var(--signal);
-  }
-
-  .transmission-log {
-    display: flex;
-    flex-direction: column-reverse;
-    width: min(100%, 11.25rem);
-    height: 2.75rem;
-    gap: 0.25rem;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .transmission {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 3ch;
-    column-gap: 0.5rem;
-    color: var(--transmission-color);
-    opacity: var(--transmission-opacity);
-    white-space: nowrap;
-    will-change: opacity, transform;
-    transition:
-      color var(--dur-short) var(--ease-out),
-      opacity var(--dur-long) var(--ease-out);
-  }
-
-  .transmission-empty {
-    color: var(--color-stage-ink-secondary);
-    opacity: 1;
-  }
-
-  .transmission-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .transmission-sequence {
-    text-align: right;
   }
 
   .edge-label {
@@ -232,19 +158,6 @@
   .edge-label-right {
     right: var(--label-safe-right);
     transform: translateY(-50%);
-  }
-
-  @media (hover: hover) {
-    .descent:hover {
-      color: var(--color-stage-ink);
-      text-decoration-color: var(--color-stage-ink);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .label-rail-bottom {
-      transition: none;
-    }
   }
 
   @media (max-width: 38rem) {

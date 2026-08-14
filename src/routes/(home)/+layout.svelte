@@ -1,5 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import type {
+    ContentDocument,
+    HomeFrontmatter,
+  } from '$lib/content/schema'
   import type { PresentationSelection } from '$lib/presentation/contract'
   import { resolve_presentation } from '$lib/presentation/registry'
   import Article from '$lib/site/article.svelte'
@@ -9,15 +13,21 @@
   import Stage from '$lib/site/stage.svelte'
 
   interface HomePageData {
+    document: ContentDocument<HomeFrontmatter>
     presentation?: PresentationSelection
   }
 
   const { children } = $props()
+  const document = $derived((page.data as HomePageData).document)
   const presentation = $derived((page.data as HomePageData).presentation)
   const resolved_presentation = $derived(
     presentation ? resolve_presentation(presentation) : undefined,
   )
   let fallback_progress = $state(0)
+  const stage_intro = $derived({
+    description: document.frontmatter.description,
+    title: document.frontmatter.title,
+  })
 
   function update_stage_progress(progress: number) {
     fallback_progress = progress
@@ -34,6 +44,7 @@
       {#key page.url.pathname}
         <Stage
           component={resolved_presentation.stage.component}
+          intro={stage_intro}
           options={resolved_presentation.stage.options}
           on_progress={update_stage_progress}
           progress={fallback_progress}

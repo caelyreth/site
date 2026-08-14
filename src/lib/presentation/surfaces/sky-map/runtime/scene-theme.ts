@@ -53,15 +53,6 @@ const sky_map_scene_themes = {
   },
 } satisfies Record<'dark' | 'light', SkyMapSceneTheme>
 
-export const signal_status_labels = [
-  'Origin lock',
-  'Zenith bearing',
-  'Horizon relay',
-  'Tidal vector',
-  'Orbital trace',
-  'Archive echo',
-]
-
 export function sky_map_scene_theme(dark: boolean) {
   return dark ? sky_map_scene_themes.dark : sky_map_scene_themes.light
 }

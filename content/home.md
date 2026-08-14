@@ -5,7 +5,7 @@ stage = "observatory"
 footer = "relay-station"
 +++
 
-# Markdown field manual {#station}
+## Markdown field manual {#station}
 
 A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.
 

@@ -33,7 +33,7 @@
     display: flex;
     width: 100%;
     flex: 1;
-    padding-block: clamp(3rem, 7vw, 5rem);
+    padding-block: clamp(1.75rem, 3vw, 2.5rem) clamp(3rem, 7vw, 5rem);
     padding-inline: var(--inline-gutter);
     flex-direction: column;
   }
