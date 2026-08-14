@@ -10,3 +10,9 @@
 </script>
 
 <tbody {...attributes}>{@render children?.()}</tbody>
+
+<style>
+  tbody :global(tr:last-child > td) {
+    border-bottom: 0;
+  }
+</style>

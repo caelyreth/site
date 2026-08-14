@@ -13,16 +13,23 @@
 
 <style>
   td {
-    padding: 0.625rem 0.875rem 0.625rem 0;
+    padding: 0.625rem 0.875rem;
     border-bottom: 1px solid var(--color-rule);
     color: var(--color-text-secondary);
-    text-align: left;
-    overflow-wrap: anywhere;
+    text-align: start;
+    vertical-align: top;
+    overflow-wrap: normal;
   }
 
-  @media (max-width: 38rem) {
-    td {
-      padding-right: 0.5rem;
-    }
+  td:first-child {
+    padding-inline-start: 0;
+  }
+
+  td:last-child {
+    padding-inline-end: 0;
+  }
+
+  td.numeric {
+    text-align: end;
   }
 </style>

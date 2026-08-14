@@ -10,3 +10,9 @@
 </script>
 
 <thead {...attributes}>{@render children?.()}</thead>
+
+<style>
+  thead {
+    background: color-mix(in oklab, var(--color-text) 4%, transparent);
+  }
+</style>

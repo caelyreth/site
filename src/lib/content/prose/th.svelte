@@ -3,29 +3,37 @@
 
   interface Props extends Record<string, unknown> {
     children?: Snippet
+    scope?: 'col' | 'colgroup' | 'row' | 'rowgroup'
   }
 
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
-  let { children, ...attributes }: Props = $props()
+  let { children, scope = 'col', ...attributes }: Props = $props()
 </script>
 
-<th {...attributes}>{@render children?.()}</th>
+<th {...attributes} {scope}>{@render children?.()}</th>
 
 <style>
   th {
-    padding: 0.625rem 0.875rem 0.625rem 0;
+    padding: 0.625rem 0.875rem;
     border-bottom: 1px solid var(--color-rule);
     color: var(--color-text);
     font-family: var(--font-stack-sans);
     font-size: inherit;
     font-weight: 600;
-    text-align: left;
-    overflow-wrap: anywhere;
+    text-align: start;
+    vertical-align: bottom;
+    overflow-wrap: normal;
   }
 
-  @media (max-width: 38rem) {
-    th {
-      padding-right: 0.5rem;
-    }
+  th:first-child {
+    padding-inline-start: 0;
+  }
+
+  th:last-child {
+    padding-inline-end: 0;
+  }
+
+  th.numeric {
+    text-align: end;
   }
 </style>

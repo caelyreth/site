@@ -13,12 +13,26 @@
 
 <style>
   ol {
-    margin: 1rem 0 0;
-    padding-inline-start: 1.25rem;
+    margin: var(--prose-list-margin, var(--prose-block-gap)) 0 0;
+    padding-inline-start: 1.5rem;
     color: var(--color-text-secondary);
     font-size: var(--prose-size);
     line-height: var(--prose-leading);
     list-style: decimal;
-    margin-block-start: var(--prose-list-gap, 1rem);
+  }
+
+  ol :global(ol) {
+    list-style-type: lower-alpha;
+  }
+
+  ol :global(ol ol) {
+    list-style-type: lower-roman;
+  }
+
+  ol::marker {
+    color: var(--color-muted);
+    font-family: var(--font-stack-sans);
+    font-size: 0.875em;
+    font-weight: 600;
   }
 </style>

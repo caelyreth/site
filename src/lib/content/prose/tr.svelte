@@ -10,3 +10,9 @@
 </script>
 
 <tr {...attributes}>{@render children?.()}</tr>
+
+<style>
+  tr {
+    vertical-align: inherit;
+  }
+</style>

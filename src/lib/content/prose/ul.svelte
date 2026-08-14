@@ -13,17 +13,29 @@
 
 <style>
   ul {
-    margin: 1rem 0 0;
-    padding-inline-start: 1.25rem;
+    margin: var(--prose-list-margin, var(--prose-block-gap)) 0 0;
+    padding-inline-start: 1.5rem;
     color: var(--color-text-secondary);
     font-size: var(--prose-size);
     line-height: var(--prose-leading);
     list-style: square;
-    margin-block-start: var(--prose-list-gap, 1rem);
   }
 
   ul.contains-task-list {
     padding-inline-start: 0;
     list-style: none;
+  }
+
+  ul :global(ul) {
+    list-style-type: disc;
+  }
+
+  ul :global(ul ul) {
+    list-style-type: circle;
+  }
+
+  ul::marker {
+    color: var(--color-muted);
+    font-size: 0.8em;
   }
 </style>
