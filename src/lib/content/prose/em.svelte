@@ -14,6 +14,7 @@
 <style>
   em {
     color: var(--color-text);
+    font-style: italic;
     overflow-wrap: anywhere;
   }
 </style>

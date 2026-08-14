@@ -23,6 +23,10 @@
       text-decoration-color var(--dur-micro) var(--ease-out);
   }
 
+  a:visited {
+    color: var(--color-text-link);
+  }
+
   @media (hover: hover) {
     a:hover {
       color: var(--color-text-link);

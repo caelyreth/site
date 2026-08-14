@@ -1,4 +1,5 @@
 @import './lib/site/paper.css';
+@import './lib/content/prose/foundation.css';
 
 :root {
   /* light color palette */
@@ -128,6 +129,8 @@
   --dur-micro: 128ms;
   --dur-short: 224ms;
   --dur-long: 432ms;
+
+  color-scheme: light;
 }
 
 @property --stage-progress {
@@ -178,6 +181,8 @@
   --noise-menu-opacity: 0.12;
   --noise-hatch-size: 192px;
   --noise-hatch-opacity: 0.52;
+
+  color-scheme: dark;
 }
 
 @supports (height: 100svh) {

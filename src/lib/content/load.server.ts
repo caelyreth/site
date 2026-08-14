@@ -1,5 +1,15 @@
 import { createMarkdownParser } from 'comark'
 import toml from 'comark-toml'
+import alert from 'comark/plugins/alert'
+import attributes from 'comark/plugins/attributes'
+import components from 'comark/plugins/components'
+import footnotes from 'comark/plugins/footnotes'
+import headings from 'comark/plugins/headings'
+import punctuation from 'comark/plugins/punctuation'
+import security from 'comark/plugins/security'
+import summary from 'comark/plugins/summary'
+import task_list from 'comark/plugins/task-list'
+import toc from 'comark/plugins/toc'
 import * as v from 'valibot'
 
 import type { ContentDocument } from './schema'
@@ -12,7 +22,22 @@ const content_sources = import.meta.glob<string>(
   },
 )
 
-const parse_markdown = createMarkdownParser({ plugins: [toml()] })
+const parse_markdown = createMarkdownParser({
+  registerDefaultPlugins: false,
+  plugins: [
+    toml(),
+    alert(),
+    task_list(),
+    components(),
+    attributes(),
+    footnotes({ hr: false }),
+    headings(),
+    toc({ depth: 3, searchDepth: 3 }),
+    summary(),
+    punctuation(),
+    security({ allowDataImages: false }),
+  ],
+})
 
 function source_for(content_id: string) {
   const source_path = `content/${content_id}.md`

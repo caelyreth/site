@@ -43,10 +43,3 @@
 <div class="document">
   <MarkdownDocument value={document} {components} />
 </div>
-
-<style>
-  .document {
-    --prose-size: 0.9375rem;
-    --prose-leading: 1.6;
-  }
-</style>

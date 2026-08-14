@@ -1,0 +1,36 @@
+.document {
+  --prose-size: 0.9375rem;
+  --prose-leading: 1.6;
+  --prose-block-gap: 1.25rem;
+  --prose-nested-gap: 0.5rem;
+
+  min-inline-size: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--font-stack-serif);
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-synthesis: none;
+}
+
+.document :where(.comark-content) {
+  min-inline-size: 0;
+}
+
+.document :where(.comark-content > *) {
+  min-inline-size: 0;
+}
+
+.document .annotation {
+  color: var(--color-muted);
+  font-family: var(--font-stack-sans);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.document :where(li, blockquote, aside, td, th, figcaption) > :first-child {
+  margin-block-start: 0;
+}
+
+.document :where(li, blockquote, aside, td, th, figcaption) > :last-child {
+  margin-block-end: 0;
+}

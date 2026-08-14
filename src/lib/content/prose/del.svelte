@@ -13,8 +13,10 @@
 
 <style>
   del {
+    text-decoration-line: line-through;
     text-decoration-color: currentcolor;
     text-decoration-thickness: 1px;
+    text-underline-offset: 0.1em;
     overflow-wrap: anywhere;
   }
 </style>

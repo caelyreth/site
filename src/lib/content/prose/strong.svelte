@@ -14,6 +14,7 @@
 <style>
   strong {
     color: var(--color-text);
+    font-synthesis: none;
     font-weight: 700;
     overflow-wrap: anywhere;
   }

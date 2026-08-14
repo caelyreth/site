@@ -19,6 +19,7 @@
 <style>
   :global([data-heading-depth]) {
     color: var(--color-text);
+    font-style: normal;
     scroll-margin-top: var(--header-safe-inset);
     overflow-wrap: anywhere;
   }
@@ -30,6 +31,7 @@
     font-size: clamp(2.25rem, 7vw, 3rem);
     font-weight: 700;
     line-height: 1.08;
+    text-wrap: balance;
   }
 
   :global([data-heading-depth='2']) {
@@ -38,6 +40,7 @@
     font-size: 1.375rem;
     font-weight: 700;
     line-height: 1.15;
+    text-wrap: balance;
   }
 
   :global([data-heading-depth='3']) {
