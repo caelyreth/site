@@ -55,18 +55,6 @@
     menu_open = false
   }
 
-  function handle_animation_end(event: AnimationEvent) {
-    if (
-      event.target !== dialog ||
-      event.animationName !== 'menu-leave' ||
-      !closing
-    ) {
-      return
-    }
-
-    dialog?.close()
-  }
-
   function track_dismiss_pointer(event: PointerEvent) {
     dismiss_pointer_type = event.pointerType
   }
@@ -105,8 +93,8 @@
   aria-label="Site menu"
   oncancel={handle_cancel}
   onclose={handle_close}
-  onanimationend={handle_animation_end}
 >
+  <div aria-hidden="true" class="menu-veil"></div>
   <button
     type="button"
     class="dismiss"
@@ -206,28 +194,21 @@
     --slip-surface: var(--color-ink);
     --slip-ink: var(--color-paper);
     --drift-ink: var(--color-ink);
-    --focus-duration: 600ms;
-
     position: fixed;
     inset: 0;
     box-sizing: border-box;
     width: 100vw;
     min-width: 100vw;
     max-width: 100vw;
-    height: 100dvh;
-    min-height: 100dvh;
-    max-height: 100dvh;
+    height: var(--stable-viewport-block);
+    min-height: var(--stable-viewport-block);
+    max-height: var(--stable-viewport-block);
     margin: 0;
     padding: 0;
     overflow: hidden;
     border: 0;
     color: var(--color-text);
-    background-color: color-mix(
-      in oklab,
-      var(--color-paper) 88%,
-      transparent
-    );
-    backdrop-filter: blur(5px);
+    background: transparent;
   }
 
   :global(.dark) .menu {
@@ -238,7 +219,7 @@
   .menu::after {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 1;
     pointer-events: none;
     content: '';
   }
@@ -272,18 +253,39 @@
   }
 
   .menu::backdrop {
-    background: color-mix(in oklab, var(--color-ink) 20%, transparent);
+    background: transparent;
   }
 
   .menu.is-closing::backdrop {
     background: transparent;
-    transition: background-color var(--dur-long) var(--ease-out);
+  }
+
+  .menu-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: color-mix(in oklab, var(--color-paper) 88%, transparent);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    transition: opacity var(--dur-long) var(--ease-out);
+  }
+
+  .menu.is-closing .menu-veil {
+    opacity: 0;
+  }
+
+  @media (max-width: 40rem) {
+    .menu-veil {
+      background: var(--color-paper);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
 
   .dismiss {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
     width: 100%;
     height: 100%;
     padding: 0;
@@ -292,36 +294,11 @@
     background: transparent;
   }
 
-  @keyframes menu-leave {
-    to {
-      opacity: 0;
-    }
-  }
-
-  @keyframes menu-focus {
-    from {
-      backdrop-filter: blur(0);
-    }
-    to {
-      backdrop-filter: blur(5px);
-    }
-  }
-
-  .menu[open]:not(.is-closing) {
-    animation: menu-focus var(--focus-duration) var(--ease-in-out) both;
-  }
-
-  .menu.is-closing {
-    animation: menu-leave var(--dur-long) var(--ease-out) both;
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .menu {
+    .menu-veil {
+      -webkit-backdrop-filter: none;
       backdrop-filter: none;
-    }
-
-    .menu[open]:not(.is-closing) {
-      animation: none;
+      transition: none;
     }
   }
 </style>

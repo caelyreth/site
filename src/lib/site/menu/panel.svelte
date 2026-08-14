@@ -48,21 +48,25 @@
   {#each drifts as drift (drift.text)}
     <span
       aria-hidden="true"
-      class="drift"
-      style:--drift-bottom={drift.layout.bottom}
-      style:--drift-blur={drift.layout.blur}
+      class="drift-layer"
       style:--drift-enter-delay={drift.layout.enter_delay}
-      style:--drift-left={drift.layout.left}
-      style:--drift-opacity={drift.layout.opacity}
-      style:--drift-right={drift.layout.right}
-      style:--drift-rotation={drift.layout.rotation}
-      style:--drift-top={drift.layout.top}
-      style:--drift-bottom-compact={drift.layout.compact?.bottom}
-      style:--drift-left-compact={drift.layout.compact?.left}
-      style:--drift-right-compact={drift.layout.compact?.right}
-      style:--drift-top-compact={drift.layout.compact?.top}
-      >{drift.text}</span
     >
+      <span
+        class="drift"
+        style:--drift-bottom={drift.layout.bottom}
+        style:--drift-blur={drift.layout.blur}
+        style:--drift-left={drift.layout.left}
+        style:--drift-opacity={drift.layout.opacity}
+        style:--drift-right={drift.layout.right}
+        style:--drift-rotation={drift.layout.rotation}
+        style:--drift-top={drift.layout.top}
+        style:--drift-bottom-compact={drift.layout.compact?.bottom}
+        style:--drift-left-compact={drift.layout.compact?.left}
+        style:--drift-right-compact={drift.layout.compact?.right}
+        style:--drift-top-compact={drift.layout.compact?.top}
+        >{drift.text}</span
+      >
+    </span>
   {/each}
 
   <nav class="primary" aria-label="Station menu options">
@@ -126,6 +130,10 @@
     --menu-gutter: clamp(0.75rem, 4vw, 2rem);
     --menu-inset-left: max(var(--menu-gutter), env(safe-area-inset-left));
     --menu-inset-right: max(var(--menu-gutter), env(safe-area-inset-right));
+    --menu-inset-bottom: max(
+      var(--menu-gutter),
+      env(safe-area-inset-bottom)
+    );
     position: relative;
     z-index: 2;
     width: 100%;
@@ -242,6 +250,7 @@
     width: 10.5rem;
     min-height: 7.5rem;
     justify-content: space-between;
+    transition: bottom var(--dur-long) var(--ease-out);
     transform: rotate(var(--slip-effective-rotation, var(--slip-rotation)));
   }
 
@@ -335,6 +344,13 @@
     user-select: none;
   }
 
+  .drift-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
   .field-note {
     position: absolute;
     z-index: 3;
@@ -383,7 +399,7 @@
     animation: slip-enter var(--dur-long) var(--ease-out)
       var(--slip-enter-delay) backwards;
   }
-  .stage.is-open:not(.is-closing) .drift {
+  .stage.is-open:not(.is-closing) .drift-layer {
     animation: drift-enter var(--dur-long) var(--ease-out)
       var(--drift-enter-delay, 0ms) backwards;
   }
@@ -394,7 +410,7 @@
   .stage.is-closing .theme-slip {
     animation: slip-leave var(--dur-long) var(--ease-out) both;
   }
-  .stage.is-closing .drift,
+  .stage.is-closing .drift-layer,
   .stage.is-closing .orbits {
     animation: drift-leave var(--dur-long) var(--ease-out) both;
   }
@@ -407,31 +423,28 @@
       opacity: 0.1;
     }
 
+    .primary {
+      display: grid;
+      box-sizing: border-box;
+      gap: 0.75rem;
+      align-content: start;
+      padding: max(18%, 5.5rem) var(--menu-inset-right) 0
+        var(--menu-inset-left);
+    }
+
     .slip {
       --slip-effective-rotation: 0deg;
 
-      right: var(--menu-inset-right);
-      left: var(--menu-inset-left);
+      position: relative;
+      top: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
       width: auto;
       max-width: none;
       min-height: 4.875rem;
       padding: 0.75rem 0.875rem 0.875rem;
       gap: 0.3rem;
-    }
-
-    .slip.observation {
-      top: max(18%, 5.5rem);
-      bottom: auto;
-    }
-
-    .slip.directory {
-      top: calc(max(18%, 5.5rem) + 5.625rem);
-      bottom: auto;
-    }
-
-    .slip.transmission {
-      top: calc(max(18%, 5.5rem) + 11.25rem);
-      bottom: auto;
     }
 
     .slip-title {
@@ -444,7 +457,7 @@
 
       top: auto;
       right: var(--menu-inset-right);
-      bottom: max(var(--menu-gutter), env(safe-area-inset-bottom));
+      bottom: var(--menu-inset-bottom);
       left: var(--menu-inset-left);
       width: auto;
       min-height: 5.625rem;
@@ -467,43 +480,45 @@
       bottom: var(--drift-bottom-compact, var(--drift-bottom));
       left: var(--drift-left-compact, var(--drift-left));
     }
+
+    .drift-layer {
+      display: none;
+    }
     .field-note {
       display: none;
     }
   }
 
   @media (max-height: 42rem) and (max-width: 40rem) {
+    .primary {
+      gap: 0.5rem;
+      padding-top: max(15%, 4rem);
+    }
+
     .slip {
       min-height: 0;
       padding-block: 0.55rem 0.625rem;
-    }
-
-    .slip-detail {
-      display: none;
-    }
-
-    .slip.directory {
-      top: calc(max(15%, 4rem) + 4.5rem);
-    }
-
-    .slip.transmission {
-      top: calc(max(15%, 4rem) + 9rem);
     }
 
     .theme-slip {
       min-height: 4.875rem;
       gap: 0.35rem;
     }
+  }
 
-    .theme-label {
-      display: none;
+  @supports (height: 100dvh) and (height: 100lvh) {
+    .stage {
+      --menu-inset-bottom: calc(
+        max(var(--menu-gutter), env(safe-area-inset-bottom)) +
+          max(0px, 100lvh - 100dvh)
+      );
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .stage.is-open .slip,
     .stage.is-open .theme-slip,
-    .stage.is-open .drift,
+    .stage.is-open .drift-layer,
     .stage.is-open .orbits {
       animation: none;
     }
