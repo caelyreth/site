@@ -15,21 +15,20 @@
   li {
     --prose-list-margin: var(--prose-nested-gap);
 
-    margin-top: 0.35rem;
-    padding-inline-start: 0.15rem;
+    min-inline-size: 0;
     overflow-wrap: anywhere;
   }
 
-  li:first-child {
-    margin-top: 0;
+  li.task-list-item::before {
+    content: none;
   }
 
   li.task-list-item {
     display: grid;
     padding-inline-start: 0;
-    grid-template-columns: 0.875rem minmax(0, 1fr);
+    grid-template-columns: 1rem minmax(0, 1fr);
     align-items: start;
-    column-gap: 0.5rem;
+    column-gap: 0.625rem;
     list-style: none;
   }
 

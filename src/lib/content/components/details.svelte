@@ -3,16 +3,71 @@
 
   interface Props extends Record<string, unknown> {
     children?: Snippet
+    open?: boolean
     summary?: string
   }
 
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
-  let { children, summary = 'Details', ...attributes }: Props = $props()
+  let {
+    children,
+    open = false,
+    summary = 'Details',
+    ...attributes
+  }: Props = $props()
+  let is_closing = $state(false)
+
+  function is_reduced_motion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }
+
+  function toggle_details(event: MouseEvent) {
+    event.preventDefault()
+
+    if (is_closing) {
+      is_closing = false
+      open = true
+      return
+    }
+
+    if (!open) {
+      open = true
+      return
+    }
+
+    if (is_reduced_motion()) {
+      open = false
+      return
+    }
+
+    is_closing = true
+  }
+
+  function finish_close(event: TransitionEvent) {
+    if (
+      !is_closing ||
+      event.target !== event.currentTarget ||
+      event.propertyName !== 'grid-template-rows'
+    ) {
+      return
+    }
+
+    open = false
+    is_closing = false
+  }
 </script>
 
-<details {...attributes}>
-  <summary>{summary}</summary>
-  <div class="details-content">{@render children?.()}</div>
+<details {...attributes} data-closing={is_closing || undefined} {open}>
+  <summary onclick={toggle_details}>{summary}</summary>
+  <div
+    aria-hidden={!open || is_closing}
+    class="details-content"
+    inert={!open || is_closing}
+    ontransitionend={finish_close}
+  >
+    <div class="details-content-inner">
+      <div class="details-copy">{@render children?.()}</div>
+    </div>
+  </div>
 </details>
 
 <style>
@@ -63,15 +118,36 @@
   }
 
   .details-content {
-    padding: 0 1rem 1rem;
+    display: grid;
+    grid-template-rows: 0fr;
+    min-inline-size: 0;
+    opacity: 0;
+    transition:
+      grid-template-rows var(--dur-short) var(--ease-out),
+      opacity var(--dur-short) var(--ease-out);
   }
 
-  .details-content :global(p + p) {
+  details[open]:not([data-closing]) .details-content {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .details-content-inner {
+    min-block-size: 0;
+    overflow: clip;
+  }
+
+  .details-copy {
+    padding: 0.875rem 1rem 1rem;
+  }
+
+  .details-copy :global(p + p) {
     margin-top: var(--prose-nested-gap);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    summary::after {
+    summary::after,
+    .details-content {
       transition-duration: 0ms;
     }
   }

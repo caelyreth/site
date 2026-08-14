@@ -36,7 +36,6 @@
 
   :global([data-heading-depth='2']) {
     margin: 3.5rem 0 0;
-    font-family: var(--font-stack-serif);
     font-size: 1.375rem;
     font-weight: 700;
     line-height: 1.15;

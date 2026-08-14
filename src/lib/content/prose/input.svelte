@@ -34,9 +34,9 @@
   .task-checkbox {
     position: relative;
     display: block;
-    inline-size: 0.875rem;
-    block-size: 0.875rem;
-    margin-block-start: 0.25em;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-block-start: 0.2em;
   }
 
   .task-checkbox::before,
@@ -49,7 +49,11 @@
   .task-checkbox::before {
     inset: 0;
     border: 1px solid var(--color-rule);
-    background: var(--color-prose-surface);
+    background: color-mix(
+      in oklab,
+      var(--color-prose-surface) 82%,
+      var(--color-paper)
+    );
   }
 
   .task-checkbox[data-checked='true']::before {
@@ -58,7 +62,7 @@
   }
 
   .task-checkbox[data-checked='true']::after {
-    inset: 0.2rem 0.16rem 0.28rem 0.18rem;
+    inset: 0.22rem 0.18rem 0.3rem 0.2rem;
     border-bottom: 1px solid var(--color-paper);
     border-left: 1px solid var(--color-paper);
     transform: rotate(-45deg);

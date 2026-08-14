@@ -14,11 +14,15 @@
 <style>
   ol {
     margin: var(--prose-list-margin, var(--prose-block-gap)) 0 0;
-    padding-inline-start: 1.5rem;
+    padding-inline-start: 2rem;
     color: var(--color-text-secondary);
     font-size: var(--prose-size);
     line-height: var(--prose-leading);
     list-style: decimal;
+  }
+
+  ol > :global(li) + :global(li) {
+    margin-top: var(--prose-list-gap, 0.5rem);
   }
 
   ol :global(ol) {
@@ -29,10 +33,10 @@
     list-style-type: lower-roman;
   }
 
-  ol::marker {
-    color: var(--color-muted);
-    font-family: var(--font-stack-sans);
-    font-size: 0.875em;
+  ol > :global(li)::marker {
+    color: var(--color-text-secondary);
+    font-size: 0.75em;
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 </style>

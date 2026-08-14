@@ -14,28 +14,41 @@
 <style>
   ul {
     margin: var(--prose-list-margin, var(--prose-block-gap)) 0 0;
-    padding-inline-start: 1.5rem;
+    padding: 0;
     color: var(--color-text-secondary);
     font-size: var(--prose-size);
     line-height: var(--prose-leading);
-    list-style: square;
-  }
-
-  ul.contains-task-list {
-    padding-inline-start: 0;
     list-style: none;
   }
 
-  ul :global(ul) {
-    list-style-type: disc;
+  ul.contains-task-list {
+    --prose-list-gap: 0.625rem;
   }
 
-  ul :global(ul ul) {
-    list-style-type: circle;
+  ul > :global(li) {
+    position: relative;
+    padding-inline-start: 1.25rem;
   }
 
-  ul::marker {
-    color: var(--color-muted);
-    font-size: 0.8em;
+  ul > :global(li)::before {
+    position: absolute;
+    top: 0.8em;
+    left: 0;
+    width: 0.625rem;
+    height: 1px;
+    background: var(--color-rule);
+    content: '';
+  }
+
+  ul > :global(li) + :global(li) {
+    margin-top: var(--prose-list-gap, 0.5rem);
+  }
+
+  ul :global(ul) > :global(li)::before {
+    width: 0.375rem;
+    height: 0.375rem;
+    border: 1px solid var(--color-rule);
+    background: transparent;
+    transform: translateY(-0.125rem) rotate(45deg);
   }
 </style>

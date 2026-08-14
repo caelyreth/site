@@ -6,7 +6,7 @@
 
   min-inline-size: 0;
   color: var(--color-text-secondary);
-  font-family: var(--font-stack-serif);
+  font-family: var(--font-stack-sans);
   font-kerning: normal;
   font-optical-sizing: auto;
   font-synthesis: none;
