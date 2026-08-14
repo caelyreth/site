@@ -1,11 +1,21 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
+  interface Props extends Record<string, unknown> {
+    class?: string
+    children?: Snippet
+  }
+
   /* oxlint-disable prefer-const -- Snippet props can update with the document. */
-  let { children }: { children?: Snippet } = $props()
+  let { children, class: class_name, ...attributes }: Props = $props()
 </script>
 
-<span class="accent">{@render children?.()}</span>
+<span
+  {...attributes}
+  class={['accent', class_name].filter(Boolean).join(' ')}
+>
+  {@render children?.()}
+</span>
 
 <style>
   .accent {

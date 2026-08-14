@@ -19,9 +19,12 @@
   const alert_label = $derived(
     alert_type ? (alert_labels[alert_type] ?? alert_type) : '',
   )
+  const is_alert = $derived(
+    alert_type !== undefined && alert_type in alert_labels,
+  )
 </script>
 
-{#if alert_type}
+{#if is_alert}
   <aside
     {...attributes}
     aria-label={alert_label}
@@ -37,7 +40,7 @@
 <style>
   aside,
   blockquote {
-    margin: 1.5rem 0 0;
+    margin: var(--prose-block-gap) 0 0;
     padding: 0.75rem 1rem;
     border: 1px solid var(--color-rule);
     border-inline-start: 2px solid var(--color-text-secondary);
@@ -86,5 +89,9 @@
 
   .copy {
     margin-top: 0.45rem;
+  }
+
+  .copy :global(p + p) {
+    margin-top: var(--prose-nested-gap);
   }
 </style>
