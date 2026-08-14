@@ -7,14 +7,16 @@ footer = "relay-station"
 
 # Markdown field manual {#station}
 
-A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.
+A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.{.lead}
 
 ## Native text
 
-This record carries _emphasis_, **strong signal**, ~~a crossed-out reading~~, `inline-code`, and a [link back to the station](#station). A hard break follows here.\
+This record carries _emphasis_, **strong signal**, ~~a crossed-out reading~~, `inline-code`, :kbd[Cmd] + :kbd[K], :mark[an observed highlight], a subscript reading :sub[2], and a superscript reading :sup[2], alongside a [link back to the station](#station). A hard break follows here.\
 The next line remains part of the same transmission.
 
 This paragraph carries a native attribute for a quieter annotation.{.annotation}
+
+### Heading level three
 
 #### Heading level four
 
@@ -58,13 +60,31 @@ This paragraph carries a native attribute for a quieter annotation.{.annotation}
 
 ## Table and image
 
+::table
+
+```toml [props]
+caption = "Current survey channels"
+```
+
 | channel | status | confidence |
 | :------ | :----: | ---------: |
 | optical |  open  |       0.94 |
 | radio   | quiet  |       0.71 |
 | relay   | queued |       0.63 |
 
+::
+
 ![Caelyreth station mark](/favicon.svg 'Caelyreth station mark')
+
+::figure
+
+```toml [props]
+src = "/favicon.svg"
+alt = "Caelyreth station mark"
+caption = "Station mark recovered from the relay archive."
+```
+
+::
 
 ## Code sample
 
@@ -72,3 +92,29 @@ This paragraph carries a native attribute for a quieter annotation.{.annotation}
 signal = "open"
 observer = "Yu"
 ```
+
+---
+
+## Structured notes
+
+::details
+
+```toml [props]
+summary = "Read the instrument note"
+```
+
+The archival receiver keeps its original calibration until a second observation confirms the drift.
+::
+
+::definition-list
+:definition-term[Station coordinate]
+:definition-description[The first location where a signal has enough continuity to become a record.]
+:definition-term[Field mark]
+:definition-description[A small visible reference that lets later observers compare the same condition.]
+::
+
+## Field reference
+
+The current channel state remains deliberately local to this document.[^channel-state]
+
+[^channel-state]: It is a reading aid, not a site-wide navigation model.

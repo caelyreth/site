@@ -7,7 +7,6 @@ import footnotes from 'comark/plugins/footnotes'
 import headings from 'comark/plugins/headings'
 import punctuation from 'comark/plugins/punctuation'
 import security from 'comark/plugins/security'
-import summary from 'comark/plugins/summary'
 import task_list from 'comark/plugins/task-list'
 import toc from 'comark/plugins/toc'
 import * as v from 'valibot'
@@ -33,7 +32,6 @@ const parse_markdown = createMarkdownParser({
     footnotes({ hr: false }),
     headings(),
     toc({ depth: 3, searchDepth: 3 }),
-    summary(),
     punctuation(),
     security({ allowDataImages: false }),
   ],
