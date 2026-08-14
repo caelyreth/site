@@ -37,4 +37,14 @@
     padding-inline: var(--inline-gutter);
     flex-direction: column;
   }
+
+  @media (max-width: 40rem) {
+    .article-content {
+      --article-floating-clearance: calc(
+        3.5rem + env(safe-area-inset-bottom)
+      );
+
+      padding-block-end: max(3rem, var(--article-floating-clearance));
+    }
+  }
 </style>

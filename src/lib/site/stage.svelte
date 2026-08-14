@@ -176,6 +176,7 @@
     .stage-capture {
       --stage-frame-inset: 0px;
       --stage-frame-radius: 0px;
+      --stage-top: 0px;
       height: var(--stage-viewport);
     }
 

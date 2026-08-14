@@ -1,9 +1,15 @@
 <script lang="ts">
   import { lock_page_scroll } from '$lib/site/page-lock'
   import { flushSync as flush_sync } from 'svelte'
+  import type { Snippet } from 'svelte'
 
   import MenuPanel from './panel.svelte'
 
+  interface Props {
+    children?: Snippet<[() => void, boolean]>
+  }
+
+  const { children }: Props = $props()
   let dialog: HTMLDialogElement | undefined
   let menu_open = $state(false)
   let closing = $state(false)
@@ -71,19 +77,7 @@
   })
 </script>
 
-<button
-  type="button"
-  class="trigger"
-  aria-controls="site-menu"
-  aria-expanded={menu_open}
-  aria-haspopup="dialog"
-  aria-label={menu_open ? 'Close menu' : 'Open menu'}
-  title={menu_open ? 'Close menu' : 'Open menu'}
-  onclick={open_menu}
->
-  <span class="label">Index</span>
-  <span class="i-ri-menu-line" aria-hidden="true"></span>
-</button>
+{@render children?.(open_menu, menu_open)}
 
 <dialog
   {@attach manage_dialog}
@@ -113,82 +107,6 @@
 </dialog>
 
 <style>
-  .trigger {
-    position: relative;
-    display: inline-flex;
-    min-width: 4.75rem;
-    height: var(--header-block-size);
-    flex: none;
-    padding-inline: 0.75rem;
-    cursor: pointer;
-    border: 0;
-    border-inline-start: 1px solid var(--header-latch-rule);
-    color: var(--header-ink);
-    background-color: transparent;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: center;
-    transition: background-color var(--dur-micro) var(--ease-out);
-  }
-
-  .trigger span {
-    flex: none;
-  }
-
-  .label {
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    line-height: 1;
-  }
-
-  .trigger .i-ri-menu-line {
-    width: 1rem;
-    height: 1rem;
-    opacity: 0.72;
-    transition: opacity var(--dur-micro) var(--ease-out);
-  }
-
-  @media (hover: hover) {
-    .trigger:hover {
-      background-color: var(--header-latch-hover);
-    }
-
-    .trigger:hover .i-ri-menu-line {
-      opacity: 1;
-    }
-  }
-
-  .trigger:focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: -2px;
-  }
-
-  @media (max-width: 40rem) {
-    .trigger {
-      min-width: 4.25rem;
-      padding-inline: var(--header-menu-optical-offset, 0.75rem);
-      border-inline-start: 0;
-    }
-  }
-
-  @media (max-width: 24rem) {
-    .trigger {
-      min-width: 3rem;
-      padding-inline: var(--header-menu-optical-offset, 0.625rem);
-    }
-
-    .label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-  }
-
   .menu {
     --menu-highlight: var(--color-text-link-dark);
     --slip-surface: var(--color-ink);
