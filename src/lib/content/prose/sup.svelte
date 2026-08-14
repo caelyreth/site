@@ -17,7 +17,7 @@
     margin-inline-start: -0.3em;
     font-size: 0.75em;
     line-height: 0;
-    vertical-align: super;
+    vertical-align: 0.35em;
   }
 
   sup.footnote-ref {
@@ -25,6 +25,7 @@
     font-family: var(--font-stack-sans);
     font-size: 0.6875em;
     font-weight: 700;
+    vertical-align: super;
   }
 
   sup.footnote-ref :global(a) {

@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
+  import CopyButton from './copy-button.svelte'
+
   interface Props extends Record<string, unknown> {
     caption?: string
     class?: string
@@ -15,11 +17,27 @@
     ...attributes
   }: Props = $props()
   const table_label = $derived(caption ? `${caption} table` : 'Data table')
+  let table: HTMLTableElement | undefined = $state()
+
+  function table_text() {
+    if (!table) return ''
+
+    return Array.from(table.rows, (row) =>
+      Array.from(row.cells, (cell) => cell.textContent?.trim() ?? '').join(
+        '\t',
+      ),
+    ).join('\n')
+  }
 </script>
 
 <div aria-label={table_label} class="table-scroll" role="region">
-  <table {...attributes} class={class_name}>
-    {#if caption}<caption>{caption}</caption>{/if}
+  <table {...attributes} bind:this={table} class={class_name}>
+    <caption>
+      <span class="caption-row">
+        {#if caption}<span class="caption-text">{caption}</span>{/if}
+        <CopyButton label="Copy table" value={table_text} />
+      </span>
+    </caption>
     {@render children?.()}
   </table>
 </div>
@@ -48,10 +66,23 @@
   caption {
     padding: 0.625rem 0 0;
     caption-side: bottom;
+    text-align: start;
+  }
+
+  .caption-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .caption-text {
     color: var(--color-muted);
     font-family: var(--font-stack-sans);
     font-size: 0.75rem;
     line-height: 1.45;
-    text-align: start;
+  }
+
+  .caption-row :global(.copy-button) {
+    margin-inline-start: auto;
   }
 </style>

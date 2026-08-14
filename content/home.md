@@ -7,7 +7,7 @@ footer = "relay-station"
 
 # Markdown field manual {#station}
 
-A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.{.lead}
+A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.
 
 ## Native text
 
@@ -77,7 +77,7 @@ caption = "Current survey channels"
 
 ## Code sample
 
-```ts
+```ts [relay-signal.ts]
 type RelaySignal = {
   observer: string
   state: 'open' | 'quiet'

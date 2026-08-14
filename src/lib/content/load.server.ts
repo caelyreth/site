@@ -38,7 +38,7 @@ const parse_markdown = createMarkdownParser({
     punctuation(),
     security({ allowDataImages: false }),
     media(),
-    rangi({ theme: eclat_nocturne }),
+    rangi({ preStyles: true, theme: eclat_nocturne }),
   ],
 })
 

@@ -15,7 +15,8 @@
 <svelte:element this={tag} {...attributes} {id} data-heading-depth={depth}>
   {#if id}
     <a class="heading-link" href={`#${id}`}>
-      {@render children?.()}
+      <span class="heading-text">{@render children?.()}</span>
+      <span aria-hidden="true" class="heading-anchor i-ri-link-m"></span>
     </a>
   {:else}
     {@render children?.()}
@@ -31,8 +32,35 @@
   }
 
   :global([data-heading-depth]) .heading-link {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
     color: inherit;
     text-decoration: none;
+  }
+
+  :global([data-heading-depth]) .heading-text {
+    min-inline-size: 0;
+  }
+
+  :global([data-heading-depth]) .heading-anchor {
+    flex: none;
+    inline-size: 1em;
+    margin-inline-start: auto;
+    color: var(--color-text-link);
+    opacity: 0;
+    transform: translateX(-0.2rem);
+    transition:
+      opacity var(--dur-short) var(--ease-in-out),
+      transform var(--dur-short) var(--ease-in-out);
+  }
+
+  :global([data-heading-depth]:hover) .heading-anchor,
+  :global([data-heading-depth])
+    .heading-link:focus-visible
+    .heading-anchor {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   :global([data-heading-depth]) .heading-link:focus-visible {
