@@ -25,6 +25,9 @@
       {disabled}
       {type}
     />
+    <svg aria-hidden="true" class="task-check" viewBox="0 0 16 16">
+      <path d="m3.25 8.25 3 3 6.5-6.5" />
+    </svg>
   </span>
 {:else}
   <input {...attributes} {checked} {disabled} {type} />
@@ -34,26 +37,22 @@
   .task-checkbox {
     position: relative;
     display: block;
-    inline-size: 1rem;
-    block-size: 1rem;
-    margin-block-start: 0.2em;
-  }
-
-  .task-checkbox::before,
-  .task-checkbox::after {
-    position: absolute;
-    pointer-events: none;
-    content: '';
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+    margin-block-start: 0.28em;
   }
 
   .task-checkbox::before {
+    position: absolute;
     inset: 0;
+    pointer-events: none;
     border: 1px solid var(--color-rule);
     background: color-mix(
       in oklab,
       var(--color-prose-surface) 82%,
       var(--color-paper)
     );
+    content: '';
   }
 
   .task-checkbox[data-checked='true']::before {
@@ -61,11 +60,21 @@
     background: var(--color-accent);
   }
 
-  .task-checkbox[data-checked='true']::after {
-    inset: 0.22rem 0.18rem 0.3rem 0.2rem;
-    border-bottom: 1px solid var(--color-paper);
-    border-left: 1px solid var(--color-paper);
-    transform: rotate(-45deg);
+  .task-check {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    pointer-events: none;
+    stroke: var(--color-paper);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.75;
+  }
+
+  .task-checkbox[data-checked='false'] .task-check {
+    display: none;
   }
 
   .task-checkbox :global(input) {
@@ -88,8 +97,8 @@
       background: Highlight;
     }
 
-    .task-checkbox[data-checked='true']::after {
-      border-color: HighlightText;
+    .task-check {
+      stroke: HighlightText;
     }
   }
 </style>

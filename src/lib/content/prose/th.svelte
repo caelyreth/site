@@ -25,14 +25,6 @@
     overflow-wrap: normal;
   }
 
-  th:first-child {
-    padding-inline-start: 0;
-  }
-
-  th:last-child {
-    padding-inline-end: 0;
-  }
-
   th.numeric {
     text-align: end;
   }

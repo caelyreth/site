@@ -73,16 +73,7 @@ caption = "Current survey channels"
 
 ::
 
-![Caelyreth station mark](/favicon.svg 'Caelyreth station mark')
-
-::figure
-+++
-src = "/favicon.svg"
-alt = "Caelyreth station mark"
-caption = "Station mark recovered from the relay archive."
-+++
-
-::
+![Caelyreth station mark](/favicon.svg 'Station mark recovered from the relay archive.')
 
 ## Code sample
 

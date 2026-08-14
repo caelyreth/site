@@ -26,7 +26,7 @@
   li.task-list-item {
     display: grid;
     padding-inline-start: 0;
-    grid-template-columns: 1rem minmax(0, 1fr);
+    grid-template-columns: 0.9375rem minmax(0, 1fr);
     align-items: start;
     column-gap: 0.625rem;
     list-style: none;

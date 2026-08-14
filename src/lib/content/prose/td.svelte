@@ -21,14 +21,6 @@
     overflow-wrap: normal;
   }
 
-  td:first-child {
-    padding-inline-start: 0;
-  }
-
-  td:last-child {
-    padding-inline-end: 0;
-  }
-
   td.numeric {
     text-align: end;
   }
