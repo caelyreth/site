@@ -28,6 +28,7 @@
     "oxfmt": "catalog:x",
     "oxlint": "catalog:x",
     "oxlint-tsgolint": "catalog:x",
+    "rangi": "catalog:f",
     "svelte": "catalog:f",
     "svelte-check": "catalog:f",
     "svelte-themes": "catalog:f",

@@ -77,9 +77,16 @@ caption = "Current survey channels"
 
 ## Code sample
 
-```text
-signal = "open"
-observer = "Yu"
+```ts
+type RelaySignal = {
+  observer: string
+  state: 'open' | 'quiet'
+}
+
+const signal: RelaySignal = {
+  observer: 'Yu',
+  state: 'open',
+}
 ```
 
 ---

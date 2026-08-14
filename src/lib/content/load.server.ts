@@ -6,11 +6,14 @@ import components from 'comark/plugins/components'
 import footnotes from 'comark/plugins/footnotes'
 import headings from 'comark/plugins/headings'
 import punctuation from 'comark/plugins/punctuation'
+import rangi from 'comark/plugins/rangi'
 import security from 'comark/plugins/security'
 import task_list from 'comark/plugins/task-list'
 import toc from 'comark/plugins/toc'
 import * as v from 'valibot'
 
+import media from './media'
+import { eclat_nocturne } from './rangi-theme'
 import type { ContentDocument } from './schema'
 
 const content_sources = import.meta.glob<string>(
@@ -34,6 +37,8 @@ const parse_markdown = createMarkdownParser({
     toc({ depth: 3, searchDepth: 3 }),
     punctuation(),
     security({ allowDataImages: false }),
+    media(),
+    rangi({ theme: eclat_nocturne }),
   ],
 })
 
