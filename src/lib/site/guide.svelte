@@ -28,7 +28,7 @@
     bottom: 0;
     width: 1px;
     pointer-events: none;
-    background: var(--color-stage-rule);
+    background: var(--color-boundary);
   }
 
   @supports (animation-timeline: scroll(root block)) {

@@ -66,10 +66,10 @@ caption = "Current survey channels"
 +++
 
 | channel | status | confidence |
-| :------ | :----: | ---------: |
-| optical |  open  |       0.94 |
-| radio   | quiet  |       0.71 |
-| relay   | queued |       0.63 |
+| :------ | :----- | :--------- |
+| optical | open   | 0.94       |
+| radio   | quiet  | 0.71       |
+| relay   | queued | 0.63       |
 
 ::
 

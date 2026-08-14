@@ -30,7 +30,7 @@
     margin-top: var(--prose-block-gap);
     overscroll-behavior-inline: contain;
     overflow-x: auto;
-    scrollbar-color: var(--color-rule) transparent;
+    scrollbar-color: var(--color-boundary) transparent;
   }
 
   table {
@@ -38,7 +38,7 @@
     min-inline-size: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    border-block: 1px solid var(--color-rule);
+    border-block: 1px solid var(--color-boundary);
     color: var(--color-text-secondary);
     font-size: var(--prose-size);
     font-variant-numeric: tabular-nums;

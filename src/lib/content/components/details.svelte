@@ -15,6 +15,26 @@
     ...attributes
   }: Props = $props()
   let is_closing = $state(false)
+  let pointer_origin: { x: number; y: number } | undefined
+
+  function track_pointer(event: PointerEvent) {
+    if (event.button !== 0) return
+    pointer_origin = { x: event.clientX, y: event.clientY }
+  }
+
+  function is_selection_gesture(event: MouseEvent) {
+    const origin = pointer_origin
+    pointer_origin = undefined
+    if (!origin) return
+
+    return (
+      Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > 4
+    )
+  }
+
+  function clear_accidental_selection() {
+    requestAnimationFrame(() => window.getSelection()?.removeAllRanges())
+  }
 
   function is_reduced_motion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -22,7 +42,15 @@
 
   function toggle_details(event: MouseEvent) {
     event.preventDefault()
+    const selection_gesture = is_selection_gesture(event)
+    if (selection_gesture) return
 
+    if (selection_gesture === false) clear_accidental_selection()
+
+    update_details()
+  }
+
+  function update_details() {
     if (is_closing) {
       is_closing = false
       open = true
@@ -57,7 +85,9 @@
 </script>
 
 <details {...attributes} data-closing={is_closing || undefined} {open}>
-  <summary onclick={toggle_details}>{summary}</summary>
+  <summary onpointerdown={track_pointer} onclick={toggle_details}>
+    {summary}
+  </summary>
   <div
     aria-hidden={!open || is_closing}
     class="details-content"

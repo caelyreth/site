@@ -36,7 +36,7 @@
       var(--color-stage-ink) calc((1 - var(--stage-progress)) * 100%),
       var(--color-text) calc(var(--stage-progress) * 100%)
     );
-    --header-rule: var(--color-stage-rule);
+    --header-rule: var(--color-boundary);
     --header-surface: color-mix(
       in oklab,
       transparent,
@@ -45,7 +45,7 @@
     --header-latch-rule: color-mix(
       in oklab,
       transparent,
-      var(--color-rule) calc(var(--stage-progress) * 100%)
+      var(--color-boundary) calc(var(--stage-progress) * 100%)
     );
     --header-latch-hover: color-mix(
       in oklab,
@@ -77,7 +77,7 @@
     .header {
       --header-ink: var(--color-text);
       --header-surface: var(--color-paper-prime);
-      --header-latch-rule: var(--color-rule);
+      --header-latch-rule: var(--color-boundary);
       animation: none;
     }
   }

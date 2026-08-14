@@ -30,7 +30,7 @@
   --color-stage-glass-surface-light: var(--color-stage-surface-light);
   --color-stage-ink-light: oklch(31% 0.06 238);
   --color-stage-ink-secondary-light: oklch(45% 0.048 238);
-  --color-stage-rule-light: oklch(83% 0.012 235);
+  --color-boundary-light: oklch(85% 0 0);
   --color-paper-dark: oklch(18% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
   --color-field-dark: oklch(10.5% 0 0);
@@ -58,7 +58,7 @@
   --color-stage-glass-surface-dark: var(--color-field-dark);
   --color-stage-ink-dark: var(--color-text-dark);
   --color-stage-ink-secondary-dark: var(--color-text-secondary-dark);
-  --color-stage-rule-dark: var(--color-rule-dark);
+  --color-boundary-dark: var(--color-rule-dark);
   --color-paper: var(--color-paper-light);
   --color-paper-prime: var(--color-paper-prime-light);
   --color-field: var(--color-field-light);
@@ -81,7 +81,7 @@
   --color-stage-glass-surface: var(--color-stage-glass-surface-light);
   --color-stage-ink: var(--color-stage-ink-light);
   --color-stage-ink-secondary: var(--color-stage-ink-secondary-light);
-  --color-stage-rule: var(--color-stage-rule-light);
+  --color-boundary: var(--color-boundary-light);
   --color-prose-surface: color-mix(
     in oklab,
     var(--color-deco) 40%,
@@ -169,7 +169,7 @@
   --color-stage-glass-surface: var(--color-stage-glass-surface-dark);
   --color-stage-ink: var(--color-stage-ink-dark);
   --color-stage-ink-secondary: var(--color-stage-ink-secondary-dark);
-  --color-stage-rule: var(--color-stage-rule-dark);
+  --color-boundary: var(--color-boundary-dark);
   --color-alert-note: var(--color-alert-note-dark);
   --color-alert-tip: var(--color-alert-tip-dark);
   --color-alert-important: var(--color-alert-important-dark);

@@ -13,8 +13,13 @@
 
 <style>
   a {
-    color: var(--color-text);
-    text-decoration-color: var(--color-rule);
+    color: var(--color-text-link);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(
+      in oklab,
+      var(--color-text-link) 55%,
+      transparent
+    );
     text-decoration-thickness: 1px;
     text-underline-offset: 0.16em;
     overflow-wrap: anywhere;
@@ -23,13 +28,23 @@
       text-decoration-color var(--dur-micro) var(--ease-out);
   }
 
-  a:visited {
-    color: var(--color-text-link);
+  a::after {
+    margin-inline-start: 0.16em;
+    color: var(--color-muted);
+    font-family: var(--font-stack-sans);
+    font-size: 0.75em;
+    font-weight: 600;
+    text-decoration: none;
+    content: '\2197';
+  }
+
+  a[href^='#fn']::after,
+  a.footnote-backref::after {
+    content: none;
   }
 
   @media (hover: hover) {
     a:hover {
-      color: var(--color-text-link);
       text-decoration-color: var(--color-text-link);
     }
   }

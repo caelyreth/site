@@ -34,7 +34,7 @@
   :global([data-heading-depth='2'])::after,
   :global([data-heading-depth='3'])::after {
     margin-top: 0.7rem;
-    background: var(--color-rule);
+    background: var(--color-boundary);
   }
 
   :global([data-heading-depth='4'])::after,
@@ -45,7 +45,6 @@
   }
 
   :global([data-heading-depth='1']) {
-    max-width: 18ch;
     margin: 0;
     font-family: var(--font-stack-serif);
     font-size: clamp(2.25rem, 7vw, 3rem);

@@ -76,7 +76,7 @@
 
   .outline {
     fill: none;
-    stroke: var(--color-rule);
+    stroke: var(--color-boundary);
     stroke-linecap: square;
     stroke-linejoin: bevel;
     stroke-width: 1.5;

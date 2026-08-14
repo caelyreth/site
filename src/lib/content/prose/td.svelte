@@ -14,11 +14,19 @@
 <style>
   td {
     padding: 0.625rem 0.875rem;
-    border-bottom: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-boundary);
     color: var(--color-text-secondary);
     text-align: start;
     vertical-align: top;
     overflow-wrap: normal;
+  }
+
+  td:first-child {
+    padding-inline-start: 0;
+  }
+
+  td:last-child {
+    padding-inline-end: 0;
   }
 
   td.numeric {

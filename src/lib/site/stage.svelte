@@ -97,7 +97,7 @@
     );
     --stage-top: calc(var(--header-block-size) - var(--stage-rail-seam));
     --stage-radius: calc(var(--stage-frame-radius) * var(--stage-opening));
-    --stage-content-rule: var(--color-stage-rule);
+    --stage-content-rule: var(--color-boundary);
     --dur-stage-signal: 1800ms;
     --ease-stage-signal: cubic-bezier(0.46, 0, 0.22, 1);
     height: calc(var(--stage-viewport) + var(--stage-scroll-span));
