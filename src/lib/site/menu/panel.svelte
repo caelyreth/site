@@ -56,9 +56,9 @@
         style:--drift-bottom={drift.layout.bottom}
         style:--drift-blur={drift.layout.blur}
         style:--drift-left={drift.layout.left}
-        style:--drift-opacity={drift.layout.opacity}
         style:--drift-right={drift.layout.right}
         style:--drift-rotation={drift.layout.rotation}
+        style:--drift-tone={drift.layout.tone}
         style:--drift-top={drift.layout.top}
         style:--drift-bottom-compact={drift.layout.compact?.bottom}
         style:--drift-left-compact={drift.layout.compact?.left}
@@ -135,7 +135,7 @@
       env(safe-area-inset-bottom)
     );
     position: relative;
-    z-index: 2;
+    z-index: 3;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -327,7 +327,11 @@
     padding: 0.5rem 0.7rem;
     overflow: hidden;
     color: var(--slip-ink);
-    background: var(--slip-surface);
+    background: color-mix(
+      in oklab,
+      var(--slip-surface) calc(var(--drift-tone) * 100%),
+      var(--color-paper)
+    );
     filter: blur(var(--drift-blur));
     font-family: var(--font-stack-sans);
     font-size: clamp(0.75rem, 1.4vw, 1.1rem);
@@ -338,7 +342,6 @@
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
-    opacity: var(--drift-opacity);
     pointer-events: none;
     transform: rotate(var(--drift-rotation));
     user-select: none;
@@ -445,6 +448,34 @@
       min-height: 4.875rem;
       padding: 0.75rem 0.875rem 0.875rem;
       gap: 0.3rem;
+    }
+
+    @keyframes mobile-slip-enter {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 1.25rem, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes mobile-slip-leave {
+      to {
+        opacity: 0;
+        transform: translate3d(0, 1.25rem, 0);
+      }
+    }
+
+    .stage.is-open:not(.is-closing) .slip,
+    .stage.is-open:not(.is-closing) .theme-slip {
+      animation-name: mobile-slip-enter;
+    }
+
+    .stage.is-closing .slip,
+    .stage.is-closing .theme-slip {
+      animation-name: mobile-slip-leave;
     }
 
     .slip-title {

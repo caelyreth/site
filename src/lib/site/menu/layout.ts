@@ -27,8 +27,8 @@ export interface Drift {
     Partial<EnteringLayout> & {
       blur: string
       compact?: Position
-      opacity: string
       rotation: string
+      tone: number
     }
   text: string
 }
@@ -83,9 +83,9 @@ export const drifts: readonly Drift[] = [
     layout: {
       blur: '11px',
       enter_delay: '30ms',
-      opacity: '0.26',
       right: '14%',
       rotation: '-42deg',
+      tone: 0.26,
       top: '12%',
     },
     text: 'RBK // 044',
@@ -94,8 +94,8 @@ export const drifts: readonly Drift[] = [
     layout: {
       blur: '9px',
       left: '-3%',
-      opacity: '0.3',
       rotation: '34deg',
+      tone: 0.3,
       top: '19%',
     },
     text: 'FIELD / 044',
@@ -104,8 +104,8 @@ export const drifts: readonly Drift[] = [
     layout: {
       blur: '12px',
       left: '16%',
-      opacity: '0.23',
       rotation: '-18deg',
+      tone: 0.23,
       top: '10%',
     },
     text: 'FIELD NOTES / 001',
@@ -114,9 +114,9 @@ export const drifts: readonly Drift[] = [
     layout: {
       blur: '5px',
       enter_delay: '100ms',
-      opacity: '0.36',
       right: '1%',
       rotation: '-38deg',
+      tone: 0.36,
       top: '45%',
     },
     text: 'CAELYRETH',
@@ -126,8 +126,8 @@ export const drifts: readonly Drift[] = [
       blur: '3px',
       bottom: '25%',
       left: '9%',
-      opacity: '0.42',
       rotation: '-55deg',
+      tone: 0.42,
     },
     text: 'ORBIT / 001',
   },
@@ -137,8 +137,8 @@ export const drifts: readonly Drift[] = [
       bottom: '11%',
       enter_delay: '160ms',
       left: '-2%',
-      opacity: '0.35',
       rotation: '14deg',
+      tone: 0.35,
     },
     text: 'TRANSMISSION / RETURN / 001',
   },
@@ -148,8 +148,8 @@ export const drifts: readonly Drift[] = [
       bottom: '17%',
       enter_delay: '220ms',
       left: '27%',
-      opacity: '0.4',
       rotation: '61deg',
+      tone: 0.4,
     },
     text: 'SIGNAL / HOLD',
   },
@@ -157,9 +157,9 @@ export const drifts: readonly Drift[] = [
     layout: {
       blur: '10px',
       bottom: '26%',
-      opacity: '0.25',
       right: '-1%',
       rotation: '27deg',
+      tone: 0.25,
     },
     text: 'RELAY / ACTIVE',
   },
@@ -167,9 +167,9 @@ export const drifts: readonly Drift[] = [
     layout: {
       blur: '9px',
       bottom: '8%',
-      opacity: '0.3',
       right: '7%',
       rotation: '-18deg',
+      tone: 0.3,
     },
     text: 'ARCHIVE / HELD',
   },
@@ -178,8 +178,8 @@ export const drifts: readonly Drift[] = [
       blur: '8px',
       compact: { left: '-11%', top: '35%' },
       left: '19%',
-      opacity: '0.24',
       rotation: '6deg',
+      tone: 0.24,
       top: '38%',
     },
     text: 'OBSERVATION / RETAINED',
@@ -189,8 +189,8 @@ export const drifts: readonly Drift[] = [
       blur: '6px',
       compact: { left: '8%', top: '50%' },
       left: '29%',
-      opacity: '0.29',
       rotation: '-10deg',
+      tone: 0.29,
       top: '50%',
     },
     text: 'VIEWING PLANE / 01',
@@ -200,8 +200,8 @@ export const drifts: readonly Drift[] = [
       blur: '10px',
       compact: { left: '0', top: '64%' },
       left: '42%',
-      opacity: '0.2',
       rotation: '8deg',
+      tone: 0.2,
       top: '61%',
     },
     text: 'CAELYRETH / IN ORBIT',

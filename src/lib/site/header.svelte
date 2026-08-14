@@ -14,7 +14,7 @@
   let scrolling = $state(false)
 
   const observe_scroll = scroll_activity({
-    idle_delay: 1800,
+    idle_delay: 1400,
     on_activity(active) {
       scrolling = active
     },
@@ -351,7 +351,7 @@
       --ease-rail-collapse: var(--ease-in-out);
       --ease-rail-expand: cubic-bezier(0.22, 1.28, 0.36, 1);
       --mobile-shell-width: min(
-        13rem,
+        8.5rem,
         calc(
           100vw - var(--mobile-control-size) -
             max(
@@ -411,13 +411,13 @@
     .inner {
       width: 100%;
       height: 100%;
-      padding-inline: 0.375rem;
-      gap: 0.25rem;
+      padding-inline: 0.625rem;
+      gap: 0.5rem;
     }
 
     .brand {
       min-width: 0;
-      gap: 0.5rem;
+      gap: 0;
       overflow: hidden;
       white-space: nowrap;
     }
@@ -428,20 +428,18 @@
     }
 
     .brand-name {
-      overflow: hidden;
-      font-size: 0.9375rem;
-      text-overflow: ellipsis;
+      display: none;
     }
 
     .menu-slot {
-      margin-right: -0.375rem;
+      margin-right: 0;
     }
 
     .menu-trigger {
       width: auto;
-      min-width: 4rem;
+      min-width: 4.25rem;
       height: 100%;
-      padding-inline: 0.625rem;
+      padding-inline: 0.75rem;
       border: 0;
       border-inline-start: 1px solid var(--color-boundary);
       border-radius: 0;
