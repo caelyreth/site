@@ -21,7 +21,7 @@
     top: 50%;
     left: 50%;
     z-index: 3;
-    width: min(64vw, 40rem);
+    width: min(58vw, 36rem);
     pointer-events: none;
     transform: translate(-50%, -50%)
       scale(calc(1 - var(--stage-progress) * 0.12));
@@ -31,7 +31,7 @@
 
   @media (max-width: 38rem) {
     .tube-layer {
-      width: min(84vw, 30rem);
+      width: min(78vw, 28rem);
     }
   }
 </style>

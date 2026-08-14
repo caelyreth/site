@@ -3,6 +3,8 @@ export interface SkyMapSceneTheme {
   backdrop_ink: number
   backdrop_wash_alpha: number
   backdrop_wash_ink: number
+  exposure_alpha: number
+  exposure_ink: number
   ink: number
   signal_colors: string[]
   signal_inks: number[]
@@ -16,6 +18,8 @@ const sky_map_scene_themes = {
     backdrop_ink: 0xe6e6e6,
     backdrop_wash_alpha: 0,
     backdrop_wash_ink: 0x000000,
+    exposure_alpha: 0.1,
+    exposure_ink: 0x4a4b4c,
     ink: 0xe6e6e6,
     signal_colors: [
       'oklch(77% 0.105 37)',
@@ -36,6 +40,8 @@ const sky_map_scene_themes = {
     backdrop_ink: 0x315b70,
     backdrop_wash_alpha: 0.1,
     backdrop_wash_ink: 0xefefef,
+    exposure_alpha: 0.075,
+    exposure_ink: 0xd2d2d0,
     ink: 0x183d53,
     signal_colors: [
       '#974942',

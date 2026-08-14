@@ -20,12 +20,6 @@
 
 <div class="sky-map" style:--signal={state.signal_color}>
   <SkyCanvas {on_event} />
-  <span aria-hidden="true" class="edge-label edge-label-left"
-    >Observation plate / open aperture</span
-  >
-  <span aria-hidden="true" class="edge-label edge-label-right"
-    >Epoch 2026.5 / meridian survey band</span
-  >
   <div class="label-rail label-rail-top">
     <span class="label observatory-label">Observatory</span>
     <span class:spreading={state.signal_active} class="label view-status"
@@ -129,40 +123,5 @@
 
   .view-status.spreading .view-status-key {
     color: var(--signal);
-  }
-
-  .edge-label {
-    position: absolute;
-    top: 50%;
-    z-index: 2;
-    color: color-mix(
-      in oklab,
-      var(--color-stage-ink-secondary) 68%,
-      transparent
-    );
-    font-size: clamp(0.4375rem, 0.36rem + 0.25vw, 0.5625rem);
-    font-weight: 500;
-    letter-spacing: clamp(0.08em, 0.04em + 0.3vw, 0.14em);
-    line-height: 1;
-    pointer-events: none;
-    text-transform: uppercase;
-    white-space: nowrap;
-    writing-mode: vertical-rl;
-  }
-
-  .edge-label-left {
-    left: var(--label-safe-left);
-    transform: translateY(-50%) rotate(180deg);
-  }
-
-  .edge-label-right {
-    right: var(--label-safe-right);
-    transform: translateY(-50%);
-  }
-
-  @media (max-width: 38rem) {
-    .edge-label {
-      display: none;
-    }
   }
 </style>
