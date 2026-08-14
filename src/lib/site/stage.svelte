@@ -1,6 +1,7 @@
 <script lang="ts">
   import type {
     RegionOptions,
+    StageIntro,
     StageProps,
     StageSignal,
   } from '$lib/presentation/contract'
@@ -8,12 +9,10 @@
   import type { Component } from 'svelte'
 
   import Guide from './guide.svelte'
-  import type { StageIntroContent } from './stage-intro'
-  import StageIntro from './stage-intro.svelte'
 
   interface Props {
     component: Component<StageProps>
-    intro: StageIntroContent
+    intro: StageIntro
     on_progress?: (progress: number) => void
     options: RegionOptions
     progress?: number
@@ -73,14 +72,13 @@
   style:--stage-fallback-progress={progress}
   {@attach observe_stage_progress}
 >
-  <section class="stage-sticky" aria-labelledby="stage-title">
+  <section class="stage-sticky" aria-label={intro.title}>
     <div
       class:active={signal !== undefined}
       class="stage-frame"
       style:--stage-signal={signal?.color ?? 'transparent'}
     >
-      <StageContent {options} on_signal={update_signal} />
-      <StageIntro {...intro} />
+      <StageContent {intro} {options} on_signal={update_signal} />
       <Guide side="left" inStage reveal />
       <Guide side="right" inStage reveal />
     </div>

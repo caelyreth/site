@@ -17,21 +17,14 @@
 
 <style>
   .tube-layer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 3;
-    width: min(58vw, 36rem);
+    width: min(37vw, 28rem);
+    margin-inline-start: var(--vfd-inline-offset, 0px);
     pointer-events: none;
-    transform: translate(-50%, -50%)
-      scale(calc(1 - var(--stage-progress) * 0.12));
-    transform-origin: center;
-    will-change: transform;
   }
 
   @media (max-width: 38rem) {
     .tube-layer {
-      width: min(78vw, 28rem);
+      width: min(72vw, 25rem);
     }
   }
 </style>

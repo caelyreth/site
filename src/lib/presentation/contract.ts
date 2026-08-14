@@ -8,7 +8,13 @@ export interface StageSignal {
   color: string
 }
 
+export interface StageIntro {
+  description?: string
+  title: string
+}
+
 export interface StageProps {
+  intro: StageIntro
   on_signal?: (signal: StageSignal | undefined) => void
   options: RegionOptions
 }

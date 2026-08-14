@@ -3,11 +3,12 @@
   import VfdTube from '$lib/presentation/parts/vfd-tube/view.svelte'
   import type { SkyMapSurfaceState } from '$lib/presentation/surfaces/sky-map/contract'
   import SkyMapSurface from '$lib/presentation/surfaces/sky-map/view.svelte'
+  import StageIntro from '$lib/site/stage-intro.svelte'
 
   import { create_observatory_controller } from './controller.svelte'
 
   /* oxlint-disable prefer-const -- Stage callback can update with its host. */
-  let { on_signal }: StageProps = $props()
+  let { intro, on_signal }: StageProps = $props()
   const controller = create_observatory_controller(() => on_signal)
   const signal_color = $derived(
     controller.color_for(controller.state.pulse.signal_color_index),
@@ -42,11 +43,33 @@
     on_event={controller.handle_runtime_event}
     state={surface_state}
   />
-  <VfdTube
-    active={surface_state.signal_active}
-    color={signal_color}
-    readout={tube_readout}
-  />
+  <div class="intro-cluster">
+    <VfdTube
+      active={surface_state.signal_active}
+      color={signal_color}
+      readout={tube_readout}
+    />
+    <nav aria-label="Caelyreth links" class="social-links">
+      <a
+        href="https://github.com/caelyreth"
+        rel="me noopener noreferrer"
+        target="_blank"
+      >
+        <span class="i-ri-github-line" aria-hidden="true"></span>
+        <span>GitHub</span>
+        <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
+      </a>
+      <span aria-hidden="true" class="social-preview">
+        <span class="i-ri-sparkling-line"></span>
+        <span>Bluesky</span>
+      </span>
+      <span aria-hidden="true" class="social-preview">
+        <span class="i-ri-chat-3-line"></span>
+        <span>Mastodon</span>
+      </span>
+    </nav>
+    <StageIntro description={intro.description} />
+  </div>
 </div>
 
 <style>
@@ -54,5 +77,114 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
+  }
+
+  .intro-cluster {
+    --stage-intro-description-measure: 34rem;
+    --stage-intro-entry-gap: 0.75rem;
+    --vfd-inline-offset: clamp(-1.25rem, -1.5vw, -0.75rem);
+
+    position: absolute;
+    bottom: var(--stage-intro-bottom-inset);
+    left: var(--stage-intro-inline-inset);
+    z-index: 5;
+    display: grid;
+    width: min(42rem, calc(100% - 2 * var(--stage-intro-inline-inset)));
+    gap: clamp(0.5rem, 1vw, 0.75rem);
+  }
+
+  .social-links {
+    display: flex;
+    min-height: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .social-links a,
+  .social-preview {
+    position: relative;
+    display: inline-flex;
+    min-height: 1.5rem;
+    padding: 0.0625rem 0 0.4375rem;
+    color: var(--color-stage-ink-secondary);
+    font-size: 0.625rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    align-items: center;
+    gap: 0.4375rem;
+  }
+
+  .social-links a {
+    text-decoration: none;
+    transition:
+      color var(--dur-short) var(--ease-out),
+      transform var(--dur-short) var(--ease-out);
+  }
+
+  .social-links a::after,
+  .social-preview::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      currentcolor 0 calc(100% - 0.75rem),
+      transparent calc(100% - 0.75rem) calc(100% - 0.5rem),
+      currentcolor calc(100% - 0.5rem)
+    );
+    content: '';
+  }
+
+  .social-links a > :first-child,
+  .social-preview > :first-child {
+    font-size: 0.8125rem;
+  }
+
+  .social-links a > :last-child {
+    margin-left: 0.0625rem;
+    font-size: 0.75rem;
+  }
+
+  .social-preview {
+    color: color-mix(
+      in oklab,
+      var(--color-stage-ink-secondary) 68%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .social-links a:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 0.25rem;
+  }
+
+  @media (hover: hover) {
+    .social-links a:hover {
+      color: var(--color-stage-ink);
+      transform: translateY(-1px);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .intro-cluster {
+      --stage-intro-description-measure: 21rem;
+      --stage-intro-entry-gap: 0.625rem;
+      --vfd-inline-offset: -0.75rem;
+
+      gap: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .social-links a {
+      transform: none;
+      transition: none;
+    }
   }
 </style>
