@@ -5,7 +5,9 @@
 <div aria-hidden="true" class="field-surface paper-seam">
   <div class="upper-edge">
     <div class="paper-surface upper-body"></div>
-    <PaperEdge guide side="bottom" />
+    <div class="upper-paper-edge">
+      <PaperEdge guide side="bottom" />
+    </div>
   </div>
   <div class="lower-edge">
     <PaperEdge side="top" />
@@ -33,7 +35,7 @@
 
   .upper-body {
     top: 0;
-    height: calc(var(--paper-seam-guide-offset) + 1px);
+    height: calc(100% - var(--paper-edge-depth));
   }
 
   .upper-edge {
@@ -41,6 +43,12 @@
     inset-inline: 0;
     top: 0;
     height: var(--paper-seam-upper-height);
+  }
+
+  .upper-paper-edge {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
   }
 
   .lower-edge {

@@ -61,10 +61,9 @@ This paragraph carries a native attribute for a quieter annotation.{.annotation}
 ## Table and image
 
 ::table
-
-```toml [props]
++++
 caption = "Current survey channels"
-```
++++
 
 | channel | status | confidence |
 | :------ | :----: | ---------: |
@@ -77,12 +76,11 @@ caption = "Current survey channels"
 ![Caelyreth station mark](/favicon.svg 'Caelyreth station mark')
 
 ::figure
-
-```toml [props]
++++
 src = "/favicon.svg"
 alt = "Caelyreth station mark"
 caption = "Station mark recovered from the relay archive."
-```
++++
 
 ::
 
@@ -98,10 +96,9 @@ observer = "Yu"
 ## Structured notes
 
 ::details
-
-```toml [props]
++++
 summary = "Read the instrument note"
-```
++++
 
 The archival receiver keeps its original calibration until a second observation confirms the drift.
 ::
