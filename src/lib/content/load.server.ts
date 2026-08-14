@@ -13,7 +13,7 @@ import toc from 'comark/plugins/toc'
 import * as v from 'valibot'
 
 import media from './media'
-import { eclat_nocturne } from './rangi-theme'
+import { eclat } from './rangi-theme'
 import type { ContentDocument } from './schema'
 
 const content_sources = import.meta.glob<string>(
@@ -38,7 +38,7 @@ const parse_markdown = createMarkdownParser({
     punctuation(),
     security({ allowDataImages: false }),
     media(),
-    rangi({ preStyles: true, theme: eclat_nocturne }),
+    rangi({ preStyles: true, theme: eclat }),
   ],
 })
 

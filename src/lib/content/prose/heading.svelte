@@ -16,7 +16,7 @@
   {#if id}
     <a class="heading-link" href={`#${id}`}>
       <span class="heading-text">{@render children?.()}</span>
-      <span aria-hidden="true" class="heading-anchor i-ri-link-m"></span>
+      <span aria-hidden="true" class="heading-anchor i-ri-hashtag"></span>
     </a>
   {:else}
     {@render children?.()}
@@ -32,24 +32,19 @@
   }
 
   :global([data-heading-depth]) .heading-link {
-    display: flex;
-    gap: 0.5rem;
-    align-items: baseline;
     color: inherit;
     text-decoration: none;
   }
 
-  :global([data-heading-depth]) .heading-text {
-    min-inline-size: 0;
-  }
-
   :global([data-heading-depth]) .heading-anchor {
-    flex: none;
-    inline-size: 1em;
-    margin-inline-start: auto;
-    color: var(--color-text-link);
+    display: inline-block;
+    inline-size: 0.875em;
+    block-size: 0.875em;
+    margin-inline-start: 0.35em;
+    color: var(--color-muted);
     opacity: 0;
-    transform: translateX(-0.2rem);
+    vertical-align: -0.08em;
+    transform: translateX(-0.15em);
     transition:
       opacity var(--dur-short) var(--ease-in-out),
       transform var(--dur-short) var(--ease-in-out);

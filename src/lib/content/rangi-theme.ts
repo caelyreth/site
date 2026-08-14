@@ -1,28 +1,39 @@
-import type { RangiTheme } from 'comark/plugins/rangi'
+import type { RangiTheme, RangiThemePair } from 'comark/plugins/rangi'
 
-// Eclat Nocturne syntax colors mapped to Rangi's compact token vocabulary.
-export const eclat_nocturne: RangiTheme = {
-  name: 'eclat-nocturne',
-  scheme: 'dark',
-  bg: '#191919',
-  fg: '#C0BEAF',
-  numbers: '#525251',
-  tokens: {
-    kwd: '#DA7C7E',
-    section: '#3B9174',
-    class: '#D1A075',
-    cmnt: '#525251',
-    bracket: '#8F8F8A',
-    num: '#D1A075',
-    bool: '#CE94A7',
-    str: '#A0A973',
-    esc: '#8F8F8A',
-    insert: '#76A78F',
-    deleted: '#DA7C7E',
-    err: '#DA7C7E',
-    var: '#C0BEAF',
-    type: '#D1A075',
-    func: '#AA9DCA',
-    oper: '#878782',
-  },
+type ThemeMode = 'dark' | 'light'
+
+function eclat_theme(name: string, scheme: ThemeMode): RangiTheme {
+  const color = (tone: string) => `var(--color-eclat-${tone}-${scheme})`
+
+  return {
+    name,
+    scheme,
+    bg: color('surface'),
+    fg: color('fg'),
+    numbers: color('muted'),
+    tokens: {
+      kwd: color('keyword'),
+      section: color('section'),
+      class: color('type'),
+      cmnt: color('muted'),
+      bracket: color('bracket'),
+      num: color('type'),
+      bool: color('boolean'),
+      str: color('string'),
+      esc: color('bracket'),
+      insert: color('insert'),
+      deleted: color('keyword'),
+      err: color('keyword'),
+      var: color('fg'),
+      type: color('type'),
+      func: color('function'),
+      oper: color('operator'),
+    },
+  }
+}
+
+// SSR emits both palettes; the app's theme class selects the active one.
+export const eclat: RangiThemePair = {
+  light: eclat_theme('eclat-dawn', 'light'),
+  dark: eclat_theme('eclat-nocturne', 'dark'),
 }

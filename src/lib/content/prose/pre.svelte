@@ -84,4 +84,13 @@
     tab-size: 2;
     background: transparent;
   }
+
+  :global(.dark pre.shiki) {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+
+  :global(.dark pre.shiki span) {
+    color: var(--shiki-dark) !important;
+  }
 </style>
