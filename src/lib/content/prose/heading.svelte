@@ -13,7 +13,13 @@
 </script>
 
 <svelte:element this={tag} {...attributes} {id} data-heading-depth={depth}>
-  {@render children?.()}
+  {#if id}
+    <a class="heading-link" href={`#${id}`}>
+      {@render children?.()}
+    </a>
+  {:else}
+    {@render children?.()}
+  {/if}
 </svelte:element>
 
 <style>
@@ -22,6 +28,17 @@
     font-style: normal;
     scroll-margin-top: var(--header-safe-inset);
     overflow-wrap: anywhere;
+  }
+
+  :global([data-heading-depth]) .heading-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :global([data-heading-depth]) .heading-link:focus-visible {
+    border-radius: 0.15rem;
+    outline: 2px solid var(--color-focus);
+    outline-offset: 0.16rem;
   }
 
   :global([data-heading-depth])::after {

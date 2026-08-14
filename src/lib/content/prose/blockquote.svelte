@@ -54,8 +54,21 @@
   aside {
     --alert-tone: var(--color-text);
 
+    position: relative;
     padding: 0.875rem 1rem 1rem;
     border-inline-start-color: var(--alert-tone);
+  }
+
+  aside::after {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+    width: 0.7rem;
+    height: 0.7rem;
+    pointer-events: none;
+    background: var(--alert-tone);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    content: '';
   }
 
   aside[data-alert-tone='note'] {
