@@ -5,7 +5,15 @@ export type SkyMapPayload = typeof SkyDataModule
 export interface SkyMapEngine {
   destroy: () => void
   set_active: (active: boolean) => void
+  set_active_viewport: (viewport?: SkyMapViewport) => void
   set_theme: (dark: boolean) => void
+}
+
+export interface SkyMapViewport {
+  bottom: number
+  left: number
+  right: number
+  top: number
 }
 
 export interface SkyMapViewStatus {
@@ -37,6 +45,7 @@ export interface DecodedSkyMap {
 }
 
 export interface RouteCandidate {
+  in_active_viewport: boolean
   index: number
   radius: number
   sector: number

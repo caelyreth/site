@@ -1,4 +1,4 @@
-export const CIRCUIT_SIDES = ['bottom', 'left', 'right', 'top'] as const
+export const CIRCUIT_SIDES = ['bottom', 'right', 'top'] as const
 
 export type CircuitSide = (typeof CIRCUIT_SIDES)[number]
 
@@ -37,10 +37,6 @@ export const circuit_traces: readonly CircuitTrace[] = [
   { d: 'M45.1 20.92V19.72', side: 'bottom', weight: 'signal' },
   { d: 'M52.7 20.92V19.72', side: 'bottom', weight: 'signal' },
   { d: 'M56.8 20.92V20.35H58.4', side: 'bottom', weight: 'power' },
-  { d: 'M-3.62 3.95V10.45', side: 'left', weight: 'power' },
-  { d: 'M-3.62 5.35H-2.32', side: 'left', weight: 'signal' },
-  { d: 'M-3.62 8.15H-2.32', side: 'left', weight: 'signal' },
-  { d: 'M-3.62 10.45H-4.35', side: 'left', weight: 'pair' },
 ]
 
 export const circuit_nodes: readonly CircuitNode[] = [
@@ -64,12 +60,6 @@ export const circuit_nodes: readonly CircuitNode[] = [
   { delay: 170, kind: 'pad', side: 'bottom', x: 52.7, y: 19.72 },
   { delay: 230, kind: 'via', side: 'bottom', x: 56.8, y: 20.92 },
   { delay: 280, kind: 'via', side: 'bottom', x: 58.4, y: 20.35 },
-  { delay: 0, kind: 'via', side: 'left', x: -3.62, y: 3.95 },
-  { delay: 70, kind: 'pad', side: 'left', x: -2.32, y: 5.35 },
-  { delay: 120, kind: 'smd', side: 'left', turn: 90, x: -3.62, y: 6.75 },
-  { delay: 180, kind: 'pad', side: 'left', x: -2.32, y: 8.15 },
-  { delay: 240, kind: 'via', side: 'left', x: -3.62, y: 10.45 },
-  { delay: 290, kind: 'via', side: 'left', x: -4.35, y: 10.45 },
 ]
 
 export function pick_circuit_side(): CircuitSide {

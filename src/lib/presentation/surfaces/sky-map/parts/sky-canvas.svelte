@@ -1,9 +1,11 @@
 <script lang="ts">
+  /* oxlint-disable complexity -- Canvas lifecycle coordinates engine startup with browser observers. */
   /* oxlint-disable prefer-const -- bind:this assigns this Svelte rune. */
   import { load_sky_map_engine } from '$lib/presentation/surfaces/sky-map/runtime/load-engine'
   import type {
     SkyMapEngine,
     SkyMapRuntimeEvent,
+    SkyMapViewport,
   } from '$lib/presentation/surfaces/sky-map/runtime/types'
   import { reduced_motion } from '$lib/site/reduced-motion'
   import { onMount } from 'svelte'
@@ -24,6 +26,31 @@
   let page_visible = $state(true)
   let field_ready = $state(false)
 
+  function clamp_unit(value: number) {
+    return Math.min(1, Math.max(0, value))
+  }
+
+  function viewport_for(
+    canvas_bounds: DOMRect,
+    porthole_bounds: DOMRect,
+  ): SkyMapViewport | undefined {
+    const { height, width } = canvas_bounds
+    if (width <= 0 || height <= 0) return undefined
+
+    const left = Math.max(canvas_bounds.left, porthole_bounds.left)
+    const right = Math.min(canvas_bounds.right, porthole_bounds.right)
+    const top = Math.max(canvas_bounds.top, porthole_bounds.top)
+    const bottom = Math.min(canvas_bounds.bottom, porthole_bounds.bottom)
+    if (right <= left || bottom <= top) return undefined
+
+    return {
+      bottom: clamp_unit((bottom - canvas_bounds.top) / height),
+      left: clamp_unit((left - canvas_bounds.left) / width),
+      right: clamp_unit((right - canvas_bounds.left) / width),
+      top: clamp_unit((top - canvas_bounds.top) / height),
+    }
+  }
+
   function sync_activity() {
     engine?.set_active(canvas_visible && page_visible)
   }
@@ -31,6 +58,10 @@
   onMount(() => {
     if (!canvas) return
 
+    const sky_map = canvas.closest<HTMLElement>('[data-sky-map]')
+    const porthole_bounds = sky_map?.querySelector<HTMLElement>(
+      '[data-sky-map-window]',
+    )
     let disposed = false
     let reveal_timer: ReturnType<typeof setTimeout> | undefined
     let scene_timer: ReturnType<typeof setTimeout> | undefined
@@ -45,11 +76,27 @@
       page_visible = document.visibilityState === 'visible'
       sync_activity()
     }
+    const sync_active_viewport = () => {
+      if (!canvas || !porthole_bounds) return
+      const active_viewport = viewport_for(
+        canvas.getBoundingClientRect(),
+        porthole_bounds.getBoundingClientRect(),
+      )
+      engine?.set_active_viewport(active_viewport)
+    }
+    const viewport_observer =
+      porthole_bounds && typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(sync_active_viewport)
+        : undefined
 
     if (observer) {
       observer.observe(canvas)
     } else {
       canvas_visible = true
+    }
+    if (viewport_observer && porthole_bounds) {
+      viewport_observer.observe(canvas)
+      viewport_observer.observe(porthole_bounds)
     }
     document.addEventListener('visibilitychange', handle_visibility)
     page_visible = document.visibilityState === 'visible'
@@ -64,6 +111,7 @@
             theme.resolvedTheme === 'dark',
             { on_event },
           )
+          sync_active_viewport()
           sync_activity()
           reveal_timer = setTimeout(() => {
             if (!disposed) {
@@ -88,6 +136,7 @@
       if (scene_timer !== undefined) clearTimeout(scene_timer)
       if (reveal_timer !== undefined) clearTimeout(reveal_timer)
       observer?.disconnect()
+      viewport_observer?.disconnect()
       document.removeEventListener('visibilitychange', handle_visibility)
       engine?.destroy()
       engine = undefined

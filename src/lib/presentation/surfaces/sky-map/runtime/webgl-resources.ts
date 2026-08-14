@@ -220,8 +220,6 @@ export function create_sky_map_renderer(
     uBackgroundInk: { value: new Color(0x000000) },
     uBackgroundWashAlpha: { value: 0 },
     uBackgroundWashInk: { value: new Color(0x000000) },
-    uExposureAlpha: { value: 0 },
-    uExposureInk: { value: new Color(0x000000) },
     uInk: { value: new Color(0xffffff) },
     uSignalInk: { value: new Color(0xffffff) },
     uBaseAlpha: { value: 0.2 },
@@ -634,8 +632,6 @@ export function create_sky_map_renderer(
       theme.backdrop_wash_ink,
       SRGBColorSpace,
     )
-    uniforms.uExposureAlpha.value = theme.exposure_alpha
-    uniforms.uExposureInk.value.setHex(theme.exposure_ink, SRGBColorSpace)
     uniforms.uSurveyMode.value = theme.survey_mode
   }
 

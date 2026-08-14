@@ -1,6 +1,7 @@
 import {
   ROUTE_CANDIDATE_MAGNITUDE,
   ROUTE_CENTER_RADIUS,
+  ROUTE_ACTIVE_VIEWPORT_BONUS,
   ROUTE_FINAL_SOURCE_MIN_DISTANCE,
   ROUTE_MAX_BACKTRACK_DOT,
   ROUTE_MAX_CAMERA_ROTATION,
@@ -17,7 +18,7 @@ import {
 } from './constants'
 /* oxlint-disable complexity -- route scoring evaluates all constraints in one selection pass. */
 import { clamp_unit } from './motion'
-import type { DecodedSkyMap, RouteCandidate } from './types'
+import type { DecodedSkyMap, RouteCandidate, SkyMapViewport } from './types'
 
 type Direction = readonly [number, number, number]
 
@@ -149,6 +150,7 @@ function candidate_for(
 export function collect_route_candidates(
   sky_map: Pick<DecodedSkyMap, 'directions' | 'magnitudes' | 'node_groups'>,
   view: SkyMapViewProjection,
+  active_viewport?: SkyMapViewport,
 ) {
   const candidates: RouteCandidate[] = []
   for (let index = 0; index < sky_map.magnitudes.length; index += 1) {
@@ -168,7 +170,16 @@ export function collect_route_candidates(
     if (depth < 0.12 || radius < ROUTE_CENTER_RADIUS) continue
 
     const angle = Math.atan2(-vertical, -horizontal * view.aspect)
+    const point_x = 0.5 - horizontal
+    const point_y = 0.5 - vertical
+    const in_active_viewport =
+      !active_viewport ||
+      (point_x >= active_viewport.left &&
+        point_x <= active_viewport.right &&
+        point_y >= active_viewport.top &&
+        point_y <= active_viewport.bottom)
     candidates.push({
+      in_active_viewport,
       index,
       radius,
       sector: Math.floor((((angle + TAU) % TAU) / TAU) * 8),
@@ -333,7 +344,8 @@ export function select_route(
         source_exit_score * 0.55 +
         direction_score * 0.35 +
         continuation_score * 0.6 +
-        outbound_score * 0.1,
+        outbound_score * 0.1 +
+        (candidate.in_active_viewport ? ROUTE_ACTIVE_VIEWPORT_BONUS : 0),
       target_group,
     })
   }

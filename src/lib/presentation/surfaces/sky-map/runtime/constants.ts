@@ -10,7 +10,7 @@ export const CONSTELLATION_RETIRE_DURATION = 900
 export const DAMPING_STIFFNESS = 5.5
 export const DAMPING_SETTLED_RESPONSE =
   1 - (1 + DAMPING_STIFFNESS) * Math.exp(-DAMPING_STIFFNESS)
-export const BASE_VIEW_RADIUS = (55 * Math.PI) / 180
+export const BASE_VIEW_RADIUS = (66 * Math.PI) / 180
 export const ROUTE_CANDIDATE_MAGNITUDE = 3.6
 export const ROUTE_CENTER_RADIUS = 0.22
 export const ROUTE_SOURCE_MAX_RADIUS = 0.44
@@ -24,6 +24,7 @@ export const ROUTE_PREFERRED_CAMERA_ROTATION = (42 * Math.PI) / 180
 export const ROUTE_MAX_CAMERA_ROTATION = (58 * Math.PI) / 180
 export const ROUTE_FINAL_SOURCE_MIN_DISTANCE = (60 * Math.PI) / 180
 export const ROUTE_SCORE_POOL_SIZE = 4
+export const ROUTE_ACTIVE_VIEWPORT_BONUS = 0.85
 export const ROUTE_HISTORY_LENGTH = 4
 export const ROUTE_MAX_BACKTRACK_DOT = 0.35
 export const ROUTE_RIBBON_SEGMENTS = 48

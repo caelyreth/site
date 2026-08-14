@@ -40,6 +40,7 @@ import type {
   SkyMapEngine,
   SkyMapEngineCallbacks,
   SkyMapPayload,
+  SkyMapViewport,
 } from './types'
 import { create_sky_map_renderer } from './webgl-resources'
 
@@ -59,7 +60,12 @@ export function create_sky_map_engine(
     initial_dark,
   )
   if (!maybe_sky_map_renderer) {
-    return { destroy: () => {}, set_active: () => {}, set_theme: () => {} }
+    return {
+      destroy: () => {},
+      set_active: () => {},
+      set_active_viewport: () => {},
+      set_theme: () => {},
+    }
   }
   const sky_map_renderer = maybe_sky_map_renderer
 
@@ -123,6 +129,7 @@ export function create_sky_map_engine(
   let rendered_height = 0
   let rendered_pixel_ratio = 0
   let rendered_width = 0
+  let active_viewport: SkyMapViewport | undefined
 
   const recent_constellation_groups: number[] = []
 
@@ -187,7 +194,7 @@ export function create_sky_map_engine(
       up: vector_components(view_up),
     }
     return select_route({
-      candidates: collect_route_candidates(sky_map, view),
+      candidates: collect_route_candidates(sky_map, view, active_viewport),
       fallback: [SKY_SOURCE_NODES[0], SKY_SOURCE_NODES[1]],
       forward: view.forward,
       previous_source_index: previous_route_source_index,
@@ -630,6 +637,9 @@ export function create_sky_map_engine(
     set_active(next_active) {
       requested_active = next_active
       sync_activity()
+    },
+    set_active_viewport(next_viewport) {
+      active_viewport = next_viewport
     },
     set_theme(next_dark) {
       if (dark_mode === next_dark) return
