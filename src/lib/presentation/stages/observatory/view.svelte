@@ -44,13 +44,15 @@
     on_event={controller.handle_runtime_event}
     state={surface_state}
   />
-  <img
-    alt=""
-    aria-hidden="true"
-    class="plana-art"
-    decoding="async"
-    src={plana_figure}
-  />
+  <div aria-hidden="true" class="plana-art">
+    <img alt="" class="plana-figure" decoding="async" src={plana_figure} />
+    <img
+      alt=""
+      class="plana-figure plana-interference"
+      decoding="async"
+      src={plana_figure}
+    />
+  </div>
   <div class="intro-cluster">
     <div aria-hidden="true" class="cabin-plate">
       <span class="micro-label">Port / 01</span>
@@ -120,10 +122,6 @@
     z-index: 1;
     width: var(--plana-normal-width);
     max-width: none;
-    height: auto;
-    max-height: min(94%, 54rem);
-    object-fit: contain;
-    object-position: center bottom;
     pointer-events: none;
     user-select: none;
     display: block;
@@ -131,6 +129,26 @@
     filter: var(--plana-filter);
     animation: plana-reveal 720ms var(--ease-out) both;
     transition: filter var(--dur-short) var(--ease-in-out);
+  }
+
+  .plana-figure {
+    display: block;
+    width: 100%;
+    max-height: min(94%, 54rem);
+    height: auto;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+  .plana-interference {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-height: none;
+    height: 100%;
+    opacity: 0;
+    filter: brightness(1.18) contrast(1.08);
+    clip-path: inset(45% 0);
   }
 
   :global(.dark) .plana-art {
@@ -146,6 +164,51 @@
     to {
       opacity: var(--plana-opacity);
       transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .plana-interference {
+      animation: plana-interference 7.5s steps(1, end) infinite;
+    }
+  }
+
+  @keyframes plana-interference {
+    0%,
+    72%,
+    100% {
+      opacity: 0;
+      transform: translateX(0);
+      filter: brightness(1.18) contrast(1.08);
+      clip-path: inset(45% 0);
+    }
+    74% {
+      opacity: 0.44;
+      transform: translateX(0.55rem);
+      filter: brightness(1.3) contrast(1.12);
+      clip-path: inset(16% 0 79%);
+    }
+    76.5% {
+      opacity: 0.08;
+      transform: translateX(-0.1rem);
+      clip-path: inset(16% 0 79%);
+    }
+    78.5% {
+      opacity: 0.54;
+      transform: translateX(-0.7rem);
+      filter: brightness(1.34) contrast(1.15);
+      clip-path: inset(45% 0 47%);
+    }
+    80.5% {
+      opacity: 0.3;
+      transform: translateX(0.35rem);
+      filter: brightness(1.24) contrast(1.1);
+      clip-path: inset(75% 0 19%);
+    }
+    82% {
+      opacity: 0;
+      transform: translateX(0);
+      clip-path: inset(75% 0 19%);
     }
   }
 
@@ -291,6 +354,10 @@
   @media (prefers-reduced-motion: reduce) {
     .plana-art {
       animation: none;
+    }
+
+    .plana-interference {
+      display: none;
     }
 
     .social-links a {

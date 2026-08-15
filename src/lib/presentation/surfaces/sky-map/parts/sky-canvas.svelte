@@ -25,7 +25,6 @@
   let canvas_visible = $state(false)
   let page_visible = $state(true)
   let field_ready = $state(false)
-  const porthole_viewport_inset = (1 - Math.SQRT1_2) * 0.5
 
   function clamp_unit(value: number) {
     return Math.min(1, Math.max(0, value))
@@ -33,35 +32,30 @@
 
   function viewport_for(
     canvas_bounds: DOMRect,
-    porthole_bounds: DOMRect,
+    route_bounds: DOMRect,
     surface_bounds: DOMRect,
   ): SkyMapViewport | undefined {
     const { height, width } = canvas_bounds
     if (width <= 0 || height <= 0) return undefined
 
-    const porthole_diameter = Math.min(
-      porthole_bounds.width,
-      porthole_bounds.height,
-    )
-    const inset = porthole_diameter * porthole_viewport_inset
     const left = Math.max(
       canvas_bounds.left,
-      porthole_bounds.left + inset,
+      route_bounds.left,
       surface_bounds.left,
     )
     const right = Math.min(
       canvas_bounds.right,
-      porthole_bounds.right - inset,
+      route_bounds.right,
       surface_bounds.right,
     )
     const top = Math.max(
       canvas_bounds.top,
-      porthole_bounds.top + inset,
+      route_bounds.top,
       surface_bounds.top,
     )
     const bottom = Math.min(
       canvas_bounds.bottom,
-      porthole_bounds.bottom - inset,
+      route_bounds.bottom,
       surface_bounds.bottom,
     )
     if (right <= left || bottom <= top) return undefined
@@ -82,8 +76,8 @@
     if (!canvas) return
 
     const sky_map = canvas.closest<HTMLElement>('[data-sky-map]')
-    const porthole_bounds = sky_map?.querySelector<HTMLElement>(
-      '[data-sky-map-window]',
+    const route_viewport = sky_map?.querySelector<HTMLElement>(
+      '[data-sky-map-route-viewport]',
     )
     let disposed = false
     let reveal_timer: ReturnType<typeof setTimeout> | undefined
@@ -101,10 +95,10 @@
       sync_activity()
     }
     const sync_active_viewport = () => {
-      if (!canvas || !porthole_bounds || !sky_map) return
+      if (!canvas || !route_viewport || !sky_map) return
       const active_viewport = viewport_for(
         canvas.getBoundingClientRect(),
-        porthole_bounds.getBoundingClientRect(),
+        route_viewport.getBoundingClientRect(),
         sky_map.getBoundingClientRect(),
       )
       engine?.set_active_viewport(active_viewport)
@@ -117,7 +111,7 @@
       })
     }
     const viewport_observer =
-      porthole_bounds && typeof ResizeObserver !== 'undefined'
+      route_viewport && typeof ResizeObserver !== 'undefined'
         ? new ResizeObserver(schedule_active_viewport_sync)
         : undefined
 
@@ -126,9 +120,9 @@
     } else {
       canvas_visible = true
     }
-    if (viewport_observer && porthole_bounds && sky_map) {
+    if (viewport_observer && route_viewport && sky_map) {
       viewport_observer.observe(canvas)
-      viewport_observer.observe(porthole_bounds)
+      viewport_observer.observe(route_viewport)
       viewport_observer.observe(sky_map)
     }
     document.addEventListener('visibilitychange', handle_visibility)
@@ -199,16 +193,25 @@
 <style>
   .canvas {
     --scene-reveal-duration: 1100ms;
+    --sky-map-field-mask: linear-gradient(
+      to right,
+      transparent var(--sky-map-fade-start),
+      #000 var(--sky-map-fade-end)
+    );
     position: absolute;
-    top: calc(var(--porthole-center-y) - var(--porthole-radius));
-    left: calc(var(--porthole-center-x) - var(--porthole-radius));
+    top: 0;
+    left: var(--sky-map-field-start);
     z-index: 1;
     display: block;
-    width: var(--porthole-box);
-    height: var(--porthole-box);
+    width: calc(100% - var(--sky-map-field-start));
+    height: 100%;
     pointer-events: none;
     opacity: 0;
     will-change: opacity;
+    -webkit-mask-image: var(--sky-map-field-mask);
+    -webkit-mask-repeat: no-repeat;
+    mask-image: var(--sky-map-field-mask);
+    mask-repeat: no-repeat;
     transition: opacity var(--scene-reveal-duration) var(--ease-out);
   }
 

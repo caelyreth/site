@@ -1,14 +1,5 @@
 <script lang="ts">
   import type { SkyMapSurfaceProps } from './contract'
-  import {
-    RIM_RADIUS,
-    VIEW_CENTER,
-    VIEW_SIZE,
-    gasket_ticks,
-    gasket_tracks,
-    inner_ticks,
-    inner_tracks,
-  } from './parts/porthole-geometry'
   import SkyCanvas from './parts/sky-canvas.svelte'
 
   /* oxlint-disable prefer-const -- Surface props update with the stage. */
@@ -68,61 +59,13 @@
   data-sky-map
   style:--signal={surface_state.signal_color}
 >
-  <div class="sky-map-visual">
-    <div class="porthole">
-      <SkyCanvas {on_event} />
-      <div aria-hidden="true" class="glass-layer"></div>
-    </div>
+  <div class="sky-field">
+    <SkyCanvas {on_event} />
     <div
       aria-hidden="true"
-      class="porthole-bounds"
-      data-sky-map-window
+      class="route-viewport"
+      data-sky-map-route-viewport
     ></div>
-    <svg
-      aria-hidden="true"
-      class="gasket"
-      viewBox="0 0 {VIEW_SIZE} {VIEW_SIZE}"
-    >
-      <circle
-        class="rim"
-        cx={VIEW_CENTER}
-        cy={VIEW_CENTER}
-        fill="none"
-        r={RIM_RADIUS}
-      />
-      {#each inner_tracks as track (track)}
-        <path class="inner-track" d={track} />
-      {/each}
-      {#each inner_ticks as tick (`inner-${tick.angle}`)}
-        <line
-          class:major={tick.major}
-          class:medium={tick.medium}
-          class:terminal={tick.terminal}
-          class="inner-tick"
-          transform={`rotate(${tick.angle} ${VIEW_CENTER} ${VIEW_CENTER})`}
-          x1={VIEW_CENTER}
-          x2={VIEW_CENTER}
-          y1={tick.y1}
-          y2={tick.y2}
-        />
-      {/each}
-      {#each gasket_tracks as track (track)}
-        <path class="gasket-track" d={track} />
-      {/each}
-      {#each gasket_ticks as tick (tick.angle)}
-        <line
-          class:major={tick.major}
-          class:medium={tick.medium}
-          class:terminal={tick.terminal}
-          class="gasket-tick"
-          transform={`rotate(${tick.angle} ${VIEW_CENTER} ${VIEW_CENTER})`}
-          x1={VIEW_CENTER}
-          x2={VIEW_CENTER}
-          y1={tick.y1}
-          y2={tick.y2}
-        />
-      {/each}
-    </svg>
   </div>
   <div class="label-rail label-rail-top">
     <div class="label-cluster">
@@ -169,19 +112,19 @@
       {surface_state.view_status.scale.toFixed(2)}</span
     >
   </div>
-  <span aria-hidden="true" class="label descent-label"
-    >Descent to station</span
-  >
 </div>
 
 <style>
   .sky-map {
     --label-inline-inset: clamp(0.75rem, 4vw, var(--inline-gutter));
-    --porthole-center-x: 84%;
-    --porthole-center-y: 42%;
-    --porthole-radius: clamp(23rem, 33vw, 37rem);
-    --porthole-box: calc(var(--porthole-radius) + var(--porthole-radius));
-    --sky-map-opacity: max(0, calc(1 - var(--stage-progress) * 1.2));
+    --sky-map-field-start: 44%;
+    --sky-map-fade-start: 0%;
+    --sky-map-fade-end: 36%;
+    --sky-map-route-top: 10%;
+    --sky-map-route-right: 5%;
+    --sky-map-route-bottom: 12%;
+    --sky-map-route-left: 64%;
+    --sky-field-opacity: max(0, calc(1 - var(--stage-progress) * 1.2));
     --label-safe-left: var(
       --stage-label-safe-left,
       max(var(--label-inline-inset), env(safe-area-inset-left))
@@ -207,140 +150,19 @@
     overflow: hidden;
   }
 
-  .sky-map-visual {
+  .sky-field {
     position: absolute;
     inset: 0;
-    opacity: var(--sky-map-opacity);
+    opacity: var(--sky-field-opacity);
     will-change: opacity;
   }
 
-  .sky-map-visual::after {
+  .route-viewport {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    height: 1px;
-    pointer-events: none;
-    content: '';
-    background: var(--color-stage-edge);
-    box-shadow: 0 -1rem 1.5rem -1rem var(--color-stage-edge);
-  }
-
-  .porthole {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    background-color: var(--color-stage-surface);
-    clip-path: circle(
-      var(--porthole-radius) at var(--porthole-center-x)
-        var(--porthole-center-y)
-    );
-  }
-
-  .porthole-bounds {
-    position: absolute;
-    top: calc(var(--porthole-center-y) - var(--porthole-radius));
-    left: calc(var(--porthole-center-x) - var(--porthole-radius));
-    width: var(--porthole-box);
-    aspect-ratio: 1;
+    inset: var(--sky-map-route-top) var(--sky-map-route-right)
+      var(--sky-map-route-bottom) var(--sky-map-route-left);
     visibility: hidden;
     pointer-events: none;
-  }
-
-  .glass-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .glass-layer::before {
-    inset: 0;
-    position: absolute;
-    content: '';
-    background: radial-gradient(
-      circle var(--porthole-radius) at var(--porthole-center-x)
-        var(--porthole-center-y),
-      transparent calc(var(--porthole-radius) - 0.875rem),
-      var(--color-stage-glass-lip) calc(var(--porthole-radius) - 0.125rem),
-      transparent var(--porthole-radius)
-    );
-  }
-
-  .rim {
-    stroke: var(--color-boundary);
-    stroke-width: 1px;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .inner-track,
-  .inner-tick {
-    fill: none;
-    stroke: currentcolor;
-    stroke-linecap: square;
-    stroke-linejoin: bevel;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .inner-track {
-    stroke: var(--color-stage-calibration-inner-standard);
-    stroke-width: 2.4px;
-  }
-
-  .inner-tick {
-    stroke: var(--color-stage-calibration-inner-minor);
-    stroke-width: 2.4px;
-  }
-
-  .inner-tick.medium {
-    stroke: var(--color-stage-calibration-inner-standard);
-    stroke-width: 3px;
-  }
-
-  .inner-tick.major,
-  .inner-tick.terminal {
-    stroke: var(--color-stage-calibration-inner-major);
-    stroke-width: 3.5px;
-  }
-
-  .gasket {
-    position: absolute;
-    top: calc(var(--porthole-center-y) - var(--porthole-radius));
-    left: calc(var(--porthole-center-x) - var(--porthole-radius));
-    z-index: 3;
-    width: var(--porthole-box);
-    overflow: visible;
-    aspect-ratio: 1;
-    color: var(--color-stage-calibration-standard);
-    pointer-events: none;
-  }
-
-  .gasket-track,
-  .gasket-tick {
-    fill: none;
-    stroke: currentcolor;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .gasket-track {
-    stroke-width: 3px;
-  }
-
-  .gasket-tick {
-    stroke: var(--color-stage-calibration-minor);
-    stroke-width: 3px;
-  }
-
-  .gasket-tick.medium {
-    stroke: var(--color-stage-calibration-standard);
-    stroke-width: 3.5px;
-  }
-
-  .gasket-tick.major,
-  .gasket-tick.terminal {
-    stroke: var(--color-stage-calibration-major);
-    stroke-width: 4px;
   }
 
   @supports (height: 100dvh) and (height: 100lvh) {
@@ -443,7 +265,7 @@
 
   .relay-trace-cells span {
     height: 1px;
-    background: var(--color-stage-calibration-minor);
+    background: var(--color-boundary);
   }
 
   .relay-trace-cells span:nth-child(3n) {
@@ -468,16 +290,6 @@
     white-space: nowrap;
   }
 
-  .descent-label {
-    position: absolute;
-    right: var(--label-safe-right);
-    bottom: var(--label-bottom-inset);
-    z-index: 4;
-    text-align: right;
-    white-space: nowrap;
-    opacity: var(--sky-map-opacity);
-  }
-
   .view-status {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.08em;
@@ -495,9 +307,13 @@
 
   @media (max-width: 40rem) {
     .sky-map {
-      --porthole-center-x: calc(100% + 30vw);
-      --porthole-center-y: 38%;
-      --porthole-radius: 75vw;
+      --sky-map-field-start: 0%;
+      --sky-map-fade-start: 12%;
+      --sky-map-fade-end: 62%;
+      --sky-map-route-top: 12%;
+      --sky-map-route-right: 8%;
+      --sky-map-route-bottom: 22%;
+      --sky-map-route-left: 62%;
     }
 
     .relay-register {
