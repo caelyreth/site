@@ -7,7 +7,6 @@
     WORDMARK_COOL_DURATION,
     WORDMARK_CRASH_DURATION,
     WORDMARK_CRASH_PIXEL_DURATION,
-    WORDMARK_FADE_DURATION,
     WORDMARK_LIGHT_DELAY,
   } from '../intro'
   import {
@@ -147,7 +146,6 @@
   style:--boot-duration={`${WORDMARK_BOOT_DURATION}ms`}
   style:--crash-duration={`${WORDMARK_CRASH_DURATION}ms`}
   style:--crash-pixel-duration={`${WORDMARK_CRASH_PIXEL_DURATION}ms`}
-  style:--fade-duration={`${WORDMARK_FADE_DURATION}ms`}
   style:--light-delay={`${WORDMARK_LIGHT_DELAY}ms`}
   style:--circuit-pulse={`${WORDMARK_CRASH_DURATION}ms`}
   style:--cool-duration={`${WORDMARK_COOL_DURATION}ms`}
@@ -275,7 +273,8 @@
   </g>
 
   <g class="filament" clip-path="url(#wordmark-glass-clip)">
-    <path class="filament-idle" d={idle} />
+    <path class="filament-idle" d={idle.matrix} />
+    <path class="filament-idle-dim" d={idle.dim} />
     <g class="letters">
       {#key reading}
         <g
@@ -285,9 +284,9 @@
           class:initial={cycle === 0}
           class="filament-on"
         >
-          <path class="boot-matrix" d={lit.matrix} />
-          <path class="boot-steady" d={lit.steady} />
-          <path class="boot-pulse" d={lit.matrix} />
+          <path class="boot-matrix boot-matrix-full" d={lit.full} />
+          <path class="boot-matrix boot-matrix-normal" d={lit.normal} />
+          <path class="boot-matrix boot-matrix-dim" d={lit.dim} />
         </g>
       {/key}
     </g>
@@ -312,14 +311,11 @@
   .wordmark {
     --ease-phosphor: cubic-bezier(0.37, 0.02, 0.2, 1);
     --filament: var(--color-stage-ink);
-    --filament-dim: var(--color-stage-ink-secondary);
     display: block;
     width: 100%;
     height: auto;
     overflow: visible;
     pointer-events: none;
-    opacity: 0;
-    animation: wordmark-fade var(--fade-duration) var(--ease-in-out) both;
   }
 
   .glass {
@@ -469,38 +465,37 @@
     );
   }
 
+  .filament-idle-dim {
+    fill: color-mix(
+      in oklab,
+      var(--color-stage-ink-secondary) 12%,
+      transparent
+    );
+  }
+
   .letters {
     transform-box: fill-box;
     transform-origin: center;
   }
 
-  .filament-on {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  .filament-on.heating {
-    animation: filament-drift var(--boot-duration) linear both;
-  }
-
-  .filament-on.heating.initial {
-    animation-delay: var(--light-delay);
-  }
-
-  .boot-matrix,
-  .boot-steady {
+  .boot-matrix {
+    opacity: 0;
     transition: fill var(--dur-long) var(--ease-in-out);
   }
 
-  .boot-matrix {
-    fill: var(--filament-dim);
-    opacity: 0;
+  .boot-matrix-full {
+    fill: var(--filament);
+    fill-opacity: 1;
   }
 
-  .boot-steady,
-  .boot-pulse {
+  .boot-matrix-normal {
     fill: var(--filament);
-    opacity: 0;
+    fill-opacity: 0.8;
+  }
+
+  .boot-matrix-dim {
+    fill: var(--filament);
+    fill-opacity: 0.6;
   }
 
   .filament-on.heating .boot-matrix {
@@ -511,31 +506,11 @@
     animation-delay: var(--light-delay);
   }
 
-  .filament-on.heating .boot-steady {
-    animation: filament-hold calc(var(--boot-duration) * 0.55)
-      var(--ease-phosphor) calc(var(--boot-duration) * 0.52) both;
-  }
-
-  .filament-on.heating.initial .boot-steady {
-    animation-delay: calc(var(--light-delay) + var(--boot-duration) * 0.52);
-  }
-
-  .filament-on.heating .boot-pulse {
-    animation: filament-strike calc(var(--boot-duration) * 0.7)
-      var(--ease-phosphor) calc(var(--boot-duration) * 0.42) both;
-  }
-
-  .filament-on.heating.initial .boot-pulse {
-    animation-delay: calc(var(--light-delay) + var(--boot-duration) * 0.42);
-  }
-
-  .filament-on.holding .boot-matrix,
-  .filament-on.holding .boot-steady {
+  .filament-on.holding .boot-matrix {
     opacity: 1;
   }
 
-  .filament-on.cooling .boot-matrix,
-  .filament-on.cooling .boot-steady {
+  .filament-on.cooling .boot-matrix {
     animation: filament-cool var(--cool-duration) var(--ease-phosphor) both;
   }
 
@@ -551,11 +526,6 @@
       in oklab,
       var(--signal) 42%,
       var(--color-stage-ink)
-    );
-    --filament-dim: color-mix(
-      in oklab,
-      var(--signal) 26%,
-      var(--color-stage-ink-secondary)
     );
   }
 
@@ -608,15 +578,6 @@
       var(--crash-delay) both;
   }
 
-  @keyframes wordmark-fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
   @keyframes wordmark-crash {
     0%,
     to {
@@ -634,12 +595,6 @@
     0% {
       opacity: 0;
     }
-    28% {
-      opacity: 0.32;
-    }
-    64% {
-      opacity: 0.78;
-    }
     to {
       opacity: 1;
     }
@@ -654,41 +609,6 @@
     }
     to {
       opacity: 0;
-    }
-  }
-
-  @keyframes filament-drift {
-    0%,
-    to {
-      transform: translate(0);
-    }
-    40% {
-      transform: translate(0.06px, -0.03px);
-    }
-    72% {
-      transform: translate(-0.04px, 0.02px);
-    }
-  }
-
-  @keyframes filament-strike {
-    0%,
-    68% {
-      opacity: 0;
-    }
-    82% {
-      opacity: 0.14;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-
-  @keyframes filament-hold {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
     }
   }
 
@@ -744,8 +664,6 @@
     .filament-on.heating,
     .filament-on.cooling,
     .boot-matrix,
-    .boot-pulse,
-    .boot-steady,
     .wordmark.active .crash-pixel,
     .wordmark.active .circuit-node.live .via-hole,
     .wordmark.active .circuit-node.live .land-pad,
@@ -755,8 +673,7 @@
     }
 
     .wordmark,
-    .boot-matrix,
-    .boot-steady {
+    .boot-matrix {
       opacity: 1;
       transition: none;
     }

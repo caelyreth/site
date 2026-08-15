@@ -1,4 +1,5 @@
 <script lang="ts">
+  import plana_figure from '$lib/assets/illustrations/plana-figure.svg'
   import type { StageProps } from '$lib/presentation/contract'
   import VfdTube from '$lib/presentation/parts/vfd-tube/view.svelte'
   import type { SkyMapSurfaceState } from '$lib/presentation/surfaces/sky-map/contract'
@@ -43,6 +44,13 @@
     on_event={controller.handle_runtime_event}
     state={surface_state}
   />
+  <img
+    alt=""
+    aria-hidden="true"
+    class="plana-art"
+    decoding="async"
+    src={plana_figure}
+  />
   <div class="intro-cluster">
     <div aria-hidden="true" class="cabin-plate">
       <span class="micro-label">Port / 01</span>
@@ -85,13 +93,60 @@
       clamp(0.75rem, 4vw, var(--inline-gutter)),
       env(safe-area-inset-right)
     );
-    --stage-porthole-center-x: 74%;
-    --stage-porthole-center-y: 42%;
-    --stage-porthole-radius: clamp(25rem, 35vw, 40rem);
-
     position: absolute;
     inset: 0;
     overflow: hidden;
+  }
+
+  .plana-art {
+    --plana-opacity: 0.48;
+    --plana-filter: grayscale(1) contrast(0.96) brightness(0.96);
+    --plana-normal-inline-start: clamp(3.5rem, 17vw, 19rem);
+    --plana-normal-width: clamp(20rem, 46vw, 48rem);
+    --plana-final-inline-start: max(
+      0px,
+      calc(min(100vw, var(--frame-measure)) - var(--plana-normal-width))
+    );
+
+    position: absolute;
+    bottom: clamp(-3rem, -3vw, -1.25rem);
+    left: calc(
+      var(--plana-final-inline-start) +
+        (
+          var(--plana-normal-inline-start) - var(--plana-final-inline-start)
+        ) *
+        var(--stage-opening)
+    );
+    z-index: 1;
+    width: var(--plana-normal-width);
+    max-width: none;
+    height: auto;
+    max-height: min(94%, 54rem);
+    object-fit: contain;
+    object-position: center bottom;
+    pointer-events: none;
+    user-select: none;
+    display: block;
+    opacity: var(--plana-opacity);
+    filter: var(--plana-filter);
+    animation: plana-reveal 720ms var(--ease-out) both;
+    transition: filter var(--dur-short) var(--ease-in-out);
+  }
+
+  :global(.dark) .plana-art {
+    --plana-opacity: 0.36;
+    --plana-filter: grayscale(1) contrast(0.92) brightness(0.94);
+  }
+
+  @keyframes plana-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(0.375rem);
+    }
+    to {
+      opacity: var(--plana-opacity);
+      transform: translateY(0);
+    }
   }
 
   .intro-cluster {
@@ -216,12 +271,6 @@
   }
 
   @media (max-width: 40rem) {
-    .observatory-stage {
-      --stage-porthole-center-x: calc(100% + 30vw);
-      --stage-porthole-center-y: 38%;
-      --stage-porthole-radius: 75vw;
-    }
-
     .intro-cluster {
       --stage-intro-description-measure: 21rem;
       --stage-intro-entry-gap: 0.625rem;
@@ -230,12 +279,20 @@
       gap: 0.5rem;
     }
 
+    .plana-art {
+      display: none;
+    }
+
     .cabin-plate {
       width: min(72vw, 25rem);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .plana-art {
+      animation: none;
+    }
+
     .social-links a {
       transform: none;
       transition: none;

@@ -12,12 +12,6 @@ export interface VfdLayout {
   line_y: number
 }
 
-export interface VfdPaths {
-  idle: string
-  matrix: string
-  steady: string
-}
-
 export const VFD_LAYOUT: VfdLayout = {
   idle_inset: 0.13,
   idle_radius: 0.1,
@@ -37,6 +31,21 @@ const BLANK = [
   '00000',
   '00000',
   '00000',
+] as const
+
+const PHOSPHOR_LEVELS = [
+  'full',
+  'normal',
+  'normal',
+  'dim',
+  'normal',
+  'normal',
+  'normal',
+  'normal',
+  'full',
+  'normal',
+  'dim',
+  'normal',
 ] as const
 
 const VFD_GLYPHS: Record<string, readonly string[]> = {
@@ -115,11 +124,13 @@ export function build_vfd_idle(
   slots: number,
   lines = 1,
   layout: VfdLayout = VFD_LAYOUT,
-): string {
-  let idle = ''
+): { dim: string; matrix: string } {
+  const idle = { dim: '', matrix: '' }
   for (let line = 0; line < lines; line += 1) {
     for (let slot = 0; slot < slots; slot += 1) {
-      idle += slot_idle(slot, line, layout)
+      const next = slot_idle(slot, line, layout)
+      idle.matrix += next.matrix
+      idle.dim += next.dim
     }
   }
   return idle
@@ -128,8 +139,12 @@ export function build_vfd_idle(
 export function build_vfd_lit(
   lines: readonly string[],
   layout: VfdLayout = VFD_LAYOUT,
-): Omit<VfdPaths, 'idle'> {
-  const state = { matrix: '', steady: '' }
+): {
+  dim: string
+  full: string
+  normal: string
+} {
+  const state = { dim: '', full: '', normal: '' }
   for (let line = 0; line < lines.length; line += 1) {
     append_line(state, lines[line] ?? '', line, layout)
   }
@@ -137,7 +152,11 @@ export function build_vfd_lit(
 }
 
 function append_line(
-  state: { matrix: string; steady: string },
+  state: {
+    dim: string
+    full: string
+    normal: string
+  },
   text: string,
   line: number,
   layout: VfdLayout,
@@ -149,22 +168,28 @@ function append_line(
 }
 
 function slot_idle(slot: number, line: number, layout: VfdLayout) {
-  let idle = ''
+  const idle = { dim: '', matrix: '' }
   for (let row = 0; row < VFD_GLYPH_ROWS; row += 1) {
     for (let column = 0; column < VFD_GLYPH_COLS; column += 1) {
-      idle += cell_path(
+      const cell = cell_path(
         slot * layout.letter_pitch + column + layout.idle_inset,
         layout.line_y + line * layout.line_pitch + row + layout.idle_inset,
         layout.idle_size,
         layout.idle_radius,
       )
+      if (is_dim_idle_cell(slot, line, row, column)) idle.dim += cell
+      else idle.matrix += cell
     }
   }
   return idle
 }
 
 function append_lit(
-  state: { matrix: string; steady: string },
+  state: {
+    dim: string
+    full: string
+    normal: string
+  },
   glyph: readonly string[],
   line: number,
   slot: number,
@@ -180,8 +205,7 @@ function append_lit(
         layout.pixel_size,
         layout.pixel_radius,
       )
-      state.matrix += path
-      if (is_steady_pixel(slot, row, column)) state.steady += path
+      state[phosphor_level(slot, line, row, column)] += path
     }
   }
 }
@@ -194,8 +218,23 @@ function marks_of(value: string) {
   return marks
 }
 
-function is_steady_pixel(slot: number, row: number, column: number) {
-  return (slot * 5 + row * 3 + column) % 7 === 0
+function is_dim_idle_cell(
+  slot: number,
+  line: number,
+  row: number,
+  column: number,
+) {
+  return (slot * 17 + line * 13 + row * 7 + column * 3) % 11 === 0
+}
+
+function phosphor_level(
+  slot: number,
+  line: number,
+  row: number,
+  column: number,
+) {
+  const pattern = (slot * 19 + line * 17 + row * 11 + column * 5) % 13
+  return PHOSPHOR_LEVELS[pattern] ?? 'normal'
 }
 
 function cell_path(x: number, y: number, size: number, radius: number) {

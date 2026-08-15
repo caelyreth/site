@@ -34,6 +34,7 @@
   function viewport_for(
     canvas_bounds: DOMRect,
     porthole_bounds: DOMRect,
+    surface_bounds: DOMRect,
   ): SkyMapViewport | undefined {
     const { height, width } = canvas_bounds
     if (width <= 0 || height <= 0) return undefined
@@ -43,15 +44,25 @@
       porthole_bounds.height,
     )
     const inset = porthole_diameter * porthole_viewport_inset
-    const left = Math.max(canvas_bounds.left, porthole_bounds.left + inset)
+    const left = Math.max(
+      canvas_bounds.left,
+      porthole_bounds.left + inset,
+      surface_bounds.left,
+    )
     const right = Math.min(
       canvas_bounds.right,
       porthole_bounds.right - inset,
+      surface_bounds.right,
     )
-    const top = Math.max(canvas_bounds.top, porthole_bounds.top + inset)
+    const top = Math.max(
+      canvas_bounds.top,
+      porthole_bounds.top + inset,
+      surface_bounds.top,
+    )
     const bottom = Math.min(
       canvas_bounds.bottom,
       porthole_bounds.bottom - inset,
+      surface_bounds.bottom,
     )
     if (right <= left || bottom <= top) return undefined
 
@@ -77,6 +88,7 @@
     let disposed = false
     let reveal_timer: ReturnType<typeof setTimeout> | undefined
     let scene_timer: ReturnType<typeof setTimeout> | undefined
+    let viewport_frame: number | undefined
     const observer =
       typeof IntersectionObserver === 'undefined'
         ? undefined
@@ -89,16 +101,24 @@
       sync_activity()
     }
     const sync_active_viewport = () => {
-      if (!canvas || !porthole_bounds) return
+      if (!canvas || !porthole_bounds || !sky_map) return
       const active_viewport = viewport_for(
         canvas.getBoundingClientRect(),
         porthole_bounds.getBoundingClientRect(),
+        sky_map.getBoundingClientRect(),
       )
       engine?.set_active_viewport(active_viewport)
     }
+    const schedule_active_viewport_sync = () => {
+      if (viewport_frame !== undefined) return
+      viewport_frame = requestAnimationFrame(() => {
+        viewport_frame = undefined
+        sync_active_viewport()
+      })
+    }
     const viewport_observer =
       porthole_bounds && typeof ResizeObserver !== 'undefined'
-        ? new ResizeObserver(sync_active_viewport)
+        ? new ResizeObserver(schedule_active_viewport_sync)
         : undefined
 
     if (observer) {
@@ -106,11 +126,15 @@
     } else {
       canvas_visible = true
     }
-    if (viewport_observer && porthole_bounds) {
+    if (viewport_observer && porthole_bounds && sky_map) {
       viewport_observer.observe(canvas)
       viewport_observer.observe(porthole_bounds)
+      viewport_observer.observe(sky_map)
     }
     document.addEventListener('visibilitychange', handle_visibility)
+    window.addEventListener('scroll', schedule_active_viewport_sync, {
+      passive: true,
+    })
     page_visible = document.visibilityState === 'visible'
 
     const start_scene = () => {
@@ -147,9 +171,11 @@
       disposed = true
       if (scene_timer !== undefined) clearTimeout(scene_timer)
       if (reveal_timer !== undefined) clearTimeout(reveal_timer)
+      if (viewport_frame !== undefined) cancelAnimationFrame(viewport_frame)
       observer?.disconnect()
       viewport_observer?.disconnect()
       document.removeEventListener('visibilitychange', handle_visibility)
+      window.removeEventListener('scroll', schedule_active_viewport_sync)
       engine?.destroy()
       engine = undefined
       field_ready = false
@@ -174,23 +200,20 @@
   .canvas {
     --scene-reveal-duration: 1100ms;
     position: absolute;
-    top: 0;
-    left: 50%;
+    top: calc(var(--porthole-center-y) - var(--porthole-radius));
+    left: calc(var(--porthole-center-x) - var(--porthole-radius));
     z-index: 1;
     display: block;
-    width: calc(100vw - 2 * var(--stage-frame-inset));
-    height: calc(
-      var(--stage-viewport) - var(--stage-top) - var(--stage-frame-inset)
-    );
+    width: var(--porthole-box);
+    height: var(--porthole-box);
     pointer-events: none;
     opacity: 0;
-    transform: translateX(-50%);
     will-change: opacity;
     transition: opacity var(--scene-reveal-duration) var(--ease-out);
   }
 
   .canvas.is-ready {
-    opacity: max(0, calc(1 - var(--stage-progress) * 1.25));
+    opacity: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -199,7 +222,7 @@
     }
 
     .canvas.is-ready {
-      opacity: max(0, calc(0.72 - var(--stage-progress) * 1.05));
+      opacity: 0.72;
     }
   }
 </style>
