@@ -77,6 +77,18 @@
 
 <style>
   .observatory-stage {
+    --stage-label-safe-left: max(
+      clamp(0.75rem, 4vw, var(--inline-gutter)),
+      env(safe-area-inset-left)
+    );
+    --stage-label-safe-right: max(
+      clamp(0.75rem, 4vw, var(--inline-gutter)),
+      env(safe-area-inset-right)
+    );
+    --stage-porthole-center-x: 74%;
+    --stage-porthole-center-y: 42%;
+    --stage-porthole-radius: clamp(25rem, 35vw, 40rem);
+
     position: absolute;
     inset: 0;
     overflow: hidden;
@@ -204,6 +216,12 @@
   }
 
   @media (max-width: 40rem) {
+    .observatory-stage {
+      --stage-porthole-center-x: calc(100% + 30vw);
+      --stage-porthole-center-y: 38%;
+      --stage-porthole-radius: 75vw;
+    }
+
     .intro-cluster {
       --stage-intro-description-measure: 21rem;
       --stage-intro-entry-gap: 0.625rem;
