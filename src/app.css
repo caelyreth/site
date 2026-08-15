@@ -45,11 +45,16 @@
   --color-stage-surface-light: oklch(90.5% 0 0);
   --color-stage-wash-light: oklch(95.5% 0 0);
   --color-stage-glass-surface-light: var(--color-stage-surface-light);
+  --color-stage-glass-lip-light: oklch(31% 0 0 / 0.11);
+  --color-stage-edge-light: oklch(100% 0 0 / 0.12);
   --color-stage-ink-light: oklch(31% 0.06 238);
   --color-stage-ink-secondary-light: oklch(45% 0.048 238);
-  --color-stage-calibration-major-light: oklch(51% 0 0);
-  --color-stage-calibration-standard-light: oklch(62% 0 0);
-  --color-stage-calibration-minor-light: oklch(72% 0 0);
+  --color-stage-calibration-major-light: oklch(57% 0 0);
+  --color-stage-calibration-standard-light: oklch(68% 0 0);
+  --color-stage-calibration-minor-light: oklch(77% 0 0);
+  --color-stage-calibration-inner-major-light: oklch(66% 0 0);
+  --color-stage-calibration-inner-standard-light: oklch(75% 0 0);
+  --color-stage-calibration-inner-minor-light: oklch(83% 0 0);
   --color-boundary-light: oklch(85% 0 0);
   --color-paper-dark: oklch(18% 0 0);
   --color-paper-prime-dark: oklch(18.5% 0 0);
@@ -93,11 +98,16 @@
   --color-stage-surface-dark: var(--color-paper-prime-dark);
   --color-stage-wash-dark: var(--color-paper-prime-dark);
   --color-stage-glass-surface-dark: var(--color-field-dark);
+  --color-stage-glass-lip-dark: oklch(0% 0 0 / 0.24);
+  --color-stage-edge-dark: oklch(88% 0 0 / 0.08);
   --color-stage-ink-dark: var(--color-text-dark);
   --color-stage-ink-secondary-dark: var(--color-text-secondary-dark);
   --color-stage-calibration-major-dark: oklch(57% 0 0);
   --color-stage-calibration-standard-dark: oklch(46% 0 0);
   --color-stage-calibration-minor-dark: oklch(36% 0 0);
+  --color-stage-calibration-inner-major-dark: oklch(66% 0 0);
+  --color-stage-calibration-inner-standard-dark: oklch(56% 0 0);
+  --color-stage-calibration-inner-minor-dark: oklch(46% 0 0);
   --color-boundary-dark: var(--color-rule-dark);
   --color-paper: var(--color-paper-light);
   --color-paper-prime: var(--color-paper-prime-light);
@@ -120,6 +130,8 @@
   --color-stage-surface: var(--color-stage-surface-light);
   --color-stage-wash: var(--color-stage-wash-light);
   --color-stage-glass-surface: var(--color-stage-glass-surface-light);
+  --color-stage-glass-lip: var(--color-stage-glass-lip-light);
+  --color-stage-edge: var(--color-stage-edge-light);
   --color-stage-ink: var(--color-stage-ink-light);
   --color-stage-ink-secondary: var(--color-stage-ink-secondary-light);
   --color-stage-calibration-major: var(
@@ -130,6 +142,15 @@
   );
   --color-stage-calibration-minor: var(
     --color-stage-calibration-minor-light
+  );
+  --color-stage-calibration-inner-major: var(
+    --color-stage-calibration-inner-major-light
+  );
+  --color-stage-calibration-inner-standard: var(
+    --color-stage-calibration-inner-standard-light
+  );
+  --color-stage-calibration-inner-minor: var(
+    --color-stage-calibration-inner-minor-light
   );
   --color-boundary: var(--color-boundary-light);
   --color-prose-surface: color-mix(
@@ -218,6 +239,8 @@
   --color-stage-surface: var(--color-stage-surface-dark);
   --color-stage-wash: var(--color-stage-wash-dark);
   --color-stage-glass-surface: var(--color-stage-glass-surface-dark);
+  --color-stage-glass-lip: var(--color-stage-glass-lip-dark);
+  --color-stage-edge: var(--color-stage-edge-dark);
   --color-stage-ink: var(--color-stage-ink-dark);
   --color-stage-ink-secondary: var(--color-stage-ink-secondary-dark);
   --color-stage-calibration-major: var(
@@ -228,6 +251,15 @@
   );
   --color-stage-calibration-minor: var(
     --color-stage-calibration-minor-dark
+  );
+  --color-stage-calibration-inner-major: var(
+    --color-stage-calibration-inner-major-dark
+  );
+  --color-stage-calibration-inner-standard: var(
+    --color-stage-calibration-inner-standard-dark
+  );
+  --color-stage-calibration-inner-minor: var(
+    --color-stage-calibration-inner-minor-dark
   );
   --color-boundary: var(--color-boundary-dark);
   --color-alert-note: var(--color-alert-note-dark);

@@ -30,6 +30,7 @@
 <div class="sky-map" data-sky-map style:--signal={state.signal_color}>
   <div class="porthole">
     <SkyCanvas {on_event} />
+    <div aria-hidden="true" class="glass-layer"></div>
   </div>
   <div aria-hidden="true" class="porthole-bounds" data-sky-map-window></div>
   <svg
@@ -97,7 +98,7 @@
   .sky-map {
     --label-inline-inset: clamp(0.75rem, 4vw, var(--inline-gutter));
     --porthole-center-x: 74%;
-    --porthole-center-y: 39%;
+    --porthole-center-y: 42%;
     --porthole-radius: clamp(25rem, 35vw, 40rem);
     --porthole-box: calc(var(--porthole-radius) + var(--porthole-radius));
     --label-safe-left: max(
@@ -113,6 +114,19 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
+  }
+
+  .sky-map::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    height: 1px;
+    pointer-events: none;
+    content: '';
+    background: var(--color-stage-edge);
+    box-shadow: 0 -1rem 1.5rem -1rem var(--color-stage-edge);
   }
 
   .porthole {
@@ -135,6 +149,26 @@
     pointer-events: none;
   }
 
+  .glass-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .glass-layer::before {
+    inset: 0;
+    position: absolute;
+    content: '';
+    background: radial-gradient(
+      circle var(--porthole-radius) at var(--porthole-center-x)
+        var(--porthole-center-y),
+      transparent calc(var(--porthole-radius) - 0.875rem),
+      var(--color-stage-glass-lip) calc(var(--porthole-radius) - 0.125rem),
+      transparent var(--porthole-radius)
+    );
+  }
+
   .rim {
     stroke: var(--color-boundary);
     stroke-width: 1px;
@@ -151,22 +185,23 @@
   }
 
   .inner-track {
+    stroke: var(--color-stage-calibration-inner-standard);
     stroke-width: 2.4px;
   }
 
   .inner-tick {
-    stroke: color-mix(in oklab, var(--color-stage-ink) 58%, transparent);
+    stroke: var(--color-stage-calibration-inner-minor);
     stroke-width: 2.4px;
   }
 
   .inner-tick.medium {
-    stroke: color-mix(in oklab, var(--color-stage-ink) 78%, transparent);
+    stroke: var(--color-stage-calibration-inner-standard);
     stroke-width: 3px;
   }
 
   .inner-tick.major,
   .inner-tick.terminal {
-    stroke: var(--color-stage-ink);
+    stroke: var(--color-stage-calibration-inner-major);
     stroke-width: 3.5px;
   }
 
@@ -283,7 +318,7 @@
   @media (max-width: 40rem) {
     .sky-map {
       --porthole-center-x: calc(100% + 30vw);
-      --porthole-center-y: 35%;
+      --porthole-center-y: 38%;
       --porthole-radius: 75vw;
     }
   }

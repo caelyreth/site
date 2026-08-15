@@ -6,13 +6,13 @@ export const SCALE_PAD = 12
 export const GASKET_RADIUS = RIM_RADIUS + SCALE_PAD
 export const INNER_TRACK_RADIUS = RIM_RADIUS - SCALE_PAD
 
-// Outer gasket on the cabin-facing rim. Inner scale on the left glass lip.
+// Outer gasket on the cabin-facing rim. Inner scale along the glass lip.
 export const GASKET_ARCS = [
   { start: 170, end: 248 },
   { start: 282, end: 360 },
 ] as const
 
-export const INNER_ARCS = [{ start: 178, end: 352 }] as const
+export const INNER_ARCS = [{ start: 0, end: 359 }] as const
 
 const TICK_LENGTH = {
   major: 12,
@@ -44,8 +44,16 @@ function format_point(value: number) {
   return value.toFixed(2)
 }
 
+function spans_full_circle(start: number, end: number) {
+  return end - start >= 359
+}
+
 function arc_path(start: number, end: number, radius: number) {
   const from = polar(start, radius)
+  if (spans_full_circle(start, end)) {
+    const midpoint = polar(start + 180, radius)
+    return `M${format_point(from.x)} ${format_point(from.y)} A${radius} ${radius} 0 1 1 ${format_point(midpoint.x)} ${format_point(midpoint.y)} A${radius} ${radius} 0 1 1 ${format_point(from.x)} ${format_point(from.y)}`
+  }
   const to = polar(end, radius)
   const large_arc = end - start > 180 ? 1 : 0
   return `M${format_point(from.x)} ${format_point(from.y)} A${radius} ${radius} 0 ${large_arc} 1 ${format_point(to.x)} ${format_point(to.y)}`
@@ -64,11 +72,12 @@ function scale_tick(
   end: number,
   y1: number,
   sign: number,
+  terminals: boolean,
 ): ScaleTick {
   const along = angle - start
   const major = along % 15 === 0
   const medium = along % 5 === 0 && !major
-  const terminal = angle === start || angle === end
+  const terminal = terminals && (angle === start || angle === end)
 
   return {
     angle,
@@ -88,8 +97,9 @@ function build_scale_ticks(
   const sign = side === 'outer' ? -1 : 1
   const y1 = sign * SCALE_PAD
   for (const arc of arcs) {
+    const terminals = !spans_full_circle(arc.start, arc.end)
     for (let angle: number = arc.start; angle <= arc.end; angle += 1) {
-      ticks.push(scale_tick(angle, arc.start, arc.end, y1, sign))
+      ticks.push(scale_tick(angle, arc.start, arc.end, y1, sign, terminals))
     }
   }
   return ticks
