@@ -25,6 +25,7 @@
   let canvas_visible = $state(false)
   let page_visible = $state(true)
   let field_ready = $state(false)
+  const porthole_viewport_inset = (1 - Math.SQRT1_2) * 0.5
 
   function clamp_unit(value: number) {
     return Math.min(1, Math.max(0, value))
@@ -37,10 +38,21 @@
     const { height, width } = canvas_bounds
     if (width <= 0 || height <= 0) return undefined
 
-    const left = Math.max(canvas_bounds.left, porthole_bounds.left)
-    const right = Math.min(canvas_bounds.right, porthole_bounds.right)
-    const top = Math.max(canvas_bounds.top, porthole_bounds.top)
-    const bottom = Math.min(canvas_bounds.bottom, porthole_bounds.bottom)
+    const porthole_diameter = Math.min(
+      porthole_bounds.width,
+      porthole_bounds.height,
+    )
+    const inset = porthole_diameter * porthole_viewport_inset
+    const left = Math.max(canvas_bounds.left, porthole_bounds.left + inset)
+    const right = Math.min(
+      canvas_bounds.right,
+      porthole_bounds.right - inset,
+    )
+    const top = Math.max(canvas_bounds.top, porthole_bounds.top + inset)
+    const bottom = Math.min(
+      canvas_bounds.bottom,
+      porthole_bounds.bottom - inset,
+    )
     if (right <= left || bottom <= top) return undefined
 
     return {

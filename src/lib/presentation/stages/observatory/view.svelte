@@ -44,6 +44,9 @@
     state={surface_state}
   />
   <div class="intro-cluster">
+    <div aria-hidden="true" class="cabin-plate">
+      <span class="micro-label">Port / 01</span>
+    </div>
     <VfdTube
       active={surface_state.signal_active}
       color={signal_color}
@@ -91,6 +94,35 @@
     display: grid;
     width: min(42rem, calc(100% - 2 * var(--stage-intro-inline-inset)));
     gap: clamp(0.5rem, 1vw, 0.75rem);
+  }
+
+  .cabin-plate {
+    display: flex;
+    width: min(37vw, 28rem);
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-stage-ink-secondary);
+    opacity: 0.72;
+  }
+
+  .cabin-plate::before {
+    width: 1px;
+    height: 0.7rem;
+    flex: none;
+    content: '';
+    background: var(--color-boundary);
+  }
+
+  .cabin-plate::after {
+    height: 1px;
+    flex: 1;
+    content: '';
+    background: var(--color-boundary);
+  }
+
+  .cabin-plate .micro-label {
+    letter-spacing: 0.12em;
   }
 
   .social-links {
@@ -178,6 +210,10 @@
       --vfd-inline-offset: -0.75rem;
 
       gap: 0.5rem;
+    }
+
+    .cabin-plate {
+      width: min(72vw, 25rem);
     }
   }
 

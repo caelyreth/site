@@ -1,21 +1,18 @@
 <script lang="ts">
   import type { SkyMapSurfaceProps } from './contract'
+  import {
+    RIM_RADIUS,
+    VIEW_CENTER,
+    VIEW_SIZE,
+    gasket_ticks,
+    gasket_tracks,
+    inner_ticks,
+    inner_tracks,
+  } from './parts/porthole-geometry'
   import SkyCanvas from './parts/sky-canvas.svelte'
 
   /* oxlint-disable prefer-const -- Surface props update with the stage. */
   let { on_event, state }: SkyMapSurfaceProps = $props()
-  const calibration_degrees = Array.from(
-    { length: 12 },
-    (_, index) => index * 30,
-  )
-  const calibration_ticks = Array.from({ length: 360 }, (_, index) => {
-    const major = index % 30 === 0
-    const medium = index % 5 === 0 && !major
-    return { angle: index, major, medium, minor: !major && !medium }
-  })
-  const calibration_rotation = $derived(
-    `${-state.view_status.right_ascension.toFixed(2)}deg`,
-  )
 
   function format_coordinate(value: number, signed = false) {
     const absolute = Math.abs(value)
@@ -35,38 +32,50 @@
     <SkyCanvas {on_event} />
   </div>
   <div aria-hidden="true" class="porthole-bounds" data-sky-map-window></div>
-  <svg aria-hidden="true" class="calibration-ring" viewBox="0 0 1000 1000">
-    <g style:--calibration-rotation={calibration_rotation} class="dial">
-      <circle
-        class="calibration-track"
-        cx="500"
-        cy="500"
-        fill="none"
-        pathLength="360"
-        r="512"
+  <svg
+    aria-hidden="true"
+    class="gasket"
+    viewBox="0 0 {VIEW_SIZE} {VIEW_SIZE}"
+  >
+    <circle
+      class="rim"
+      cx={VIEW_CENTER}
+      cy={VIEW_CENTER}
+      fill="none"
+      r={RIM_RADIUS}
+    />
+    {#each inner_tracks as track (track)}
+      <path class="inner-track" d={track} />
+    {/each}
+    {#each inner_ticks as tick (`inner-${tick.angle}`)}
+      <line
+        class:major={tick.major}
+        class:medium={tick.medium}
+        class:terminal={tick.terminal}
+        class="inner-tick"
+        transform={`rotate(${tick.angle} ${VIEW_CENTER} ${VIEW_CENTER})`}
+        x1={VIEW_CENTER}
+        x2={VIEW_CENTER}
+        y1={tick.y1}
+        y2={tick.y2}
       />
-      {#each calibration_ticks as tick (tick.angle)}
-        <line
-          class:major={tick.major}
-          class:medium={tick.medium}
-          class:minor={tick.minor}
-          class="calibration-tick"
-          transform={`rotate(${tick.angle} 500 500)`}
-          x1="500"
-          x2="500"
-          y1="-12"
-          y2={tick.major ? -38 : tick.medium ? -30 : -24}
-        />
-      {/each}
-      {#each calibration_degrees as degree (degree)}
-        <text
-          class="calibration-degree"
-          transform={`rotate(${degree} 500 500)`}
-          x="500"
-          y="-57">{String(degree).padStart(3, '0')}&deg;</text
-        >
-      {/each}
-    </g>
+    {/each}
+    {#each gasket_tracks as track (track)}
+      <path class="gasket-track" d={track} />
+    {/each}
+    {#each gasket_ticks as tick (tick.angle)}
+      <line
+        class:major={tick.major}
+        class:medium={tick.medium}
+        class:terminal={tick.terminal}
+        class="gasket-tick"
+        transform={`rotate(${tick.angle} ${VIEW_CENTER} ${VIEW_CENTER})`}
+        x1={VIEW_CENTER}
+        x2={VIEW_CENTER}
+        y1={tick.y1}
+        y2={tick.y2}
+      />
+    {/each}
   </svg>
   <div class="label-rail label-rail-top">
     <span class="label observatory-label">Observatory</span>
@@ -90,6 +99,7 @@
     --porthole-center-x: 74%;
     --porthole-center-y: 39%;
     --porthole-radius: clamp(25rem, 35vw, 40rem);
+    --porthole-box: calc(var(--porthole-radius) + var(--porthole-radius));
     --label-safe-left: max(
       var(--label-inline-inset),
       env(safe-area-inset-left)
@@ -119,78 +129,84 @@
     position: absolute;
     top: calc(var(--porthole-center-y) - var(--porthole-radius));
     left: calc(var(--porthole-center-x) - var(--porthole-radius));
-    width: calc(var(--porthole-radius) + var(--porthole-radius));
+    width: var(--porthole-box);
     aspect-ratio: 1;
     visibility: hidden;
     pointer-events: none;
   }
 
-  .sky-map::before {
-    position: absolute;
-    top: calc(var(--porthole-center-y) - var(--porthole-radius) - 2px);
-    left: calc(var(--porthole-center-x) - var(--porthole-radius) - 2px);
-    z-index: 4;
-    box-sizing: border-box;
-    width: calc(var(--porthole-radius) + var(--porthole-radius) + 4px);
-    aspect-ratio: 1;
-    pointer-events: none;
-    content: '';
-    border: 2px solid var(--color-boundary);
-    border-radius: 50%;
+  .rim {
+    stroke: var(--color-boundary);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
   }
 
-  .calibration-ring {
+  .inner-track,
+  .inner-tick {
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: square;
+    stroke-linejoin: bevel;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .inner-track {
+    stroke-width: 2.4px;
+  }
+
+  .inner-tick {
+    stroke: color-mix(in oklab, var(--color-stage-ink) 58%, transparent);
+    stroke-width: 2.4px;
+  }
+
+  .inner-tick.medium {
+    stroke: color-mix(in oklab, var(--color-stage-ink) 78%, transparent);
+    stroke-width: 3px;
+  }
+
+  .inner-tick.major,
+  .inner-tick.terminal {
+    stroke: var(--color-stage-ink);
+    stroke-width: 3.5px;
+  }
+
+  .gasket {
     position: absolute;
-    top: calc(var(--porthole-center-y) - var(--porthole-radius) + 1px);
-    left: calc(var(--porthole-center-x) - var(--porthole-radius) + 1px);
+    top: calc(var(--porthole-center-y) - var(--porthole-radius));
+    left: calc(var(--porthole-center-x) - var(--porthole-radius));
     z-index: 3;
-    width: calc(var(--porthole-radius) + var(--porthole-radius) - 2px);
-    aspect-ratio: 1;
+    width: var(--porthole-box);
     overflow: visible;
+    aspect-ratio: 1;
     color: var(--color-stage-calibration-standard);
     pointer-events: none;
   }
 
-  .dial {
-    transform-box: view-box;
-    transform-origin: center;
-    transform: rotate(var(--calibration-rotation));
-    transition: transform 180ms linear;
-  }
-
-  .calibration-track,
-  .calibration-tick {
+  .gasket-track,
+  .gasket-tick {
+    fill: none;
     stroke: currentcolor;
     vector-effect: non-scaling-stroke;
   }
 
-  .calibration-track {
-    stroke-width: 2px;
-  }
-
-  .calibration-tick {
-    stroke-width: 2.5px;
-  }
-
-  .calibration-tick.major {
-    stroke: var(--color-stage-calibration-major);
-    stroke-width: 3.5px;
-  }
-
-  .calibration-tick.medium {
+  .gasket-track {
     stroke-width: 3px;
   }
 
-  .calibration-tick.minor {
+  .gasket-tick {
     stroke: var(--color-stage-calibration-minor);
+    stroke-width: 3px;
   }
 
-  .calibration-degree {
-    fill: var(--color-stage-calibration-major);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-anchor: middle;
+  .gasket-tick.medium {
+    stroke: var(--color-stage-calibration-standard);
+    stroke-width: 3.5px;
+  }
+
+  .gasket-tick.major,
+  .gasket-tick.terminal {
+    stroke: var(--color-stage-calibration-major);
+    stroke-width: 4px;
   }
 
   @supports (height: 100dvh) and (height: 100lvh) {
@@ -273,7 +289,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .dial {
+    .view-status-key {
       transition: none;
     }
   }
