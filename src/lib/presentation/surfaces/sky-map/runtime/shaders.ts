@@ -25,4 +25,4 @@ export const route_vertex_shader = with_projection(route_vertex_source)
 export const star_fragment_shader = star_fragment_source
 export const star_vertex_shader = with_projection(star_vertex_source)
 export const trail_fragment_shader = trail_fragment_source
-export const trail_vertex_shader = trail_vertex_source
+export const trail_vertex_shader = with_projection(trail_vertex_source)

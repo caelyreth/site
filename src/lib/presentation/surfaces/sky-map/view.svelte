@@ -112,6 +112,9 @@
       {surface_state.view_status.scale.toFixed(2)}</span
     >
   </div>
+  <span aria-hidden="true" class="label descent-label"
+    >Descent to station</span
+  >
 </div>
 
 <style>
@@ -303,6 +306,16 @@
 
   .view-status.spreading .view-status-key {
     color: var(--signal);
+  }
+
+  .descent-label {
+    position: absolute;
+    right: var(--label-safe-right);
+    bottom: var(--label-bottom-inset);
+    z-index: 4;
+    text-align: right;
+    white-space: nowrap;
+    opacity: var(--sky-field-opacity);
   }
 
   @media (max-width: 40rem) {

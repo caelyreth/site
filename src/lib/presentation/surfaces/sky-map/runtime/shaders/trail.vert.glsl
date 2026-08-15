@@ -21,6 +21,8 @@ varying float vMotion;
 varying float vSide;
 varying float vVisible;
 
+/* @include projection */
+
 vec2 projectWithBasis(
   vec3 point,
   vec3 right,
@@ -37,7 +39,8 @@ vec2 projectWithBasis(
   float denominator = max(0.08, 1.0 + local.z);
   vec2 stereographic = 2.0 * local.xy / denominator;
   depth = clamp((local.z + 1.0) * 0.5, 0.0, 1.0);
-  return stereographic * vec2(-scale / uAspect, -scale) + 0.5;
+  vec2 projected = stereographic * vec2(-scale / uAspect, -scale) + 0.5;
+  return warpFieldPoint(projected, depth);
 }
 
 float insideViewport(vec2 point) {
