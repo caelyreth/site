@@ -4,62 +4,61 @@
     ContentSummary,
     EntryFrontmatter,
   } from '$lib/content/schema'
-  import {
-    content_section_label,
-    type ContentSection,
-  } from '$lib/content/sections'
+  import { content_section_label } from '$lib/content/sections'
+  import { thread_label, type ThreadSummary } from '$lib/content/threads'
 
   interface Props {
-    description: string
-    entries: ContentSummary<EntryFrontmatter>[]
-    eyebrow: string
-    section?: ContentSection
-    title: string
+    threads: ThreadSummary<ContentSummary<EntryFrontmatter>>[]
   }
 
-  const { description, entries, eyebrow, section, title }: Props = $props()
+  const { threads }: Props = $props()
 
-  function entry_path(entry: ContentSummary<EntryFrontmatter>) {
-    const entry_section = section ?? entry.section
-    return `${base}/${entry_section}/${entry.slug}`.replace('//', '/')
+  function thread_href(thread: string) {
+    return `${base}/threads/${thread}`.replace('//', '/')
   }
 
-  function display_date(value: string | undefined) {
-    if (!value) return 'Undated record'
-    return value
+  function thread_sections(entries: ContentSummary<EntryFrontmatter>[]) {
+    return [
+      ...new Set(
+        entries.map((entry) => content_section_label(entry.section)),
+      ),
+    ].join(' / ')
+  }
+
+  function thread_titles(entries: ContentSummary<EntryFrontmatter>[]) {
+    return entries.map((entry) => entry.frontmatter.title).join(' / ')
   }
 </script>
 
-<section id="content" class="collection-page">
-  <header class="collection-header">
-    <p class="micro-label eyebrow">{eyebrow}</p>
-    <h1 class="font-serif">{title}</h1>
-    <p class="description">{description}</p>
+<section id="content" class="thread-index">
+  <header class="thread-header">
+    <p class="micro-label eyebrow">Cross-collection index</p>
+    <h1 class="font-serif">Threads</h1>
+    <p class="description">
+      Recurring questions that cross the archive without replacing the form
+      of any individual record.
+    </p>
   </header>
 
-  <div class="collection-rule" aria-hidden="true"></div>
+  <div class="thread-rule" aria-hidden="true"></div>
 
-  {#if entries.length > 0}
-    <ol class="entry-list">
-      {#each entries as entry}
+  {#if threads.length > 0}
+    <ol class="thread-list">
+      {#each threads as thread}
         <li>
-          <a class="entry-link" href={entry_path(entry)}>
-            <div class="entry-meta">
-              <span>{display_date(entry.frontmatter.published)}</span>
+          <a class="thread-link" href={thread_href(thread.id)}>
+            <div class="thread-meta">
               <span
-                >{section
-                  ? entry.slug
-                  : content_section_label(entry.section)}</span
+                >{thread.entries.length} record{thread.entries.length === 1
+                  ? ''
+                  : 's'}</span
               >
+              <span>{thread_sections(thread.entries)}</span>
             </div>
-            <h2 class="font-serif">{entry.frontmatter.title}</h2>
-            {#if entry.frontmatter.summary || entry.frontmatter.description}
-              <p>
-                {entry.frontmatter.summary ?? entry.frontmatter.description}
-              </p>
-            {/if}
+            <h2 class="font-serif">{thread_label(thread.id)}</h2>
+            <p>{thread_titles(thread.entries)}</p>
             <span
-              class="entry-arrow i-ri-arrow-right-line"
+              class="thread-arrow i-ri-arrow-right-line"
               aria-hidden="true"
             ></span>
           </a>
@@ -69,13 +68,13 @@
   {:else}
     <div class="empty-state">
       <span class="empty-mark" aria-hidden="true">--</span>
-      <p>No records have been filed in this shelf yet.</p>
+      <p>No threads have been attached to the archive yet.</p>
     </div>
   {/if}
 </section>
 
 <style>
-  .collection-page {
+  .thread-index {
     box-sizing: border-box;
     width: min(100%, var(--frame-measure));
     margin: 0 auto;
@@ -83,7 +82,7 @@
       clamp(4rem, 9vw, 7rem);
   }
 
-  .collection-header {
+  .thread-header {
     max-width: 42rem;
   }
 
@@ -98,7 +97,6 @@
     color: var(--color-text);
     font-size: clamp(2.25rem, 6vw, 4.5rem);
     font-weight: 700;
-    letter-spacing: 0;
     line-height: 0.98;
   }
 
@@ -110,23 +108,23 @@
     line-height: 1.6;
   }
 
-  .collection-rule {
+  .thread-rule {
     height: 1px;
     margin-top: clamp(2.5rem, 6vw, 5rem);
     background-image: var(--paper-seam-dash);
   }
 
-  .entry-list {
+  .thread-list {
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .entry-list li {
+  .thread-list li {
     border-bottom: 1px solid var(--color-boundary);
   }
 
-  .entry-link {
+  .thread-link {
     position: relative;
     display: block;
     padding: 1.5rem 2.5rem 1.5rem 0;
@@ -138,7 +136,7 @@
       background-color var(--dur-short) var(--ease-out);
   }
 
-  .entry-meta {
+  .thread-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1.25rem;
@@ -149,7 +147,7 @@
     text-transform: uppercase;
   }
 
-  .entry-meta span + span::before {
+  .thread-meta span + span::before {
     margin-right: 1.25rem;
     color: var(--color-boundary);
     content: '/';
@@ -163,15 +161,15 @@
     line-height: 1.08;
   }
 
-  .entry-link p {
-    max-width: 40rem;
+  .thread-link p {
+    max-width: 48rem;
     margin: 0.625rem 0 0;
     color: var(--color-text-secondary);
     font-size: 0.8125rem;
     line-height: 1.55;
   }
 
-  .entry-arrow {
+  .thread-arrow {
     position: absolute;
     top: 50%;
     right: 0.25rem;
@@ -204,7 +202,7 @@
   }
 
   @media (hover: hover) {
-    .entry-link:hover {
+    .thread-link:hover {
       padding-inline-start: 0.75rem;
       background-color: color-mix(
         in oklab,
@@ -213,30 +211,30 @@
       );
     }
 
-    .entry-link:hover .entry-arrow {
+    .thread-link:hover .thread-arrow {
       color: var(--color-text-link);
       transform: translate(0.25rem, -50%);
     }
   }
 
-  .entry-link:focus-visible {
+  .thread-link:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: -2px;
   }
 
   @media (max-width: 40rem) {
-    .collection-page {
+    .thread-index {
       padding-top: 3rem;
     }
 
-    .entry-link {
+    .thread-link {
       padding-block: 1.25rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .entry-link,
-    .entry-arrow {
+    .thread-link,
+    .thread-arrow {
       transition: none;
     }
   }

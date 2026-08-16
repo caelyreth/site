@@ -14,11 +14,9 @@ import * as v from 'valibot'
 
 import media from './media'
 import { eclat } from './rangi-theme'
-import type {
-  ContentDocument,
-  ContentSection,
-  ContentSummary,
-} from './schema'
+import type { ContentDocument, ContentSummary } from './schema'
+import { content_sections, type ContentSection } from './sections'
+import type { ThreadSummary } from './threads'
 
 const content_sources = import.meta.glob<string>(
   '../../../content/**/*.md',
@@ -65,6 +63,30 @@ function published_date(frontmatter: Record<string, unknown>) {
   return typeof frontmatter.published === 'string'
     ? frontmatter.published
     : ''
+}
+
+function entry_threads(frontmatter: Record<string, unknown>) {
+  if (!Array.isArray(frontmatter.threads)) return []
+  return [
+    ...new Set(
+      frontmatter.threads.filter(
+        (thread): thread is string => typeof thread === 'string',
+      ),
+    ),
+  ]
+}
+
+function sort_content_summaries<
+  Frontmatter extends Record<string, unknown>,
+>(entries: ContentSummary<Frontmatter>[]) {
+  return entries.sort((left, right) => {
+    const left_date = published_date(left.frontmatter)
+    const right_date = published_date(right.frontmatter)
+    return (
+      right_date.localeCompare(left_date) ||
+      left.slug.localeCompare(right.slug)
+    )
+  })
 }
 
 function parse_frontmatter<Frontmatter extends Record<string, unknown>>(
@@ -118,17 +140,49 @@ export async function load_content_collection<
       const document = await load_content(content_id, frontmatter_schema)
       return {
         frontmatter: document.frontmatter,
+        section,
         slug,
       }
     }),
   )
 
-  return entries.sort((left, right) => {
-    const left_date = published_date(left.frontmatter)
-    const right_date = published_date(right.frontmatter)
-    return (
-      right_date.localeCompare(left_date) ||
-      left.slug.localeCompare(right.slug)
-    )
-  })
+  return sort_content_summaries(entries)
+}
+
+export async function load_thread_index<
+  Frontmatter extends Record<string, unknown>,
+>(
+  frontmatter_schema: v.GenericSchema<unknown, Frontmatter>,
+): Promise<ThreadSummary<ContentSummary<Frontmatter>>[]> {
+  const collections = await Promise.all(
+    content_sections.map((section) =>
+      load_content_collection(section, frontmatter_schema),
+    ),
+  )
+  const entries_by_thread = new Map<string, ContentSummary<Frontmatter>[]>()
+
+  for (const entry of collections.flat()) {
+    for (const thread of entry_threads(entry.frontmatter)) {
+      const entries = entries_by_thread.get(thread)
+      if (entries) entries.push(entry)
+      else entries_by_thread.set(thread, [entry])
+    }
+  }
+
+  return [...entries_by_thread]
+    .map(([id, entries]) => ({
+      id,
+      entries: sort_content_summaries(entries),
+    }))
+    .sort((left, right) => left.id.localeCompare(right.id))
+}
+
+export async function load_thread_collection<
+  Frontmatter extends Record<string, unknown>,
+>(
+  thread: string,
+  frontmatter_schema: v.GenericSchema<unknown, Frontmatter>,
+): Promise<ContentSummary<Frontmatter>[]> {
+  const threads = await load_thread_index(frontmatter_schema)
+  return threads.find((candidate) => candidate.id === thread)?.entries ?? []
 }

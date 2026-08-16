@@ -3,6 +3,7 @@ title = "After the Instrument"
 published = "2026-08-15"
 summary = "A specimen essay about the attention that remains after a tool has become quiet."
 description = "Notes toward a slower reading of instruments, rooms, and the social shape of observation."
+threads = ["attention", "observation"]
 +++
 
 ## The room after use

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { base } from '$app/paths'
-  import PaperEdge from '$lib/components/layout/paper-edge.svelte'
+  import ThreadLinks from '$lib/components/content/thread-links.svelte'
   import Content from '$lib/components/markdown/document.svelte'
   import type {
     ContentDocument,
@@ -45,6 +45,9 @@
         {document.frontmatter.summary ?? document.frontmatter.description}
       </p>
     {/if}
+    {#if document.frontmatter.threads?.length}
+      <ThreadLinks threads={document.frontmatter.threads} />
+    {/if}
   </header>
 
   <div class="entry-rule" aria-hidden="true"></div>
@@ -59,17 +62,18 @@
       <span>Back to {back_label}</span>
     </a>
   </nav>
-
-  <PaperEdge guide side="bottom" />
 </article>
 
 <style>
   .entry-view {
     --entry-measure: 48rem;
     box-sizing: border-box;
+    display: flex;
     width: min(100%, var(--frame-measure));
     margin: 0 auto;
     padding: clamp(3rem, 8vw, 6rem) var(--inline-gutter) 0;
+    flex: 1;
+    flex-direction: column;
   }
 
   .essay-profile {

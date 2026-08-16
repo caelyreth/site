@@ -14,6 +14,7 @@ export function listen_for_content_updates() {
     const section_end = content_id.indexOf('/')
     if (section_end > 0) {
       void invalidate(content_dependency(content_id.slice(0, section_end)))
+      void invalidate(content_dependency('threads'))
     }
   }
 

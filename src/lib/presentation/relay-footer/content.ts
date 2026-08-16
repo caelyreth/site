@@ -7,5 +7,6 @@ export const footer_index = [
   { href: '/articles', label: 'Articles' },
   { href: '/essays', label: 'Essays' },
   { href: '/maps', label: 'Maps' },
+  { href: '/threads', label: 'Threads' },
   { href: '/', label: 'Observatory' },
 ] as const

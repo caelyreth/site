@@ -10,6 +10,7 @@ const config = {
           '/(library)/articles/[slug]',
           '/(library)/essays/[slug]',
           '/(library)/maps/[slug]',
+          '/(library)/threads/[thread]',
         ])
         const unexpected_routes = routes.filter(
           (route) => !library_templates.has(route),

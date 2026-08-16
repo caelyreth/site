@@ -3,6 +3,7 @@ title = "Attention Around the Machine"
 published = "2026-08-16"
 summary = "A specimen map connecting technical restraint with the quieter conditions around it."
 description = "A short route through two archive records about instruments, pacing, and observation."
+threads = ["attention", "rendering"]
 +++
 
 ## A short route

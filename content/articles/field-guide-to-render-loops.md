@@ -3,6 +3,7 @@ title = "Field Guide to Render Loops"
 published = "2026-08-16"
 summary = "A specimen technical article for checking reading measure, structured data, and highlighted code."
 description = "A compact survey of deciding when a visual system should draw again."
+threads = ["attention", "rendering"]
 +++
 
 ## Start from stillness
@@ -45,6 +46,8 @@ function schedule(next_frame: FrameRequestCallback) {
 ```
 
 The timer limits the request rate, while `requestAnimationFrame` keeps the draw aligned with a browser paint. When the surface is hidden, cancel both handles instead of letting an invisible scene retain its turn.
+
+---
 
 ## Reading outward
 
