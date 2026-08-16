@@ -16,6 +16,7 @@
     margin-inline-start: var(--vfd-inline-offset, 0px);
     pointer-events: none;
     position: relative;
+    user-select: none;
   }
 
   .tube-glass {

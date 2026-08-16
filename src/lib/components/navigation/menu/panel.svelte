@@ -1,5 +1,6 @@
 <script lang="ts">
   import MenuOrnaments from './ornaments.svelte'
+  import MenuSlips from './slips.svelte'
   import ThemeSlip from './theme-slip.svelte'
 
   interface Props {
@@ -13,6 +14,7 @@
 
 <div class="stage">
   <MenuOrnaments {is_closing} {is_open} />
+  <MenuSlips {is_closing} {is_open} />
   <ThemeSlip {is_closing} {is_open} {on_close} />
   <p class="micro-label field-note">Caelyreth relay / viewing plane 01</p>
 </div>

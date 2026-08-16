@@ -26,14 +26,20 @@
       <span>GitHub</span>
       <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
     </a>
-    <span aria-hidden="true" class="social-preview">
-      <span class="i-ri-sparkling-line"></span>
-      <span>Bluesky</span>
-    </span>
-    <span aria-hidden="true" class="social-preview">
-      <span class="i-ri-chat-3-line"></span>
-      <span>Mastodon</span>
-    </span>
+    <a
+      href="https://x.com/caelyreth"
+      rel="me noopener noreferrer"
+      target="_blank"
+    >
+      <span class="i-ri-twitter-x-line" aria-hidden="true"></span>
+      <span>X (Twitter)</span>
+      <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
+    </a>
+    <a href="mailto:me@iki.moe">
+      <span class="i-ri-mail-line" aria-hidden="true"></span>
+      <span>Email</span>
+      <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
+    </a>
   </nav>
   <StageIntro {description} invert_description_in_light />
 </div>
@@ -55,12 +61,13 @@
 
   .cabin-plate {
     display: flex;
-    width: min(37vw, 28rem);
+    width: min(24vw, 13rem);
     min-width: 0;
     align-items: center;
     gap: 0.75rem;
     color: var(--color-stage-ink-secondary);
     opacity: 0.72;
+    user-select: none;
   }
 
   .cabin-plate::before {
@@ -88,33 +95,33 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.625rem;
+    user-select: none;
   }
 
-  .social-links a,
-  .social-preview {
+  .social-links a {
     position: relative;
     display: inline-flex;
     min-height: 1.5rem;
     padding: 0.0625rem 0 0.4375rem;
-    color: var(--color-stage-ink-secondary);
+    color: color-mix(
+      in oklab,
+      var(--color-stage-ink-secondary) 68%,
+      transparent
+    );
     font-size: 0.625rem;
     font-weight: 500;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.08em;
     line-height: 1.15;
+    text-decoration: none;
     align-items: center;
     gap: 0.4375rem;
-  }
-
-  .social-links a {
-    text-decoration: none;
     transition:
       color var(--dur-short) var(--ease-out),
       transform var(--dur-short) var(--ease-out);
   }
 
-  .social-links a::after,
-  .social-preview::after {
+  .social-links a::after {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -129,23 +136,13 @@
     content: '';
   }
 
-  .social-links a > :first-child,
-  .social-preview > :first-child {
+  .social-links a > :first-child {
     font-size: 0.8125rem;
   }
 
   .social-links a > :last-child {
     margin-left: 0.0625rem;
     font-size: 0.75rem;
-  }
-
-  .social-preview {
-    color: color-mix(
-      in oklab,
-      var(--color-stage-ink-secondary) 68%,
-      transparent
-    );
-    pointer-events: none;
   }
 
   .social-links a:focus-visible {

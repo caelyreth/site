@@ -35,6 +35,7 @@
     color: var(--color-stage-ink-secondary);
     font-size: clamp(0.8125rem, 0.7rem + 0.35vw, 0.9375rem);
     line-height: 1.45;
+    user-select: text;
   }
 
   :global(html:not(.dark)) .stage-intro.inverted-in-light .description {
@@ -64,6 +65,7 @@
     text-decoration: none;
     align-items: center;
     gap: 0.5rem;
+    user-select: none;
   }
 
   .entry-icon {

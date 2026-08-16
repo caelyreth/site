@@ -94,6 +94,7 @@
     line-height: 1.2;
     min-width: 0;
     text-transform: uppercase;
+    user-select: none;
   }
 
   .observatory-label {
