@@ -14,7 +14,8 @@ interface EnteringLayout {
 export interface MenuItem {
   code: string
   detail: string
-  id: 'directory' | 'observation' | 'transmission'
+  href: string
+  id: 'articles' | 'essays' | 'maps'
   layout: Position &
     EnteringLayout & {
       rotation: string
@@ -35,9 +36,10 @@ export interface Drift {
 
 export const menu_items: readonly MenuItem[] = [
   {
-    code: 'OBS / 001',
-    detail: 'Window retained',
-    id: 'observation',
+    code: 'ART / 001',
+    detail: 'Technical shelf',
+    href: '/articles',
+    id: 'articles',
     layout: {
       enter_delay: '80ms',
       enter_x: '-2rem',
@@ -46,12 +48,13 @@ export const menu_items: readonly MenuItem[] = [
       rotation: '-13deg',
       top: '22%',
     },
-    title: 'Observation',
+    title: 'Articles',
   },
   {
-    code: 'DIR / 044',
-    detail: 'Archive pending',
-    id: 'directory',
+    code: 'ESS / 002',
+    detail: 'Reflective shelf',
+    href: '/essays',
+    id: 'essays',
     layout: {
       enter_delay: '140ms',
       enter_x: '1.75rem',
@@ -60,12 +63,13 @@ export const menu_items: readonly MenuItem[] = [
       rotation: '11deg',
       top: '29%',
     },
-    title: 'Directory',
+    title: 'Essays',
   },
   {
-    code: 'SIG / 007',
-    detail: 'Carrier available',
-    id: 'transmission',
+    code: 'MAP / 003',
+    detail: 'Curated paths',
+    href: '/maps',
+    id: 'maps',
     layout: {
       enter_delay: '200ms',
       enter_x: '-1.5rem',
@@ -74,7 +78,7 @@ export const menu_items: readonly MenuItem[] = [
       rotation: '-7deg',
       top: '56%',
     },
-    title: 'Transmission',
+    title: 'Maps',
   },
 ]
 

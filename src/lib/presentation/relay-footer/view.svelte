@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths'
   import PaperEdge from '$lib/components/layout/paper-edge.svelte'
 
   import { footer_barcode, footer_index } from './content'
@@ -10,6 +11,10 @@
 
   /* oxlint-disable prefer-const -- Visibility is owned by the footer observer. */
   let { visible }: Props = $props()
+
+  function footer_href(href: string) {
+    return `${base}${href}`.replace('//', '/')
+  }
 </script>
 
 {#snippet footer_label(text: string)}
@@ -35,10 +40,12 @@
     <div class="grid">
       <section class="footer-module">
         {@render footer_label('Site map')}
-        <ul class="sitemap" aria-label="Placeholder site map">
-          {#each footer_index as item}<li>{item}</li>{/each}
+        <ul class="sitemap" aria-label="Site map">
+          {#each footer_index as item}
+            <li><a href={footer_href(item.href)}>{item.label}</a></li>
+          {/each}
         </ul>
-        <p class="detail">Placeholder index only</p>
+        <p class="detail">Current station index</p>
       </section>
       <section class="footer-module">
         {@render footer_label('Archive marker')}
@@ -197,6 +204,23 @@
   .sitemap li::before {
     content: '-';
     color: var(--muted);
+  }
+
+  .sitemap a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--dur-micro) var(--ease-out);
+  }
+
+  .sitemap a:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 0.2rem;
+  }
+
+  @media (hover: hover) {
+    .sitemap a:hover {
+      color: var(--primary);
+    }
   }
 
   .barcode {

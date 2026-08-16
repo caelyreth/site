@@ -4,8 +4,8 @@ export const footer_barcode = [
 ] as const
 
 export const footer_index = [
-  'Observation archive',
-  'Field register',
-  'Transmission ledger',
-  'Material index',
+  { href: '/articles', label: 'Articles' },
+  { href: '/essays', label: 'Essays' },
+  { href: '/maps', label: 'Maps' },
+  { href: '/', label: 'Observatory' },
 ] as const

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { base } from '$app/paths'
+
   import { menu_items } from './content'
 
   interface Props {
@@ -8,6 +10,10 @@
   }
 
   const { is_closing, is_open, on_select }: Props = $props()
+
+  function item_href(href: string) {
+    return `${base}${href}`.replace('//', '/')
+  }
 </script>
 
 <nav
@@ -17,14 +23,12 @@
   aria-label="Station menu options"
 >
   {#each menu_items as item}
-    <!-- svelte-ignore a11y_autofocus: The first choice receives focus only when the dialog opens. -->
-    <button
-      type="button"
+    <a
+      href={item_href(item.href)}
       class="slip"
-      class:directory={item.id === 'directory'}
-      class:observation={item.id === 'observation'}
-      class:transmission={item.id === 'transmission'}
-      autofocus={item === menu_items[0]}
+      class:articles={item.id === 'articles'}
+      class:essays={item.id === 'essays'}
+      class:maps={item.id === 'maps'}
       onpointerdown={on_select}
       onclick={on_select}
       style:--slip-bottom={item.layout.bottom}
@@ -39,7 +43,7 @@
       <span class="micro-label slip-code">{item.code}</span>
       <span class="slip-title font-serif">{item.title}</span>
       <span class="micro-label slip-detail">{item.detail}</span>
-    </button>
+    </a>
   {/each}
 </nav>
 
