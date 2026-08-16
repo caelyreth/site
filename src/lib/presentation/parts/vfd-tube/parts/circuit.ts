@@ -1,11 +1,5 @@
-export const CIRCUIT_SIDES = ['bottom', 'right', 'top'] as const
-
-export type CircuitSide = (typeof CIRCUIT_SIDES)[number]
-
 export interface CircuitNode {
-  delay: number
   kind: 'pad' | 'smd' | 'via'
-  side: CircuitSide
   turn?: number
   x: number
   y: number
@@ -13,58 +7,50 @@ export interface CircuitNode {
 
 export interface CircuitTrace {
   d: string
-  side: CircuitSide
   weight: 'pair' | 'power' | 'signal'
 }
 
 export const circuit_traces: readonly CircuitTrace[] = [
-  { d: 'M1.6 0.92H29.8', side: 'top', weight: 'power' },
-  { d: 'M1.6 1.22H17.4', side: 'top', weight: 'pair' },
-  { d: 'M4.4 0.92V2.38', side: 'top', weight: 'signal' },
-  { d: 'M10.6 0.92V2.38', side: 'top', weight: 'signal' },
-  { d: 'M17.4 0.92V1.22', side: 'top', weight: 'pair' },
-  { d: 'M23.8 0.92V2.12H27.1', side: 'top', weight: 'signal' },
-  { d: 'M29.8 0.92V1.55H33.4', side: 'top', weight: 'power' },
-  { d: 'M61.65 3.85V10.75', side: 'right', weight: 'power' },
-  { d: 'M61.65 4.55H59.58', side: 'right', weight: 'signal' },
-  { d: 'M61.65 6.95H59.58', side: 'right', weight: 'signal' },
-  { d: 'M61.65 9.35H59.58', side: 'right', weight: 'signal' },
-  { d: 'M61.65 5.55H62.55V6.45', side: 'right', weight: 'signal' },
-  { d: 'M61.65 10.75H63.05', side: 'right', weight: 'pair' },
-  { d: 'M33.8 20.92H56.8', side: 'bottom', weight: 'power' },
-  { d: 'M40.2 20.64H51.4', side: 'bottom', weight: 'pair' },
-  { d: 'M37.6 20.92V19.72', side: 'bottom', weight: 'signal' },
-  { d: 'M45.1 20.92V19.72', side: 'bottom', weight: 'signal' },
-  { d: 'M52.7 20.92V19.72', side: 'bottom', weight: 'signal' },
-  { d: 'M56.8 20.92V20.35H58.4', side: 'bottom', weight: 'power' },
+  { d: 'M1.6 0.92H29.8', weight: 'power' },
+  { d: 'M1.6 1.22H17.4', weight: 'pair' },
+  { d: 'M4.4 0.92V2.38', weight: 'signal' },
+  { d: 'M10.6 0.92V2.38', weight: 'signal' },
+  { d: 'M17.4 0.92V1.22', weight: 'pair' },
+  { d: 'M23.8 0.92V2.12H27.1', weight: 'signal' },
+  { d: 'M29.8 0.92V1.55H33.4', weight: 'power' },
+  { d: 'M61.65 3.85V10.75', weight: 'power' },
+  { d: 'M61.65 4.55H59.58', weight: 'signal' },
+  { d: 'M61.65 6.95H59.58', weight: 'signal' },
+  { d: 'M61.65 9.35H59.58', weight: 'signal' },
+  { d: 'M61.65 5.55H62.55V6.45', weight: 'signal' },
+  { d: 'M61.65 10.75H63.05', weight: 'pair' },
+  { d: 'M33.8 20.92H56.8', weight: 'power' },
+  { d: 'M40.2 20.64H51.4', weight: 'pair' },
+  { d: 'M37.6 20.92V19.72', weight: 'signal' },
+  { d: 'M45.1 20.92V19.72', weight: 'signal' },
+  { d: 'M52.7 20.92V19.72', weight: 'signal' },
+  { d: 'M56.8 20.92V20.35H58.4', weight: 'power' },
 ]
 
 export const circuit_nodes: readonly CircuitNode[] = [
-  { delay: 0, kind: 'via', side: 'top', x: 1.6, y: 0.92 },
-  { delay: 50, kind: 'via', side: 'top', x: 4.4, y: 2.38 },
-  { delay: 100, kind: 'pad', side: 'top', x: 10.6, y: 2.38 },
-  { delay: 140, kind: 'via', side: 'top', x: 17.4, y: 1.22 },
-  { delay: 190, kind: 'smd', side: 'top', x: 27.1, y: 2.12 },
-  { delay: 230, kind: 'via', side: 'top', x: 29.8, y: 0.92 },
-  { delay: 280, kind: 'pad', side: 'top', x: 33.4, y: 1.55 },
-  { delay: 0, kind: 'via', side: 'right', x: 61.65, y: 3.85 },
-  { delay: 70, kind: 'pad', side: 'right', x: 59.58, y: 4.55 },
-  { delay: 90, kind: 'smd', side: 'right', turn: 90, x: 62.55, y: 6 },
-  { delay: 140, kind: 'pad', side: 'right', x: 59.58, y: 6.95 },
-  { delay: 210, kind: 'pad', side: 'right', x: 59.58, y: 9.35 },
-  { delay: 280, kind: 'via', side: 'right', x: 61.65, y: 10.75 },
-  { delay: 320, kind: 'via', side: 'right', x: 63.05, y: 10.75 },
-  { delay: 0, kind: 'via', side: 'bottom', x: 33.8, y: 20.92 },
-  { delay: 60, kind: 'pad', side: 'bottom', x: 37.6, y: 19.72 },
-  { delay: 110, kind: 'smd', side: 'bottom', x: 45.1, y: 19.72 },
-  { delay: 170, kind: 'pad', side: 'bottom', x: 52.7, y: 19.72 },
-  { delay: 230, kind: 'via', side: 'bottom', x: 56.8, y: 20.92 },
-  { delay: 280, kind: 'via', side: 'bottom', x: 58.4, y: 20.35 },
+  { kind: 'via', x: 1.6, y: 0.92 },
+  { kind: 'via', x: 4.4, y: 2.38 },
+  { kind: 'pad', x: 10.6, y: 2.38 },
+  { kind: 'via', x: 17.4, y: 1.22 },
+  { kind: 'smd', x: 27.1, y: 2.12 },
+  { kind: 'via', x: 29.8, y: 0.92 },
+  { kind: 'pad', x: 33.4, y: 1.55 },
+  { kind: 'via', x: 61.65, y: 3.85 },
+  { kind: 'pad', x: 59.58, y: 4.55 },
+  { kind: 'smd', turn: 90, x: 62.55, y: 6 },
+  { kind: 'pad', x: 59.58, y: 6.95 },
+  { kind: 'pad', x: 59.58, y: 9.35 },
+  { kind: 'via', x: 61.65, y: 10.75 },
+  { kind: 'via', x: 63.05, y: 10.75 },
+  { kind: 'via', x: 33.8, y: 20.92 },
+  { kind: 'pad', x: 37.6, y: 19.72 },
+  { kind: 'smd', x: 45.1, y: 19.72 },
+  { kind: 'pad', x: 52.7, y: 19.72 },
+  { kind: 'via', x: 56.8, y: 20.92 },
+  { kind: 'via', x: 58.4, y: 20.35 },
 ]
-
-export function pick_circuit_side(): CircuitSide {
-  return (
-    CIRCUIT_SIDES[Math.floor(Math.random() * CIRCUIT_SIDES.length)] ??
-    'right'
-  )
-}

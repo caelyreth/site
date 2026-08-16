@@ -1,18 +1,9 @@
 <script lang="ts">
   import Wordmark from './parts/wordmark.svelte'
-
-  interface Props {
-    active: boolean
-    color: string
-    readout: string
-  }
-
-  /* oxlint-disable prefer-const -- Observatory pulse props update with the stage. */
-  let { active, color, readout }: Props = $props()
 </script>
 
-<div class="tube-layer" style:--signal={color}>
-  <Wordmark {active} {readout} />
+<div class="tube-layer">
+  <Wordmark readout="DEEP FIELD" />
 </div>
 
 <style>

@@ -1,13 +1,11 @@
 precision highp float;
 
-uniform vec3 uInk;
-uniform float uSurveyMode;
-uniform float uTrailOpacity;
+uniform float uTrailAlpha;
 varying float vAlong;
 varying float vStrength;
 varying float vMotion;
 varying float vSide;
-varying float vVisible;
+varying vec3 vTint;
 
 void main() {
   float antialias = max(fwidth(vSide) * 1.15, 0.018);
@@ -16,18 +14,15 @@ void main() {
     0.42 + antialias,
     abs(vSide)
   );
-  float tailGradient = mix(0.08, 1.0, smoothstep(0.0, 1.0, vAlong));
-  float themeStrength = mix(0.9, 0.68, uSurveyMode);
+  float tail_gradient = mix(0.08, 1.0, smoothstep(0.0, 1.0, vAlong));
   float alpha =
     coverage *
-    tailGradient *
-    vStrength *
+    tail_gradient *
+    (0.32 + vStrength * 1.55) *
     vMotion *
-    vVisible *
-    uTrailOpacity *
-    themeStrength;
+    uTrailAlpha;
 
   if (alpha < 0.002) discard;
-  gl_FragColor = vec4(uInk, alpha);
+  gl_FragColor = vec4(vTint, alpha);
   #include <colorspace_fragment>
 }

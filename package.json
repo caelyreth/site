@@ -8,7 +8,6 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "check": "svelte-check --incremental",
-    "generate:sky": "oxnode scripts/build-sky-map.ts",
     "sync": "svelte-kit sync",
     "dev": "vite dev",
     "build": "vite build",

@@ -1,1 +1,1 @@
-export const SKY_SCENE_START_DELAY = 920
+export const SKY_SCENE_START_DELAY = 300

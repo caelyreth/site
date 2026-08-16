@@ -4,10 +4,6 @@ import * as v from 'valibot'
 export type RegionOptions = Record<string, unknown>
 export type RegionSchema = v.GenericSchema<unknown, RegionOptions>
 
-export interface StageSignal {
-  color: string
-}
-
 export interface StageIntro {
   description?: string
   title: string
@@ -15,7 +11,6 @@ export interface StageIntro {
 
 export interface StageProps {
   intro: StageIntro
-  on_signal?: (signal: StageSignal | undefined) => void
   options: RegionOptions
 }
 

@@ -1,3 +1,13 @@
+uniform float uOrbitAngle;
+
+vec2 orbitFieldPoint(vec2 point, float angle) {
+  const vec2 horizon = vec2(1.12, -0.14);
+  vec2 offset = point - horizon;
+  float cosine = cos(angle);
+  float sine = sin(angle);
+  return horizon + mat2(cosine, -sine, sine, cosine) * offset;
+}
+
 vec2 warpFieldPoint(vec2 point, float depth) {
   const vec2 vanishing_point = vec2(0.82, 0.58);
   vec2 offset = point - vanishing_point;
@@ -8,18 +18,4 @@ vec2 warpFieldPoint(vec2 point, float depth) {
   offset *= stretch;
   offset.y += offset.x * depth_weight * 0.035;
   return vanishing_point + offset;
-}
-
-vec2 projectSky(vec3 point, out float depth) {
-  vec3 local = vec3(
-    dot(point, uRight),
-    dot(point, uUp),
-    dot(point, uForward)
-  );
-  float denominator = max(0.08, 1.0 + local.z);
-  vec2 stereographic = 2.0 * local.xy / denominator;
-  depth = clamp((local.z + 1.0) * 0.5, 0.0, 1.0);
-  // Keep north up and right ascension increasing toward the left.
-  vec2 projected = stereographic * vec2(-uMapScale / uAspect, -uMapScale) + 0.5;
-  return warpFieldPoint(projected, depth);
 }

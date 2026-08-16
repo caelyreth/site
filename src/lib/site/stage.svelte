@@ -3,7 +3,6 @@
     RegionOptions,
     StageIntro,
     StageProps,
-    StageSignal,
   } from '$lib/presentation/contract'
   import { scroll_progress } from '$lib/site/scroll-progress'
   import type { Component } from 'svelte'
@@ -27,11 +26,6 @@
     progress = 0,
   }: Props = $props()
   const StageContent = $derived(component)
-  let signal = $state<StageSignal | undefined>()
-
-  function update_signal(next_signal: StageSignal | undefined) {
-    signal = next_signal
-  }
 
   function stage_element(capture: HTMLElement) {
     const element = capture.firstElementChild
@@ -73,12 +67,8 @@
   {@attach observe_stage_progress}
 >
   <section class="stage-sticky" aria-label={intro.title}>
-    <div
-      class:active={signal !== undefined}
-      class="stage-frame"
-      style:--stage-signal={signal?.color ?? 'transparent'}
-    >
-      <StageContent {intro} {options} on_signal={update_signal} />
+    <div class="stage-frame">
+      <StageContent {intro} {options} />
       <Guide side="left" inStage reveal />
       <Guide side="right" inStage reveal />
     </div>
@@ -112,8 +102,6 @@
       env(safe-area-inset-right)
     );
     --stage-intro-bottom-inset: max(1.25rem, env(safe-area-inset-bottom));
-    --dur-stage-signal: 1800ms;
-    --ease-stage-signal: cubic-bezier(0.46, 0, 0.22, 1);
     height: calc(var(--stage-viewport) + var(--stage-scroll-span));
   }
 
@@ -172,29 +160,6 @@
     background-size: var(--noise-size);
   }
 
-  .stage-frame::after {
-    --frame-signal: color-mix(
-      in oklab,
-      var(--stage-signal) 72%,
-      transparent
-    );
-
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    pointer-events: none;
-    content: '';
-    border: 1px solid var(--frame-signal);
-    border-radius: inherit;
-    box-shadow: inset 0 0 1.25rem -0.875rem var(--frame-signal);
-    filter: opacity(var(--stage-opening));
-    opacity: 0;
-  }
-
-  .stage-frame.active::after {
-    animation: stage-signal var(--dur-stage-signal) var(--ease-stage-signal);
-  }
-
   @media (max-width: 40rem) {
     .stage-capture {
       --stage-frame-inset: 0px;
@@ -209,35 +174,6 @@
 
     .stage-frame {
       border: 0;
-    }
-
-    .stage-frame::after {
-      display: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .stage-frame.active::after {
-      animation: none;
-      opacity: 0.72;
-    }
-  }
-
-  @keyframes stage-signal {
-    0% {
-      opacity: 0;
-    }
-    12% {
-      opacity: 0.95;
-    }
-    46% {
-      opacity: 0.58;
-    }
-    78% {
-      opacity: 0.24;
-    }
-    to {
-      opacity: 0;
     }
   }
 </style>
