@@ -77,6 +77,10 @@
 </div>
 
 <style>
+  .signal-monitor {
+    width: 100%;
+  }
+
   .module-head {
     display: flex;
     width: 100%;

@@ -24,10 +24,13 @@
         {@render footer_label('Archive transmission')}
         <p class="title font-serif">Caelyreth relay station</p>
       </div>
-      <p class="statement">
-        Field notes, status signals, and future paths held at the edge of
-        the station.
-      </p>
+      <div class="statement-row">
+        <p class="statement">
+          Field notes, status signals, and future paths held at the edge of
+          the station.
+        </p>
+        <span aria-hidden="true" class="statement-mark"></span>
+      </div>
     </div>
     <div class="grid">
       <section class="footer-module">
@@ -45,22 +48,18 @@
         </div>
         <p class="detail">RBK / 2026 / YU</p>
       </section>
-      <div aria-hidden="true" class="footer-module base-module">
-        <svg class="base-mark" viewBox="0 0 512 512" fill="none"
-          ><path
-            d="M256 32v448M32 256h448M97.6 97.6l316.8 316.8m0-316.8L97.6 414.4"
-            stroke="currentColor"
-            stroke-width="48"
-          /></svg
-        >
-      </div>
       <section class="footer-module">
         <FooterSignalMonitor is_active={visible} />
       </section>
     </div>
     <div class="tail">
-      <span>© 2026 Yu</span><span>Rainbook program - Caelyreth relay</span
-      ><span>Station log / no public uplink</span>
+      <span>© 2026 Yu</span>
+      <a
+        class="tail-link"
+        href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        >CC BY-NC-SA</a
+      >
+      <span class="tail-signature">Caelyreth</span>
     </div>
   </div>
 </div>
@@ -92,7 +91,7 @@
   }
 
   .footer-content {
-    padding: 1.5rem var(--inline-gutter) 1.25rem;
+    padding: 1.5rem var(--inline-gutter) 0.75rem;
     color: var(--footer-ink);
     background-color: var(--footer-surface);
   }
@@ -118,12 +117,29 @@
     line-height: 1.1;
   }
 
+  .statement-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   .statement {
+    flex: 0 1 36ch;
     max-width: 36ch;
     margin: 0;
     color: var(--footer-secondary);
     font-size: 0.75rem;
     line-height: 1.55;
+  }
+
+  .statement-mark {
+    display: block;
+    width: 1.5rem;
+    flex: none;
+    aspect-ratio: 1;
+    background-color: var(--footer-secondary);
+    -webkit-mask: url('/favicon.svg') center / contain no-repeat;
+    mask: url('/favicon.svg') center / contain no-repeat;
   }
 
   .grid {
@@ -161,8 +177,9 @@
 
   .sitemap {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
-    gap: 0.5rem;
+    gap: 0.5rem 1rem;
     margin: 0.875rem 0 0;
     padding: 0;
     color: var(--secondary);
@@ -196,17 +213,6 @@
     background: var(--primary);
   }
 
-  .base-module {
-    align-items: center;
-    justify-content: center;
-    color: var(--secondary);
-  }
-
-  .base-mark {
-    width: 2.75rem;
-    height: 2.75rem;
-  }
-
   .detail {
     margin: auto 0 0;
     color: var(--muted);
@@ -224,6 +230,17 @@
     color: var(--footer-secondary);
     font-size: 0.625rem;
     line-height: 1.3;
+  }
+
+  .tail-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .tail-signature {
+    margin-inline-start: auto;
   }
 
   @media (hover: hover) {
@@ -255,7 +272,7 @@
 
   @media (min-width: 48rem) {
     .grid {
-      grid-template-columns: 1.1fr 1.25fr 0.85fr 1.25fr;
+      grid-template-columns: 2.2fr 1.25fr 1.25fr;
     }
 
     .footer-module {
