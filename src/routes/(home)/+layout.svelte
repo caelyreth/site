@@ -5,16 +5,13 @@
   import Footer from '$lib/components/layout/footer.svelte'
   import Stage from '$lib/components/layout/stage.svelte'
   import Header from '$lib/components/navigation/header.svelte'
-  import type {
-    ContentDocument,
-    DocumentFrontmatter,
-  } from '$lib/content/schema'
+  import type { HomeDocument } from '$lib/content/home'
   import { SKY_FIELD_FADE_RATE } from '$lib/presentation/observatory/sky/config'
   import Observatory from '$lib/presentation/observatory/view.svelte'
   import RelayFooter from '$lib/presentation/relay-footer/view.svelte'
 
   interface HomePageData {
-    document: ContentDocument<DocumentFrontmatter>
+    document: HomeDocument
   }
 
   const { children } = $props()

@@ -17,7 +17,7 @@
   title={is_open ? 'Close menu' : 'Open menu'}
   onclick={on_open}
 >
-  <span class="label">Index</span>
+  <span class="label">Display</span>
   <span class="i-ri-menu-line" aria-hidden="true"></span>
 </button>
 

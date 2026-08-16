@@ -102,7 +102,6 @@
     is_closing={closing}
     is_open={menu_open}
     on_close={request_close}
-    on_select={request_close}
   />
 </dialog>
 

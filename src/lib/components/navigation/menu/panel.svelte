@@ -1,21 +1,18 @@
 <script lang="ts">
   import MenuOrnaments from './ornaments.svelte'
-  import MenuSlips from './slips.svelte'
   import ThemeSlip from './theme-slip.svelte'
 
   interface Props {
     is_closing: boolean
     is_open: boolean
     on_close: () => void
-    on_select: () => void
   }
 
-  const { is_closing, is_open, on_close, on_select }: Props = $props()
+  const { is_closing, is_open, on_close }: Props = $props()
 </script>
 
 <div class="stage">
   <MenuOrnaments {is_closing} {is_open} />
-  <MenuSlips {is_closing} {is_open} {on_select} />
   <ThemeSlip {is_closing} {is_open} {on_close} />
   <p class="micro-label field-note">Caelyreth relay / viewing plane 01</p>
 </div>

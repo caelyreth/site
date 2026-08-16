@@ -11,18 +11,6 @@ interface EnteringLayout {
   enter_y: string
 }
 
-export interface MenuItem {
-  code: string
-  detail: string
-  href: string
-  id: 'articles' | 'essays' | 'maps'
-  layout: Position &
-    EnteringLayout & {
-      rotation: string
-    }
-  title: string
-}
-
 export interface Drift {
   layout: Position &
     Partial<EnteringLayout> & {
@@ -33,54 +21,6 @@ export interface Drift {
     }
   text: string
 }
-
-export const menu_items: readonly MenuItem[] = [
-  {
-    code: 'ART / 001',
-    detail: 'Technical shelf',
-    href: '/articles',
-    id: 'articles',
-    layout: {
-      enter_delay: '80ms',
-      enter_x: '-2rem',
-      enter_y: '1rem',
-      left: '25%',
-      rotation: '-13deg',
-      top: '22%',
-    },
-    title: 'Articles',
-  },
-  {
-    code: 'ESS / 002',
-    detail: 'Reflective shelf',
-    href: '/essays',
-    id: 'essays',
-    layout: {
-      enter_delay: '140ms',
-      enter_x: '1.75rem',
-      enter_y: '-1rem',
-      left: '57%',
-      rotation: '11deg',
-      top: '29%',
-    },
-    title: 'Essays',
-  },
-  {
-    code: 'MAP / 003',
-    detail: 'Curated paths',
-    href: '/maps',
-    id: 'maps',
-    layout: {
-      enter_delay: '200ms',
-      enter_x: '-1.5rem',
-      enter_y: '1.25rem',
-      left: '34%',
-      rotation: '-7deg',
-      top: '56%',
-    },
-    title: 'Maps',
-  },
-]
 
 export const drifts: readonly Drift[] = [
   {

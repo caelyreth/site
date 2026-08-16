@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { ContentDocument } from '$lib/content/schema'
   import { MarkdownDocument } from '@comark/svelte'
+  import type { MarkdownDocument as MarkdownDocumentValue } from 'comark'
   import { pascalCase } from 'comark/utils'
   import type { Component } from 'svelte'
 
@@ -37,7 +37,7 @@
   })
 
   /* oxlint-disable prefer-const -- Document props can update during client navigation. */
-  let { document }: { document: ContentDocument } = $props()
+  let { document }: { document: MarkdownDocumentValue } = $props()
 </script>
 
 <div class="document">
