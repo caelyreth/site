@@ -8,7 +8,9 @@
 </script>
 
 <div class="stage-intro">
-  {#if description}<p>{description}</p>{/if}
+  {#if description}
+    <p><span class="description">{description}</span></p>
+  {/if}
   <a class="entry" href="#content">
     <span>Field notes below</span>
     <span class="i-ri-arrow-down-line entry-icon" aria-hidden="true"></span>

@@ -1,24 +1,49 @@
 <script lang="ts">
   /* oxlint-disable prefer-const -- Stage props can update with their host. */
-  import plana_figure from '$lib/assets/illustrations/plana-figure.svg'
+  import plana_figure_source from '$lib/assets/illustrations/plana-figure.svg?raw'
   import type { StageProps } from '$lib/presentation/contract'
   import VfdTube from '$lib/presentation/parts/vfd-tube/view.svelte'
   import SkyMapSurface from '$lib/presentation/surfaces/sky-map/view.svelte'
   import StageIntro from '$lib/site/stage-intro.svelte'
+
+  const plana_palette = [
+    ['#fafafa', '--plana-tone-0'],
+    ['#f7f6f7', '--plana-tone-1'],
+    ['#e3dddf', '--plana-tone-2'],
+    ['#bfb3b6', '--plana-tone-3'],
+    ['#7d767a', '--plana-tone-4'],
+    ['#323033', '--plana-tone-5'],
+    ['#201f22', '--plana-tone-6'],
+    ['#161517', '--plana-tone-7'],
+  ] as const
+
+  function recolor_plana(clip_id: string) {
+    let figure = plana_figure_source
+      .replaceAll('url(#a)', `url(#${clip_id})`)
+      .replace('id="a"', `id="${clip_id}"`)
+    for (const [source, tone] of plana_palette) {
+      figure = figure.replaceAll(source, `var(${tone})`)
+    }
+    return figure
+  }
+
+  const plana_far = recolor_plana('plana-far-clip')
+  const plana_near = recolor_plana('plana-near-clip')
+  const plana_interference = recolor_plana('plana-interference-clip')
 
   let { intro }: StageProps = $props()
 </script>
 
 <div class="observatory-stage">
   <SkyMapSurface />
-  <div aria-hidden="true" class="plana-art">
-    <img alt="" class="plana-figure" decoding="async" src={plana_figure} />
-    <img
-      alt=""
-      class="plana-figure plana-interference"
-      decoding="async"
-      src={plana_figure}
-    />
+  <div aria-hidden="true" class="plana-art plana-far">
+    <div class="plana-figure">{@html plana_far}</div>
+  </div>
+  <div aria-hidden="true" class="plana-art plana-near">
+    <div class="plana-figure">{@html plana_near}</div>
+    <div class="plana-figure plana-interference">
+      {@html plana_interference}
+    </div>
   </div>
   <div class="intro-cluster">
     <div aria-hidden="true" class="cabin-plate">
@@ -64,8 +89,6 @@
   }
 
   .plana-art {
-    --plana-opacity: 0.48;
-    --plana-filter: grayscale(1) contrast(0.96) brightness(0.96);
     --plana-normal-inline-start: clamp(3.5rem, 17vw, 19rem);
     --plana-normal-width: clamp(20rem, 46vw, 48rem);
     --plana-final-inline-start: max(
@@ -82,25 +105,25 @@
         ) *
         var(--stage-opening)
     );
-    z-index: 1;
     width: var(--plana-normal-width);
     max-width: none;
     pointer-events: none;
     user-select: none;
     display: block;
-    opacity: var(--plana-opacity);
-    filter: var(--plana-filter);
-    animation: plana-reveal 720ms var(--ease-out) both;
-    transition: filter var(--dur-short) var(--ease-in-out);
+    animation: plana-materialize 900ms var(--ease-out) both;
   }
 
   .plana-figure {
     display: block;
     width: 100%;
+    height: auto;
+  }
+
+  .plana-figure :global(svg) {
+    display: block;
+    width: 100%;
     max-height: min(94%, 54rem);
     height: auto;
-    object-fit: contain;
-    object-position: center bottom;
   }
 
   .plana-interference {
@@ -114,25 +137,266 @@
     clip-path: inset(45% 0);
   }
 
-  :global(.dark) .plana-art {
-    --plana-opacity: 0.36;
-    --plana-filter: grayscale(1) contrast(0.92) brightness(0.94);
+  .plana-interference :global(svg) {
+    max-height: none;
+    height: 100%;
   }
 
-  @keyframes plana-reveal {
-    from {
+  .plana-far {
+    --plana-tone-0: color-mix(
+      in oklab,
+      var(--color-stage-surface) 98%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-1: color-mix(
+      in oklab,
+      var(--color-stage-surface) 95%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-2: color-mix(
+      in oklab,
+      var(--color-stage-surface) 87%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-3: color-mix(
+      in oklab,
+      var(--color-stage-surface) 72%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-4: color-mix(
+      in oklab,
+      var(--color-stage-surface) 57%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-5: color-mix(
+      in oklab,
+      var(--color-stage-surface) 43%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-6: color-mix(
+      in oklab,
+      var(--color-stage-surface) 32%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-7: color-mix(
+      in oklab,
+      var(--color-stage-surface) 25%,
+      var(--color-stage-ink)
+    );
+
+    z-index: 1;
+  }
+
+  .plana-near {
+    --plana-tone-0: color-mix(
+      in oklab,
+      var(--color-stage-surface) 96%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-1: color-mix(
+      in oklab,
+      var(--color-stage-surface) 91%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-2: color-mix(
+      in oklab,
+      var(--color-stage-surface) 79%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-3: color-mix(
+      in oklab,
+      var(--color-stage-surface) 59%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-4: color-mix(
+      in oklab,
+      var(--color-stage-surface) 41%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-5: color-mix(
+      in oklab,
+      var(--color-stage-surface) 23%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-6: color-mix(
+      in oklab,
+      var(--color-stage-surface) 15%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-7: color-mix(
+      in oklab,
+      var(--color-stage-surface) 11%,
+      var(--color-stage-ink)
+    );
+
+    z-index: 3;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 0 54%,
+      rgb(0 0 0 / 0.82) 68%,
+      transparent 84%
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-image: linear-gradient(
+      to right,
+      #000 0 54%,
+      rgb(0 0 0 / 0.82) 68%,
+      transparent 84%
+    );
+    mask-repeat: no-repeat;
+  }
+
+  :global(.dark) .plana-far {
+    --plana-tone-0: color-mix(
+      in oklab,
+      var(--color-stage-surface) 50%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-1: color-mix(
+      in oklab,
+      var(--color-stage-surface) 54%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-2: color-mix(
+      in oklab,
+      var(--color-stage-surface) 62%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-3: color-mix(
+      in oklab,
+      var(--color-stage-surface) 72%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-4: color-mix(
+      in oklab,
+      var(--color-stage-surface) 83%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-5: color-mix(
+      in oklab,
+      var(--color-stage-surface) 91%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-6: color-mix(
+      in oklab,
+      var(--color-stage-surface) 96%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-7: color-mix(
+      in oklab,
+      var(--color-stage-surface) 98%,
+      var(--color-stage-ink)
+    );
+  }
+
+  :global(.dark) .plana-near {
+    --plana-tone-0: color-mix(
+      in oklab,
+      var(--color-stage-surface) 43%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-1: color-mix(
+      in oklab,
+      var(--color-stage-surface) 46%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-2: color-mix(
+      in oklab,
+      var(--color-stage-surface) 54%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-3: color-mix(
+      in oklab,
+      var(--color-stage-surface) 66%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-4: color-mix(
+      in oklab,
+      var(--color-stage-surface) 78%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-5: color-mix(
+      in oklab,
+      var(--color-stage-surface) 88%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-6: color-mix(
+      in oklab,
+      var(--color-stage-surface) 93%,
+      var(--color-stage-ink)
+    );
+    --plana-tone-7: color-mix(
+      in oklab,
+      var(--color-stage-surface) 97%,
+      var(--color-stage-ink)
+    );
+  }
+
+  @keyframes plana-materialize {
+    0% {
       opacity: 0;
-      transform: translateY(0.375rem);
+      transform: translateY(0.25rem);
+      filter: blur(0.75px) brightness(1.08);
     }
-    to {
-      opacity: var(--plana-opacity);
+    28% {
+      opacity: 0.38;
+      transform: translateY(0.125rem);
+      filter: blur(0.35px) brightness(1.14) contrast(1.04);
+    }
+    62% {
+      opacity: 0.74;
+      transform: translateY(0.0625rem);
+      filter: brightness(1.24) contrast(1.08);
+    }
+    100% {
+      opacity: 1;
       transform: translateY(0);
+      filter: none;
     }
   }
 
   @media (prefers-reduced-motion: no-preference) {
     .plana-interference {
-      animation: plana-interference 7.5s steps(1, end) infinite;
+      animation:
+        plana-boot-scan 900ms steps(1, end) both,
+        plana-interference 7.5s 1.2s steps(1, end) infinite;
+    }
+  }
+
+  @keyframes plana-boot-scan {
+    0% {
+      opacity: 0;
+      transform: translateX(0);
+      filter: brightness(1.18) contrast(1.08);
+      clip-path: inset(45% 0 47%);
+    }
+    18% {
+      opacity: 0.36;
+      transform: translateX(0.18rem);
+      filter: brightness(1.3) contrast(1.12);
+      clip-path: inset(15% 0 79%);
+    }
+    37% {
+      opacity: 0.16;
+      transform: translateX(-0.1rem);
+      clip-path: inset(50% 0 43%);
+    }
+    58% {
+      opacity: 0.3;
+      transform: translateX(-0.22rem);
+      filter: brightness(1.26) contrast(1.1);
+      clip-path: inset(74% 0 19%);
+    }
+    78% {
+      opacity: 0.14;
+      transform: translateX(0.08rem);
+      clip-path: inset(34% 0 59%);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(0);
+      filter: brightness(1.18) contrast(1.08);
+      clip-path: inset(45% 0 47%);
     }
   }
 
@@ -224,6 +488,21 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.625rem;
+  }
+
+  :global(html:not(.dark))
+    .intro-cluster
+    :global(.stage-intro .description) {
+    box-sizing: border-box;
+    background-color: var(--color-stage-ink);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-block: 0.1em;
+    box-shadow:
+      -0.375rem 0 var(--color-stage-ink),
+      0.375rem 0 var(--color-stage-ink);
+    color: var(--color-paper-light);
+    line-height: 1.15;
   }
 
   .social-links a,

@@ -15,9 +15,9 @@
 <style>
   .sky-map {
     --label-inline-inset: clamp(0.75rem, 4vw, var(--inline-gutter));
-    --sky-map-field-start: 44%;
+    --sky-map-field-start: 24%;
     --sky-map-fade-start: 0%;
-    --sky-map-fade-end: 36%;
+    --sky-map-fade-end: 42%;
     --sky-field-opacity: max(0, calc(1 - var(--stage-progress) * 1.2));
     --label-safe-left: var(
       --stage-label-safe-left,
