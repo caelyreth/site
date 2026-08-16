@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
-  import PaperEdge from './paper-edge.svelte'
+  import PaperDeck from './paper-deck.svelte'
 
   interface Props {
     children?: Snippet
@@ -13,10 +13,11 @@
 </script>
 
 <article id="content" class="article">
-  <div class="article-content deck">
-    {@render children?.()}
-  </div>
-  {#if has_footer}<PaperEdge guide side="bottom" />{/if}
+  <PaperDeck edge={has_footer}>
+    <div class="article-content">
+      {@render children?.()}
+    </div>
+  </PaperDeck>
 </article>
 
 <style>
@@ -30,12 +31,9 @@
   }
 
   .article-content {
-    display: flex;
-    width: 100%;
     flex: 1;
     padding-block: clamp(1.75rem, 3vw, 2.5rem) clamp(3rem, 7vw, 5rem);
     padding-inline: var(--inline-gutter);
-    flex-direction: column;
   }
 
   @media (max-width: 40rem) {

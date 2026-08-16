@@ -1,6 +1,7 @@
 <script lang="ts">
   import Backdrop from '$lib/components/layout/backdrop.svelte'
   import Footer from '$lib/components/layout/footer.svelte'
+  import PaperDeck from '$lib/components/layout/paper-deck.svelte'
   import Header from '$lib/components/navigation/header.svelte'
   import RelayFooter from '$lib/presentation/relay-footer/view.svelte'
 
@@ -13,8 +14,10 @@
     <Header />
   </div>
   <main class="library-main">
-    <div class="library-surface deck">
-      {@render children()}
+    <div class="library-surface">
+      <PaperDeck edge>
+        {@render children()}
+      </PaperDeck>
     </div>
   </main>
   <Footer>
