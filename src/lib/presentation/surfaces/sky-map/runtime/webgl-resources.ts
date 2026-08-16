@@ -240,7 +240,7 @@ export function create_sky_map_renderer(
   function set_theme(dark: boolean) {
     const theme = sky_map_scene_theme(dark)
     sky_pass.uniforms.uTrailAlpha.value = theme.trail_alpha
-    ground_pass.uniforms.uTrailAlpha.value = theme.trail_alpha * 0.48
+    ground_pass.uniforms.uTrailAlpha.value = theme.trail_alpha * 0.3
     update_trail_tints(dark)
   }
 

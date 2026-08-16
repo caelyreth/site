@@ -65,6 +65,7 @@ export function create_sky_map_engine(
     stop_frame()
     previous_frame_at = 0
     if (active) {
+      render()
       frame = requestAnimationFrame(animate)
     } else {
       render()

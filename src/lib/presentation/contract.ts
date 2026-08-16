@@ -9,8 +9,19 @@ export interface StageIntro {
   title: string
 }
 
+/**
+ * Runtime state supplied by the stage host.
+ *
+ * Stages can use this to defer expensive presentation layers while their
+ * frame returns from the compact content state.
+ */
+export interface StageMotion {
+  defer_surface: boolean
+}
+
 export interface StageProps {
   intro: StageIntro
+  motion?: StageMotion
   options: RegionOptions
 }
 

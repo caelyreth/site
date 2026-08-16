@@ -8,6 +8,11 @@
 
   import { SKY_SCENE_START_DELAY } from '../intro'
 
+  interface Props {
+    deferred?: boolean
+  }
+
+  let { deferred = false }: Props = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
   let engine = $state<SkyMapEngine>()
@@ -16,7 +21,7 @@
   let field_ready = $state(false)
 
   function sync_activity() {
-    engine?.set_active(canvas_visible && page_visible)
+    engine?.set_active(canvas_visible && page_visible && !deferred)
   }
 
   onMount(() => {
@@ -27,10 +32,13 @@
     const observer =
       typeof IntersectionObserver === 'undefined'
         ? undefined
-        : new IntersectionObserver(([entry]) => {
-            canvas_visible = entry?.isIntersecting ?? false
-            sync_activity()
-          })
+        : new IntersectionObserver(
+            ([entry]) => {
+              canvas_visible = entry?.isIntersecting ?? false
+              sync_activity()
+            },
+            { rootMargin: '75% 0px 60%' },
+          )
     const handle_visibility = () => {
       page_visible = document.visibilityState === 'visible'
       sync_activity()
@@ -87,6 +95,7 @@
 <canvas
   aria-hidden="true"
   bind:this={canvas}
+  class:is-deferred={deferred}
   class:is-ready={field_ready}
   class="canvas"
   data-sky-map-canvas
@@ -119,6 +128,10 @@
 
   .canvas.is-ready {
     opacity: 1;
+  }
+
+  .canvas.is-deferred {
+    opacity: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {

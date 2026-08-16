@@ -233,7 +233,6 @@
       var(--color-stage-glass-surface) 20%,
       transparent
     );
-    filter: blur(0.4px);
   }
 
   .glass-dust {

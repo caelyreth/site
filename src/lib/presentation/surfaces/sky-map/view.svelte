@@ -1,10 +1,17 @@
 <script lang="ts">
+  /* oxlint-disable prefer-const -- Svelte props update client state. */
   import SkyCanvas from './parts/sky-canvas.svelte'
+
+  interface Props {
+    deferred?: boolean
+  }
+
+  let { deferred = false }: Props = $props()
 </script>
 
-<div class="sky-map" data-sky-map>
+<div class="sky-map" class:is-deferred={deferred} data-sky-map>
   <div class="sky-field">
-    <SkyCanvas />
+    <SkyCanvas {deferred} />
   </div>
   <span class="label observatory-label">Observatory</span>
   <span aria-hidden="true" class="label descent-label"
@@ -45,9 +52,17 @@
 
   .sky-field {
     position: absolute;
-    inset: 0;
+    top: calc(-1 * var(--stage-top));
+    left: calc(-1 * var(--stage-inline-inset));
+    width: 100vw;
+    height: var(--stage-viewport);
     opacity: var(--sky-field-opacity);
     will-change: opacity;
+  }
+
+  .sky-map.is-deferred .sky-field {
+    opacity: 0;
+    visibility: hidden;
   }
 
   @supports (height: 100dvh) and (height: 100lvh) {
@@ -91,9 +106,9 @@
 
   @media (max-width: 40rem) {
     .sky-map {
-      --sky-map-field-start: 0%;
-      --sky-map-fade-start: 12%;
-      --sky-map-fade-end: 62%;
+      --sky-map-field-start: -8%;
+      --sky-map-fade-start: 0%;
+      --sky-map-fade-end: 28%;
     }
   }
 </style>

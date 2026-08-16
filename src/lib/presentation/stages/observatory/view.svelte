@@ -2,6 +2,7 @@
   /* oxlint-disable prefer-const -- Stage props can update with their host. */
   import plana_figure_source from '$lib/assets/illustrations/plana-figure.svg?raw'
   import type { StageProps } from '$lib/presentation/contract'
+  import SiteMark from '$lib/presentation/parts/site-mark/view.svelte'
   import VfdTube from '$lib/presentation/parts/vfd-tube/view.svelte'
   import SkyMapSurface from '$lib/presentation/surfaces/sky-map/view.svelte'
   import StageIntro from '$lib/site/stage-intro.svelte'
@@ -31,11 +32,12 @@
   const plana_near = recolor_plana('plana-near-clip')
   const plana_interference = recolor_plana('plana-interference-clip')
 
-  let { intro }: StageProps = $props()
+  let { intro, motion }: StageProps = $props()
 </script>
 
 <div class="observatory-stage">
-  <SkyMapSurface />
+  <SkyMapSurface deferred={motion?.defer_surface ?? false} />
+  <SiteMark />
   <div aria-hidden="true" class="plana-art plana-far">
     <div class="plana-figure">{@html plana_far}</div>
   </div>
@@ -90,7 +92,7 @@
 
   .plana-art {
     --plana-normal-inline-start: clamp(3.5rem, 17vw, 19rem);
-    --plana-normal-width: clamp(20rem, 46vw, 48rem);
+    --plana-normal-width: clamp(23rem, 48vw, 48rem);
     --plana-final-inline-start: max(
       0px,
       calc(min(100vw, var(--frame-measure)) - var(--plana-normal-width))
