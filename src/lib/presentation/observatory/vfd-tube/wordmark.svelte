@@ -8,12 +8,16 @@
     VFD_LAYOUT,
     VFD_GLYPH_ROWS,
     build_vfd_idle,
-    build_vfd_lit,
     fit_vfd_text,
     vfd_word_width,
   } from './matrix'
-
-  type FilamentPhase = 'heat' | 'hold'
+  import VfdMatrix from './matrix.svelte'
+  import {
+    VFD_REFRESH_INTERVAL,
+    VFD_REFRESH_READOUTS,
+    VFD_REFRESH_STEP_DURATION,
+    vfd_refresh_frame,
+  } from './refresh'
 
   interface Props {
     readout?: string
@@ -33,12 +37,27 @@
 
   /* oxlint-disable prefer-const -- The readout can update from a host part. */
   let { readout = 'R322*D+42' }: Props = $props()
-  let phase = $state<FilamentPhase>('heat')
+  let refresh_step = $state(-1)
+  let readout_index = $state(-1)
+  /* oxlint-disable prefer-const -- Svelte binding assigns DOM state. */
+  let wordmark = $state<SVGSVGElement>()
   const reading = fit_vfd_text('CAELYRETH', tube_slots)
-  const secondary_reading = $derived(fit_vfd_text(readout, tube_slots))
-  const lit = $derived(
-    build_vfd_lit([reading, secondary_reading], VFD_LAYOUT),
+  const active_readout = $derived(
+    readout_index < 0
+      ? readout
+      : (VFD_REFRESH_READOUTS[
+          readout_index % VFD_REFRESH_READOUTS.length
+        ] ?? readout),
   )
+  const refresh_reading = $derived(
+    refresh_step < 0
+      ? active_readout
+      : vfd_refresh_frame(refresh_step, tube_slots),
+  )
+  const secondary_reading = $derived(
+    fit_vfd_text(refresh_reading, tube_slots),
+  )
+  const matrix_lines = $derived([reading, secondary_reading])
   let display_timer = 0
 
   function clear_display_timer() {
@@ -54,21 +73,43 @@
     }, delay)
   }
 
-  function finish_heat() {
-    phase = 'hold'
+  function begin_refresh() {
+    refresh_step = 0
+    schedule_display_change(advance_refresh, VFD_REFRESH_STEP_DURATION)
+  }
+
+  function advance_refresh() {
+    if (refresh_step < tube_slots) {
+      refresh_step += 1
+      schedule_display_change(advance_refresh, VFD_REFRESH_STEP_DURATION)
+      return
+    }
+
+    readout_index += 1
+    refresh_step = -1
+    schedule_display_change(begin_refresh, VFD_REFRESH_INTERVAL)
   }
 
   onMount(() => {
-    if (reduced_motion.current) {
-      phase = 'hold'
-      return
+    if (reduced_motion.current) return
+    if (!wordmark || typeof IntersectionObserver === 'undefined') {
+      schedule_display_change(begin_refresh, VFD_REFRESH_INTERVAL)
+      return clear_display_timer
     }
-    schedule_display_change(
-      finish_heat,
-      WORDMARK_LIGHT_DELAY + WORDMARK_BOOT_DURATION,
-    )
+
+    const observer = new IntersectionObserver(([entry]) => {
+      clear_display_timer()
+      if (!entry?.isIntersecting) {
+        refresh_step = -1
+        return
+      }
+      schedule_display_change(begin_refresh, VFD_REFRESH_INTERVAL)
+    })
+    observer.observe(wordmark)
+
     return () => {
       clear_display_timer()
+      observer.disconnect()
     }
   })
 </script>
@@ -76,6 +117,7 @@
 <svg
   aria-hidden="true"
   class="wordmark"
+  bind:this={wordmark}
   fill="none"
   style:--boot-duration={`${WORDMARK_BOOT_DURATION}ms`}
   style:--light-delay={`${WORDMARK_LIGHT_DELAY}ms`}
@@ -202,17 +244,7 @@
   <g class="filament" clip-path="url(#wordmark-glass-clip)">
     <path class="filament-idle" d={idle.matrix} />
     <path class="filament-idle-dim" d={idle.dim} />
-    <g class="letters">
-      <g
-        class:heating={phase === 'heat'}
-        class:holding={phase === 'hold'}
-        class="filament-on initial"
-      >
-        <path class="boot-matrix boot-matrix-full" d={lit.full} />
-        <path class="boot-matrix boot-matrix-normal" d={lit.normal} />
-        <path class="boot-matrix boot-matrix-dim" d={lit.dim} />
-      </g>
-    </g>
+    <VfdMatrix lines={matrix_lines} slots={tube_slots} />
   </g>
 </svg>
 
@@ -374,66 +406,5 @@
       var(--color-stage-ink-secondary) 12%,
       transparent
     );
-  }
-
-  .letters {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  .boot-matrix {
-    opacity: 0;
-    transition: fill var(--dur-long) var(--ease-in-out);
-  }
-
-  .boot-matrix-full {
-    fill: var(--filament);
-    fill-opacity: 1;
-  }
-
-  .boot-matrix-normal {
-    fill: var(--filament);
-    fill-opacity: 0.8;
-  }
-
-  .boot-matrix-dim {
-    fill: var(--filament);
-    fill-opacity: 0.6;
-  }
-
-  .filament-on.heating .boot-matrix {
-    animation: filament-heat var(--boot-duration) var(--ease-phosphor) both;
-  }
-
-  .filament-on.heating.initial .boot-matrix {
-    animation-delay: var(--light-delay);
-  }
-
-  .filament-on.holding .boot-matrix {
-    opacity: 1;
-  }
-
-  @keyframes filament-heat {
-    0% {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .wordmark,
-    .filament-on,
-    .filament-on.heating,
-    .boot-matrix {
-      animation: none;
-    }
-
-    .wordmark,
-    .boot-matrix {
-      opacity: 1;
-      transition: none;
-    }
   }
 </style>

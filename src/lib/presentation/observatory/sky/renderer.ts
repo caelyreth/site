@@ -73,10 +73,10 @@ export function create_sky_field_renderer(
   }
 
   function set_orbit(angle: number, trail_angle: number) {
-    for (const pass of [ground_pass, sky_pass]) {
-      pass.uniforms.uOrbitAngle.value = angle
-      pass.uniforms.uTrailOrbitAngle.value = trail_angle
-    }
+    sky_pass.uniforms.uOrbitAngle.value = angle
+    sky_pass.uniforms.uTrailOrbitAngle.value = trail_angle
+    ground_pass.uniforms.uOrbitAngle.value = angle
+    ground_pass.uniforms.uTrailOrbitAngle.value = trail_angle
   }
 
   function set_theme(dark: boolean) {

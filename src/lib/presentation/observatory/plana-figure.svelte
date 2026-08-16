@@ -14,6 +14,7 @@
 
 <style>
   .plana-art {
+    --plana-materialize-delay: 420ms;
     --plana-normal-inline-start: clamp(3.5rem, 17vw, 19rem);
     --plana-normal-width: clamp(23rem, 48vw, 48rem);
     --plana-final-inline-start: max(
@@ -35,7 +36,8 @@
     pointer-events: none;
     user-select: none;
     display: block;
-    animation: plana-materialize 900ms var(--ease-out) both;
+    animation: plana-materialize 900ms var(--ease-out)
+      var(--plana-materialize-delay) both;
   }
 
   .plana-figure {
@@ -283,8 +285,10 @@
   @media (prefers-reduced-motion: no-preference) {
     .plana-interference {
       animation:
-        plana-boot-scan 900ms steps(1, end) both,
-        plana-interference 7.5s 1.2s steps(1, end) infinite;
+        plana-boot-scan 900ms var(--plana-materialize-delay) steps(1, end)
+          both,
+        plana-interference 7.5s calc(var(--plana-materialize-delay) + 1.2s)
+          steps(1, end) infinite;
     }
   }
 

@@ -5,7 +5,7 @@
 <div class="tube-layer">
   <div aria-hidden="true" class="tube-glass"></div>
   <div class="tube-wordmark">
-    <Wordmark readout="DEEP FIELD" />
+    <Wordmark readout="DEEP*VOID" />
   </div>
 </div>
 
@@ -25,11 +25,14 @@
     border-radius: 0.2rem;
     background-color: color-mix(
       in oklab,
-      var(--color-stage-glass-surface) 18%,
+      var(--color-stage-glass-surface) 72%,
       transparent
     );
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--color-paper) 14%, transparent),
+      transparent 58%
+    );
   }
 
   .tube-wordmark {

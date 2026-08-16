@@ -3,7 +3,11 @@ import {
   type ReducedMotionPreference,
 } from '$lib/browser/reduced-motion'
 
-import { ORBIT_ANGULAR_SPEED, ORBIT_TRAIL_LAG } from './config'
+import {
+  ORBIT_ANGULAR_SPEED,
+  ORBIT_TRAIL_LAG,
+  SKY_FIELD_FRAME_INTERVAL,
+} from './config'
 import { create_sky_field_renderer } from './renderer'
 import { choose_pixel_ratio } from './resolution'
 
@@ -35,6 +39,7 @@ export function create_sky_field_engine(
   let requested_active = false
   let disposed = false
   let frame = 0
+  let frame_timer: ReturnType<typeof setTimeout> | undefined
   let orbit_angle = 0
   let previous_frame_at = 0
   let rendered_height = 0
@@ -49,17 +54,29 @@ export function create_sky_field_engine(
   function stop_frame() {
     if (frame) cancelAnimationFrame(frame)
     frame = 0
+    if (frame_timer !== undefined) clearTimeout(frame_timer)
+    frame_timer = undefined
+  }
+
+  function schedule_frame() {
+    frame_timer = setTimeout(() => {
+      frame_timer = undefined
+      frame = requestAnimationFrame(animate)
+    }, SKY_FIELD_FRAME_INTERVAL)
   }
 
   function animate(now: number) {
     if (!active || disposed || motion_preference.current) return
+    frame = 0
     const delta =
-      previous_frame_at > 0 ? Math.min(now - previous_frame_at, 50) : 16.667
+      previous_frame_at > 0
+        ? Math.min(now - previous_frame_at, SKY_FIELD_FRAME_INTERVAL * 2)
+        : SKY_FIELD_FRAME_INTERVAL
     previous_frame_at = now
     orbit_angle =
       (orbit_angle - delta * ORBIT_ANGULAR_SPEED) % (Math.PI * 2)
     render()
-    frame = requestAnimationFrame(animate)
+    schedule_frame()
   }
 
   function sync_activity() {
@@ -71,7 +88,7 @@ export function create_sky_field_engine(
     previous_frame_at = 0
     if (active) {
       render()
-      frame = requestAnimationFrame(animate)
+      schedule_frame()
     } else {
       render()
     }

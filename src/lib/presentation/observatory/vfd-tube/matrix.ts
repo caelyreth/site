@@ -48,6 +48,8 @@ const PHOSPHOR_LEVELS = [
   'normal',
 ] as const
 
+const cell_layouts = new Map<string, VfdCell[]>()
+
 const VFD_GLYPHS: Record<string, readonly string[]> = {
   ' ': BLANK,
   '!': ['00100', '00100', '00100', '00100', '00100', '00000', '00100'],
@@ -120,6 +122,112 @@ export function fit_vfd_text(value: string, slots: number) {
   return `${' '.repeat(lead)}${glyphs.join('')}${' '.repeat(pad - lead)}`
 }
 
+export interface VfdCell {
+  d: string
+  delay: number
+  key: string
+  opacity: number
+}
+
+export function get_vfd_cell_layout(
+  line_count: number,
+  slots: number,
+  layout: VfdLayout = VFD_LAYOUT,
+): VfdCell[] {
+  const cache_key = [
+    line_count,
+    slots,
+    layout.letter_pitch,
+    layout.line_pitch,
+    layout.pixel_radius,
+    layout.pixel_size,
+    layout.line_y,
+  ].join(':')
+  const cached_layout = cell_layouts.get(cache_key)
+  if (cached_layout) return cached_layout
+
+  const cells: VfdCell[] = []
+
+  for (let line = 0; line < line_count; line += 1) {
+    for (let slot = 0; slot < slots; slot += 1) {
+      cells.push(...build_vfd_glyph_layout(line, slot, layout))
+    }
+  }
+
+  cell_layouts.set(cache_key, cells)
+  return cells
+}
+
+export function build_vfd_lit_mask(
+  lines: readonly string[],
+  slots: number,
+): boolean[] {
+  const cells: boolean[] = []
+
+  for (let line = 0; line < lines.length; line += 1) {
+    append_vfd_line_mask(cells, lines[line] ?? '', slots)
+  }
+
+  return cells
+}
+
+function append_vfd_line_mask(
+  cells: boolean[],
+  text: string,
+  slots: number,
+) {
+  const marks = marks_of(text)
+  for (let slot = 0; slot < slots; slot += 1) {
+    append_vfd_glyph_mask(cells, VFD_GLYPHS[marks[slot] ?? ' '] ?? BLANK)
+  }
+}
+
+function append_vfd_glyph_mask(cells: boolean[], glyph: readonly string[]) {
+  for (const row of glyph) {
+    for (const mark of row) cells.push(mark === '1')
+  }
+}
+
+function build_vfd_glyph_layout(
+  line: number,
+  slot: number,
+  layout: VfdLayout,
+) {
+  const cells: VfdCell[] = []
+
+  for (let row = 0; row < VFD_GLYPH_ROWS; row += 1) {
+    cells.push(...build_vfd_row_layout(line, slot, row, layout))
+  }
+
+  return cells
+}
+
+function build_vfd_row_layout(
+  line: number,
+  slot: number,
+  row: number,
+  layout: VfdLayout,
+) {
+  const cells: VfdCell[] = []
+
+  for (let column = 0; column < VFD_GLYPH_COLS; column += 1) {
+    const level = phosphor_level(slot, line, row, column)
+    cells.push({
+      d: cell_path(
+        slot * layout.letter_pitch + column,
+        layout.line_y + line * layout.line_pitch + row,
+        layout.pixel_size,
+        layout.pixel_radius,
+      ),
+      delay: cell_light_delay(slot, line, row, column),
+      key: `${line}:${slot}:${row}:${column}`,
+      opacity: phosphor_opacity(level),
+    })
+  }
+
+  return cells
+}
+
 export function build_vfd_idle(
   slots: number,
   lines = 1,
@@ -134,37 +242,6 @@ export function build_vfd_idle(
     }
   }
   return idle
-}
-
-export function build_vfd_lit(
-  lines: readonly string[],
-  layout: VfdLayout = VFD_LAYOUT,
-): {
-  dim: string
-  full: string
-  normal: string
-} {
-  const state = { dim: '', full: '', normal: '' }
-  for (let line = 0; line < lines.length; line += 1) {
-    append_line(state, lines[line] ?? '', line, layout)
-  }
-  return state
-}
-
-function append_line(
-  state: {
-    dim: string
-    full: string
-    normal: string
-  },
-  text: string,
-  line: number,
-  layout: VfdLayout,
-) {
-  const marks = marks_of(text)
-  for (let slot = 0; slot < marks.length; slot += 1) {
-    append_lit(state, VFD_GLYPHS[marks[slot]] ?? BLANK, line, slot, layout)
-  }
 }
 
 function slot_idle(slot: number, line: number, layout: VfdLayout) {
@@ -182,32 +259,6 @@ function slot_idle(slot: number, line: number, layout: VfdLayout) {
     }
   }
   return idle
-}
-
-function append_lit(
-  state: {
-    dim: string
-    full: string
-    normal: string
-  },
-  glyph: readonly string[],
-  line: number,
-  slot: number,
-  layout: VfdLayout,
-) {
-  for (let row = 0; row < glyph.length; row += 1) {
-    const cells = glyph[row]
-    for (let column = 0; column < cells.length; column += 1) {
-      if (cells[column] !== '1') continue
-      const path = cell_path(
-        slot * layout.letter_pitch + column,
-        layout.line_y + line * layout.line_pitch + row,
-        layout.pixel_size,
-        layout.pixel_radius,
-      )
-      state[phosphor_level(slot, line, row, column)] += path
-    }
-  }
 }
 
 function marks_of(value: string) {
@@ -235,6 +286,21 @@ function phosphor_level(
 ) {
   const pattern = (slot * 19 + line * 17 + row * 11 + column * 5) % 13
   return PHOSPHOR_LEVELS[pattern] ?? 'normal'
+}
+
+function phosphor_opacity(level: string) {
+  if (level === 'full') return 1
+  if (level === 'dim') return 0.6
+  return 0.8
+}
+
+function cell_light_delay(
+  slot: number,
+  line: number,
+  row: number,
+  column: number,
+) {
+  return ((slot * 17 + line * 13 + row * 7 + column * 3) % 8) * 12
 }
 
 function cell_path(x: number, y: number, size: number, radius: number) {

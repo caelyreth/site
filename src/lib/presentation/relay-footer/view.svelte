@@ -91,7 +91,7 @@
   }
 
   .footer-content {
-    padding: 1.5rem var(--inline-gutter) 0.75rem;
+    padding: 1.5rem var(--inline-gutter) 1rem;
     color: var(--footer-ink);
     background-color: var(--footer-surface);
   }
