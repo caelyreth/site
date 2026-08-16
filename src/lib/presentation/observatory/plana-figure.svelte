@@ -2,71 +2,92 @@
   import { plana_layers } from './plana-asset'
 </script>
 
-<div aria-hidden="true" class="plana-art plana-far">
-  <div class="plana-figure">{@html plana_layers.far}</div>
-</div>
-<div aria-hidden="true" class="plana-art plana-near">
-  <div class="plana-figure">{@html plana_layers.near}</div>
-  <div class="plana-figure plana-interference">
-    {@html plana_layers.interference}
+<div aria-hidden="true" class="plana-position">
+  <div class="plana-art plana-far">
+    <div class="plana-figure">{@html plana_layers.far}</div>
+  </div>
+  <div class="plana-art plana-near">
+    <div class="plana-figure">{@html plana_layers.near}</div>
+    <div class="plana-figure plana-interference">
+      {@html plana_layers.interference}
+    </div>
   </div>
 </div>
 
 <style>
-  .plana-art {
+  .plana-position {
     --plana-materialize-delay: 420ms;
+    --plana-figure-aspect-ratio: 0.885;
     --plana-normal-inline-start: clamp(3.5rem, 17vw, 19rem);
     --plana-normal-width: clamp(23rem, 48vw, 48rem);
+    --plana-art-height: min(
+      54rem,
+      calc(
+        (
+            var(--stage-viewport) - var(--stage-top) -
+              var(--stage-frame-inset)
+          ) *
+          0.94
+      )
+    );
+    --plana-render-width: min(
+      var(--plana-normal-width),
+      calc(var(--plana-art-height) * var(--plana-figure-aspect-ratio))
+    );
     --plana-final-inline-start: max(
       0px,
       calc(min(100vw, var(--frame-measure)) - var(--plana-normal-width))
     );
-
-    position: absolute;
-    bottom: clamp(-3rem, -3vw, -1.25rem);
-    left: calc(
+    --plana-inline-shift: calc(
       var(--plana-final-inline-start) +
         (
           var(--plana-normal-inline-start) - var(--plana-final-inline-start)
         ) *
         var(--stage-opening)
     );
+
+    position: absolute;
+    bottom: clamp(-3rem, -3vw, -1.25rem);
+    left: 0;
     width: var(--plana-normal-width);
-    max-width: none;
+    height: var(--plana-art-height);
     pointer-events: none;
     user-select: none;
+  }
+
+  .plana-art {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--plana-render-width);
+    height: var(--plana-art-height);
     display: block;
     animation: plana-materialize 900ms var(--ease-out)
       var(--plana-materialize-delay) both;
+    translate: var(--plana-inline-shift) 0;
+    will-change: transform, translate;
   }
 
   .plana-figure {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
   }
 
   .plana-figure :global(svg) {
     display: block;
     width: 100%;
-    max-height: min(94%, 54rem);
-    height: auto;
+    height: 100%;
   }
 
   .plana-interference {
     position: absolute;
     inset: 0;
     width: 100%;
-    max-height: none;
     height: 100%;
     opacity: 0;
     filter: brightness(1.18) contrast(1.08);
     clip-path: inset(45% 0);
-  }
-
-  .plana-interference :global(svg) {
-    max-height: none;
-    height: 100%;
   }
 
   .plana-far {
