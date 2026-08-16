@@ -1,8 +1,6 @@
 +++
 title = "Caelyreth"
 description = "Field notes on architecture, geometry, and the philosophy of space."
-stage = "observatory"
-footer = "relay-station"
 +++
 
 ## Markdown field manual {#station}

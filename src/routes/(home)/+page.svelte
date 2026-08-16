@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Content from '$lib/content/render.svelte'
+  import Content from '$lib/components/markdown/document.svelte'
 
   import type { PageData } from './$types'
 

@@ -1,33 +1,25 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import Article from '$lib/components/layout/article.svelte'
+  import Backdrop from '$lib/components/layout/backdrop.svelte'
+  import Footer from '$lib/components/layout/footer.svelte'
+  import Stage from '$lib/components/layout/stage.svelte'
+  import Header from '$lib/components/navigation/header.svelte'
   import type {
     ContentDocument,
-    HomeFrontmatter,
+    DocumentFrontmatter,
   } from '$lib/content/schema'
-  import type { PresentationSelection } from '$lib/presentation/contract'
-  import { resolve_presentation } from '$lib/presentation/registry'
-  import Article from '$lib/site/article.svelte'
-  import Backdrop from '$lib/site/backdrop.svelte'
-  import Footer from '$lib/site/footer.svelte'
-  import Header from '$lib/site/header.svelte'
-  import Stage from '$lib/site/stage.svelte'
+  import { SKY_FIELD_FADE_RATE } from '$lib/presentation/observatory/sky/config'
+  import Observatory from '$lib/presentation/observatory/view.svelte'
+  import RelayFooter from '$lib/presentation/relay-footer/view.svelte'
 
   interface HomePageData {
-    document: ContentDocument<HomeFrontmatter>
-    presentation?: PresentationSelection
+    document: ContentDocument<DocumentFrontmatter>
   }
 
   const { children } = $props()
   const document = $derived((page.data as HomePageData).document)
-  const presentation = $derived((page.data as HomePageData).presentation)
-  const resolved_presentation = $derived(
-    presentation ? resolve_presentation(presentation) : undefined,
-  )
   let fallback_progress = $state(0)
-  const stage_intro = $derived({
-    description: document.frontmatter.description,
-    title: document.frontmatter.title,
-  })
 
   function update_stage_progress(progress: number) {
     fallback_progress = progress
@@ -40,30 +32,29 @@
     <Header />
   </div>
   <main>
-    {#if resolved_presentation?.stage}
-      {#key page.url.pathname}
-        <Stage
-          component={resolved_presentation.stage.component}
-          intro={stage_intro}
-          options={resolved_presentation.stage.options}
-          on_progress={update_stage_progress}
-          progress={fallback_progress}
+    <Stage
+      title={document.frontmatter.title}
+      on_progress={update_stage_progress}
+      progress={fallback_progress}
+      surface_exit_progress={1 / SKY_FIELD_FADE_RATE}
+    >
+      {#snippet children(defer_surface)}
+        <Observatory
+          {defer_surface}
+          description={document.frontmatter.description}
         />
-      {/key}
-    {/if}
+      {/snippet}
+    </Stage>
     <div aria-hidden="true" class="mobile-stage-seam"></div>
-    <Article has_footer={resolved_presentation?.footer !== undefined}>
+    <Article has_footer>
       {@render children()}
     </Article>
   </main>
-  {#if resolved_presentation?.footer}
-    {#key page.url.pathname}
-      <Footer
-        component={resolved_presentation.footer.component}
-        options={resolved_presentation.footer.options}
-      />
-    {/key}
-  {/if}
+  <Footer>
+    {#snippet children(visible)}
+      <RelayFooter {visible} />
+    {/snippet}
+  </Footer>
 </div>
 
 <style>

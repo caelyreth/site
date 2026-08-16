@@ -1,5 +1,5 @@
-@import './lib/site/paper.css';
-@import './lib/content/prose/foundation.css';
+@import './lib/styles/paper.css';
+@import './lib/components/markdown/prose/foundation.css';
 
 :root {
   /* light color palette */
