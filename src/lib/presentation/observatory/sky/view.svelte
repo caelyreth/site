@@ -5,9 +5,10 @@
 
   interface Props {
     deferred?: boolean
+    paused?: boolean
   }
 
-  let { deferred = false }: Props = $props()
+  let { deferred = false, paused = false }: Props = $props()
 </script>
 
 <div
@@ -17,7 +18,7 @@
   style:--sky-field-fade-rate={SKY_FIELD_FADE_RATE}
 >
   <div class="sky-field">
-    <SkyCanvas {deferred} />
+    <SkyCanvas {deferred} {paused} />
   </div>
   <span class="label observatory-label">Observatory</span>
   <span aria-hidden="true" class="label descent-label"

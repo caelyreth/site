@@ -7,14 +7,19 @@
   interface Props {
     defer_surface?: boolean
     description?: string
+    sky_paused?: boolean
   }
 
   /* oxlint-disable prefer-const -- Observatory props can update with the route. */
-  let { defer_surface = false, description }: Props = $props()
+  let {
+    defer_surface = false,
+    description,
+    sky_paused = false,
+  }: Props = $props()
 </script>
 
 <div class="observatory">
-  <SkyField deferred={defer_surface} />
+  <SkyField deferred={defer_surface} paused={sky_paused} />
   <SiteMark />
   <PlanaFigure />
   <Intro {description} />

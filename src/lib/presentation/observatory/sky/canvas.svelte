@@ -10,9 +10,10 @@
 
   interface Props {
     deferred?: boolean
+    paused?: boolean
   }
 
-  let { deferred = false }: Props = $props()
+  let { deferred = false, paused = false }: Props = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
   let engine = $state<SkyFieldEngine>()
@@ -20,8 +21,10 @@
   let page_visible = $state(true)
   let field_ready = $state(false)
 
-  function sync_activity() {
-    engine?.set_active(canvas_visible && page_visible && !deferred)
+  function sync_engine_activity() {
+    engine?.set_active(
+      canvas_visible && page_visible && !deferred && !paused,
+    )
   }
 
   onMount(() => {
@@ -35,13 +38,13 @@
         : new IntersectionObserver(
             ([entry]) => {
               canvas_visible = entry?.isIntersecting ?? false
-              sync_activity()
+              sync_engine_activity()
             },
             { rootMargin: '75% 0px 60%' },
           )
     const handle_visibility = () => {
       page_visible = document.visibilityState === 'visible'
-      sync_activity()
+      sync_engine_activity()
     }
 
     if (observer) {
@@ -60,7 +63,7 @@
             canvas,
             theme.resolvedTheme === 'dark',
           )
-          sync_activity()
+          sync_engine_activity()
           reveal_timer = setTimeout(() => {
             if (!disposed) field_ready = true
           }, 32)
@@ -91,7 +94,10 @@
 
   $effect(() => {
     engine?.set_theme(theme.resolvedTheme === 'dark')
-    sync_activity()
+  })
+
+  $effect(() => {
+    sync_engine_activity()
   })
 </script>
 

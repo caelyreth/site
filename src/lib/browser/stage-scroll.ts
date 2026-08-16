@@ -46,9 +46,9 @@ export function stage_scroll_elements(capture: HTMLElement) {
 }
 
 /**
- * Defers an expensive stage surface while it expands back into view, then
- * restores it after scrolling settles or the stage returns to its open
- * state.
+ * Defers an expensive stage surface once its visual fade has completed. It
+ * restores only after a return scroll settles or the stage reaches its open
+ * state, preventing a renderer restart during the expensive transition.
  */
 export function defer_stage_surface_on_return(
   options: StageSurfaceDeferralOptions,
@@ -95,11 +95,11 @@ export function defer_stage_surface_on_return(
       const returning = scroll_top < previous_scroll_top
       if (scroll_top <= stage_start + 2) {
         set_deferred(false)
-      } else if (returning && previous_scroll_top >= surface_exit) {
+      } else if (scroll_top >= surface_exit) {
         set_deferred(true)
       }
       previous_scroll_top = scroll_top
-      if (deferred) {
+      if (deferred && returning) {
         schedule_settle()
       } else {
         cancel_settle()
@@ -107,6 +107,7 @@ export function defer_stage_surface_on_return(
     }
 
     refresh_stage_bounds()
+    update()
     window.addEventListener('scroll', update, { passive: true })
     window.addEventListener('resize', refresh_stage_bounds)
 

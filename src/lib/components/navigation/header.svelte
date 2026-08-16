@@ -4,7 +4,7 @@
   import { page } from '$app/state'
   import { scroll_activity } from '$lib/browser/scroll-activity'
   import { scroll_to_top } from '$lib/browser/scroll-to-top'
-  import { reaches_viewport_threshold } from '$lib/browser/viewport-threshold'
+  import { observe_viewport_threshold } from '$lib/browser/viewport-threshold'
   import { tick } from 'svelte'
 
   import Brand from './header/brand.svelte'
@@ -21,13 +21,14 @@
     on_activity(active) {
       scrolling = active
     },
-    on_scroll() {
-      content_active = reaches_viewport_threshold(
-        'content',
-        content_reveal_ratio,
-      )
-    },
   })
+  const observe_content = observe_viewport_threshold(
+    'content',
+    content_reveal_ratio,
+    (active) => {
+      content_active = active
+    },
+  )
 
   function has_navigation_modifier(event: MouseEvent) {
     return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey
@@ -56,6 +57,7 @@
 
 <div
   {@attach observe_scroll}
+  {@attach observe_content}
   class="site-controls"
   data-content-active={content_active}
   data-scrolling={scrolling}

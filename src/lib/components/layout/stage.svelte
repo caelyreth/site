@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { scroll_activity } from '$lib/browser/scroll-activity'
   import { scroll_progress } from '$lib/browser/scroll-progress'
   import {
     defer_stage_surface_on_return,
@@ -10,7 +11,7 @@
   import Guide from './guide.svelte'
 
   interface Props {
-    children?: Snippet<[boolean]>
+    children?: Snippet<[boolean, boolean]>
     on_progress?: (progress: number) => void
     progress?: number
     surface_exit_progress?: number
@@ -26,6 +27,7 @@
     title,
   }: Props = $props()
   let defer_surface = $state(false)
+  let sky_paused = $state(false)
 
   function set_surface_deferred(next_defer_surface: boolean) {
     if (defer_surface === next_defer_surface) return
@@ -39,6 +41,11 @@
     })(capture)
   }
 
+  function set_sky_paused(next_sky_paused: boolean) {
+    if (sky_paused === next_sky_paused) return
+    sky_paused = next_sky_paused
+  }
+
   const observe_stage_progress = scroll_progress({
     fallback_only: true,
     get_progress: stage_scroll_progress,
@@ -47,6 +54,10 @@
       on_progress?.(progress)
     },
   })
+  const observe_stage_activity = scroll_activity({
+    idle_delay: 180,
+    on_activity: set_sky_paused,
+  })
 </script>
 
 <div
@@ -54,10 +65,11 @@
   style:--stage-fallback-progress={progress}
   {@attach observe_stage_progress}
   {@attach observe_stage_return}
+  {@attach observe_stage_activity}
 >
   <section class="stage-sticky" aria-label={title}>
     <div class="stage-frame">
-      {@render children?.(defer_surface)}
+      {@render children?.(defer_surface, sky_paused)}
       <Guide side="left" inStage reveal />
       <Guide side="right" inStage reveal />
     </div>

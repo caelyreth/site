@@ -42,6 +42,7 @@ export function create_sky_field_engine(
   let frame_timer: ReturnType<typeof setTimeout> | undefined
   let orbit_angle = 0
   let previous_frame_at = 0
+  let rendered_dark = initial_dark
   let rendered_height = 0
   let rendered_pixel_ratio = 0
   let rendered_width = 0
@@ -89,8 +90,6 @@ export function create_sky_field_engine(
     if (active) {
       render()
       schedule_frame()
-    } else {
-      render()
     }
   }
 
@@ -110,7 +109,7 @@ export function create_sky_field_engine(
     rendered_height = height
     rendered_pixel_ratio = pixel_ratio
     sky_field_renderer.resize(width, height, pixel_ratio)
-    render()
+    if (active) render()
   }
 
   const resize_observer = new ResizeObserver(resize)
@@ -118,7 +117,6 @@ export function create_sky_field_engine(
     sync_activity()
   })
 
-  sky_field_renderer.set_theme(initial_dark)
   resize_observer.observe(target)
   resize()
 
@@ -128,8 +126,10 @@ export function create_sky_field_engine(
       sync_activity()
     },
     set_theme(next_dark) {
+      if (next_dark === rendered_dark) return
+      rendered_dark = next_dark
       sky_field_renderer.set_theme(next_dark)
-      render()
+      if (active) render()
     },
     destroy() {
       disposed = true

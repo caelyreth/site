@@ -38,10 +38,11 @@
       progress={fallback_progress}
       surface_exit_progress={1 / SKY_FIELD_FADE_RATE}
     >
-      {#snippet children(defer_surface)}
+      {#snippet children(defer_surface, sky_paused)}
         <Observatory
           {defer_surface}
           description={document.frontmatter.description}
+          {sky_paused}
         />
       {/snippet}
     </Stage>
