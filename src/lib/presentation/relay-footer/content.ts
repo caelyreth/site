@@ -5,6 +5,6 @@ export const footer_barcode = [
 
 export const footer_index = [
   { href: '/', label: '观测台' },
-  { href: '/essays', label: '随笔' },
-  { href: '/threads', label: '线索' },
+  { href: '/records', label: '记录' },
+  { href: '/constellations', label: '星群' },
 ] as const

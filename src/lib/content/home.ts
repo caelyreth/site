@@ -1,9 +1,8 @@
 import type { MarkdownDocument } from 'comark'
 
-export interface HomeFrontmatter {
-  description?: string
-  title: string
-}
+import type { SharedFrontmatter } from './frontmatter'
+
+export type HomeFrontmatter = SharedFrontmatter
 
 export type HomeDocument = MarkdownDocument<
   Record<string, unknown>,

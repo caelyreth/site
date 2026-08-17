@@ -16,4 +16,4 @@
   {/if}
 </svelte:head>
 
-<Content document={data.document} />
+<Content document={data.document} font={data.document.frontmatter.font} />

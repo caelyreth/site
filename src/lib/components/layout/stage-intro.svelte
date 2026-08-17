@@ -15,7 +15,7 @@
     <p><span class="description">{description}</span></p>
   {/if}
   <a class="entry" href="#content">
-    <span>下方是随笔</span>
+    <span>下方是记录</span>
     <span class="i-ri-arrow-down-line entry-icon" aria-hidden="true"></span>
   </a>
 </div>

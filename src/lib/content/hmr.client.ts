@@ -13,9 +13,9 @@ export function listen_for_content_updates() {
     void invalidate(content_dependency(content_id))
 
     const [collection] = content_id.split('/', 1)
-    if (collection === 'essays' || collection === 'threads') {
-      void invalidate(content_dependency('essays'))
-      void invalidate(content_dependency('threads'))
+    if (collection === 'records' || collection === 'constellations') {
+      void invalidate(content_dependency('records'))
+      void invalidate(content_dependency('constellations'))
     }
   }
 

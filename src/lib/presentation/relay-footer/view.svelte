@@ -30,7 +30,7 @@
       </div>
       <div class="statement-row">
         <p class="statement">
-          随笔、近况和未来的方向，都停在中继站的边缘。
+          记录、近况和未来的方向，都停在中继站的边缘。
         </p>
         <span aria-hidden="true" class="statement-mark"></span>
       </div>

@@ -35,9 +35,9 @@ export interface Drift {
 
 export const menu_previews: readonly MenuPreview[] = [
   {
-    code: '随笔 / 001',
-    detail: '缓慢记录',
-    href: '/essays',
+    code: '记录 / 001',
+    detail: '留存文字',
+    href: '/records',
     layout: {
       enter_delay: '80ms',
       enter_x: '-2rem',
@@ -46,12 +46,12 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '-13deg',
       top: '22%',
     },
-    title: '随笔',
+    title: '记录',
   },
   {
-    code: '线索 / 002',
-    detail: '彼此呼应',
-    href: '/threads',
+    code: '星群 / 002',
+    detail: '彼此回响',
+    href: '/constellations',
     layout: {
       enter_delay: '140ms',
       enter_x: '1.75rem',
@@ -60,7 +60,7 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '11deg',
       top: '29%',
     },
-    title: '线索',
+    title: '星群',
   },
   {
     code: '片段 / 待启用',
@@ -107,7 +107,7 @@ export const drifts: readonly Drift[] = [
       tone: 0.23,
       top: '10%',
     },
-    text: '随笔 / 001',
+    text: '记录 / 001',
   },
   {
     layout: {

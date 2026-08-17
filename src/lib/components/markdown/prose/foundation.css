@@ -12,6 +12,10 @@
   font-synthesis: none;
 }
 
+.document[data-font='serif'] {
+  font-family: var(--font-stack-serif);
+}
+
 .document :where(.comark-content) {
   min-inline-size: 0;
 }

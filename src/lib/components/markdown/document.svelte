@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ContentFont } from '$lib/content/frontmatter'
   import { MarkdownDocument } from '@comark/svelte'
   import type { MarkdownDocument as MarkdownDocumentValue } from 'comark'
   import { pascalCase } from 'comark/utils'
@@ -36,9 +37,14 @@
     ),
   })
 
-  let { document }: { document: MarkdownDocumentValue } = $props()
+  interface Props {
+    document: MarkdownDocumentValue
+    font?: ContentFont
+  }
+
+  let { document, font = 'sans' }: Props = $props()
 </script>
 
-<div class="document">
+<div class="document" data-font={font}>
   <MarkdownDocument value={document} {components} />
 </div>
