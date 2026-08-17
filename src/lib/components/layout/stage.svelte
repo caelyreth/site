@@ -80,7 +80,6 @@
   .stage-capture {
     --stage-viewport: var(--stable-viewport-block);
     --stage-scroll-span: var(--stage-transition-span);
-    --stage-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
     --stage-frame-radius: clamp(0.375rem, 0.75vw, 0.625rem);
     --stage-progress: var(--stage-fallback-progress, 0);
     --stage-opening: calc(1 - var(--stage-progress));
@@ -101,9 +100,6 @@
       var(--inline-gutter),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
-    );
-    --stage-intro-bottom-inset: calc(
-      max(1.25rem, env(safe-area-inset-bottom)) + max(0px, 100lvh - 100dvh)
     );
     height: calc(var(--stage-viewport) + var(--stage-scroll-span));
   }
@@ -134,7 +130,7 @@
       var(--stage-block-inset);
     z-index: 1;
     overflow: hidden;
-    border: 1px solid var(--stage-content-rule);
+    border: var(--stage-frame-border) solid var(--stage-content-rule);
     border-radius: var(--stage-radius);
     background-color: color-mix(
       in oklab,

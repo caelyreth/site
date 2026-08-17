@@ -16,7 +16,13 @@
   <MenuOrnaments {is_closing} {is_open} />
   <MenuSlips {is_closing} {is_open} />
   <ThemeSlip {is_closing} {is_open} {on_close} />
-  <p class="micro-label field-note">Caelyreth relay / viewing plane 01</p>
+  <p
+    class:is-closing={is_closing}
+    class:is-open={is_open}
+    class="micro-label field-note"
+  >
+    Caelyreth relay / viewing plane 01
+  </p>
 </div>
 
 <style>
@@ -39,17 +45,59 @@
   .field-note {
     position: absolute;
     z-index: 3;
-    right: var(--menu-gutter);
-    bottom: var(--menu-gutter);
+    right: calc(
+      var(--stage-label-safe-right) + var(--stage-frame-inset) +
+        var(--stage-frame-border)
+    );
+    bottom: calc(
+      var(--viewport-bottom-inset) + var(--stage-frame-inset) +
+        var(--stage-frame-border)
+    );
     margin: 0;
     color: var(--color-text-secondary);
-    line-height: 1.3;
+    font-size: clamp(0.5rem, 0.42rem + 0.4vw, 0.625rem);
+    font-weight: 500;
+    letter-spacing: clamp(0.06em, 0.025em + 0.35vw, 0.12em);
+    line-height: 1.2;
     pointer-events: none;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  @keyframes field-note-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes field-note-leave {
+    to {
+      opacity: 0;
+    }
+  }
+
+  .field-note.is-open:not(.is-closing) {
+    animation: field-note-enter var(--dur-long) var(--ease-out) 240ms
+      backwards;
+  }
+
+  .field-note.is-closing {
+    animation: field-note-leave var(--dur-long) var(--ease-out) both;
   }
 
   @media (width < 40rem) {
     .field-note {
       display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-note.is-open,
+    .field-note.is-closing {
+      animation: none;
     }
   }
 </style>

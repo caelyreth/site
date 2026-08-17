@@ -159,8 +159,22 @@
     50% + var(--half-measure) + var(--content-rail-gap)
   );
   --inline-gutter: 1.5rem;
+  --stage-label-inline-inset: clamp(0.75rem, 4vw, var(--inline-gutter));
+  --stage-label-safe-left: max(
+    var(--stage-label-inline-inset),
+    env(safe-area-inset-left)
+  );
+  --stage-label-safe-right: max(
+    var(--stage-label-inline-inset),
+    env(safe-area-inset-right)
+  );
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
+  --stage-frame-border: 1px;
+  --stage-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
+  --viewport-bottom-inset: calc(
+    max(1.25rem, env(safe-area-inset-bottom)) + max(0px, 100lvh - 100dvh)
+  );
   --stable-viewport-block: 100lvh;
   --stage-transition-span: min(
     var(--stable-viewport-block),

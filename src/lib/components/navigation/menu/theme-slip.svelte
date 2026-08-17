@@ -31,8 +31,12 @@
   style:--slip-right={theme_slip_layout.right}
   style:--slip-rotation={theme_slip_layout.rotation}
 >
-  <div class="theme-heading">
+  <div class="theme-copy">
     <span class="micro-label slip-code">SHIFT / 002</span>
+    <span class="micro-label theme-label">{theme_label}</span>
+  </div>
+  <div class="theme-controls">
+    <ThemeToggle fill />
     <button
       type="button"
       class="close"
@@ -42,8 +46,6 @@
       ><span class="i-ri-close-line" aria-hidden="true"></span></button
     >
   </div>
-  <span class="micro-label theme-label">{theme_label}</span>
-  <ThemeToggle />
 </section>
 
 <style>
@@ -59,31 +61,28 @@
     bottom: var(--slip-bottom);
     left: var(--slip-left);
     z-index: 3;
-    display: flex;
+    display: block;
     box-sizing: border-box;
-    width: 10.5rem;
-    min-height: 7.5rem;
-    min-width: 0;
-    padding: 0.9rem 1rem 1rem;
+    width: 14rem;
+    padding: 0;
     border: 1px solid transparent;
     color: var(--slip-ink);
     background-color: var(--slip-surface);
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.5rem;
-    justify-content: space-between;
     pointer-events: auto;
     transform: rotate(var(--slip-effective-rotation, var(--slip-rotation)));
     transition: bottom var(--dur-long) var(--ease-out);
     white-space: nowrap;
   }
 
-  .theme-heading {
+  .theme-copy {
     display: flex;
+    box-sizing: border-box;
     width: 100%;
-    align-items: center;
-    gap: 0.75rem;
-    justify-content: space-between;
+    padding: 0.75rem 0.875rem;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.3rem;
+    justify-content: center;
   }
 
   .slip-code {
@@ -96,14 +95,25 @@
     line-height: 1.3;
   }
 
+  .theme-controls {
+    display: flex;
+    width: calc(100% + 2px);
+    min-height: 2.5rem;
+    margin-right: -1px;
+    margin-bottom: -1px;
+    margin-left: -1px;
+    border-top: 1px solid var(--toggle-rule);
+    align-items: stretch;
+  }
+
   .close {
     display: grid;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2.5rem;
     flex: none;
     padding: 0;
     cursor: pointer;
-    border: 1px solid var(--toggle-rule);
+    border: 0;
+    border-inline-start: 1px solid var(--toggle-rule);
     color: var(--toggle-ink);
     background: transparent;
     place-items: center;
@@ -113,8 +123,8 @@
   }
 
   .close span {
-    width: 0.875rem;
-    height: 0.875rem;
+    width: 1rem;
+    height: 1rem;
   }
 
   @media (hover: hover) {
@@ -162,25 +172,21 @@
   @media (width < 40rem) {
     .theme-slip {
       --slip-effective-rotation: 0deg;
-      --theme-toggle-size: 2.25rem;
+      --theme-toggle-size: 2.75rem;
 
       top: auto;
       right: var(--menu-inset-right);
       bottom: var(--menu-inset-bottom);
       left: var(--menu-inset-left);
       width: auto;
-      min-height: 5.625rem;
-      padding: 0.75rem 0.875rem;
+    }
+
+    .theme-controls {
+      min-height: 2.75rem;
     }
 
     .close {
-      width: 2.25rem;
-      height: 2.25rem;
-    }
-
-    .close span {
-      width: 1rem;
-      height: 1rem;
+      width: 2.75rem;
     }
 
     @keyframes mobile-slip-enter {
@@ -211,9 +217,9 @@
   }
 
   @media (height < 42rem) and (width < 40rem) {
-    .theme-slip {
-      min-height: 4.875rem;
-      gap: 0.35rem;
+    .theme-copy {
+      padding-block: 0.55rem;
+      gap: 0.25rem;
     }
   }
 

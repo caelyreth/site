@@ -5,6 +5,12 @@
 
   type ThemeMode = 'system' | 'light' | 'dark'
 
+  interface Props {
+    fill?: boolean
+  }
+
+  let { fill = false }: Props = $props()
+
   const modes = [
     {
       value: 'system',
@@ -53,7 +59,7 @@
   }
 </script>
 
-<div class="theme-toggle" role="group" aria-label="Display mode">
+<div class="theme-toggle" class:fill role="group" aria-label="Display mode">
   {#each modes as mode (mode.value)}
     <button
       type="button"
@@ -109,6 +115,15 @@
   .theme-toggle span {
     width: 1rem;
     height: 1rem;
+  }
+
+  .theme-toggle.fill {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    flex: 1 1 0;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   @media (hover: hover) {

@@ -27,7 +27,6 @@
 
 <style>
   .sky-surface {
-    --label-inline-inset: clamp(0.75rem, 4vw, var(--inline-gutter));
     --sky-field-start: 24%;
     --sky-field-fade-start: 0%;
     --sky-field-fade-end: 42%;
@@ -35,18 +34,10 @@
       0,
       calc(1 - var(--stage-progress) * var(--sky-field-fade-rate))
     );
-    --label-safe-left: var(
-      --stage-label-safe-left,
-      max(var(--label-inline-inset), env(safe-area-inset-left))
-    );
-    --label-safe-right: var(
-      --stage-label-safe-right,
-      max(var(--label-inline-inset), env(safe-area-inset-right))
-    );
+    --label-safe-left: var(--stage-label-safe-left);
+    --label-safe-right: var(--stage-label-safe-right);
     --label-block-inset: max(1.25rem, env(safe-area-inset-top));
-    --label-bottom-inset: calc(
-      max(1.25rem, env(safe-area-inset-bottom)) + max(0px, 100lvh - 100dvh)
-    );
+    --label-bottom-inset: var(--viewport-bottom-inset);
     --label-rail-top: calc(
       var(--label-block-inset) +
         (
@@ -112,6 +103,10 @@
       --sky-field-start: -8%;
       --sky-field-fade-start: 0%;
       --sky-field-fade-end: 28%;
+    }
+
+    .descent-label {
+      display: none;
     }
   }
 </style>

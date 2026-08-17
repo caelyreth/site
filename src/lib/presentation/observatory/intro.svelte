@@ -50,7 +50,7 @@
     --vfd-inline-offset: clamp(-1.25rem, -1.5vw, -0.75rem);
 
     position: absolute;
-    bottom: var(--stage-intro-bottom-inset);
+    bottom: var(--viewport-bottom-inset);
     left: var(--stage-intro-inline-inset);
     z-index: 5;
     display: grid;

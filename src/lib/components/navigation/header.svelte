@@ -2,9 +2,10 @@
   import { goto } from '$app/navigation'
   import { base } from '$app/paths'
   import { page } from '$app/state'
+  import { reduced_motion } from '$lib/browser/reduced-motion'
   import { scroll_activity } from '$lib/browser/scroll-activity'
   import { get_page_chrome } from '$lib/components/layout/page-chrome'
-  import { tick } from 'svelte'
+  import { onMount, tick } from 'svelte'
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
@@ -14,7 +15,11 @@
 
   const home_path = base || '/'
   const chrome = get_page_chrome()
+  const entry_rail_delay = 640
   let scrolling = $state(false)
+  let entry_rail_ready = $state(false)
+  const rail_visible = $derived(chrome.content_active || entry_rail_ready)
+  const rail_collapsed = $derived(!chrome.content_active || scrolling)
 
   const observe_scroll = scroll_activity({
     idle_delay: 1150,
@@ -45,6 +50,19 @@
   function handle_return_click() {
     void return_to_top()
   }
+
+  onMount(() => {
+    if (reduced_motion.current) {
+      entry_rail_ready = true
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      entry_rail_ready = true
+    }, entry_rail_delay)
+
+    return () => window.clearTimeout(timer)
+  })
 </script>
 
 {#snippet index_panel(close_panel: () => void)}
@@ -84,17 +102,25 @@
   </div>
 
   <MobileRail
-    visible={chrome.content_active}
-    collapsed={scrolling}
+    visible={rail_visible}
+    collapsed={rail_collapsed}
     cells={chrome.toc.length ? 4 : 3}
     panel={chrome.toc.length ? index_panel : undefined}
   >
     {#snippet children(toggle_panel, expanded, has_panel, panel_id)}
-      <div class="mobile-brand" data-rail-cell data-rail-secondary>
+      <div
+        class="mobile-brand"
+        data-rail-cell
+        data-rail-priority="secondary"
+      >
         <Brand href={home_path} on_activate={handle_brand_click} />
       </div>
 
-      <div class="mobile-menu" data-rail-cell data-rail-secondary>
+      <div
+        class="mobile-menu"
+        data-rail-cell
+        data-rail-priority={chrome.content_active ? 'secondary' : 'primary'}
+      >
         <Menu id="mobile-site-menu">
           {#snippet children(open_menu, menu_open)}
             <MenuTrigger
@@ -107,7 +133,11 @@
       </div>
 
       {#if has_panel}
-        <div class="mobile-index" data-rail-cell data-rail-secondary>
+        <div
+          class="mobile-index"
+          data-rail-cell
+          data-rail-priority="secondary"
+        >
           <button
             type="button"
             class="index-button"
@@ -125,7 +155,11 @@
         </div>
       {/if}
 
-      <div class="mobile-actions" data-rail-cell data-rail-primary>
+      <div
+        class="mobile-actions"
+        data-rail-cell
+        data-rail-priority={chrome.content_active ? 'primary' : 'secondary'}
+      >
         <button
           type="button"
           class="action return-button"

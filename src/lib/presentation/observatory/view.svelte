@@ -26,14 +26,6 @@
 
 <style>
   .observatory {
-    --stage-label-safe-left: max(
-      clamp(0.75rem, 4vw, var(--inline-gutter)),
-      env(safe-area-inset-left)
-    );
-    --stage-label-safe-right: max(
-      clamp(0.75rem, 4vw, var(--inline-gutter)),
-      env(safe-area-inset-right)
-    );
     position: absolute;
     inset: 0;
     overflow: hidden;

@@ -85,11 +85,12 @@
       );
       --rail-collapse-duration: 384ms;
       --rail-expand-duration: 520ms;
+      --rail-switch-duration: 240ms;
       --rail-collapse-ease: var(--ease-in-out);
       --rail-expand-ease: cubic-bezier(0.22, 1.28, 0.36, 1);
       position: fixed;
       left: 50%;
-      bottom: max(0.75rem, env(safe-area-inset-bottom));
+      bottom: var(--viewport-bottom-inset);
       z-index: 50;
       display: block;
       width: var(--rail-compact-width);
@@ -114,6 +115,7 @@
     }
 
     .rail-cells {
+      position: relative;
       display: flex;
       min-width: 0;
       height: var(--rail-size);
@@ -127,12 +129,13 @@
       height: 100%;
       flex: 1 1 0;
       place-items: center;
+      transition: opacity var(--rail-switch-duration) var(--ease-in-out);
     }
 
-    .rail-cells > :global([data-rail-secondary]) {
+    .rail-cells > :global([data-rail-priority='secondary']) {
       transition:
         flex-grow var(--rail-expand-duration) var(--rail-expand-ease),
-        opacity var(--dur-micro) var(--ease-out);
+        opacity var(--rail-switch-duration) var(--ease-in-out);
     }
 
     .rail-cells > :global([data-rail-cell] + [data-rail-cell])::before {
@@ -190,7 +193,7 @@
 
     .mobile-rail[data-collapsed='true']
       .rail-cells
-      > :global([data-rail-secondary]) {
+      > :global([data-rail-priority='secondary']) {
       flex-grow: 0;
       flex-shrink: 0;
       overflow: clip;
@@ -198,13 +201,21 @@
       pointer-events: none;
       transition:
         flex-grow var(--rail-collapse-duration) var(--rail-collapse-ease),
-        opacity var(--dur-micro) var(--ease-out);
+        opacity var(--rail-switch-duration) var(--ease-in-out);
     }
 
     .mobile-rail[data-collapsed='true']
       .rail-cells
-      > :global([data-rail-primary]) {
+      > :global([data-rail-priority='primary']) {
       flex-grow: 1;
+    }
+
+    .mobile-rail[data-collapsed='true']
+      .rail-cells
+      > :global([data-rail-cell]) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
     }
 
     .mobile-rail[data-collapsed='true']
@@ -237,6 +248,7 @@
     .rail-shell,
     .rail-panel,
     .rail-panel-content,
+    .rail-cells > :global([data-rail-cell]),
     .rail-cells > :global([data-rail-cell])::before {
       transition-duration: 1ms;
     }
