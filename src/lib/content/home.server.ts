@@ -29,7 +29,7 @@ const parse_home_markdown = createMarkdownParser({
     task_list(),
     components(),
     attributes(),
-    footnotes({ hr: false }),
+    footnotes(),
     headings(),
     punctuation(),
     security({ allowDataImages: false }),

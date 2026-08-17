@@ -13,9 +13,11 @@
 
 <style>
   section.footnotes {
-    margin-top: 3rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--color-rule);
+    margin-top: 0;
+  }
+
+  section.footnotes > :global(.divider) {
+    margin-bottom: 1rem;
   }
 
   section.footnotes :global([data-heading-depth='2']) {
