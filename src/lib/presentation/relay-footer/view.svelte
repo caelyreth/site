@@ -98,6 +98,8 @@
   }
 
   .footer-content {
+    --color-selection-surface: var(--color-footer-selection-surface);
+    --color-selection-ink: var(--color-footer-selection-ink);
     padding: 1.5rem var(--inline-gutter) 1rem;
     color: var(--footer-ink);
     background-color: var(--footer-surface);
