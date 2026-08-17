@@ -8,33 +8,29 @@ import {
   ORBIT_TRAIL_LAG,
   SKY_FIELD_FRAME_INTERVAL,
 } from './config'
-import { create_sky_field_renderer } from './renderer'
+import { create_renderer } from './renderer'
 import { choose_pixel_ratio } from './resolution'
 
-export interface SkyFieldEngine {
+export interface Engine {
   destroy: () => void
   set_active: (active: boolean) => void
   set_theme: (dark: boolean) => void
 }
 
-export function create_sky_field_engine(
+export function create_engine(
   target: HTMLCanvasElement,
   initial_dark = false,
   motion_preference: ReducedMotionPreference = reduced_motion,
-): SkyFieldEngine {
-  const maybe_sky_field_renderer = create_sky_field_renderer(
-    target,
-    initial_dark,
-  )
-  if (!maybe_sky_field_renderer) {
+): Engine {
+  const renderer = create_renderer(target, initial_dark)
+  if (!renderer) {
     return {
       destroy: () => {},
       set_active: () => {},
       set_theme: () => {},
     }
   }
-  const sky_field_renderer = maybe_sky_field_renderer
-
+  const ready_renderer = renderer
   let active = false
   let requested_active = false
   let disposed = false
@@ -48,8 +44,8 @@ export function create_sky_field_engine(
   let rendered_width = 0
 
   function render() {
-    sky_field_renderer.set_orbit(orbit_angle, orbit_angle + ORBIT_TRAIL_LAG)
-    sky_field_renderer.draw()
+    ready_renderer.set_orbit(orbit_angle, orbit_angle + ORBIT_TRAIL_LAG)
+    ready_renderer.draw()
   }
 
   function stop_frame() {
@@ -108,7 +104,7 @@ export function create_sky_field_engine(
     rendered_width = width
     rendered_height = height
     rendered_pixel_ratio = pixel_ratio
-    sky_field_renderer.resize(width, height, pixel_ratio)
+    ready_renderer.resize(width, height, pixel_ratio)
     if (active) render()
   }
 
@@ -128,7 +124,7 @@ export function create_sky_field_engine(
     set_theme(next_dark) {
       if (next_dark === rendered_dark) return
       rendered_dark = next_dark
-      sky_field_renderer.set_theme(next_dark)
+      ready_renderer.set_theme(next_dark)
       if (active) render()
     },
     destroy() {
@@ -136,7 +132,7 @@ export function create_sky_field_engine(
       stop_frame()
       resize_observer.disconnect()
       unsubscribe_reduced_motion()
-      sky_field_renderer.dispose()
+      ready_renderer.dispose()
     },
   }
 }

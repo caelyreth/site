@@ -3,7 +3,7 @@
   import { onMount } from 'svelte'
 
   import { WORDMARK_BOOT_DURATION, WORDMARK_LIGHT_DELAY } from './intro'
-  import { get_vfd_cell_layout, build_vfd_lit_mask } from './matrix'
+  import { cell_layout, lit_mask } from './matrix'
 
   interface Props {
     lines: readonly string[]
@@ -11,8 +11,8 @@
   }
 
   const { lines, slots }: Props = $props()
-  const cells = $derived(get_vfd_cell_layout(lines.length, slots))
-  const lit_cells = $derived(build_vfd_lit_mask(lines, slots))
+  const cells = $derived(cell_layout(lines.length, slots))
+  const lit_cells = $derived(lit_mask(lines, slots))
   let mounted = $state(false)
   let booting = $state(true)
   let animation_frame = 0

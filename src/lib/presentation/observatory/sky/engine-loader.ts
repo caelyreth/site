@@ -1,16 +1,14 @@
-import type { SkyFieldEngine } from './engine'
+import type { Engine } from './engine'
 
-type SkyFieldEngineFactory = (
+type EngineFactory = (
   target: HTMLCanvasElement,
   initial_dark?: boolean,
-) => SkyFieldEngine
+) => Engine
 
-let pending_engine_load: Promise<SkyFieldEngineFactory> | undefined
+let pending_load: Promise<EngineFactory> | undefined
 
-export function load_sky_field_engine() {
-  pending_engine_load ??= import('./engine').then(
-    ({ create_sky_field_engine }) => create_sky_field_engine,
-  )
+export function load_engine() {
+  pending_load ??= import('./engine').then(({ create_engine }) => create_engine)
 
-  return pending_engine_load
+  return pending_load
 }

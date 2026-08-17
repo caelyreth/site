@@ -5,8 +5,8 @@
   import { useTheme } from 'svelte-themes'
 
   import { SKY_FIELD_START_DELAY } from './config'
-  import type { SkyFieldEngine } from './engine'
-  import { load_sky_field_engine } from './engine-loader'
+  import type { Engine } from './engine'
+  import { load_engine } from './engine-loader'
 
   interface Props {
     deferred?: boolean
@@ -16,7 +16,7 @@
   let { deferred = false, paused = false }: Props = $props()
   const theme = useTheme()
   let canvas = $state<HTMLCanvasElement | undefined>()
-  let engine = $state<SkyFieldEngine>()
+  let engine = $state<Engine>()
   let canvas_visible = $state(false)
   let page_visible = $state(true)
   let field_ready = $state(false)
@@ -49,13 +49,10 @@
     page_visible = document.visibilityState === 'visible'
 
     const start_scene = () => {
-      void load_sky_field_engine()
-        .then((create_sky_field_engine) => {
+      void load_engine()
+        .then((create_engine) => {
           if (disposed || !canvas) return
-          engine = create_sky_field_engine(
-            canvas,
-            theme.resolvedTheme === 'dark',
-          )
+          engine = create_engine(canvas, theme.resolvedTheme === 'dark')
           sync_engine_activity()
           reveal_timer = setTimeout(() => {
             if (!disposed) field_ready = true

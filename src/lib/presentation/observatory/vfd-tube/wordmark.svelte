@@ -5,18 +5,18 @@
   import { circuit_nodes, circuit_traces } from './circuit'
   import { WORDMARK_BOOT_DURATION, WORDMARK_LIGHT_DELAY } from './intro'
   import {
-    VFD_LAYOUT,
-    VFD_GLYPH_ROWS,
-    build_vfd_idle,
-    fit_vfd_text,
-    vfd_word_width,
+    GLYPH_ROWS,
+    LAYOUT,
+    fit_text,
+    idle_matrix,
+    word_width,
   } from './matrix'
   import VfdMatrix from './matrix.svelte'
   import {
     VFD_REFRESH_INTERVAL,
     VFD_REFRESH_READOUTS,
     VFD_REFRESH_STEP_DURATION,
-    vfd_refresh_frame,
+    refresh_frame,
   } from './refresh'
 
   interface Props {
@@ -27,13 +27,13 @@
   const tube_lines = 2
   const glass = {
     height:
-      VFD_GLYPH_ROWS + VFD_LAYOUT.line_pitch * (tube_lines - 1) + 1.28,
+      GLYPH_ROWS + LAYOUT.line_pitch * (tube_lines - 1) + 1.28,
     radius: 0.4,
-    width: vfd_word_width(tube_slots) + 3.2,
+    width: word_width(tube_slots) + 3.2,
     x: -1.6,
     y: 3.18,
   }
-  const idle = build_vfd_idle(tube_slots, tube_lines)
+  const idle = idle_matrix(tube_slots, tube_lines)
 
   /* oxlint-disable prefer-const -- The readout can update from a host part. */
   let { readout = 'R322*D+42' }: Props = $props()
@@ -41,7 +41,7 @@
   let readout_index = $state(-1)
   /* oxlint-disable prefer-const -- Svelte binding assigns DOM state. */
   let wordmark = $state<SVGSVGElement>()
-  const reading = fit_vfd_text('CAELYRETH', tube_slots)
+  const reading = fit_text('CAELYRETH', tube_slots)
   const active_readout = $derived(
     readout_index < 0
       ? readout
@@ -52,10 +52,10 @@
   const refresh_reading = $derived(
     refresh_step < 0
       ? active_readout
-      : vfd_refresh_frame(refresh_step, tube_slots),
+      : refresh_frame(refresh_step, tube_slots),
   )
   const secondary_reading = $derived(
-    fit_vfd_text(refresh_reading, tube_slots),
+    fit_text(refresh_reading, tube_slots),
   )
   const matrix_lines = $derived([reading, secondary_reading])
   let display_timer = 0

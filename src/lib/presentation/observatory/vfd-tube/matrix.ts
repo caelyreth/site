@@ -1,7 +1,7 @@
-export const VFD_GLYPH_COLS = 5
-export const VFD_GLYPH_ROWS = 7
+export const GLYPH_COLS = 5
+export const GLYPH_ROWS = 7
 
-export interface VfdLayout {
+export interface Layout {
   idle_inset: number
   idle_radius: number
   idle_size: number
@@ -12,7 +12,7 @@ export interface VfdLayout {
   line_y: number
 }
 
-export const VFD_LAYOUT: VfdLayout = {
+export const LAYOUT: Layout = {
   idle_inset: 0.13,
   idle_radius: 0.1,
   idle_size: 0.58,
@@ -48,9 +48,9 @@ const PHOSPHOR_LEVELS = [
   'normal',
 ] as const
 
-const cell_layouts = new Map<string, VfdCell[]>()
+const layout_cache = new Map<string, Cell[]>()
 
-const VFD_GLYPHS: Record<string, readonly string[]> = {
+const GLYPHS: Record<string, readonly string[]> = {
   ' ': BLANK,
   '!': ['00100', '00100', '00100', '00100', '00100', '00000', '00100'],
   '#': ['01010', '01010', '11111', '01010', '11111', '01010', '01010'],
@@ -105,16 +105,16 @@ const VFD_GLYPHS: Record<string, readonly string[]> = {
   '_': ['00000', '00000', '00000', '00000', '00000', '00000', '11111'],
 }
 
-export function vfd_word_width(
+export function word_width(
   slots: number,
-  layout: VfdLayout = VFD_LAYOUT,
+  layout: Layout = LAYOUT,
 ) {
-  return Math.max(slots - 1, 0) * layout.letter_pitch + VFD_GLYPH_COLS
+  return Math.max(slots - 1, 0) * layout.letter_pitch + GLYPH_COLS
 }
 
-export function fit_vfd_text(value: string, slots: number) {
+export function fit_text(value: string, slots: number) {
   const glyphs = marks_of(value).map((mark) =>
-    mark in VFD_GLYPHS ? mark : ' ',
+    mark in GLYPHS ? mark : ' ',
   )
   if (glyphs.length > slots) return glyphs.slice(0, slots).join('')
   const pad = slots - glyphs.length
@@ -122,18 +122,18 @@ export function fit_vfd_text(value: string, slots: number) {
   return `${' '.repeat(lead)}${glyphs.join('')}${' '.repeat(pad - lead)}`
 }
 
-export interface VfdCell {
+export interface Cell {
   d: string
   delay: number
   key: string
   opacity: number
 }
 
-export function get_vfd_cell_layout(
+export function cell_layout(
   line_count: number,
   slots: number,
-  layout: VfdLayout = VFD_LAYOUT,
-): VfdCell[] {
+  layout: Layout = LAYOUT,
+): Cell[] {
   const cache_key = [
     line_count,
     slots,
@@ -143,74 +143,74 @@ export function get_vfd_cell_layout(
     layout.pixel_size,
     layout.line_y,
   ].join(':')
-  const cached_layout = cell_layouts.get(cache_key)
+  const cached_layout = layout_cache.get(cache_key)
   if (cached_layout) return cached_layout
 
-  const cells: VfdCell[] = []
+  const cells: Cell[] = []
 
   for (let line = 0; line < line_count; line += 1) {
     for (let slot = 0; slot < slots; slot += 1) {
-      cells.push(...build_vfd_glyph_layout(line, slot, layout))
+      cells.push(...glyph_layout(line, slot, layout))
     }
   }
 
-  cell_layouts.set(cache_key, cells)
+  layout_cache.set(cache_key, cells)
   return cells
 }
 
-export function build_vfd_lit_mask(
+export function lit_mask(
   lines: readonly string[],
   slots: number,
 ): boolean[] {
   const cells: boolean[] = []
 
   for (let line = 0; line < lines.length; line += 1) {
-    append_vfd_line_mask(cells, lines[line] ?? '', slots)
+    line_mask(cells, lines[line] ?? '', slots)
   }
 
   return cells
 }
 
-function append_vfd_line_mask(
+function line_mask(
   cells: boolean[],
   text: string,
   slots: number,
 ) {
   const marks = marks_of(text)
   for (let slot = 0; slot < slots; slot += 1) {
-    append_vfd_glyph_mask(cells, VFD_GLYPHS[marks[slot] ?? ' '] ?? BLANK)
+    glyph_mask(cells, GLYPHS[marks[slot] ?? ' '] ?? BLANK)
   }
 }
 
-function append_vfd_glyph_mask(cells: boolean[], glyph: readonly string[]) {
+function glyph_mask(cells: boolean[], glyph: readonly string[]) {
   for (const row of glyph) {
     for (const mark of row) cells.push(mark === '1')
   }
 }
 
-function build_vfd_glyph_layout(
+function glyph_layout(
   line: number,
   slot: number,
-  layout: VfdLayout,
+  layout: Layout,
 ) {
-  const cells: VfdCell[] = []
+  const cells: Cell[] = []
 
-  for (let row = 0; row < VFD_GLYPH_ROWS; row += 1) {
-    cells.push(...build_vfd_row_layout(line, slot, row, layout))
+  for (let row = 0; row < GLYPH_ROWS; row += 1) {
+    cells.push(...row_layout(line, slot, row, layout))
   }
 
   return cells
 }
 
-function build_vfd_row_layout(
+function row_layout(
   line: number,
   slot: number,
   row: number,
-  layout: VfdLayout,
+  layout: Layout,
 ) {
-  const cells: VfdCell[] = []
+  const cells: Cell[] = []
 
-  for (let column = 0; column < VFD_GLYPH_COLS; column += 1) {
+  for (let column = 0; column < GLYPH_COLS; column += 1) {
     const level = phosphor_level(slot, line, row, column)
     cells.push({
       d: cell_path(
@@ -228,10 +228,10 @@ function build_vfd_row_layout(
   return cells
 }
 
-export function build_vfd_idle(
+export function idle_matrix(
   slots: number,
   lines = 1,
-  layout: VfdLayout = VFD_LAYOUT,
+  layout: Layout = LAYOUT,
 ): { dim: string; matrix: string } {
   const idle = { dim: '', matrix: '' }
   for (let line = 0; line < lines; line += 1) {
@@ -244,10 +244,10 @@ export function build_vfd_idle(
   return idle
 }
 
-function slot_idle(slot: number, line: number, layout: VfdLayout) {
+function slot_idle(slot: number, line: number, layout: Layout) {
   const idle = { dim: '', matrix: '' }
-  for (let row = 0; row < VFD_GLYPH_ROWS; row += 1) {
-    for (let column = 0; column < VFD_GLYPH_COLS; column += 1) {
+  for (let row = 0; row < GLYPH_ROWS; row += 1) {
+    for (let column = 0; column < GLYPH_COLS; column += 1) {
       const cell = cell_path(
         slot * layout.letter_pitch + column + layout.idle_inset,
         layout.line_y + line * layout.line_pitch + row + layout.idle_inset,

@@ -1,4 +1,4 @@
-export interface SkyFieldTheme {
+export interface Theme {
   ground_alpha: number
   ground_ink: number
   ground_light: number
@@ -6,7 +6,7 @@ export interface SkyFieldTheme {
   trail_inks: number[]
 }
 
-const sky_field_themes = {
+const themes = {
   dark: {
     ground_alpha: 1,
     ground_ink: 0x242424,
@@ -25,8 +25,8 @@ const sky_field_themes = {
       0xa94e47, 0x8f7130, 0x397b60, 0x2f7588, 0x4d6fa6, 0x7d588f,
     ],
   },
-} satisfies Record<'dark' | 'light', SkyFieldTheme>
+} satisfies Record<'dark' | 'light', Theme>
 
-export function sky_field_theme(dark: boolean) {
-  return dark ? sky_field_themes.dark : sky_field_themes.light
+export function get_theme(dark: boolean) {
+  return dark ? themes.dark : themes.light
 }

@@ -9,10 +9,10 @@ import {
 
 import { TRAIL_FIELD_COUNT } from './config'
 import { create_ground_plane, create_trail_pass } from './materials'
-import { sky_field_theme, type SkyFieldTheme } from './theme'
+import { get_theme, type Theme } from './theme'
 import { create_trail_field, create_trail_geometry } from './trail-field'
 
-export function create_sky_field_renderer(
+export function create_renderer(
   target: HTMLCanvasElement,
   initial_dark = false,
 ) {
@@ -47,7 +47,7 @@ export function create_sky_field_renderer(
   sky_mesh.frustumCulled = false
   scene.add(ground_plane.mesh, ground_mesh, sky_mesh)
 
-  function apply_theme(theme: SkyFieldTheme) {
+  function apply_theme(theme: Theme) {
     sky_pass.uniforms.uTrailAlpha.value = theme.trail_alpha
     ground_pass.uniforms.uTrailAlpha.value = theme.trail_alpha * 0.3
     const tint = new Color()
@@ -80,7 +80,7 @@ export function create_sky_field_renderer(
   }
 
   function set_theme(dark: boolean) {
-    apply_theme(sky_field_theme(dark))
+    apply_theme(get_theme(dark))
   }
 
   function resize(width: number, height: number, pixel_ratio: number) {

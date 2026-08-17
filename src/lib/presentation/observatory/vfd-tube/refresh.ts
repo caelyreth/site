@@ -8,7 +8,7 @@ export const VFD_REFRESH_READOUTS = [
   'SCAN+004',
 ] as const
 
-export function vfd_refresh_frame(step: number, slots: number) {
+export function refresh_frame(step: number, slots: number) {
   const position = Math.min(step, slots - 1)
   const previous = step > 0 && step < slots ? position - 1 : -1
   return Array.from({ length: slots }, (_, index) =>
