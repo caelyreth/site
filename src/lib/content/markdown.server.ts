@@ -22,7 +22,7 @@ export const parse_markdown = createMarkdownParser({
     task_list(),
     components(),
     attributes(),
-    footnotes(),
+    footnotes({ label: '脚注' }),
     headings(),
     punctuation(),
     security({ allowDataImages: false }),

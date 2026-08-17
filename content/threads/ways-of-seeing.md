@@ -1,6 +1,6 @@
 +++
-title = "Ways of seeing"
-summary = "The frames that make some details evident and allow others to remain concealed."
+title = "观看的方式"
+summary = "让一些细节显现，也让另一些保持隐没的框架。"
 +++
 
-Seeing is never neutral, but it can remain patient enough to avoid becoming possession.
+观看从来不是完全中立的；但它可以足够耐心，不把一切都据为己有。

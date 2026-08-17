@@ -7,7 +7,7 @@
   const { href, on_activate }: Props = $props()
 </script>
 
-<a {href} class="brand" onclick={on_activate} title="Return to top">
+<a {href} class="brand" onclick={on_activate} title="返回顶部">
   <svg
     aria-hidden="true"
     class="brand-mark"
@@ -20,7 +20,7 @@
     <rect x="27.25" y="2" width="6" height="20" fill="currentColor" />
     <rect x="35.25" y="2" width="3" height="20" fill="currentColor" />
   </svg>
-  <span class="brand-name font-serif">Caelyreth</span>
+  <span class="brand-name">Caelyreth</span>
 </a>
 
 <style>
@@ -46,6 +46,7 @@
   }
 
   .brand-name {
+    font-family: var(--font-stack-serif);
     font-size: 1rem;
     font-weight: 700;
     line-height: 1;

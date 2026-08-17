@@ -9,6 +9,6 @@ export const prerender = true
 export const load: PageServerLoad = async ({ depends }) => {
   depends(content_dependency('essays'))
   const essays = paginate(await load_essay_summaries(), 1)
-  if (!essays) throw new Error('Unable to create the first essay page.')
+  if (!essays) throw new Error('无法创建第一页随笔。')
   return { essays }
 }

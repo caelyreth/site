@@ -25,41 +25,40 @@
   <div class="deck footer-deck footer-content">
     <div class="heading">
       <div>
-        {@render footer_label('Archive transmission')}
-        <p class="title font-serif">Caelyreth relay station</p>
+        {@render footer_label('档案传输')}
+        <p class="title">Caelyreth 中继站</p>
       </div>
       <div class="statement-row">
         <p class="statement">
-          Field notes, status signals, and future paths held at the edge of
-          the station.
+          随笔、近况和未来的方向，都停在中继站的边缘。
         </p>
         <span aria-hidden="true" class="statement-mark"></span>
       </div>
     </div>
     <div class="grid">
       <section class="footer-module">
-        {@render footer_label('Site map')}
-        <ul class="sitemap" aria-label="Site map">
+        {@render footer_label('站点索引')}
+        <ul class="sitemap" aria-label="站点索引">
           {#each footer_index as item}
             <li><a href={footer_href(item.href)}>{item.label}</a></li>
           {/each}
         </ul>
-        <p class="detail">Current station index</p>
+        <p class="detail">当前中继站索引</p>
       </section>
       <section class="footer-module">
-        {@render footer_label('Archive marker')}
+        {@render footer_label('档案标记')}
         <div aria-hidden="true" class="barcode">
           {#each footer_barcode as width}<span style:--bar-width={width}
             ></span>{/each}
         </div>
-        <p class="detail">RBK / 2026 / YU</p>
+        <p class="detail">RBK / 2026 / 余</p>
       </section>
       <section class="footer-module">
         <FooterSignalMonitor is_active={visible} />
       </section>
     </div>
     <div class="tail">
-      <span>© 2026 Yu</span>
+      <span>© 2026 余</span>
       <a
         class="tail-link"
         href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
@@ -120,6 +119,7 @@
   .title {
     margin: 0.5rem 0 0;
     color: var(--footer-ink);
+    font-family: var(--font-stack-serif);
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.1;

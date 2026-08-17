@@ -1,16 +1,16 @@
 +++
-title = "Objects that remember"
+title = "有记忆的物件"
 published = "2026-08-02"
-summary = "A lamp, a keyboard, and the forms of memory held in things that outlast their intended task."
+summary = "一盏灯、一块键盘，以及物件如何在用途之外留下记忆。"
 threads = ["ordinary-machines", "ways-of-seeing"]
 +++
 
-## More than use
+## 不止于用途
 
-An object begins to remember when we stop treating its function as its whole meaning. The worn key is not sentimental evidence; it is a map of repeated attention.
+功能不再是物件的全部时，它才开始有了记忆。磨损的按键不是感伤的证物，而是日复一日的注意留下的地图。
 
-Some objects survive because they are useful. Others survive because they have taught a room how to hold time.
+有的物件因实用而被留下；有的则让一间房学会如何容纳时间。
 
-## The second life of a tool
+## 工具的余生
 
-After a tool becomes quiet, it still offers a posture: how close to sit, where to look, what kind of slowness is permitted.
+工具沉默之后，仍会留下一种姿态：坐得多近、望向哪里，以及容许怎样的缓慢。

@@ -41,17 +41,13 @@
 
 <div class="signal-monitor">
   <div class="module-head">
-    <p class="micro-label signal-label">Signal monitor</p>
+    <p class="micro-label signal-label">信号监测</p>
     <button
       type="button"
       class="signal-toggle"
-      aria-label={transmission_paused
-        ? 'Resume signal rotation'
-        : 'Pause signal rotation'}
+      aria-label={transmission_paused ? '继续轮换信号' : '暂停轮换信号'}
       aria-pressed={transmission_paused}
-      title={transmission_paused
-        ? 'Resume signal rotation'
-        : 'Pause signal rotation'}
+      title={transmission_paused ? '继续轮换信号' : '暂停轮换信号'}
       onclick={toggle_transmission}
     >
       {#if transmission_paused}<span
@@ -61,7 +57,7 @@
         ></span>{/if}
     </button>
   </div>
-  <p class="status">Carrier retained</p>
+  <p class="status">载波已保留</p>
   <div aria-hidden="true" class="signal-log">
     {#each signals as signal, index (signal.id)}
       <span

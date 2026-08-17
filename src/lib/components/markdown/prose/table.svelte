@@ -16,7 +16,7 @@
     class: class_name,
     ...attributes
   }: Props = $props()
-  const table_label = $derived(caption ? `${caption} table` : 'Data table')
+  const table_label = $derived(caption ? `${caption}表格` : '数据表格')
   let table: HTMLTableElement | undefined = $state()
   let table_scroll: HTMLDivElement | undefined = $state()
 
@@ -41,7 +41,7 @@
     <caption>
       <span class="caption-row">
         {#if caption}<span class="caption-text">{caption}</span>{/if}
-        <CopyButton label="Copy table" value={table_text} />
+        <CopyButton label="复制表格" value={table_text} />
       </span>
     </caption>
     {@render children?.()}

@@ -19,7 +19,7 @@
   <span class="task-checkbox" data-checked={checked}>
     <input
       {...attributes}
-      aria-label={aria_label ?? (checked ? 'Completed' : 'Not completed')}
+      aria-label={aria_label ?? (checked ? '已完成' : '未完成')}
       {checked}
       {disabled}
       {type}

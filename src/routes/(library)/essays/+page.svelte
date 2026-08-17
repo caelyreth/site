@@ -7,11 +7,8 @@
 </script>
 
 <svelte:head>
-  <title>Essays / Caelyreth</title>
-  <meta
-    name="description"
-    content="Essays held at the edge of the Caelyreth relay station."
-  />
+  <title>随笔 / Caelyreth</title>
+  <meta name="description" content="写在 Caelyreth 中继站边缘的随笔。" />
 </svelte:head>
 
 <EssayIndex essays={data.essays} />

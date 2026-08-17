@@ -10,6 +10,6 @@ export const load: PageServerLoad = async ({ depends }) => {
   depends(content_dependency('threads'))
   depends(content_dependency('essays'))
   const threads = paginate(await load_thread_summaries(), 1)
-  if (!threads) throw new Error('Unable to create the first thread page.')
+  if (!threads) throw new Error('无法创建第一页线索。')
   return { threads }
 }

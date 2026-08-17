@@ -15,8 +15,8 @@
 
 <section id="content" class="thread-index">
   <IndexHeader
-    title="Threads"
-    description="Questions that recur across separate records, held as visible crossings rather than shelves."
+    title="线索"
+    description="把散落在不同文字里的问题，按彼此的回响收拢在一起。"
   />
 
   <ol class="strand-field">

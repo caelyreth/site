@@ -12,10 +12,10 @@
 
 <div class="intro-cluster">
   <div aria-hidden="true" class="cabin-plate">
-    <span class="micro-label">Port / 01</span>
+    <span class="micro-label">舷窗 / 01</span>
   </div>
   <VfdTube />
-  <nav aria-label="Caelyreth links" class="social-links">
+  <nav aria-label="Caelyreth 链接" class="social-links">
     <a
       href="https://github.com/caelyreth"
       rel="me noopener noreferrer"
@@ -36,7 +36,7 @@
     </a>
     <a href="mailto:me@iki.moe">
       <span class="i-ri-mail-line" aria-hidden="true"></span>
-      <span>Email</span>
+      <span>邮箱</span>
       <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
     </a>
   </nav>

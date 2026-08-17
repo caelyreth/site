@@ -2,11 +2,11 @@
   import type { Snippet } from 'svelte'
 
   const alert_labels: Record<string, string> = {
-    caution: 'Caution',
-    important: 'Important',
-    note: 'Note',
-    tip: 'Tip',
-    warning: 'Warning',
+    caution: '注意',
+    important: '重要',
+    note: '注记',
+    tip: '提示',
+    warning: '警告',
   }
 
   interface Props extends Record<string, unknown> {

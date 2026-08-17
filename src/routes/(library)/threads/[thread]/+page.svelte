@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.thread.title} / Threads / Caelyreth</title>
+  <title>{data.thread.title} / 线索 / Caelyreth</title>
   <meta name="description" content={data.thread.summary} />
 </svelte:head>
 

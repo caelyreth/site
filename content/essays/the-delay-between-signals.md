@@ -1,16 +1,16 @@
 +++
-title = "The delay between signals"
+title = "信号之间的延迟"
 published = "2026-08-14"
-summary = "On the small interval in which a response has not yet become an instruction."
+summary = "关于答案到来前，那一点必要的停顿。"
 threads = ["attention", "thresholds"]
 +++
 
-## Before the answer arrives
+## 答案到来之前
 
-Most systems are designed to reduce delay. A screen confirms the tap, a service returns a result, a message marks itself read. This is convenient, but it leaves little room for the peculiar intelligence of waiting.
+大多数系统都想缩短延迟。屏幕确认轻触，服务返回结果，消息自动标为已读。这当然方便，却很少替等待留下位置。
 
-The interval before an answer is not empty. It is where attention notices whether it has been asked to do too much, too quickly.
+答案出现前的空档并不空无。注意力会在这里发现，自己是不是被催促得太多、太快。
 
-## A usable uncertainty
+## 有用的不确定性
 
-To preserve a delay is not to romanticise friction. It is to leave enough time for a question to change shape before it receives the first available answer.
+保留延迟并不是美化阻力，而是在第一个答案出现前，让问题仍有机会改变形状。

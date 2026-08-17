@@ -29,7 +29,7 @@
     font-size: clamp(2.5rem, 4vw, 4rem);
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 0.94;
+    line-height: 1.15;
     overflow-wrap: anywhere;
   }
 

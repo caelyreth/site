@@ -26,8 +26,8 @@
 <article id="content" class="thread-detail">
   <EntryHeader
     {back_href}
-    back_label="Threads"
-    meta={`${thread.entry_count} linked record${thread.entry_count === 1 ? '' : 's'}`}
+    back_label="线索"
+    meta={`${thread.entry_count} 篇关联记录`}
     summary={thread.summary}
     title={thread.title}
   >
@@ -36,8 +36,8 @@
     {/snippet}
   </EntryHeader>
 
-  <section class="thread-records" aria-label={`Records in ${thread.title}`}>
-    <h2>Linked essays</h2>
+  <section class="thread-records" aria-label={`${thread.title}中的记录`}>
+    <h2>关联随笔</h2>
     <EssayTrajectory entries={entries.entries} show_threads={false} />
     <Pagination
       page={entries.page}
@@ -78,8 +78,7 @@
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.06em;
-    line-height: 1.3;
-    text-transform: uppercase;
+    line-height: 1.5;
   }
 
   .thread-records :global(.trajectory) {

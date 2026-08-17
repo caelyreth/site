@@ -7,10 +7,10 @@
 </script>
 
 <svelte:head>
-  <title>Threads / Caelyreth</title>
+  <title>线索 / Caelyreth</title>
   <meta
     name="description"
-    content="Connections that recur across essays at the Caelyreth relay station."
+    content="在 Caelyreth 中继站的随笔之间彼此呼应的主题。"
   />
 </svelte:head>
 

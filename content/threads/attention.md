@@ -1,6 +1,6 @@
 +++
-title = "Attention"
-summary = "How a place, tool, or record changes what can remain visible."
+title = "注意力"
+summary = "一处地方、一件工具或一份记录，怎样改变我们的视线。"
 +++
 
-Attention is not a resource to extract. It is the condition that lets a detail become available at all.
+注意力不是可被榨取的资源，而是让细节浮现的前提。

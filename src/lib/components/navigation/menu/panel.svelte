@@ -22,7 +22,7 @@
     class:is-open={is_open}
     class="micro-label field-note"
   >
-    Caelyreth relay / viewing plane 01
+    Caelyreth 中继站 / 观测面 01
   </p>
 </div>
 

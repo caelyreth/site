@@ -41,8 +41,8 @@
   })
 </script>
 
-<nav class="toc-panel" aria-label="On this page" {@attach observe_panel}>
-  <p class="label">On this page</p>
+<nav class="toc-panel" aria-label="本页目录" {@attach observe_panel}>
+  <p class="label">本页目录</p>
   <TocList {entries} {active_index} variant="panel" on_select={on_close} />
 </nav>
 

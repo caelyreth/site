@@ -92,7 +92,7 @@
   {id}
   class="menu"
   class:is-closing={closing}
-  aria-label="Site menu"
+  aria-label="站点菜单"
   oncancel={handle_cancel}
   onclose={handle_close}
 >
@@ -100,7 +100,7 @@
   <button
     type="button"
     class="dismiss"
-    aria-label="Close menu"
+    aria-label="关闭菜单"
     tabindex="-1"
     onpointerdown={track_dismiss_pointer}
     onclick={dismiss_with_mouse}

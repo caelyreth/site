@@ -1,16 +1,16 @@
 +++
-title = "The ordinary future"
+title = "寻常的未来"
 published = "2026-06-27"
-summary = "A future is easier to inhabit when it begins with repairs, routines, and tools modest enough to become ordinary."
+summary = "未来不必从宏大叙事开始；修补、日常和朴素工具同样能让它可被安放。"
 threads = ["private-infrastructure", "ordinary-machines"]
 +++
 
-## The future as maintenance
+## 未来，也需要维护
 
-The future is often pictured as a new object arriving from elsewhere. A more believable future begins when a common tool becomes easier to repair, a room becomes easier to share, or a record becomes easier to return to.
+未来常被想成从远处抵达的新东西。更可信的未来，或许只是普通工具更容易修好、一间房更容易共享，或一份记录更容易找回。
 
-None of these gestures are spectacular. Together they change what a day can support.
+没有一件事壮观，但合起来，它们会改变一天能容下多少事情。
 
-## An inhabited signal
+## 新奇之后
 
-The most durable technical imagination is not fascinated by novelty alone. It asks what will still be there after novelty has become someone's routine.
+真正持久的技术想象力不只追逐新奇。它会追问：当新奇变成某人的日常，还有什么会留下。

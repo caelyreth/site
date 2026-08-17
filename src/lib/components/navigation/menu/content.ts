@@ -35,8 +35,8 @@ export interface Drift {
 
 export const menu_previews: readonly MenuPreview[] = [
   {
-    code: 'ESS / 001',
-    detail: 'Reflective field',
+    code: '随笔 / 001',
+    detail: '缓慢记录',
     href: '/essays',
     layout: {
       enter_delay: '80ms',
@@ -46,11 +46,11 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '-13deg',
       top: '22%',
     },
-    title: 'Essays',
+    title: '随笔',
   },
   {
-    code: 'THR / 002',
-    detail: 'Connection field',
+    code: '线索 / 002',
+    detail: '彼此呼应',
     href: '/threads',
     layout: {
       enter_delay: '140ms',
@@ -60,11 +60,11 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '11deg',
       top: '29%',
     },
-    title: 'Threads',
+    title: '线索',
   },
   {
-    code: 'FRG / HOLD',
-    detail: 'Awaiting signal',
+    code: '片段 / 待启用',
+    detail: '尚无信号',
     layout: {
       enter_delay: '200ms',
       enter_x: '-1.5rem',
@@ -73,7 +73,7 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '-7deg',
       top: '56%',
     },
-    title: 'Fragments',
+    title: '片段',
   },
 ]
 
@@ -97,7 +97,7 @@ export const drifts: readonly Drift[] = [
       tone: 0.3,
       top: '19%',
     },
-    text: 'FIELD / 044',
+    text: '坐标 / 044',
   },
   {
     layout: {
@@ -107,7 +107,7 @@ export const drifts: readonly Drift[] = [
       tone: 0.23,
       top: '10%',
     },
-    text: 'FIELD NOTES / 001',
+    text: '随笔 / 001',
   },
   {
     layout: {
@@ -128,7 +128,7 @@ export const drifts: readonly Drift[] = [
       rotation: '-55deg',
       tone: 0.42,
     },
-    text: 'ORBIT / 001',
+    text: '轨道 / 001',
   },
   {
     layout: {
@@ -139,7 +139,7 @@ export const drifts: readonly Drift[] = [
       rotation: '14deg',
       tone: 0.35,
     },
-    text: 'TRANSMISSION / RETURN / 001',
+    text: '传输 / 回传 / 001',
   },
   {
     layout: {
@@ -150,7 +150,7 @@ export const drifts: readonly Drift[] = [
       rotation: '61deg',
       tone: 0.4,
     },
-    text: 'SIGNAL / HOLD',
+    text: '信号 / 保留',
   },
   {
     layout: {
@@ -160,7 +160,7 @@ export const drifts: readonly Drift[] = [
       rotation: '27deg',
       tone: 0.25,
     },
-    text: 'RELAY / ACTIVE',
+    text: '中继 / 在线',
   },
   {
     layout: {
@@ -170,7 +170,7 @@ export const drifts: readonly Drift[] = [
       rotation: '-18deg',
       tone: 0.3,
     },
-    text: 'ARCHIVE / HELD',
+    text: '档案 / 留存',
   },
   {
     layout: {
@@ -181,7 +181,7 @@ export const drifts: readonly Drift[] = [
       tone: 0.24,
       top: '38%',
     },
-    text: 'OBSERVATION / RETAINED',
+    text: '观测 / 存档',
   },
   {
     layout: {
@@ -192,7 +192,7 @@ export const drifts: readonly Drift[] = [
       tone: 0.29,
       top: '50%',
     },
-    text: 'VIEWING PLANE / 01',
+    text: '观测面 / 01',
   },
   {
     layout: {
@@ -203,7 +203,7 @@ export const drifts: readonly Drift[] = [
       tone: 0.2,
       top: '61%',
     },
-    text: 'CAELYRETH / IN ORBIT',
+    text: 'CAELYRETH / 在轨',
   },
 ]
 

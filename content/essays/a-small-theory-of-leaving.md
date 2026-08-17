@@ -1,16 +1,16 @@
 +++
-title = "A small theory of leaving"
+title = "关于离开的小理论"
 published = "2026-07-11"
-summary = "On departures that do not end a relation, but change the angle from which it can be seen."
+summary = "离开并不终结关系，它只是改变了看待彼此的角度。"
 threads = ["thresholds", "ways-of-seeing"]
 +++
 
-## Not an opposite
+## 不是对立面
 
-Leaving is often described as the opposite of staying. In practice, it can be a way of giving a place enough distance to become legible again.
+离开常被看作停留的反面。但它也可以是一种距离，让一处地方重新显出轮廓。
 
-The work is not to sever every attachment. It is to learn which ones can survive a change of position.
+要做的不是斩断所有依附，而是看清哪些关系经得起位置的变化。
 
-## A different horizon
+## 另一道地平线
 
-Distance makes some details smaller and others newly unavoidable. That unevenness is part of what makes a departure useful.
+距离会让一些细节退远，也把另一些推到眼前。这种不均衡正是离开可贵的地方。

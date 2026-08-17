@@ -12,7 +12,7 @@
   }
 
   let { document }: Props = $props()
-  const date_formatter = new Intl.DateTimeFormat('en', {
+  const date_formatter = new Intl.DateTimeFormat('zh-CN', {
     day: 'numeric',
     month: 'long',
     timeZone: 'UTC',
@@ -27,8 +27,8 @@
 <article id="content" class="essay-detail">
   <EntryHeader
     back_href={`${base}/essays`.replace('//', '/')}
-    back_label="Essays"
-    meta={`Essay / ${display_date(document.frontmatter.published)}`}
+    back_label="随笔"
+    meta={`随笔 / ${display_date(document.frontmatter.published)}`}
     summary={document.frontmatter.summary}
     title={document.frontmatter.title}
   >
@@ -42,10 +42,7 @@
   </div>
 
   <footer class="entry-footer">
-    <BackLink
-      href={`${base}/essays`.replace('//', '/')}
-      label="Return to essays"
-    />
+    <BackLink href={`${base}/essays`.replace('//', '/')} label="返回随笔" />
   </footer>
 </article>
 

@@ -13,7 +13,7 @@
     children,
     class: class_name,
     open = false,
-    summary = 'Details',
+    summary = '详情',
     ...attributes
   }: Props = $props()
   let is_closing = $state(false)

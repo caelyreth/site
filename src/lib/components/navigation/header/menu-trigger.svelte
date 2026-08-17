@@ -14,11 +14,11 @@
   aria-controls={controls}
   aria-expanded={is_open}
   aria-haspopup="dialog"
-  aria-label={is_open ? 'Close menu' : 'Open menu'}
-  title={is_open ? 'Close menu' : 'Open menu'}
+  aria-label={is_open ? '关闭菜单' : '打开菜单'}
+  title={is_open ? '关闭菜单' : '打开菜单'}
   onclick={on_open}
 >
-  <span class="label">Navigate</span>
+  <span class="label">导航</span>
   <span class="i-ri-compass-line" aria-hidden="true"></span>
 </button>
 

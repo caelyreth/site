@@ -1,6 +1,6 @@
 +++
-title = "Weather systems"
-summary = "Ambient conditions that act on a person long before they become a subject of thought."
+title = "天气系统"
+summary = "在我们意识到之前就已开始作用的环境条件。"
 +++
 
-Weather is not background. It is a slow interface between a body and everything beyond it.
+天气不是布景，而是身体与外部世界之间那层缓慢变化的界面。

@@ -16,15 +16,15 @@
 </script>
 
 {#if page_count > 1}
-  <nav class="pagination" aria-label="Pagination">
+  <nav class="pagination" aria-label="分页">
     {#if page > 1}
-      <a href={page_href(page - 1)}>Previous</a>
+      <a href={page_href(page - 1)}>上一页</a>
     {/if}
 
     <p>{page} / {page_count}</p>
 
     {#if page < page_count}
-      <a href={page_href(page + 1)}>Next</a>
+      <a href={page_href(page + 1)}>下一页</a>
     {/if}
   </nav>
 {/if}

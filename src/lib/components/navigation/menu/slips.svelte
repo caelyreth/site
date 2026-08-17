@@ -39,7 +39,7 @@
   {#each menu_previews as item}
     {#snippet contents()}
       <span class="micro-label slip-code">{item.code}</span>
-      <span class="slip-title font-serif">{item.title}</span>
+      <span class="slip-title">{item.title}</span>
       <span class="micro-label slip-detail">{item.detail}</span>
     {/snippet}
     {#if item.href}
@@ -132,6 +132,7 @@
 
   .slip-title {
     min-width: 0;
+    font-family: var(--font-stack-serif);
     font-size: clamp(1.45rem, 3vw, 2.5rem);
     font-style: normal;
     font-weight: 700;

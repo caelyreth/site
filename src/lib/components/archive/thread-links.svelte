@@ -1,5 +1,6 @@
 <script lang="ts">
   import { base } from '$app/paths'
+  import { thread_titles } from '$lib/content/thread-labels'
 
   interface Props {
     threads: string[]
@@ -10,12 +11,16 @@
   function thread_href(thread: string) {
     return `${base}/threads/${thread}`.replace('//', '/')
   }
+
+  function thread_label(thread: string) {
+    return thread_titles[thread] ?? '关联线索'
+  }
 </script>
 
 {#if threads.length}
-  <nav class="thread-links" aria-label="Connected threads">
+  <nav class="thread-links" aria-label="关联线索">
     {#each threads as thread}
-      <a href={thread_href(thread)}>{thread.replaceAll('-', ' ')}</a>
+      <a href={thread_href(thread)}>{thread_label(thread)}</a>
     {/each}
   </nav>
 {/if}
@@ -38,7 +43,6 @@
     text-decoration-color: var(--color-boundary);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.28em;
-    text-transform: uppercase;
     transition:
       color var(--dur-micro) var(--ease-out),
       text-decoration-color var(--dur-micro) var(--ease-out);

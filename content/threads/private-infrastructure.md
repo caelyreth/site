@@ -1,6 +1,6 @@
 +++
-title = "Private infrastructure"
-summary = "Small systems of care, maintenance, and self-organisation held outside public performance."
+title = "私人基础设施"
+summary = "在公共展示之外，由照料、维护与自我组织搭起的微型系统。"
 +++
 
-Private infrastructure is made of repeated gestures: keeping a note, repairing a surface, leaving a way back.
+私人基础设施由一连串重复动作组成：留下一则笔记，修好一处表面，再给自己留一条回去的路。

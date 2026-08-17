@@ -1,6 +1,6 @@
 +++
-title = "Ordinary machines"
-summary = "The quiet apparatuses that shape a day without asking to be noticed."
+title = "日常机器"
+summary = "那些塑造一天，却无需刻意留意的安静装置。"
 +++
 
-The machine becomes interesting when its operation is ordinary enough to disappear into a room.
+当机器运作得足够日常，几乎融进房间时，它反而开始有意思。

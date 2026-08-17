@@ -15,8 +15,8 @@
 
 <section id="content" class="essay-index">
   <IndexHeader
-    title="Essays"
-    description="Longer observations kept open long enough to gather their own weather."
+    title="随笔"
+    description="写下那些值得多停留一会儿的念头。"
   />
 
   <div class="reading-field">

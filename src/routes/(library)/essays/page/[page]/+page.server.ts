@@ -28,9 +28,9 @@ export const entries: EntryGenerator = async () => {
 export const load: PageServerLoad = async ({ depends, params }) => {
   depends(content_dependency('essays'))
   const page = page_number(params.page)
-  if (!page || page === 1) throw error(404, 'Essay page not found')
+  if (!page || page === 1) throw error(404, '未找到随笔页')
 
   const essays = paginate(await load_essay_summaries(), page)
-  if (!essays) throw error(404, 'Essay page not found')
+  if (!essays) throw error(404, '未找到随笔页')
   return { essays }
 }

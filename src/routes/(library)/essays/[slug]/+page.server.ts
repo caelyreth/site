@@ -12,7 +12,7 @@ export const entries: EntryGenerator = () =>
 
 export const load: PageServerLoad = async ({ depends, params }) => {
   if (!essay_slugs().includes(params.slug)) {
-    throw error(404, 'Essay not found')
+    throw error(404, '未找到随笔')
   }
   depends(content_dependency(`essays/${params.slug}`))
   const document = await load_essay(params.slug)

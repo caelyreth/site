@@ -146,10 +146,9 @@
   --color-alert-important: var(--color-alert-important-light);
   --color-alert-warning: var(--color-alert-warning-light);
   --color-alert-caution: var(--color-alert-caution-light);
-  --font-stack-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-stack-serif: ui-serif, Georgia, serif;
-  --font-stack-mono:
-    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-stack-sans: system-ui, sans-serif;
+  --font-stack-serif: 'Noto Serif SC', ui-serif, serif;
+  --font-stack-mono: ui-monospace, monospace;
 
   /* layout control */
   --half-measure: 24rem;

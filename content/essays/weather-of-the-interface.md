@@ -1,16 +1,16 @@
 +++
-title = "The weather of the interface"
+title = "界面的天气"
 published = "2026-07-26"
-summary = "Why an interface is never only a set of controls, but also an atmosphere that reaches the body first."
+summary = "界面不只是控件的集合；在被理解之前，它已先作用于身体，形成一种氛围。"
 threads = ["weather-systems", "thresholds"]
 +++
 
-## Before interaction
+## 交互之前
 
-Before an interface asks for an action, it establishes a climate. Density, contrast, delay, and texture all make a proposal about the pace at which a person should enter.
+界面在要求我们行动前，先布置出一种气候。密度、对比、延迟与纹理，都在暗示我们该以什么速度进入。
 
-The proposal is felt before it is understood. That is why visual restraint can be a form of care rather than merely a style.
+这种暗示先被身体接收，再被理智理解。也因此，视觉克制可以是一种照顾，而不只是风格。
 
-## Conditions, not decoration
+## 条件，而非装饰
 
-Atmosphere becomes deceptive only when it covers up a confused structure. When it follows a clear structure, it tells the truth about the conditions of use.
+氛围在遮掩混乱的结构时才显得虚伪；当它依附于清晰的结构，便能如实说明使用的条件。

@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.document.frontmatter.title} / Essays / Caelyreth</title>
+  <title>{data.document.frontmatter.title} / 随笔 / Caelyreth</title>
   <meta name="description" content={data.document.frontmatter.summary} />
 </svelte:head>
 

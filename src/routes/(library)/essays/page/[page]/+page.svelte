@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-  <title>Essays / Page {data.essays.page} / Caelyreth</title>
+  <title>随笔 / 第 {data.essays.page} 页 / Caelyreth</title>
 </svelte:head>
 
 <EssayIndex essays={data.essays} />

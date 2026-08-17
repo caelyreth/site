@@ -59,7 +59,7 @@
         })
         .catch((error: unknown) => {
           if (!disposed) {
-            console.error('Unable to initialize the sky field.', error)
+            console.error('无法初始化星空场。', error)
           }
         })
     }

@@ -50,7 +50,7 @@
     font-size: clamp(1.35rem, 2.25vw, 1.85rem);
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 1.05;
+    line-height: 1.18;
     overflow-wrap: anywhere;
   }
 

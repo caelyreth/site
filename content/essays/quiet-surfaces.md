@@ -1,16 +1,16 @@
 +++
-title = "Quiet surfaces"
+title = "安静的表面"
 published = "2026-07-04"
-summary = "The surface of a room, a page, or a screen can make attention rest without making it disappear."
+summary = "房间、纸页和屏幕如何让注意力有所停靠，却不抢走它。"
 threads = ["attention", "weather-systems"]
 +++
 
-## The edge of notice
+## 注意的边缘
 
-A quiet surface does not demand to be looked at. It holds the conditions under which looking can continue.
+安静的表面无需争取目光。它只是让目光得以停留。
 
-This is not emptiness. It is a decision about how much pressure an environment should place on a person who is already trying to think.
+这不是空白，而是一种取舍：环境该向正在思考的人施加多少压力。
 
-## Texture without insistence
+## 不喧宾夺主的纹理
 
-Texture becomes useful when it gives orientation without becoming a subject in its own right. A small irregularity can keep a field from turning into a void.
+纹理只有给出方向、又不把自己变成主题时才有用。少许不规则，已足够让一片空间不至于空洞。

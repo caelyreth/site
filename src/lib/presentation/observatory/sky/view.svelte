@@ -19,10 +19,8 @@
   <div class="sky-field">
     <SkyCanvas {deferred} {paused} />
   </div>
-  <span class="label observatory-label">Observatory</span>
-  <span aria-hidden="true" class="label descent-label"
-    >Descent to station</span
-  >
+  <span class="label observatory-label">观测台</span>
+  <span aria-hidden="true" class="label descent-label">进入中继站</span>
 </div>
 
 <style>

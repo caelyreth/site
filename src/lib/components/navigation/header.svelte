@@ -89,12 +89,12 @@
     </div>
   </header>
 
-  <div class="desktop-actions" role="group" aria-label="Page actions">
+  <div class="desktop-actions" role="group" aria-label="页面操作">
     <button
       type="button"
       class="action return-button"
-      aria-label="Return to top"
-      title="Return to top"
+      aria-label="返回顶部"
+      title="返回顶部"
       onclick={handle_return_click}
     >
       <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
@@ -143,8 +143,8 @@
             class="index-button"
             aria-controls={panel_id}
             aria-expanded={expanded}
-            aria-label={expanded ? 'Close index' : 'Open index'}
-            title={expanded ? 'Close index' : 'Open index'}
+            aria-label={expanded ? '关闭目录' : '打开目录'}
+            title={expanded ? '关闭目录' : '打开目录'}
             onclick={toggle_panel}
           >
             <span
@@ -163,8 +163,8 @@
         <button
           type="button"
           class="action return-button"
-          aria-label="Return to top"
-          title="Return to top"
+          aria-label="返回顶部"
+          title="返回顶部"
           onclick={handle_return_click}
         >
           <span class="i-ri-arrow-up-line" aria-hidden="true"></span>

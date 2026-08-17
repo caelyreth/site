@@ -31,7 +31,7 @@
   {/if}
   <figcaption class="code-tools">
     {#if code_caption}<span class="code-caption">{code_caption}</span>{/if}
-    <CopyButton label="Copy code" value={code_text} />
+    <CopyButton label="复制代码" value={code_text} />
   </figcaption>
 </figure>
 

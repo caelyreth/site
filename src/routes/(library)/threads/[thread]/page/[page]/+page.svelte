@@ -8,7 +8,7 @@
 
 <svelte:head>
   <title
-    >{data.thread.title} / Page {data.entries.page} / Threads / Caelyreth</title
+    >{data.thread.title} / 第 {data.entries.page} 页 / 线索 / Caelyreth</title
   >
 </svelte:head>
 

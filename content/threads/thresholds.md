@@ -1,6 +1,6 @@
 +++
-title = "Thresholds"
-summary = "The edges where a signal changes state, a room changes use, or a thought becomes a record."
+title = "临界处"
+summary = "信号换挡、房间改作他用，或一个念头沉淀为记录时所经过的边缘。"
 +++
 
-Every threshold has a duration. The interesting part is rarely the side on which it ends.
+每一道临界处都有自己的持续时间。真正有意思的，往往不是最后落在哪一边。

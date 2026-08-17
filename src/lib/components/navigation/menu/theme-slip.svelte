@@ -14,8 +14,8 @@
   const theme = use_theme()
   const theme_label = $derived(
     theme.theme === 'system'
-      ? `System relay / ${theme.resolvedTheme}`
-      : `${theme.resolvedTheme} relay`,
+      ? `跟随系统 / ${theme.resolvedTheme === 'dark' ? '深色' : '浅色'}`
+      : `${theme.resolvedTheme === 'dark' ? '深色' : '浅色'}模式`,
   )
 </script>
 
@@ -23,7 +23,7 @@
   class:is-closing={is_closing}
   class:is-open={is_open}
   class="theme-slip"
-  aria-label="Display mode"
+  aria-label="显示模式"
   style:--slip-bottom={theme_slip_layout.bottom}
   style:--slip-enter-delay={theme_slip_layout.enter_delay}
   style:--slip-enter-x={theme_slip_layout.enter_x}
@@ -32,7 +32,7 @@
   style:--slip-rotation={theme_slip_layout.rotation}
 >
   <div class="theme-copy">
-    <span class="micro-label slip-code">SHIFT / 002</span>
+    <span class="micro-label slip-code">切换 / 002</span>
     <span class="micro-label theme-label">{theme_label}</span>
   </div>
   <div class="theme-controls">
@@ -40,8 +40,8 @@
     <button
       type="button"
       class="close"
-      aria-label="Close menu"
-      title="Close menu"
+      aria-label="关闭菜单"
+      title="关闭菜单"
       onclick={on_close}
       ><span class="i-ri-close-line" aria-hidden="true"></span></button
     >

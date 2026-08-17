@@ -100,7 +100,7 @@
 {#if entries.length}
   <aside
     class="toc-rail"
-    aria-label="On this page"
+    aria-label="本页目录"
     aria-hidden={!toc_visible}
     class:has-hover={has_hover}
     class:is-visible={toc_visible}

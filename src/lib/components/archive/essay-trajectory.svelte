@@ -11,7 +11,7 @@
 
   let { entries, show_threads = true }: Props = $props()
 
-  const date_formatter = new Intl.DateTimeFormat('en', {
+  const date_formatter = new Intl.DateTimeFormat('zh-CN', {
     day: 'numeric',
     month: 'short',
     timeZone: 'UTC',
@@ -50,7 +50,7 @@
 
 <style>
   .trajectory {
-    --date-width: clamp(5.5rem, 12vw, 7.5rem);
+    --date-width: clamp(6.25rem, 14vw, 8.5rem);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -94,7 +94,7 @@
     font-size: clamp(1.25rem, 2vw, 1.65rem);
     font-weight: 700;
     letter-spacing: 0;
-    line-height: 1.05;
+    line-height: 1.18;
     overflow-wrap: anywhere;
   }
 

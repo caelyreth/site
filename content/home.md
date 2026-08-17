@@ -1,77 +1,77 @@
 +++
 title = "Caelyreth"
-description = "Field notes on architecture, geometry, and the philosophy of space."
+description = "关于建筑、几何与空间哲学的记录。"
 +++
 
-## Markdown field manual {#station}
+## Markdown 展示页 {#station}
 
-A relay station on an isolated survey planet. Field notes on architecture, geometry, and the philosophy of :accent[space] - kept by Yu, the one who stayed.
+这是一座孤悬于勘测行星上的中继站。余在这里记录建筑、几何与 :accent[空间] 的哲学。
 
-## Native text
+## 基础文本
 
-This record carries _emphasis_, **strong signal**, ~~a crossed-out reading~~, `inline-code`, :kbd[Cmd] + :kbd[K], :mark[an observed highlight], a subscript reading :sub[2], and a superscript reading :sup[2], alongside a [link back to the station](#station). A hard break follows here.\
-The next line remains part of the same transmission.
+这一行展示 _强调_、**强信号**、~~划去的读数~~、`行内代码`、 :kbd[⌘] + :kbd[K]、 :mark[一次观测高亮]、下标 :sub[2] 与上标 :sup[2]，以及一个[返回中继站的链接](#station)。这里有一个硬换行。\
+下一行仍属于同一段传输。
 
-This paragraph carries a native attribute for a quieter annotation.{.annotation}
+这段文字带有原生属性，作为简短的注释。{.annotation}
 
-### Heading level three
+### 第三级标题
 
-#### Heading level four
+#### 第四级标题
 
-##### Heading level five
+##### 第五级标题
 
-###### Heading level six
+###### 第六级标题
 
-## Quotations and alerts
+## 引文与提示
 
-> The observer marks the coordinate, then waits long enough for the light to become a fact.
+> 观测者记下坐标，然后等待，直到光不再只是可能。
 
 > [!NOTE]
-> Every document can carry its own reading surface without claiming another route.
+> 每篇文档都可以有自己的阅读环境，无须占用另一条路径。
 
 > [!TIP]
-> Keep calls to action in the content that owns the action.
+> 把行动入口放在真正承载它的内容旁。
 
 > [!IMPORTANT]
-> A component name is part of the document interface, not a presentational afterthought.
+> 组件名称属于文档接口，不是最后才补上的外观。
 
 > [!WARNING]
-> Do not confuse a temporary signal with a permanent navigation point.
+> 别把短暂的信号当成固定的航标。
 
 > [!CAUTION]
-> Do not publish a route until its content and visual contract agree.
+> 内容与视觉尚未达成共识前，不要公布这条路径。
 
-## Lists and tasks
+## 列表与任务
 
-- Field ledger
-  - Exposure notes
-  - Instrument state
-- Transmission register
+- 观测记录
+  - 曝光
+  - 仪器状态
+- 传输清单
 
-1. Mark the source.
-2. Read the horizon.
-3. File the observation.
+1. 标记源头。
+2. 读取地平线。
+3. 归档观测。
 
-- [x] Frame the visual field.
-- [x] Keep the document semantic.
-- [ ] Publish the first field log.
+- [x] 划定视野。
+- [x] 保留文档语义。
+- [ ] 发布第一篇观测日志。
 
-## Table and image
+## 表格与图像
 
 ::table
 +++
-caption = "Current survey channels"
+caption = "本次勘测通道"
 +++
 
-| channel | status | confidence |
-| :------ | :----- | :--------- |
-| optical | open   | 0.94       |
-| radio   | quiet  | 0.71       |
-| relay   | queued | 0.63       |
+| 通道 | 状态 | 置信度 |
+| :--- | :--- | :----- |
+| 光学 | 开放 | 0.94   |
+| 无线 | 静默 | 0.71   |
+| 中继 | 排队 | 0.63   |
 
 ::
 
-![Caelyreth station mark](/favicon.svg 'Station mark recovered from the relay archive.')
+![Caelyreth 站点标记](/favicon.svg '从中继档案中找回的站点标记。')
 
 ## Code sample
 
@@ -89,25 +89,25 @@ const signal: RelaySignal = {
 
 ---
 
-## Structured notes
+## 结构化笔记
 
 ::details
 +++
-summary = "Read the instrument note"
+summary = "查看仪器记录"
 +++
 
-The archival receiver keeps its original calibration until a second observation confirms the drift.
+档案接收机会保留原始校准，直到第二次观测确认漂移。
 ::
 
 ::definition-list
-:definition-term[Station coordinate]
-:definition-description[The first location where a signal has enough continuity to become a record.]
-:definition-term[Field mark]
-:definition-description[A small visible reference that lets later observers compare the same condition.]
+:definition-term[站点坐标]
+:definition-description[信号第一次足够连续，因而值得被记录的位置。]
+:definition-term[观测标记]
+:definition-description[一个可见的小参照，让后来的人能比较同一种状态。]
 ::
 
-## Field reference
+## 参考
 
-The current channel state remains deliberately local to this document.[^channel-state]
+当前通道状态只在这份文档里有效。[^channel-state]
 
-[^channel-state]: It is a reading aid, not a site-wide navigation model.
+[^channel-state]: 这是阅读辅助，不是全站导航。

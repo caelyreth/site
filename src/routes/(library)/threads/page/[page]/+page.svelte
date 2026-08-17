@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-  <title>Threads / Page {data.threads.page} / Caelyreth</title>
+  <title>线索 / 第 {data.threads.page} 页 / Caelyreth</title>
 </svelte:head>
 
 <ThreadIndex threads={data.threads} />

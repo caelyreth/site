@@ -1,16 +1,16 @@
 +++
-title = "A private room, a public record"
+title = "私密的房间，公开的记录"
 published = "2026-08-09"
-summary = "Notes on the distance between keeping something for oneself and making it available to be read."
+summary = "关于私藏与分享之间那段距离。"
 threads = ["private-infrastructure", "attention"]
 +++
 
-## The room remains
+## 房间还在
 
-A record can leave a room without bringing the room with it. The objects, pauses, and unfinished sentences that made the writing possible do not become public simply because the writing does.
+一份记录可以走出房间，不必把房间一起带走。让写作发生的物件、停顿和未完成的句子，不会因为文字公开便同时摊开。
 
-This distance is useful. It lets a personal site be an aperture rather than a performance of access.
+这样的距离很重要。它让个人网站成为一扇小窗，而不是一次对可见性的表演。
 
-## A careful address
+## 谨慎地公开
 
-Public writing need not explain every condition of its existence. It can offer a clear surface and keep its deeper machinery quiet.
+公开写作不必交代所有前提。它可以有清晰的表面，也可以让深处的运转保持安静。

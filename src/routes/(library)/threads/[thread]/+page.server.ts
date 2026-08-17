@@ -17,10 +17,10 @@ export const load: PageServerLoad = async ({ depends, params }) => {
   depends(content_dependency('threads'))
   depends(content_dependency('essays'))
   const result = await load_thread_entries(params.thread)
-  if (!result) throw error(404, 'Thread not found')
+  if (!result) throw error(404, '未找到线索')
 
   const entries = paginate(result.entries, 1)
-  if (!entries) throw error(404, 'Thread not found')
+  if (!entries) throw error(404, '未找到线索')
 
   return {
     document: result.document,

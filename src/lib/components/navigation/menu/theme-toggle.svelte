@@ -14,15 +14,15 @@
   const modes = [
     {
       value: 'system',
-      label: 'Use system appearance',
+      label: '跟随系统',
       icon: 'i-ri-computer-line',
     },
     {
       value: 'light',
-      label: 'Use light appearance',
+      label: '浅色模式',
       icon: 'i-ri-sun-line',
     },
-    { value: 'dark', label: 'Use dark appearance', icon: 'i-ri-moon-line' },
+    { value: 'dark', label: '深色模式', icon: 'i-ri-moon-line' },
   ] as const satisfies ReadonlyArray<{
     value: ThemeMode
     label: string
@@ -59,7 +59,7 @@
   }
 </script>
 
-<div class="theme-toggle" class:fill role="group" aria-label="Display mode">
+<div class="theme-toggle" class:fill role="group" aria-label="显示模式">
   {#each modes as mode (mode.value)}
     <button
       type="button"

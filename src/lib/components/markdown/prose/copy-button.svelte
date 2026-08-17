@@ -16,11 +16,7 @@
   onDestroy(() => clearTimeout(reset_timer))
 
   const button_label = $derived(
-    state === 'copied'
-      ? 'Copied'
-      : state === 'failed'
-        ? 'Try again'
-        : label,
+    state === 'copied' ? '已复制' : state === 'failed' ? '重试' : label,
   )
 
   async function copy() {

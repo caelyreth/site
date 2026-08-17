@@ -91,7 +91,7 @@
       onerror={image_failed}
       onload={image_loaded}
     />
-    <span aria-hidden="true" class="media-failure">Image unavailable</span>
+    <span aria-hidden="true" class="media-failure">图片无法显示</span>
   </div>
   {#if title}<figcaption>{title}</figcaption>{/if}
 </figure>
