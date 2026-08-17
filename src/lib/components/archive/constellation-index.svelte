@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { ConstellationSummary } from '$lib/content/library'
-  import type { Page } from '$lib/content/pagination'
+  import type { ConstellationSummary } from '$lib/content/relations'
+  import type { ContentPage } from '$lib/content/schema'
 
   import ArchiveList from './archive-list.svelte'
   import ConstellationStrand from './constellation-strand.svelte'
@@ -9,7 +9,7 @@
   import ReadingPlane from './reading-plane.svelte'
 
   interface Props {
-    constellations: Page<ConstellationSummary>
+    constellations: ContentPage<ConstellationSummary>
   }
 
   let { constellations }: Props = $props()

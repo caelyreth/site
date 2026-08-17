@@ -1,19 +1,15 @@
 <script lang="ts">
   import { base } from '$app/paths'
-  import { constellation_titles } from '$lib/content/constellation-labels'
+  import type { ConstellationReference } from '$lib/content/relations'
 
   interface Props {
-    constellations: string[]
+    constellations: ConstellationReference[]
   }
 
   let { constellations }: Props = $props()
 
-  function constellation_href(constellation: string) {
-    return `${base}/constellations/${constellation}`.replace('//', '/')
-  }
-
-  function constellation_label(constellation: string) {
-    return constellation_titles[constellation] ?? '关联星群'
+  function constellation_href(id: string) {
+    return `${base}/constellations/${id}`.replace('//', '/')
   }
 </script>
 
@@ -21,10 +17,8 @@
   <nav class="constellation-links" aria-label="关联星群">
     <span class="constellation-kind">星群</span>
     {#each constellations as constellation}
-      <a href={constellation_href(constellation)}>
-        <span class="constellation-title"
-          >{constellation_label(constellation)}</span
-        >
+      <a href={constellation_href(constellation.id)}>
+        <span class="constellation-title">{constellation.title}</span>
       </a>
     {/each}
   </nav>

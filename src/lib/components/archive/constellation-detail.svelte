@@ -2,11 +2,13 @@
   import { base } from '$app/paths'
   import Content from '$lib/components/markdown/document.svelte'
   import type {
-    RecordSummary,
-    ConstellationDocument,
     ConstellationSummary,
-  } from '$lib/content/library'
-  import type { Page } from '$lib/content/pagination'
+    RecordSummary,
+  } from '$lib/content/relations'
+  import type {
+    ConstellationDocument,
+    ContentPage,
+  } from '$lib/content/schema'
 
   import EntryHeader from './entry-header.svelte'
   import Pagination from './pagination.svelte'
@@ -15,7 +17,7 @@
 
   interface Props {
     document: ConstellationDocument
-    entries: Page<RecordSummary>
+    entries: ContentPage<RecordSummary>
     constellation: ConstellationSummary
   }
 

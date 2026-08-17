@@ -1,7 +1,8 @@
 <script lang="ts">
   import { base } from '$app/paths'
   import Content from '$lib/components/markdown/document.svelte'
-  import type { RecordDocument } from '$lib/content/library'
+  import type { ConstellationReference } from '$lib/content/relations'
+  import type { RecordDocument } from '$lib/content/schema'
 
   import BackLink from './back-link.svelte'
   import ConstellationLinks from './constellation-links.svelte'
@@ -9,10 +10,11 @@
   import ReadingPlane from './reading-plane.svelte'
 
   interface Props {
+    constellations: ConstellationReference[]
     document: RecordDocument
   }
 
-  let { document }: Props = $props()
+  let { constellations, document }: Props = $props()
   const date_formatter = new Intl.DateTimeFormat('zh-CN', {
     day: 'numeric',
     month: 'long',
@@ -35,9 +37,7 @@
       title={document.frontmatter.title}
     >
       {#snippet children()}
-        <ConstellationLinks
-          constellations={document.frontmatter.constellations ?? []}
-        />
+        <ConstellationLinks {constellations} />
       {/snippet}
     </EntryHeader>
 

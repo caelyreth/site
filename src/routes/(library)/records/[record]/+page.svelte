@@ -11,4 +11,7 @@
   <meta name="description" content={data.document.frontmatter.summary} />
 </svelte:head>
 
-<RecordDetail document={data.document} />
+<RecordDetail
+  constellations={data.constellations}
+  document={data.document}
+/>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { base } from '$app/paths'
-  import type { ConstellationSummary } from '$lib/content/library'
+  import type { ConstellationSummary } from '$lib/content/relations'
 
   interface Props {
     constellation: ConstellationSummary
@@ -12,8 +12,8 @@
     return `${base}/constellations/${id}`.replace('//', '/')
   }
 
-  function record_href(slug: string) {
-    return `${base}/records/${slug}`.replace('//', '/')
+  function record_href(id: string) {
+    return `${base}/records/${id}`.replace('//', '/')
   }
 </script>
 
@@ -25,7 +25,7 @@
 
   <nav class="strand-records" aria-label={`${constellation.title}中的记录`}>
     {#each constellation.latest as record}
-      <a href={record_href(record.slug)}>{record.title}</a>
+      <a href={record_href(record.id)}>{record.title}</a>
     {/each}
   </nav>
 </article>

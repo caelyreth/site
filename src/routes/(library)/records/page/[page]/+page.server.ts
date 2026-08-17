@@ -1,24 +1,41 @@
 import { content_dependency } from '$lib/content/hmr'
 import {
-  archive_page_size,
+  content_query,
+  page_count,
   page_number,
   paginate,
-} from '$lib/content/pagination'
-import { load_record_summaries } from '$lib/content/records.server'
+} from '$lib/content/query.server'
+import { record_index } from '$lib/content/relations'
+import {
+  constellation_frontmatter_schema,
+  record_frontmatter_schema,
+} from '$lib/content/schema'
 import { error } from '@sveltejs/kit'
 
 import type { EntryGenerator, PageServerLoad } from './$types'
 
 export const prerender = true
 
+const records = content_query('records', record_frontmatter_schema)
+const constellations = content_query(
+  'constellations',
+  constellation_frontmatter_schema,
+)
+
 export const entries: EntryGenerator = async () => {
-  const records = await load_record_summaries()
-  const page_count = Math.max(
-    1,
-    Math.ceil(records.length / archive_page_size),
-  )
+  const [record_entries, constellation_entries] = await Promise.all([
+    records.entries(),
+    constellations.entries(),
+  ])
   return Array.from(
-    { length: Math.max(0, page_count - 1) },
+    {
+      length: Math.max(
+        0,
+        page_count(
+          record_index(record_entries, constellation_entries).length,
+        ) - 1,
+      ),
+    },
     (_, index) => ({
       page: String(index + 2),
     }),
@@ -27,11 +44,18 @@ export const entries: EntryGenerator = async () => {
 
 export const load: PageServerLoad = async ({ depends, params }) => {
   depends(content_dependency('records'))
+  depends(content_dependency('constellations'))
   const page = page_number(params.page)
   if (!page || page === 1) throw error(404, '未找到记录页')
 
-  const summaries = await load_record_summaries()
-  const records = paginate(summaries, page)
-  if (!records) throw error(404, '未找到记录页')
-  return { records }
+  const [record_entries, constellation_entries] = await Promise.all([
+    records.entries(),
+    constellations.entries(),
+  ])
+  const entries = paginate(
+    record_index(record_entries, constellation_entries),
+    page,
+  )
+  if (!entries) throw error(404, '未找到记录页')
+  return { records: entries }
 }

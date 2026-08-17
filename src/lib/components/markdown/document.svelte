@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ContentFont } from '$lib/content/frontmatter'
+  import type { ContentFont } from '$lib/content/schema'
   import { MarkdownDocument } from '@comark/svelte'
   import type { MarkdownDocument as MarkdownDocumentValue } from 'comark'
   import { pascalCase } from 'comark/utils'

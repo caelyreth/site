@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { RecordSummary } from '$lib/content/library'
-  import type { Page } from '$lib/content/pagination'
+  import type { RecordSummary } from '$lib/content/relations'
+  import type { ContentPage } from '$lib/content/schema'
 
   import IndexHeader from './index-header.svelte'
   import Pagination from './pagination.svelte'
@@ -8,7 +8,7 @@
   import RecordTrajectory from './record-trajectory.svelte'
 
   interface Props {
-    records: Page<RecordSummary>
+    records: ContentPage<RecordSummary>
   }
 
   let { records }: Props = $props()

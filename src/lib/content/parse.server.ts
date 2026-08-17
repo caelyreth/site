@@ -1,3 +1,5 @@
+import media from '$lib/components/markdown/media'
+import { eclat } from '$lib/components/markdown/rangi-theme'
 import { createMarkdownParser } from 'comark'
 import toml from 'comark-toml'
 import alert from 'comark/plugins/alert'
@@ -9,10 +11,6 @@ import punctuation from 'comark/plugins/punctuation'
 import rangi from 'comark/plugins/rangi'
 import security from 'comark/plugins/security'
 import task_list from 'comark/plugins/task-list'
-import * as v from 'valibot'
-
-import media from './media'
-import { eclat } from './rangi-theme'
 
 export const parse_markdown = createMarkdownParser({
   registerDefaultPlugins: false,
@@ -30,15 +28,3 @@ export const parse_markdown = createMarkdownParser({
     rangi({ preStyles: true, theme: eclat }),
   ],
 })
-
-export function parse_frontmatter<
-  Frontmatter extends Record<string, unknown>,
->(
-  value: unknown,
-  source_path: string,
-  schema: v.GenericSchema<unknown, Frontmatter>,
-) {
-  const result = v.safeParse(schema, value)
-  if (result.success) return result.output
-  throw new Error(`${source_path}: ${v.summarize(result.issues)}`)
-}

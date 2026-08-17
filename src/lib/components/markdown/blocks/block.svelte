@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ContentFont } from '$lib/content/frontmatter'
+  import type { ContentFont } from '$lib/content/schema'
   import type { Snippet } from 'svelte'
 
   const alignments = ['start', 'center', 'end', 'justify'] as const
