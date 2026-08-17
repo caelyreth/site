@@ -90,45 +90,62 @@
     const sync_visibility = () => {
       const bounds = article.getBoundingClientRect()
       const midpoint = window.innerHeight * 0.5
-      toc_visible = bounds.top <= midpoint && bounds.bottom > 0
+      const rail_bottom =
+        midpoint + rail.getBoundingClientRect().height * 0.5
+      toc_visible = bounds.top <= midpoint && bounds.bottom >= rail_bottom
     }
-    const visibility_observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry) return
-        const midpoint =
-          entry.rootBounds?.bottom ?? window.innerHeight * 0.5
-        toc_visible =
-          entry.isIntersecting && entry.boundingClientRect.top <= midpoint
-      },
-      { threshold: 0, rootMargin: '0px 0px -50% 0px' },
-    )
-    visibility_observer.observe(article)
-    window.addEventListener('pageshow', sync_visibility)
-    window.addEventListener('resize', sync_visibility)
-    sync_visibility()
+    let frame: number | undefined
+    const schedule_visibility = () => {
+      if (frame !== undefined) return
+      frame = requestAnimationFrame(() => {
+        frame = undefined
+        sync_visibility()
+      })
+    }
+    const resize_observer = new ResizeObserver(schedule_visibility)
+
+    resize_observer.observe(article)
+    resize_observer.observe(rail)
+    window.addEventListener('scroll', schedule_visibility, {
+      passive: true,
+    })
+    window.addEventListener('pageshow', schedule_visibility)
+    window.addEventListener('resize', schedule_visibility)
+    schedule_visibility()
 
     return () => {
-      visibility_observer.disconnect()
-      window.removeEventListener('pageshow', sync_visibility)
-      window.removeEventListener('resize', sync_visibility)
+      if (frame !== undefined) cancelAnimationFrame(frame)
+      resize_observer.disconnect()
+      window.removeEventListener('scroll', schedule_visibility)
+      window.removeEventListener('pageshow', schedule_visibility)
+      window.removeEventListener('resize', schedule_visibility)
     }
   }
 
   function observe_rail(rail: HTMLElement) {
-    const cleanup_visibility = observe_visibility(rail)
     const media_query = window.matchMedia(wide_media_query)
     let cleanup: (() => void) | undefined
 
     const sync = () => {
       cleanup?.()
-      cleanup = media_query.matches ? observe_headings() : undefined
+      if (!media_query.matches) {
+        toc_visible = false
+        cleanup = undefined
+        return
+      }
+
+      const cleanup_headings = observe_headings()
+      const cleanup_visibility = observe_visibility(rail)
+      cleanup = () => {
+        cleanup_headings?.()
+        cleanup_visibility?.()
+      }
     }
 
     media_query.addEventListener('change', sync)
     sync()
 
     return () => {
-      cleanup_visibility?.()
       cleanup?.()
       media_query.removeEventListener('change', sync)
     }

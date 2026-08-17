@@ -223,7 +223,7 @@
   @media (min-width: 60rem) {
     .actions {
       position: fixed;
-      left: calc(50% + var(--half-measure) + var(--content-rail-gap));
+      left: var(--content-rail-start);
       bottom: clamp(1.25rem, 4vw, 3rem);
       z-index: 49;
       display: flex;

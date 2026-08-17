@@ -153,6 +153,9 @@
   --half-measure: 24rem;
   --frame-measure: calc(var(--half-measure) * 2);
   --content-rail-gap: 0.875rem;
+  --content-rail-start: calc(
+    50% + var(--half-measure) + var(--content-rail-gap)
+  );
   --inline-gutter: 1.5rem;
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);

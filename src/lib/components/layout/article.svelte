@@ -22,15 +22,12 @@
     </div>
   </PaperDeck>
   {#if toc.length}
-    <div class="article-toc">
-      <TableOfContents entries={toc} />
-    </div>
+    <TableOfContents entries={toc} />
   {/if}
 </article>
 
 <style>
   .article {
-    position: relative;
     display: flex;
     flex: 1;
     width: 100%;
@@ -45,24 +42,11 @@
     padding-inline: var(--inline-gutter);
   }
 
-  .article-toc {
-    position: absolute;
-    inset: 0 auto 0 calc(100% + var(--content-rail-gap));
-    width: 11rem;
-    pointer-events: none;
-  }
-
-  .article-toc :global(.toc-rail) {
-    position: sticky;
+  .article :global(.toc-rail) {
+    position: fixed;
     top: 50svh;
-    pointer-events: auto;
+    left: var(--content-rail-start);
     transform: translateY(-50%);
-  }
-
-  @media (max-width: 79.99rem) {
-    .article-toc {
-      display: none;
-    }
   }
 
   @media (max-width: 40rem) {
