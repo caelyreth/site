@@ -65,8 +65,8 @@
     }
 
     .brand-mark {
-      width: 2.25rem;
-      height: 1.125rem;
+      width: 2rem;
+      height: 1rem;
     }
 
     .brand-name {

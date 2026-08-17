@@ -7,9 +7,10 @@
 
   interface Props {
     children?: Snippet<[() => void, boolean]>
+    id?: string
   }
 
-  const { children }: Props = $props()
+  const { children, id = 'site-menu' }: Props = $props()
   let dialog: HTMLDialogElement | undefined
   let menu_open = $state(false)
   let closing = $state(false)
@@ -81,7 +82,7 @@
 
 <dialog
   {@attach manage_dialog}
-  id="site-menu"
+  {id}
   class="menu"
   class:is-closing={closing}
   aria-label="Site menu"

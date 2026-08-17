@@ -6,10 +6,18 @@
   import { scroll_to_top } from '$lib/browser/scroll-to-top'
   import { observe_viewport_threshold } from '$lib/browser/viewport-threshold'
   import { tick } from 'svelte'
+  import type { Snippet } from 'svelte'
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
   import Menu from './menu/menu.svelte'
+  import MobileRail from './mobile-rail.svelte'
+
+  interface Props {
+    mobile_panel?: Snippet<[() => void]>
+  }
+
+  const { mobile_panel }: Props = $props()
 
   const home_path = base || '/'
   const content_reveal_ratio = 0.6
@@ -60,22 +68,23 @@
   {@attach observe_content}
   class="site-controls"
   data-content-active={content_active}
-  data-scrolling={scrolling}
 >
   <header class="header">
     <div class="inner">
       <Brand href={home_path} on_activate={handle_brand_click} />
-      <div class="menu-slot">
-        <Menu>
-          {#snippet children(open_menu, menu_open)}
-            <MenuTrigger is_open={menu_open} on_open={open_menu} />
-          {/snippet}
-        </Menu>
-      </div>
+      <Menu id="desktop-site-menu">
+        {#snippet children(open_menu, menu_open)}
+          <MenuTrigger
+            controls="desktop-site-menu"
+            is_open={menu_open}
+            on_open={open_menu}
+          />
+        {/snippet}
+      </Menu>
     </div>
   </header>
 
-  <div class="actions" role="group" aria-label="Page actions">
+  <div class="desktop-actions" role="group" aria-label="Page actions">
     <button
       type="button"
       class="action return-button"
@@ -86,9 +95,69 @@
       <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
     </button>
   </div>
+
+  <MobileRail
+    visible={content_active}
+    collapsed={scrolling}
+    cells={mobile_panel ? 4 : 3}
+    panel={mobile_panel}
+  >
+    {#snippet children(toggle_panel, expanded, has_panel, panel_id)}
+      <div class="mobile-brand" data-rail-cell data-rail-secondary>
+        <Brand href={home_path} on_activate={handle_brand_click} />
+      </div>
+
+      <div class="mobile-menu" data-rail-cell data-rail-secondary>
+        <Menu id="mobile-site-menu">
+          {#snippet children(open_menu, menu_open)}
+            <MenuTrigger
+              controls="mobile-site-menu"
+              is_open={menu_open}
+              on_open={open_menu}
+            />
+          {/snippet}
+        </Menu>
+      </div>
+
+      {#if has_panel}
+        <div class="mobile-index" data-rail-cell data-rail-secondary>
+          <button
+            type="button"
+            class="index-button"
+            aria-controls={panel_id}
+            aria-expanded={expanded}
+            aria-label={expanded ? 'Close index' : 'Open index'}
+            title={expanded ? 'Close index' : 'Open index'}
+            onclick={toggle_panel}
+          >
+            <span
+              class={expanded ? 'i-ri-close-line' : 'i-ri-list-unordered'}
+              aria-hidden="true"
+            ></span>
+          </button>
+        </div>
+      {/if}
+
+      <div class="mobile-actions" data-rail-cell data-rail-primary>
+        <button
+          type="button"
+          class="action return-button"
+          aria-label="Return to top"
+          title="Return to top"
+          onclick={handle_return_click}
+        >
+          <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
+        </button>
+      </div>
+    {/snippet}
+  </MobileRail>
 </div>
 
 <style>
+  .site-controls {
+    display: contents;
+  }
+
   .header {
     --header-ink: color-mix(
       in oklab,
@@ -148,46 +217,10 @@
     display: flex;
     width: 100%;
     height: var(--header-block-size);
-    padding-inline: var(--inline-gutter);
+    padding-inline-start: var(--inline-gutter);
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-  }
-
-  .menu-slot {
-    display: inline-flex;
-    min-width: 0;
-    align-items: center;
-  }
-
-  .menu-slot {
-    margin-right: calc(-1 * var(--inline-gutter));
-  }
-
-  .action span {
-    flex: none;
-  }
-
-  .return-button .i-ri-arrow-up-line {
-    width: 1rem;
-    height: 1rem;
-    opacity: 0.72;
-    transition: opacity var(--dur-micro) var(--ease-out);
-  }
-
-  @media (hover: hover) {
-    .return-button:hover .i-ri-arrow-up-line {
-      opacity: 1;
-    }
-  }
-
-  .action:focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: -2px;
-  }
-
-  .actions {
-    display: none;
   }
 
   .action {
@@ -197,42 +230,93 @@
     height: 2.75rem;
     padding: 0;
     cursor: pointer;
-    border: 1px solid var(--color-boundary);
-    color: var(--color-text);
-    background-color: var(--color-paper-prime);
+    border: 0;
+    color: inherit;
+    background-color: transparent;
     place-items: center;
     transition:
-      border-radius var(--dur-short) var(--ease-out),
       background-color var(--dur-micro) var(--ease-out),
       color var(--dur-micro) var(--ease-out),
       opacity var(--dur-short) var(--ease-out);
   }
 
+  .return-button .i-ri-arrow-up-line,
+  .index-button span {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    opacity: 0.72;
+    transition: opacity var(--dur-micro) var(--ease-out);
+  }
+
   @media (hover: hover) {
-    .action:hover {
+    .action:hover,
+    .index-button:hover {
+      color: var(--color-paper-prime);
+      background-color: var(--color-text);
+    }
+
+    .action:hover .i-ri-arrow-up-line,
+    .index-button:hover span {
+      opacity: 1;
+    }
+
+    .action:active,
+    .index-button:active {
       color: var(--color-paper-prime);
       background-color: var(--color-text);
     }
   }
 
-  .action:active {
-    color: var(--color-paper-prime);
-    background-color: var(--color-text);
+  .action:focus-visible,
+  .index-button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -2px;
+  }
+
+  .desktop-actions {
+    display: none;
+    box-sizing: border-box;
+    color: var(--color-text);
+    background-color: var(--color-paper-prime);
+  }
+
+  .mobile-brand,
+  .mobile-menu,
+  .mobile-index,
+  .mobile-actions {
+    color: var(--color-text);
+  }
+
+  .index-button {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    cursor: pointer;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    place-items: center;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
   }
 
   @media (min-width: 60rem) {
-    .actions {
+    .desktop-actions {
       position: fixed;
       left: var(--content-rail-start);
       bottom: clamp(1.25rem, 4vw, 3rem);
       z-index: 49;
       display: flex;
+      border: 1px solid var(--color-boundary);
       transition:
         opacity var(--dur-short) var(--ease-out),
         transform var(--dur-short) var(--ease-out);
     }
 
-    .site-controls[data-content-active='false'] .actions {
+    .site-controls[data-content-active='false'] .desktop-actions {
       pointer-events: none;
       opacity: 0;
       transform: translateY(0.5rem);
@@ -240,149 +324,38 @@
   }
 
   @media (max-width: 40rem) {
-    .site-controls {
-      --mobile-control-size: 2.75rem;
-      --control-block-size: var(--mobile-control-size);
-      --mobile-control-edge: max(0.75rem, env(safe-area-inset-right));
-      --dur-rail-collapse: 384ms;
-      --dur-rail-expand: 520ms;
-      --ease-rail-collapse: var(--ease-in-out);
-      --ease-rail-expand: cubic-bezier(0.22, 1.28, 0.36, 1);
-      --mobile-shell-width: min(
-        8.5rem,
-        calc(
-          100vw - var(--mobile-control-size) -
-            max(
-              1.5rem,
-              env(safe-area-inset-left) + env(safe-area-inset-right)
-            )
-        )
-      );
-      --mobile-rail-width: calc(
-        var(--mobile-shell-width) + var(--control-block-size)
-      );
-      position: fixed;
-      top: auto;
-      left: 50%;
-      bottom: max(0.75rem, env(safe-area-inset-bottom));
-      z-index: 50;
-      display: flex;
-      width: var(--mobile-rail-width);
-      height: var(--control-block-size);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(calc(50vw + var(--control-block-size)));
-      transition:
-        transform var(--dur-rail-expand) var(--ease-rail-expand),
-        opacity var(--dur-short) var(--ease-out);
-    }
-
-    .header {
-      --header-ink: var(--color-text);
-      --header-latch-rule: var(--color-guide);
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: auto;
-      width: var(--mobile-shell-width);
-      height: var(--control-block-size);
-      min-width: 0;
-      overflow: clip;
-      border: 1px solid var(--color-boundary);
-      border-inline-end: 0;
-      border-radius: 0.25rem 0 0 0.25rem;
-      background-color: var(--color-paper-prime);
-      background-clip: padding-box;
-      opacity: 1;
-      pointer-events: auto;
-      transform: none;
-      transition:
-        width var(--dur-rail-expand) var(--ease-rail-expand),
-        opacity var(--dur-rail-expand) var(--ease-rail-expand);
-      animation: none;
-    }
-
-    .header::after {
+    .header,
+    .desktop-actions {
       display: none;
     }
 
-    .inner {
+    .mobile-brand,
+    .mobile-menu,
+    .mobile-index,
+    .mobile-actions {
+      display: grid;
+      min-width: 0;
+      place-items: center;
+    }
+
+    .mobile-actions .action {
       width: 100%;
       height: 100%;
-      padding-inline: 0.625rem;
-      gap: 0.5rem;
     }
 
-    .menu-slot {
-      margin-right: 0;
-    }
-
-    .actions {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: flex;
-      height: var(--control-block-size);
-      pointer-events: auto;
-    }
-
-    .action {
-      width: var(--control-block-size);
-      height: var(--control-block-size);
-      border-radius: 0 0.25rem 0.25rem 0;
-      transition-duration:
-        var(--dur-rail-expand), var(--dur-micro), var(--dur-micro),
-        var(--dur-micro);
-      transition-timing-function:
-        var(--ease-rail-expand), var(--ease-out), var(--ease-out),
-        var(--ease-out);
-    }
-
-    .site-controls[data-content-active='false'] {
-      pointer-events: none;
-      opacity: 0;
-    }
-
-    .site-controls[data-content-active='true'][data-scrolling='false'] {
-      opacity: 1;
-      transform: translateX(-50%);
-    }
-
-    .site-controls[data-content-active='true'][data-scrolling='true'] {
-      transform: translateX(calc(50vw - var(--mobile-control-edge) - 100%));
-      opacity: 1;
-      transition:
-        transform var(--dur-rail-collapse) var(--ease-rail-collapse),
-        opacity var(--dur-short) var(--ease-out);
-    }
-
-    .site-controls[data-content-active='true'][data-scrolling='true']
-      .header {
-      width: 0;
-      opacity: 0;
-      pointer-events: none;
-      transition:
-        width var(--dur-rail-collapse) var(--ease-rail-collapse),
-        opacity var(--dur-micro) var(--ease-out);
-    }
-
-    .site-controls[data-content-active='true'][data-scrolling='true']
-      .action:first-child {
-      border-radius: 0.25rem;
-      transition-duration:
-        var(--dur-short), var(--dur-micro), var(--dur-micro),
-        var(--dur-micro);
-      transition-timing-function:
-        var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out);
+    .mobile-brand :global(.brand),
+    .mobile-menu :global(.menu-trigger),
+    .mobile-index .index-button,
+    .mobile-actions .action {
+      -webkit-tap-highlight-color: transparent;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .header,
-    .inner,
-    .actions,
     .action,
-    .site-controls {
+    .index-button,
+    .return-button .i-ri-arrow-up-line,
+    .index-button span {
       transition-duration: 1ms;
     }
   }

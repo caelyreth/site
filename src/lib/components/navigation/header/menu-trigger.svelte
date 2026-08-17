@@ -2,23 +2,24 @@
   interface Props {
     is_open: boolean
     on_open: () => void
+    controls?: string
   }
 
-  const { is_open, on_open }: Props = $props()
+  const { is_open, on_open, controls = 'site-menu' }: Props = $props()
 </script>
 
 <button
   type="button"
   class="menu-trigger"
-  aria-controls="site-menu"
+  aria-controls={controls}
   aria-expanded={is_open}
   aria-haspopup="dialog"
   aria-label={is_open ? 'Close menu' : 'Open menu'}
   title={is_open ? 'Close menu' : 'Open menu'}
   onclick={on_open}
 >
-  <span class="label">Display</span>
-  <span class="i-ri-menu-line" aria-hidden="true"></span>
+  <span class="label">Navigate</span>
+  <span class="i-ri-compass-line" aria-hidden="true"></span>
 </button>
 
 <style>
@@ -53,7 +54,7 @@
     line-height: 1;
   }
 
-  .i-ri-menu-line {
+  .i-ri-compass-line {
     width: 1rem;
     height: 1rem;
     opacity: 0.72;
@@ -65,7 +66,7 @@
       background-color: var(--header-latch-hover);
     }
 
-    .menu-trigger:hover .i-ri-menu-line {
+    .menu-trigger:hover .i-ri-compass-line {
       opacity: 1;
     }
   }
@@ -77,15 +78,18 @@
 
   @media (max-width: 40rem) {
     .menu-trigger {
-      width: auto;
-      min-width: 4.25rem;
+      width: 100%;
+      min-width: 0;
       height: 100%;
-      padding-inline: 0.75rem;
+      padding-inline: 0;
       border: 0;
-      border-inline-start: 1px solid var(--color-boundary);
       border-radius: 0;
       color: var(--color-text);
       background-color: transparent;
+    }
+
+    .label {
+      display: none;
     }
   }
 </style>
