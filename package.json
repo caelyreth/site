@@ -11,7 +11,7 @@
     "sync": "svelte-kit sync",
     "dev": "vite dev",
     "build": "vite build",
-    "preview": "vite start",
+    "preview": "vite preview",
     "prepare": "pnpm run sync"
   },
   "devDependencies": {

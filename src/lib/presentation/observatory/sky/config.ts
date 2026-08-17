@@ -4,4 +4,4 @@ export const SKY_FIELD_FRAME_INTERVAL = 1000 / 45
 export const ORBIT_ANGULAR_SPEED = 0.028 / 1000
 export const ORBIT_TRAIL_LAG = 0.28
 export const SKY_FIELD_FADE_RATE = 1.2
-export const SKY_FIELD_START_DELAY = 760
+export const SKY_FIELD_START_DELAY = 1_040

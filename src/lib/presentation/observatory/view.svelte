@@ -1,6 +1,6 @@
 <script lang="ts">
   import Intro from './intro.svelte'
-  import PlanaFigure from './plana-figure.svelte'
+  import PlanaSurface from './plana-surface.svelte'
   import SiteMark from './site-mark.svelte'
   import SkyField from './sky/view.svelte'
 
@@ -21,8 +21,8 @@
 <div class="observatory">
   <SkyField deferred={defer_surface} paused={sky_paused} />
   <SiteMark />
-  <PlanaFigure />
   <Intro {description} />
+  <PlanaSurface />
 </div>
 
 <style>

@@ -389,12 +389,6 @@
     }
   }
 
-  @media (max-width: 40rem) {
-    .plana-art {
-      display: none;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .plana-art {
       animation: none;
