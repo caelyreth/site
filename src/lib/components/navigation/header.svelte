@@ -104,7 +104,7 @@
     --header-latch-rule: color-mix(
       in oklab,
       transparent,
-      var(--color-boundary) calc(var(--stage-progress) * 100%)
+      var(--color-guide) calc(var(--stage-progress) * 100%)
     );
     --header-latch-hover: color-mix(
       in oklab,
@@ -223,9 +223,7 @@
   @media (min-width: 60rem) {
     .actions {
       position: fixed;
-      right: calc(
-        50% - var(--half-measure) - clamp(0.75rem, 1.5vw, 1.25rem) - 2.75rem
-      );
+      left: calc(50% + var(--half-measure) + var(--content-rail-gap));
       bottom: clamp(1.25rem, 4vw, 3rem);
       z-index: 49;
       display: flex;
@@ -281,7 +279,7 @@
 
     .header {
       --header-ink: var(--color-text);
-      --header-latch-rule: var(--color-boundary);
+      --header-latch-rule: var(--color-guide);
       position: absolute;
       top: 0;
       left: 0;

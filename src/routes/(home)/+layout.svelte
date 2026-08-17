@@ -5,6 +5,7 @@
   import Footer from '$lib/components/layout/footer.svelte'
   import Stage from '$lib/components/layout/stage.svelte'
   import Header from '$lib/components/navigation/header.svelte'
+  import type { HeadingEntry } from '$lib/content/headings'
   import type { HomeDocument } from '$lib/content/home'
   import { SKY_FIELD_FADE_RATE } from '$lib/presentation/observatory/sky/config'
   import Observatory from '$lib/presentation/observatory/view.svelte'
@@ -12,10 +13,12 @@
 
   interface HomePageData {
     document: HomeDocument
+    toc: HeadingEntry[]
   }
 
   const { children } = $props()
   const document = $derived((page.data as HomePageData).document)
+  const document_toc = $derived((page.data as HomePageData).toc)
   let fallback_progress = $state(0)
 
   function update_stage_progress(progress: number) {
@@ -44,7 +47,7 @@
       {/snippet}
     </Stage>
     <div aria-hidden="true" class="mobile-stage-seam"></div>
-    <Article has_footer>
+    <Article has_footer toc={document_toc}>
       {@render children()}
     </Article>
   </main>
