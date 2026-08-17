@@ -44,6 +44,7 @@
       title={document.frontmatter.title}
       on_progress={update_stage_progress}
       progress={fallback_progress}
+      defer_surface_when_covered_mobile
       surface_exit_progress={1 / SKY_FIELD_FADE_RATE}
     >
       {#snippet children(defer_surface, sky_paused)}
@@ -54,7 +55,6 @@
         />
       {/snippet}
     </Stage>
-    <div aria-hidden="true" class="mobile-stage-seam"></div>
     <Article has_footer toc={document_toc}>
       {@render children()}
     </Article>
@@ -83,15 +83,4 @@
     flex-direction: column;
   }
 
-  .mobile-stage-seam {
-    display: none;
-  }
-
-  @media (max-width: 40rem) {
-    .mobile-stage-seam {
-      display: block;
-      height: 1px;
-      background-color: var(--color-rule);
-    }
-  }
 </style>

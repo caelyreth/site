@@ -14,6 +14,7 @@
     children?: Snippet<[boolean, boolean]>
     on_progress?: (progress: number) => void
     progress?: number
+    defer_surface_when_covered_mobile?: boolean
     surface_exit_progress?: number
     title: string
   }
@@ -23,6 +24,7 @@
     children,
     on_progress,
     progress = 0,
+    defer_surface_when_covered_mobile = false,
     surface_exit_progress,
     title,
   }: Props = $props()
@@ -37,6 +39,7 @@
   function observe_stage_return(capture: HTMLElement) {
     return defer_stage_surface_on_return({
       hidden_progress: surface_exit_progress,
+      defer_after_mobile_cover: defer_surface_when_covered_mobile,
       on_change: set_surface_deferred,
     })(capture)
   }
@@ -159,12 +162,15 @@
     .stage-capture {
       --stage-frame-inset: 0px;
       --stage-frame-radius: 0px;
+      --stage-progress: 0;
       --stage-top: 0px;
-      height: var(--stage-viewport);
+
+      height: calc(var(--stage-viewport) + var(--stage-scroll-span));
+      animation: none;
     }
 
     .stage-sticky {
-      position: relative;
+      position: sticky;
     }
 
     .stage-frame {

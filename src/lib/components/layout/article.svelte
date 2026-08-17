@@ -16,7 +16,7 @@
 </script>
 
 <article id="content" class="article">
-  <PaperDeck edge={has_footer}>
+  <PaperDeck edge={has_footer} top_edge>
     <div class="article-content">
       {@render children?.()}
     </div>
@@ -50,6 +50,12 @@
   }
 
   @media (max-width: 40rem) {
+    .article {
+      position: relative;
+      z-index: 22;
+      margin-top: calc(-1 * var(--stage-transition-span));
+    }
+
     .article-content {
       --article-floating-clearance: calc(
         3.5rem + env(safe-area-inset-bottom)

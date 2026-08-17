@@ -25,7 +25,7 @@
   let scrolling = $state(false)
 
   const observe_scroll = scroll_activity({
-    idle_delay: 1400,
+    idle_delay: 1150,
     on_activity(active) {
       scrolling = active
     },

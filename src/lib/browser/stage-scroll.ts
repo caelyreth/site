@@ -3,6 +3,7 @@ import type { Attachment } from 'svelte/attachments'
 const compact_stage_query = '(max-width: 40rem)'
 
 export interface StageSurfaceDeferralOptions {
+  defer_after_mobile_cover?: boolean
   on_change: (deferred: boolean) => void
   settle_delay?: number
   visible_progress?: number
@@ -14,21 +15,10 @@ function stage_element(capture: HTMLElement) {
   return element instanceof HTMLElement ? element : undefined
 }
 
-function compact_transition_span(stage: HTMLElement) {
-  const root_font_size = Number.parseFloat(
-    getComputedStyle(document.documentElement).fontSize,
-  )
-  const minimum = 8 * root_font_size
-  const maximum = 12 * root_font_size
-  return Math.min(maximum, Math.max(minimum, stage.offsetHeight * 0.24))
-}
-
 export function stage_scroll_span(capture: HTMLElement) {
   const stage = stage_element(capture)
   if (!stage) return 0
-  return window.matchMedia(compact_stage_query).matches
-    ? compact_transition_span(stage)
-    : Math.max(capture.offsetHeight - stage.offsetHeight, 1)
+  return Math.max(capture.offsetHeight - stage.offsetHeight, 1)
 }
 
 export function stage_scroll_progress(capture: HTMLElement) {
@@ -46,9 +36,9 @@ export function stage_scroll_elements(capture: HTMLElement) {
 }
 
 /**
- * Defers an expensive stage surface once its visual fade has completed. It
- * restores only after a return scroll settles or the stage reaches its open
- * state, preventing a renderer restart during the expensive transition.
+ * Defers an expensive stage surface once it is no longer visible. Desktop
+ * stages defer after their fade; mobile overlay stages defer after the paper
+ * has covered the scene.
  */
 export function defer_stage_surface_on_return(
   options: StageSurfaceDeferralOptions,
@@ -61,8 +51,11 @@ export function defer_stage_surface_on_return(
     let deferred = false
     let settle_timer: ReturnType<typeof setTimeout> | undefined
     let previous_scroll_top = window.scrollY
+    let mobile_cover_at = 0
     let stage_start = 0
     let surface_exit = 0
+
+    const compact_media_query = window.matchMedia(compact_stage_query)
 
     const set_deferred = (next_deferred: boolean) => {
       if (deferred === next_deferred) return
@@ -71,8 +64,9 @@ export function defer_stage_surface_on_return(
     }
     const refresh_stage_bounds = () => {
       stage_start = window.scrollY + capture.getBoundingClientRect().top
-      surface_exit =
-        stage_start + stage_scroll_span(capture) * hidden_progress
+      const span = stage_scroll_span(capture)
+      mobile_cover_at = stage_start + span
+      surface_exit = stage_start + span * hidden_progress
       previous_scroll_top = window.scrollY
     }
     const cancel_settle = () => {
@@ -90,31 +84,56 @@ export function defer_stage_surface_on_return(
       cancel_settle()
       settle_timer = setTimeout(settle, settle_delay)
     }
-    const update = () => {
-      const scroll_top = window.scrollY
-      const returning = scroll_top < previous_scroll_top
+    const update_desktop_deferral = (scroll_top: number) => {
       if (scroll_top <= stage_start + 2) {
         set_deferred(false)
       } else if (scroll_top >= surface_exit) {
         set_deferred(true)
       }
-      previous_scroll_top = scroll_top
+    }
+    const update_mobile_deferral = (scroll_top: number) => {
+      if (!options.defer_after_mobile_cover || !compact_media_query.matches) {
+        return false
+      }
+
+      set_deferred(scroll_top > mobile_cover_at)
+      cancel_settle()
+      return true
+    }
+    const update_return_deferral = (returning: boolean) => {
       if (deferred && returning) {
         schedule_settle()
       } else {
         cancel_settle()
       }
     }
+    const update = () => {
+      const scroll_top = window.scrollY
+      if (update_mobile_deferral(scroll_top)) {
+        previous_scroll_top = scroll_top
+        return
+      }
+
+      const returning = scroll_top < previous_scroll_top
+      update_desktop_deferral(scroll_top)
+      previous_scroll_top = scroll_top
+      update_return_deferral(returning)
+    }
+
+    const handle_resize = () => {
+      refresh_stage_bounds()
+      update()
+    }
 
     refresh_stage_bounds()
     update()
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', refresh_stage_bounds)
+    window.addEventListener('resize', handle_resize)
 
     return () => {
       cancel_settle()
       window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', refresh_stage_bounds)
+      window.removeEventListener('resize', handle_resize)
     }
   }
 }

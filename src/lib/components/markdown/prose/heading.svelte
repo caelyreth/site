@@ -123,10 +123,10 @@
 
   .prose-heading[data-heading-depth='5'],
   .prose-heading[data-heading-depth='6'] {
-    margin: 0.75rem 0 0;
+    margin: 1rem 0 0;
     font-family: var(--font-stack-sans);
-    font-size: var(--prose-size);
-    line-height: var(--prose-leading);
+    font-size: 0.875rem;
+    line-height: 1.4;
   }
 
   .prose-heading[data-heading-depth='5'] {
@@ -136,5 +136,17 @@
   .prose-heading[data-heading-depth='6'] {
     color: var(--color-text-secondary);
     font-weight: 500;
+  }
+
+  .prose-heading[data-heading-depth='4']::after {
+    opacity: 0.82;
+  }
+
+  .prose-heading[data-heading-depth='5']::after {
+    opacity: 0.6;
+  }
+
+  .prose-heading[data-heading-depth='6']::after {
+    opacity: 0.42;
   }
 </style>

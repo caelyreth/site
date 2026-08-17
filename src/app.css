@@ -252,7 +252,7 @@
 
 @media (max-width: 40rem) {
   :root {
-    --stage-transition-span: clamp(8rem, 24svh, 12rem);
+    --stage-transition-span: var(--stable-viewport-block);
     --chrome-transition-span: var(--stage-transition-span);
   }
 }

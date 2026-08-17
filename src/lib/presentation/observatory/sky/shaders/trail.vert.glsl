@@ -62,6 +62,18 @@ float groundFade(vec2 point) {
   return skyFade(point) * (1.0 - smoothstep(0.3, 0.68, source_depth));
 }
 
+float skyTonalTaper(vec2 point) {
+  if (uReflection > 0.5) return 1.0;
+
+  float right_side = smoothstep(0.52, 1.02, point.x);
+  float horizon_band = 1.0 - smoothstep(
+    0.14,
+    0.5,
+    abs(point.y - uGroundHorizon)
+  );
+  return 1.0 - right_side * horizon_band * 0.16;
+}
+
 void main() {
   float tail_angle = uTrailOrbitAngle + aOrbitOffset;
   float head_angle = uOrbitAngle + aOrbitOffset;
@@ -99,7 +111,9 @@ void main() {
     mix(0.46, 0.7, aDepth),
     uReflection
   );
-  vFieldFade = mix(skyFade(source_point), groundFade(source_point), uReflection);
+  vFieldFade =
+    mix(skyFade(source_point), groundFade(source_point), uReflection) *
+    skyTonalTaper(source_point);
   vReflectionDepth = max(0.0, uGroundHorizon - source_point.y);
   vStrength = aStrength;
   vMotion = smoothstep(0.35, 2.2, motion_length);
