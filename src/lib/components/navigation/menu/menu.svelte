@@ -51,6 +51,13 @@
     }, close_fallback)
   }
 
+  function close_for_navigation() {
+    if (!dialog?.open) return
+    clear_close_timer()
+    closing = false
+    dialog.close()
+  }
+
   function handle_cancel(event: Event) {
     event.preventDefault()
     request_close()
@@ -103,6 +110,7 @@
     is_closing={closing}
     is_open={menu_open}
     on_close={request_close}
+    on_navigate={close_for_navigation}
   />
 </dialog>
 

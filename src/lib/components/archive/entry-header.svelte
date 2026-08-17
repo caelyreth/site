@@ -1,0 +1,52 @@
+<script lang="ts">
+  import type { Snippet } from 'svelte'
+
+  import BackLink from './back-link.svelte'
+
+  interface Props {
+    back_href: string
+    back_label: string
+    children?: Snippet
+    meta: string
+    summary: string
+    title: string
+  }
+
+  let { back_href, back_label, children, meta, summary, title }: Props =
+    $props()
+</script>
+
+<header class="archive-entry-header">
+  <BackLink href={back_href} label={back_label} />
+  <p class="micro-label entry-meta">{meta}</p>
+  <h1>{title}</h1>
+  <p class="summary">{summary}</p>
+  {@render children?.()}
+</header>
+
+<style>
+  .entry-meta {
+    margin: clamp(1.5rem, 4vw, 2.75rem) 0 0;
+    color: var(--color-muted);
+    letter-spacing: 0.13em;
+  }
+
+  h1 {
+    margin: 0.875rem 0 0;
+    color: var(--color-text);
+    font-family: var(--font-stack-serif);
+    font-size: clamp(2.25rem, 4.5vw, 4.25rem);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 0.96;
+    overflow-wrap: anywhere;
+  }
+
+  .summary {
+    max-width: 41rem;
+    margin: 1.25rem 0 0;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+</style>

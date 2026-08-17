@@ -7,14 +7,15 @@
     is_closing: boolean
     is_open: boolean
     on_close: () => void
+    on_navigate: () => void
   }
 
-  const { is_closing, is_open, on_close }: Props = $props()
+  const { is_closing, is_open, on_close, on_navigate }: Props = $props()
 </script>
 
 <div class="stage">
   <MenuOrnaments {is_closing} {is_open} />
-  <MenuSlips {is_closing} {is_open} />
+  <MenuSlips {is_closing} {is_open} {on_navigate} />
   <ThemeSlip {is_closing} {is_open} {on_close} />
   <p
     class:is-closing={is_closing}

@@ -297,6 +297,40 @@ body::-webkit-scrollbar {
   }
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-short);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root) {
+  animation-name: page-leave;
+  animation-timing-function: var(--ease-in);
+}
+
+::view-transition-new(root) {
+  animation-name: page-enter;
+}
+
+@keyframes page-leave {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
 html.page-scroll-locked {
   overflow: hidden;
 }

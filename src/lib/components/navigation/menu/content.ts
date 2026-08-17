@@ -14,6 +14,7 @@ interface EnteringLayout {
 interface MenuPreview {
   code: string
   detail: string
+  href?: string
   layout: Position &
     EnteringLayout & {
       rotation: string
@@ -34,8 +35,9 @@ export interface Drift {
 
 export const menu_previews: readonly MenuPreview[] = [
   {
-    code: 'ART / 001',
-    detail: 'Technical shelf',
+    code: 'ESS / 001',
+    detail: 'Reflective field',
+    href: '/essays',
     layout: {
       enter_delay: '80ms',
       enter_x: '-2rem',
@@ -44,11 +46,12 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '-13deg',
       top: '22%',
     },
-    title: 'Articles',
+    title: 'Essays',
   },
   {
-    code: 'ESS / 002',
-    detail: 'Reflective shelf',
+    code: 'THR / 002',
+    detail: 'Connection field',
+    href: '/threads',
     layout: {
       enter_delay: '140ms',
       enter_x: '1.75rem',
@@ -57,11 +60,11 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '11deg',
       top: '29%',
     },
-    title: 'Essays',
+    title: 'Threads',
   },
   {
-    code: 'MAP / 003',
-    detail: 'Curated paths',
+    code: 'FRG / HOLD',
+    detail: 'Awaiting signal',
     layout: {
       enter_delay: '200ms',
       enter_x: '-1.5rem',
@@ -70,7 +73,7 @@ export const menu_previews: readonly MenuPreview[] = [
       rotation: '-7deg',
       top: '56%',
     },
-    title: 'Maps',
+    title: 'Fragments',
   },
 ]
 

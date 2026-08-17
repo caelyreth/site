@@ -1,0 +1,23 @@
+import { onNavigate } from '$app/navigation'
+
+export function install_view_transitions() {
+  onNavigate((navigation) => {
+    if (
+      typeof document === 'undefined' ||
+      !document.startViewTransition ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return
+    }
+
+    return new Promise((continue_navigation) => {
+      const transition = document.startViewTransition(async () => {
+        continue_navigation()
+        await navigation.complete
+      })
+
+      // Interrupted transitions reject their finished promise by design.
+      void transition.finished.catch(() => {})
+    })
+  })
+}

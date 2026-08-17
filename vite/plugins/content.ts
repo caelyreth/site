@@ -1,25 +1,32 @@
 import { normalizePath, type Plugin } from 'vite'
 
-import { content_update_event } from '../../src/lib/content/hmr'
+import {
+  content_update_event,
+  type ContentUpdate,
+} from '../../src/lib/content/hmr'
 
 export function content_updates(): Plugin {
-  let home_source = ''
+  let content_root = ''
 
   return {
     name: 'content-updates',
     apply: 'serve',
     configResolved(config) {
-      home_source = normalizePath(`${config.root}/content/home.md`)
+      content_root = normalizePath(`${config.root}/content/`)
     },
     hotUpdate(options) {
       const file = normalizePath(options.file)
-      if (file !== home_source) return
+      if (!file.startsWith(content_root) || !file.endsWith('.md')) return
 
       // Raw Markdown is imported only by SvelteKit's SSR environment.
       if (this.environment.name !== 'ssr') return
 
+      const update: ContentUpdate = {
+        content_id: file.slice(content_root.length, -'.md'.length),
+      }
+
       options.server.ws.send({
-        data: null,
+        data: update,
         event: content_update_event,
         type: 'custom',
       })

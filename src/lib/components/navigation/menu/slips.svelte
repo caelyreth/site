@@ -1,36 +1,79 @@
 <script lang="ts">
+  import { base } from '$app/paths'
+
   import { menu_previews } from './content'
 
   interface Props {
     is_closing: boolean
     is_open: boolean
+    on_navigate: () => void
   }
 
-  const { is_closing, is_open }: Props = $props()
+  const { is_closing, is_open, on_navigate }: Props = $props()
+
+  function is_primary_navigation(event: MouseEvent) {
+    return (
+      event.button === 0 &&
+      ![
+        event.defaultPrevented,
+        event.metaKey,
+        event.altKey,
+        event.ctrlKey,
+        event.shiftKey,
+      ].some(Boolean)
+    )
+  }
+
+  function close_on_navigation(event: MouseEvent) {
+    if (is_primary_navigation(event)) {
+      on_navigate()
+    }
+  }
 </script>
 
 <div
-  aria-hidden="true"
   class:is-closing={is_closing}
   class:is-open={is_open}
   class="collection-previews"
 >
   {#each menu_previews as item}
-    <span
-      class="slip"
-      style:--slip-bottom={item.layout.bottom}
-      style:--slip-enter-delay={item.layout.enter_delay}
-      style:--slip-enter-x={item.layout.enter_x}
-      style:--slip-enter-y={item.layout.enter_y}
-      style:--slip-left={item.layout.left}
-      style:--slip-right={item.layout.right}
-      style:--slip-rotation={item.layout.rotation}
-      style:--slip-top={item.layout.top}
-    >
+    {#snippet contents()}
       <span class="micro-label slip-code">{item.code}</span>
       <span class="slip-title font-serif">{item.title}</span>
       <span class="micro-label slip-detail">{item.detail}</span>
-    </span>
+    {/snippet}
+    {#if item.href}
+      <a
+        class="slip"
+        href={`${base}${item.href}`.replace('//', '/')}
+        onclick={close_on_navigation}
+        style:--slip-bottom={item.layout.bottom}
+        style:--slip-enter-delay={item.layout.enter_delay}
+        style:--slip-enter-x={item.layout.enter_x}
+        style:--slip-enter-y={item.layout.enter_y}
+        style:--slip-left={item.layout.left}
+        style:--slip-right={item.layout.right}
+        style:--slip-rotation={item.layout.rotation}
+        style:--slip-top={item.layout.top}
+      >
+        {@render contents()}
+      </a>
+    {:else}
+      <span
+        aria-disabled="true"
+        class="slip is-deferred"
+        style:--slip-bottom={item.layout.bottom}
+        style:--slip-enter-delay={item.layout.enter_delay}
+        style:--slip-enter-x={item.layout.enter_x}
+        style:--slip-enter-y={item.layout.enter_y}
+        style:--slip-left={item.layout.left}
+        style:--slip-right={item.layout.right}
+        style:--slip-rotation={item.layout.rotation}
+        style:--slip-top={item.layout.top}
+      >
+        {@render contents()}
+      </span>
+    {/if}
   {/each}
 </div>
 
@@ -66,6 +109,20 @@
     gap: 0.5rem;
     transform: rotate(var(--slip-effective-rotation, var(--slip-rotation)));
     white-space: nowrap;
+    pointer-events: auto;
+    text-decoration: none;
+    transition:
+      color var(--dur-short) var(--ease-out),
+      background-color var(--dur-short) var(--ease-out);
+  }
+
+  .slip.is-deferred {
+    opacity: 0.65;
+  }
+
+  .slip:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 0.25rem;
   }
 
   .slip-code {
@@ -85,6 +142,13 @@
   .slip-detail {
     line-height: 1.3;
     opacity: 0.65;
+  }
+
+  @media (hover: hover) {
+    a.slip:hover {
+      color: var(--slip-surface);
+      background-color: var(--menu-highlight);
+    }
   }
 
   @keyframes slip-enter {
@@ -186,8 +250,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .collection-previews.is-open .slip {
+    .collection-previews.is-open .slip,
+    .slip {
       animation: none;
+      transition: none;
     }
   }
 </style>
