@@ -3,6 +3,7 @@
 
   interface Props extends Record<string, unknown> {
     children?: Snippet
+    class?: string
     open?: boolean
     summary?: string
   }
@@ -10,6 +11,7 @@
   /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let {
     children,
+    class: class_name,
     open = false,
     summary = 'Details',
     ...attributes
@@ -41,7 +43,6 @@
   }
 
   function toggle_details(event: MouseEvent) {
-    event.preventDefault()
     const selection_gesture = is_selection_gesture(event)
     if (selection_gesture) return
 
@@ -84,10 +85,21 @@
   }
 </script>
 
-<details {...attributes} data-closing={is_closing || undefined} {open}>
-  <summary onpointerdown={track_pointer} onclick={toggle_details}>
+<div
+  {...attributes}
+  class={`details${class_name ? ` ${class_name}` : ''}`}
+  data-closing={is_closing || undefined}
+  data-open={open || undefined}
+>
+  <button
+    type="button"
+    class="details-toggle"
+    aria-expanded={open && !is_closing}
+    onpointerdown={track_pointer}
+    onclick={toggle_details}
+  >
     {summary}
-  </summary>
+  </button>
   <div
     aria-hidden={!open || is_closing}
     class="details-content"
@@ -98,21 +110,24 @@
       <div class="details-copy">{@render children?.()}</div>
     </div>
   </div>
-</details>
+</div>
 
 <style>
-  details {
+  .details {
     margin-top: var(--prose-block-gap);
     border: 1px solid var(--color-rule);
     color: var(--color-text-secondary);
     background: var(--color-prose-surface);
   }
 
-  summary {
+  .details-toggle {
     display: flex;
+    inline-size: 100%;
     min-inline-size: 0;
     padding: 0.75rem 1rem;
+    border: 0;
     align-items: center;
+    background: transparent;
     justify-content: space-between;
     gap: 1rem;
     color: var(--color-text);
@@ -121,28 +136,24 @@
     font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1.35;
-    list-style: none;
+    text-align: start;
   }
 
-  summary::-webkit-details-marker {
-    display: none;
-  }
-
-  summary::after {
+  .details-toggle::after {
     flex: none;
     content: '+';
     transition: transform var(--dur-micro) var(--ease-out);
   }
 
-  details[open] summary {
+  .details[data-open] .details-toggle {
     border-bottom: 1px solid var(--color-rule);
   }
 
-  details[open] summary::after {
+  .details[data-open] .details-toggle::after {
     transform: rotate(45deg);
   }
 
-  summary:focus-visible {
+  .details-toggle:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: -2px;
   }
@@ -157,7 +168,7 @@
       opacity var(--dur-short) var(--ease-out);
   }
 
-  details[open]:not([data-closing]) .details-content {
+  .details[data-open]:not([data-closing]) .details-content {
     grid-template-rows: 1fr;
     opacity: 1;
   }
@@ -176,7 +187,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    summary::after,
+    .details-toggle::after,
     .details-content {
       transition-duration: 0ms;
     }
