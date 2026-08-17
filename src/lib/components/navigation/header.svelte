@@ -3,25 +3,17 @@
   import { base } from '$app/paths'
   import { page } from '$app/state'
   import { scroll_activity } from '$lib/browser/scroll-activity'
-  import { scroll_to_top } from '$lib/browser/scroll-to-top'
-  import { observe_viewport_threshold } from '$lib/browser/viewport-threshold'
+  import { get_page_chrome } from '$lib/components/layout/page-chrome'
   import { tick } from 'svelte'
-  import type { Snippet } from 'svelte'
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
   import Menu from './menu/menu.svelte'
   import MobileRail from './mobile-rail.svelte'
-
-  interface Props {
-    mobile_panel?: Snippet<[() => void]>
-  }
-
-  const { mobile_panel }: Props = $props()
+  import TableOfContentsPanel from './table-of-contents-panel.svelte'
 
   const home_path = base || '/'
-  const content_reveal_ratio = 0.6
-  let content_active = $state(false)
+  const chrome = get_page_chrome()
   let scrolling = $state(false)
 
   const observe_scroll = scroll_activity({
@@ -30,14 +22,6 @@
       scrolling = active
     },
   })
-  const observe_content = observe_viewport_threshold(
-    'content',
-    content_reveal_ratio,
-    (active) => {
-      content_active = active
-    },
-  )
-
   function has_navigation_modifier(event: MouseEvent) {
     return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey
   }
@@ -48,7 +32,7 @@
       await tick()
     }
 
-    scroll_to_top()
+    window.scrollTo({ top: 0, behavior: 'auto' })
   }
 
   function handle_brand_click(event: MouseEvent) {
@@ -63,11 +47,14 @@
   }
 </script>
 
+{#snippet index_panel(close_panel: () => void)}
+  <TableOfContentsPanel entries={chrome.toc} on_close={close_panel} />
+{/snippet}
+
 <div
   {@attach observe_scroll}
-  {@attach observe_content}
   class="site-controls"
-  data-content-active={content_active}
+  data-content-active={chrome.content_active}
 >
   <header class="header">
     <div class="inner">
@@ -97,10 +84,10 @@
   </div>
 
   <MobileRail
-    visible={content_active}
+    visible={chrome.content_active}
     collapsed={scrolling}
-    cells={mobile_panel ? 4 : 3}
-    panel={mobile_panel}
+    cells={chrome.toc.length ? 4 : 3}
+    panel={chrome.toc.length ? index_panel : undefined}
   >
     {#snippet children(toggle_panel, expanded, has_panel, panel_id)}
       <div class="mobile-brand" data-rail-cell data-rail-secondary>
@@ -303,7 +290,7 @@
       color var(--dur-micro) var(--ease-out);
   }
 
-  @media (min-width: 60rem) {
+  @media (width >= 60rem) {
     .desktop-actions {
       position: fixed;
       left: var(--content-rail-start);
@@ -323,7 +310,7 @@
     }
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .header,
     .desktop-actions {
       display: none;

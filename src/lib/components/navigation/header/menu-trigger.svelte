@@ -76,7 +76,7 @@
     outline-offset: -2px;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .menu-trigger {
       width: 100%;
       min-width: 0;

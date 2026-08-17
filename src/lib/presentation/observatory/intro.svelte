@@ -7,7 +7,6 @@
     description?: string
   }
 
-  /* oxlint-disable prefer-const -- Intro props can update with the route. */
   let { description }: Props = $props()
 </script>
 
@@ -157,7 +156,7 @@
     }
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .intro-cluster {
       --stage-intro-description-measure: 21rem;
       --stage-intro-entry-gap: 0.625rem;
@@ -171,7 +170,7 @@
     }
   }
 
-  @media (max-width: 40rem) and (prefers-reduced-motion: no-preference) {
+  @media (width < 40rem) and (prefers-reduced-motion: no-preference) {
     .intro-cluster {
       transition: bottom 320ms var(--ease-out);
     }

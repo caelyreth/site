@@ -1,6 +1,5 @@
 <script lang="ts">
   import SkyCanvas from './canvas.svelte'
-  /* oxlint-disable prefer-const -- Svelte props update client state. */
   import { SKY_FIELD_FADE_RATE } from './config'
 
   interface Props {
@@ -46,8 +45,7 @@
     );
     --label-block-inset: max(1.25rem, env(safe-area-inset-top));
     --label-bottom-inset: calc(
-      max(1.25rem, env(safe-area-inset-bottom)) +
-        max(0px, 100lvh - 100dvh)
+      max(1.25rem, env(safe-area-inset-bottom)) + max(0px, 100lvh - 100dvh)
     );
     --label-rail-top: calc(
       var(--label-block-inset) +
@@ -109,7 +107,7 @@
     opacity: var(--sky-field-opacity);
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .sky-surface {
       --sky-field-start: -8%;
       --sky-field-fade-start: 0%;

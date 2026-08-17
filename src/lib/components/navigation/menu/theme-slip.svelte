@@ -159,7 +159,7 @@
     animation: slip-leave var(--dur-long) var(--ease-out) both;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .theme-slip {
       --slip-effective-rotation: 0deg;
       --theme-toggle-size: 2.25rem;
@@ -210,7 +210,7 @@
     }
   }
 
-  @media (max-height: 42rem) and (max-width: 40rem) {
+  @media (height < 42rem) and (width < 40rem) {
     .theme-slip {
       min-height: 4.875rem;
       gap: 0.35rem;

@@ -6,7 +6,6 @@
     'type'?: string
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let {
     'aria-label': aria_label,
     checked = false,

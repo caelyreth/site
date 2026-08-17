@@ -1,46 +1,33 @@
 import type { Attachment } from 'svelte/attachments'
 
+interface ViewportThresholdOptions {
+  on_change: (active: boolean) => void
+  ratio: number
+}
+
 /**
  * Observes when an element's top edge reaches a viewport-relative
  * threshold. IntersectionObserver lets the browser coalesce geometry work
  * with layout, instead of forcing a measurement from a scroll listener.
  */
 export function observe_viewport_threshold(
-  element_id: string,
-  ratio: number,
-  on_change: (active: boolean) => void,
+  options: ViewportThresholdOptions,
 ) {
-  return (() => {
-    let observed_element: HTMLElement | undefined
+  return ((element) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry) return
         const threshold =
-          entry.rootBounds?.bottom ?? window.innerHeight * ratio
-        on_change(entry.boundingClientRect.top <= threshold)
+          entry.rootBounds?.bottom ?? window.innerHeight * options.ratio
+        options.on_change(entry.boundingClientRect.top <= threshold)
       },
-      { rootMargin: `0px 0px -${(1 - ratio) * 100}%` },
+      { rootMargin: `0px 0px -${(1 - options.ratio) * 100}%` },
     )
-    const observe_target = () => {
-      const next_element = document.getElementById(element_id) ?? undefined
-      if (next_element === observed_element) return
-
-      observer.disconnect()
-      observed_element = next_element
-      if (observed_element) observer.observe(observed_element)
-      else on_change(false)
-    }
-    const mutation_observer = new MutationObserver(observe_target)
-
-    mutation_observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
-    observe_target()
+    observer.observe(element)
 
     return () => {
-      mutation_observer.disconnect()
       observer.disconnect()
+      options.on_change(false)
     }
   }) satisfies Attachment<HTMLElement>
 }

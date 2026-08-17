@@ -8,13 +8,12 @@
     entries: readonly HeadingEntry[]
   }
 
-  /* oxlint-disable prefer-const -- TOC state follows document scrolling. */
   let { entries }: Props = $props()
   let active_index = $state(0)
   let has_hover = $state(false)
   let toc_visible = $state(false)
 
-  const wide_media_query = '(min-width: 80rem)'
+  const wide_media_query = '(width >= 80rem)'
 
   function observe_visibility(rail: HTMLElement) {
     const article = rail.closest('article')
@@ -58,36 +57,44 @@
     }
   }
 
-  function observe_rail(rail: HTMLElement) {
-    const media_query = window.matchMedia(wide_media_query)
-    let cleanup: (() => void) | undefined
+  const observe_rail = $derived.by(() => {
+    const current_entries = entries
 
-    const sync = () => {
-      cleanup?.()
-      if (!media_query.matches) {
-        toc_visible = false
-        cleanup = undefined
-        return
+    return (rail: HTMLElement) => {
+      const media_query = window.matchMedia(wide_media_query)
+      let cleanup: (() => void) | undefined
+
+      const sync = () => {
+        cleanup?.()
+        if (!media_query.matches) {
+          toc_visible = false
+          cleanup = undefined
+          return
+        }
+
+        active_index = 0
+        const cleanup_headings = observe_active_heading(
+          current_entries,
+          (index) => {
+            active_index = index
+          },
+        )
+        const cleanup_visibility = observe_visibility(rail)
+        cleanup = () => {
+          cleanup_headings()
+          cleanup_visibility?.()
+        }
       }
 
-      const cleanup_headings = observe_active_heading(entries, (index) => {
-        active_index = index
-      })
-      const cleanup_visibility = observe_visibility(rail)
-      cleanup = () => {
-        cleanup_headings()
-        cleanup_visibility?.()
+      media_query.addEventListener('change', sync)
+      sync()
+
+      return () => {
+        cleanup?.()
+        media_query.removeEventListener('change', sync)
       }
     }
-
-    media_query.addEventListener('change', sync)
-    sync()
-
-    return () => {
-      cleanup?.()
-      media_query.removeEventListener('change', sync)
-    }
-  }
+  })
 </script>
 
 {#if entries.length}

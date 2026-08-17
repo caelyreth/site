@@ -162,7 +162,7 @@
     animation: drift-leave var(--dur-long) var(--ease-out) both;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .orbits {
       inset: -14% -48%;
       width: 196%;

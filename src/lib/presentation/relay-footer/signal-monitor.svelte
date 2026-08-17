@@ -3,7 +3,6 @@
   import { fly } from 'svelte/transition'
 
   import { next_signal } from './signal'
-  /* oxlint-disable prefer-const -- a Svelte rune must remain mutable. */
   import { text_refresh_in, text_refresh_out } from './transitions'
 
   interface Props {

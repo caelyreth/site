@@ -6,7 +6,6 @@
     scope?: 'col' | 'colgroup' | 'row' | 'rowgroup'
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { children, scope = 'col', ...attributes }: Props = $props()
 </script>
 

@@ -1,14 +1,14 @@
 <script lang="ts">
+  import { compact_viewport_query } from '$lib/browser/viewport'
   import { onMount } from 'svelte'
   import type { Component } from 'svelte'
 
-  const mobile_query = '(max-width: 40rem)'
   const load_delay = 160
 
   let Figure = $state<Component>()
 
   onMount(() => {
-    const media_query = window.matchMedia(mobile_query)
+    const media_query = window.matchMedia(compact_viewport_query)
     let disposed = false
     let load_timer = 0
 

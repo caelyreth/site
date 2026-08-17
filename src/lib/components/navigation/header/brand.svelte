@@ -56,7 +56,7 @@
     outline-offset: -2px;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .brand {
       min-width: 0;
       gap: 0;

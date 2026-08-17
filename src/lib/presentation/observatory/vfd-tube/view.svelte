@@ -41,7 +41,7 @@
     z-index: 1;
   }
 
-  @media (max-width: 38rem) {
+  @media (width < 38rem) {
     .tube-layer {
       width: min(76vw, 26rem);
     }

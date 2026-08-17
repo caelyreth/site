@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { reduced_motion } from '$lib/browser/reduced-motion'
   import type { Snippet } from 'svelte'
 
   interface Props extends Record<string, unknown> {
@@ -8,7 +9,6 @@
     summary?: string
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let {
     children,
     class: class_name,
@@ -38,10 +38,6 @@
     requestAnimationFrame(() => window.getSelection()?.removeAllRanges())
   }
 
-  function is_reduced_motion() {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  }
-
   function toggle_details(event: MouseEvent) {
     const selection_gesture = is_selection_gesture(event)
     if (selection_gesture) return
@@ -63,7 +59,7 @@
       return
     }
 
-    if (is_reduced_motion()) {
+    if (reduced_motion.current) {
       open = false
       return
     }

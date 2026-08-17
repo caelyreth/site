@@ -23,7 +23,6 @@
   const minimum_thumb_size = 28
   const scrollbar_thickness = 6
 
-  /* oxlint-disable prefer-const -- Svelte props and element bindings can update. */
   let { axis = 'block', target, viewport = false }: Props = $props()
   let dragging = $state(false)
   let geometry = $state<ScrollbarGeometry>({

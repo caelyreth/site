@@ -55,4 +55,13 @@ export default defineConfig({
     'typescript/consistent-type-imports': 'warn',
     'typescript/consistent-type-exports': 'warn',
   },
+  overrides: [
+    {
+      // Svelte runes and mutable props intentionally require `let` bindings.
+      files: ['**/*.svelte'],
+      rules: {
+        'prefer-const': 'off',
+      },
+    },
+  ],
 })

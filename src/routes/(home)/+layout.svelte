@@ -3,47 +3,43 @@
   import Article from '$lib/components/layout/article.svelte'
   import Backdrop from '$lib/components/layout/backdrop.svelte'
   import Footer from '$lib/components/layout/footer.svelte'
+  import {
+    set_page_chrome,
+    type PageChrome,
+  } from '$lib/components/layout/page-chrome'
   import Stage from '$lib/components/layout/stage.svelte'
   import Header from '$lib/components/navigation/header.svelte'
-  import TableOfContentsPanel from '$lib/components/navigation/table-of-contents-panel.svelte'
-  import type { HeadingEntry } from '$lib/content/headings'
-  import type { HomeDocument } from '$lib/content/home'
   import { SKY_FIELD_FADE_RATE } from '$lib/presentation/observatory/sky/config'
   import Observatory from '$lib/presentation/observatory/view.svelte'
   import RelayFooter from '$lib/presentation/relay-footer/view.svelte'
 
-  interface HomePageData {
-    document: HomeDocument
-    toc: HeadingEntry[]
-  }
+  import type { PageData } from './$types'
 
   const { children } = $props()
-  const document = $derived((page.data as HomePageData).document)
-  const document_toc = $derived((page.data as HomePageData).toc)
-  let fallback_progress = $state(0)
+  const data = $derived(page.data as PageData)
+  const document = $derived(data.document)
+  const document_toc = $derived(data.toc)
+  const chrome = $state<PageChrome>({
+    content_active: false,
+    stage_progress: 0,
+    toc: (page.data as PageData).toc,
+  })
 
-  function update_stage_progress(progress: number) {
-    fallback_progress = progress
-  }
+  set_page_chrome(chrome)
+
+  $effect(() => {
+    chrome.toc = document_toc
+  })
 </script>
 
 <div class="home">
-  <div class="scroll-chrome" style:--stage-progress={fallback_progress}>
+  <div class="scroll-chrome" style:--stage-progress={chrome.stage_progress}>
     <Backdrop />
-    <Header>
-      {#snippet mobile_panel(close_panel)}
-        <TableOfContentsPanel
-          entries={document_toc}
-          on_close={close_panel}
-        />
-      {/snippet}
-    </Header>
+    <Header />
   </div>
   <main>
     <Stage
       title={document.frontmatter.title}
-      on_progress={update_stage_progress}
-      progress={fallback_progress}
       defer_surface_when_covered_mobile
       surface_exit_progress={1 / SKY_FIELD_FADE_RATE}
     >
@@ -55,7 +51,7 @@
         />
       {/snippet}
     </Stage>
-    <Article has_footer toc={document_toc}>
+    <Article has_footer>
       {@render children()}
     </Article>
   </main>
@@ -82,5 +78,4 @@
     min-height: 100vh;
     flex-direction: column;
   }
-
 </style>

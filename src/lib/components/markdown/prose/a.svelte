@@ -5,7 +5,6 @@
     children?: Snippet
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { children, ...attributes }: Props = $props()
 </script>
 

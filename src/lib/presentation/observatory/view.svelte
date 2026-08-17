@@ -10,7 +10,6 @@
     sky_paused?: boolean
   }
 
-  /* oxlint-disable prefer-const -- Observatory props can update with the route. */
   let {
     defer_surface = false,
     description,

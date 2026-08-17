@@ -9,7 +9,6 @@
     panel?: Snippet<[() => void]>
   }
 
-  /* oxlint-disable prefer-const -- Props can update during client navigation. */
   let { visible, collapsed, cells, children, panel }: Props = $props()
   let expanded = $state(false)
   let panel_height = $state(0)
@@ -75,7 +74,7 @@
     display: none;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .mobile-rail {
       --rail-size: 2.75rem;
       --rail-edge: max(0.75rem, env(safe-area-inset-right));

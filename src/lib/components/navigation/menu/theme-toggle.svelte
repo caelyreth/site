@@ -117,7 +117,7 @@
     }
   }
 
-  @media (max-width: 24rem) {
+  @media (width < 24rem) {
     .theme-toggle {
       height: var(--theme-toggle-size, 2rem);
       grid-auto-columns: var(--theme-toggle-size, 2rem);

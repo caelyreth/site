@@ -9,7 +9,6 @@
     top_edge?: boolean
   }
 
-  /* oxlint-disable prefer-const -- Snippet props can update with the route. */
   let { children, edge = false, top_edge = false }: Props = $props()
 </script>
 
@@ -37,7 +36,7 @@
     display: none;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .paper-deck-top-edge {
       display: block;
     }

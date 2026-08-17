@@ -1,6 +1,6 @@
 import type { Attachment } from 'svelte/attachments'
 
-const compact_stage_query = '(max-width: 40rem)'
+import { compact_viewport_query } from './viewport'
 
 export interface StageSurfaceDeferralOptions {
   defer_after_mobile_cover?: boolean
@@ -37,8 +37,8 @@ export function stage_scroll_elements(capture: HTMLElement) {
 
 /**
  * Defers an expensive stage surface once it is no longer visible. Desktop
- * stages defer after their fade; mobile overlay stages defer after the paper
- * has covered the scene.
+ * stages defer after their fade; mobile overlay stages defer after the
+ * paper has covered the scene.
  */
 export function defer_stage_surface_on_return(
   options: StageSurfaceDeferralOptions,
@@ -55,7 +55,7 @@ export function defer_stage_surface_on_return(
     let stage_start = 0
     let surface_exit = 0
 
-    const compact_media_query = window.matchMedia(compact_stage_query)
+    const compact_media_query = window.matchMedia(compact_viewport_query)
 
     const set_deferred = (next_deferred: boolean) => {
       if (deferred === next_deferred) return
@@ -92,7 +92,10 @@ export function defer_stage_surface_on_return(
       }
     }
     const update_mobile_deferral = (scroll_top: number) => {
-      if (!options.defer_after_mobile_cover || !compact_media_query.matches) {
+      if (
+        !options.defer_after_mobile_cover ||
+        !compact_media_query.matches
+      ) {
         return false
       }
 

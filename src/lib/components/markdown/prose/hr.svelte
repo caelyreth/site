@@ -5,7 +5,6 @@
     class?: string
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { class: class_name, ...attributes }: Props = $props()
 </script>
 

@@ -11,7 +11,6 @@
     language?: string
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { caption, children, filename, language, ...attributes }: Props =
     $props()
   let pre: HTMLPreElement | undefined = $state()

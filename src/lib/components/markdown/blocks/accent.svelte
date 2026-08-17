@@ -6,7 +6,6 @@
     children?: Snippet
   }
 
-  /* oxlint-disable prefer-const -- Snippet props can update with the document. */
   let { children, class: class_name, ...attributes }: Props = $props()
 </script>
 

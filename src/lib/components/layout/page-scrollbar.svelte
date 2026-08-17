@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { compact_viewport_query } from '$lib/browser/viewport'
   import { onMount } from 'svelte'
 
   import ScrollbarIndicator from './scrollbar-indicator.svelte'
@@ -7,7 +8,7 @@
   let show_indicator = $state(false)
 
   onMount(() => {
-    const mobile_media = window.matchMedia('(max-width: 40rem)')
+    const mobile_media = window.matchMedia(compact_viewport_query)
     const sync_indicator = () => {
       show_indicator = !mobile_media.matches
     }

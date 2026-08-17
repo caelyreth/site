@@ -9,7 +9,6 @@
     on_select?: () => void
   }
 
-  /* oxlint-disable prefer-const -- Props follow route data and scroll state. */
   let { entries, active_index, variant, on_hover, on_select }: Props =
     $props()
   let hover_index = $state<number | null>(null)

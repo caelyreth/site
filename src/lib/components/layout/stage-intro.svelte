@@ -4,7 +4,6 @@
     invert_description_in_light?: boolean
   }
 
-  /* oxlint-disable prefer-const -- Intro props can update with the route. */
   let { description, invert_description_in_light = false }: Props = $props()
 </script>
 

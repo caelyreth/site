@@ -5,7 +5,6 @@
     children?: Snippet<[boolean]>
   }
 
-  /* oxlint-disable prefer-const -- Snippet props can update with the route. */
   let { children }: Props = $props()
   let visible = $state(false)
 

@@ -47,10 +47,9 @@
     pointer-events: none;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .field-note {
       display: none;
     }
   }
-
 </style>

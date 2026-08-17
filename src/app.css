@@ -118,7 +118,9 @@
   --color-ink-prime: var(--color-ink-prime-light);
   --color-accent: var(--color-accent-light);
   --color-footer-surface: var(--color-footer-surface-light);
-  --color-footer-selection-surface: var(--color-footer-selection-surface-light);
+  --color-footer-selection-surface: var(
+    --color-footer-selection-surface-light
+  );
   --color-footer-selection-ink: var(--color-footer-selection-ink-light);
   --color-focus: var(--color-focus-light);
   --color-text: var(--color-text-light);
@@ -219,7 +221,9 @@
   --color-ink-prime: var(--color-ink-prime-dark);
   --color-accent: var(--color-accent-dark);
   --color-footer-surface: var(--color-footer-surface-dark);
-  --color-footer-selection-surface: var(--color-footer-selection-surface-dark);
+  --color-footer-selection-surface: var(
+    --color-footer-selection-surface-dark
+  );
   --color-footer-selection-ink: var(--color-footer-selection-ink-dark);
   --color-focus: var(--color-focus-dark);
   --color-text: var(--color-text-dark);
@@ -250,7 +254,7 @@
   color-scheme: dark;
 }
 
-@media (max-width: 40rem) {
+@media (width < 40rem) {
   :root {
     --stage-transition-span: var(--stable-viewport-block);
     --chrome-transition-span: var(--stage-transition-span);
@@ -285,6 +289,7 @@ html.page-scroll-locked {
 
 @media (forced-colors: active) {
   html {
+    scrollbar-gutter: stable;
     scrollbar-width: auto;
   }
 

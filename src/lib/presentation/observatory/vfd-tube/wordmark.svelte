@@ -26,8 +26,7 @@
   const tube_slots = 9
   const tube_lines = 2
   const glass = {
-    height:
-      GLYPH_ROWS + LAYOUT.line_pitch * (tube_lines - 1) + 1.28,
+    height: GLYPH_ROWS + LAYOUT.line_pitch * (tube_lines - 1) + 1.28,
     radius: 0.4,
     width: word_width(tube_slots) + 3.2,
     x: -1.6,
@@ -35,11 +34,9 @@
   }
   const idle = idle_matrix(tube_slots, tube_lines)
 
-  /* oxlint-disable prefer-const -- The readout can update from a host part. */
   let { readout = 'R322*D+42' }: Props = $props()
   let refresh_step = $state(-1)
   let readout_index = $state(-1)
-  /* oxlint-disable prefer-const -- Svelte binding assigns DOM state. */
   let wordmark = $state<SVGSVGElement>()
   const reading = fit_text('CAELYRETH', tube_slots)
   const active_readout = $derived(
@@ -54,9 +51,7 @@
       ? active_readout
       : refresh_frame(refresh_step, tube_slots),
   )
-  const secondary_reading = $derived(
-    fit_text(refresh_reading, tube_slots),
-  )
+  const secondary_reading = $derived(fit_text(refresh_reading, tube_slots))
   const matrix_lines = $derived([reading, secondary_reading])
   let display_timer = 0
 

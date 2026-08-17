@@ -192,7 +192,7 @@
     opacity: 0;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .menu-veil {
       background: var(--color-paper);
       -webkit-backdrop-filter: none;

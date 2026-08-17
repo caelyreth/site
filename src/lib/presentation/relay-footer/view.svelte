@@ -9,7 +9,6 @@
     visible: boolean
   }
 
-  /* oxlint-disable prefer-const -- Visibility is owned by the footer observer. */
   let { visible }: Props = $props()
 
   function footer_href(href: string) {
@@ -289,7 +288,7 @@
     }
   }
 
-  @media (min-width: 40rem) {
+  @media (width >= 40rem) {
     .heading {
       grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.8fr);
       gap: 2rem;
@@ -303,7 +302,7 @@
     }
   }
 
-  @media (min-width: 48rem) {
+  @media (width >= 48rem) {
     .grid {
       grid-template-columns: 2.2fr 1.25fr 1.25fr;
     }
@@ -330,7 +329,7 @@
     }
   }
 
-  @media (hover: hover) and (min-width: 48rem) {
+  @media (hover: hover) and (width >= 48rem) {
     .footer-module:first-child:hover {
       box-shadow: calc(-1 * var(--footer-hover-outset)) 0 0
         var(--footer-ink);

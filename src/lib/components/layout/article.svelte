@@ -1,28 +1,34 @@
 <script lang="ts">
+  import { observe_viewport_threshold } from '$lib/browser/viewport-threshold'
   import TableOfContents from '$lib/components/navigation/table-of-contents.svelte'
-  import type { HeadingEntry } from '$lib/content/headings'
   import type { Snippet } from 'svelte'
 
+  import { get_page_chrome } from './page-chrome'
   import PaperDeck from './paper-deck.svelte'
 
   interface Props {
     children?: Snippet
     has_footer?: boolean
-    toc?: readonly HeadingEntry[]
   }
 
-  /* oxlint-disable prefer-const -- Snippet props can update with the route. */
-  let { children, has_footer = false, toc = [] }: Props = $props()
+  let { children, has_footer = false }: Props = $props()
+  const chrome = get_page_chrome()
+  const observe_content = observe_viewport_threshold({
+    ratio: 0.6,
+    on_change(active) {
+      chrome.content_active = active
+    },
+  })
 </script>
 
-<article id="content" class="article">
+<article id="content" class="article" {@attach observe_content}>
   <PaperDeck edge={has_footer} top_edge>
     <div class="article-content">
       {@render children?.()}
     </div>
   </PaperDeck>
-  {#if toc.length}
-    <TableOfContents entries={toc} />
+  {#if chrome.toc.length}
+    <TableOfContents entries={chrome.toc} />
   {/if}
 </article>
 
@@ -49,7 +55,7 @@
     transform: translateY(-50%);
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .article {
       position: relative;
       z-index: 22;

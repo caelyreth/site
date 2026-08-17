@@ -8,7 +8,9 @@ type EngineFactory = (
 let pending_load: Promise<EngineFactory> | undefined
 
 export function load_engine() {
-  pending_load ??= import('./engine').then(({ create_engine }) => create_engine)
+  pending_load ??= import('./engine').then(
+    ({ create_engine }) => create_engine,
+  )
 
   return pending_load
 }

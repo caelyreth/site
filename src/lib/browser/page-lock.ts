@@ -1,52 +1,24 @@
-export interface PageScrollLockRoot {
-  classList: Pick<DOMTokenList, 'add' | 'remove'>
-  clientWidth: number
-  style: Pick<CSSStyleDeclaration, 'paddingRight'>
-}
-
-export interface PageScrollLockViewport {
-  innerWidth: number
-}
-
-interface LockState {
-  count: number
-  padding_right: string
-}
-
 const scroll_lock_class = 'page-scroll-locked'
-const active_locks = new WeakMap<PageScrollLockRoot, LockState>()
+const active_locks = new WeakMap<HTMLElement, number>()
 
-/**
- * Locks document scrolling while preserving the layout width behind an
- * overlay.
- */
-export function lock_page_scroll(
-  root: PageScrollLockRoot = document.documentElement,
-  viewport: PageScrollLockViewport = window,
-) {
-  let state = active_locks.get(root)
-  if (!state) {
-    state = {
-      count: 0,
-      padding_right: root.style.paddingRight,
-    }
-    const scrollbar_width = viewport.innerWidth - root.clientWidth
-    if (scrollbar_width > 0) {
-      root.style.paddingRight = `${scrollbar_width}px`
-    }
+export function lock_page_scroll(root = document.documentElement) {
+  let count = active_locks.get(root) ?? 0
+  if (count === 0) {
     root.classList.add(scroll_lock_class)
-    active_locks.set(root, state)
   }
-  state.count += 1
+  count += 1
+  active_locks.set(root, count)
 
   let released = false
   return () => {
     if (released) return
     released = true
-    state.count -= 1
-    if (state.count > 0) return
+    const next_count = (active_locks.get(root) ?? 1) - 1
+    if (next_count > 0) {
+      active_locks.set(root, next_count)
+      return
+    }
     root.classList.remove(scroll_lock_class)
-    root.style.paddingRight = state.padding_right
     active_locks.delete(root)
   }
 }

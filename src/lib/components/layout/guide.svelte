@@ -66,7 +66,7 @@
     right: calc(50% - var(--half-measure));
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .guide.stage {
       display: none;
     }

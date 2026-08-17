@@ -1,5 +1,6 @@
 <script lang="ts">
   import { observe_active_heading } from '$lib/browser/active-heading'
+  import { compact_viewport_query } from '$lib/browser/viewport'
   import type { HeadingEntry } from '$lib/content/headings'
 
   import TocList from './toc-list.svelte'
@@ -9,31 +10,35 @@
     on_close: () => void
   }
 
-  /* oxlint-disable prefer-const -- Props can update with route data. */
   let { entries, on_close }: Props = $props()
   let active_index = $state(0)
 
-  function observe_panel() {
-    const media_query = window.matchMedia('(max-width: 40rem)')
-    let cleanup: (() => void) | undefined
-
-    const sync = () => {
-      cleanup?.()
-      cleanup = media_query.matches
-        ? observe_active_heading(entries, (index) => {
-            active_index = index
-          })
-        : undefined
-    }
-
-    media_query.addEventListener('change', sync)
-    sync()
+  const observe_panel = $derived.by(() => {
+    const current_entries = entries
 
     return () => {
-      cleanup?.()
-      media_query.removeEventListener('change', sync)
+      const media_query = window.matchMedia(compact_viewport_query)
+      let cleanup: (() => void) | undefined
+
+      const sync = () => {
+        cleanup?.()
+        active_index = 0
+        cleanup = media_query.matches
+          ? observe_active_heading(current_entries, (index) => {
+              active_index = index
+            })
+          : undefined
+      }
+
+      media_query.addEventListener('change', sync)
+      sync()
+
+      return () => {
+        cleanup?.()
+        media_query.removeEventListener('change', sync)
+      }
     }
-  }
+  })
 </script>
 
 <nav class="toc-panel" aria-label="On this page" {@attach observe_panel}>

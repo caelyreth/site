@@ -21,7 +21,7 @@ const home_frontmatter_schema = v.strictObject({
   title: v.string(),
 })
 
-const parse_home_markdown = createMarkdownParser({
+const home_parser = createMarkdownParser({
   registerDefaultPlugins: false,
   plugins: [
     toml(),
@@ -39,7 +39,7 @@ const parse_home_markdown = createMarkdownParser({
 })
 
 export async function load_home_document(): Promise<HomeDocument> {
-  const document = await parse_home_markdown(home_source)
+  const document = await home_parser(home_source)
   const frontmatter = v.safeParse(
     home_frontmatter_schema,
     document.frontmatter,

@@ -1,5 +1,4 @@
 <script lang="ts">
-  /* oxlint-disable prefer-const -- Svelte bindings update client state. */
   import { reduced_motion } from '$lib/browser/reduced-motion'
   import { onMount } from 'svelte'
   import { useTheme } from 'svelte-themes'

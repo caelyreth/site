@@ -105,10 +105,7 @@ const GLYPHS: Record<string, readonly string[]> = {
   '_': ['00000', '00000', '00000', '00000', '00000', '00000', '11111'],
 }
 
-export function word_width(
-  slots: number,
-  layout: Layout = LAYOUT,
-) {
+export function word_width(slots: number, layout: Layout = LAYOUT) {
   return Math.max(slots - 1, 0) * layout.letter_pitch + GLYPH_COLS
 }
 
@@ -171,11 +168,7 @@ export function lit_mask(
   return cells
 }
 
-function line_mask(
-  cells: boolean[],
-  text: string,
-  slots: number,
-) {
+function line_mask(cells: boolean[], text: string, slots: number) {
   const marks = marks_of(text)
   for (let slot = 0; slot < slots; slot += 1) {
     glyph_mask(cells, GLYPHS[marks[slot] ?? ' '] ?? BLANK)
@@ -188,11 +181,7 @@ function glyph_mask(cells: boolean[], glyph: readonly string[]) {
   }
 }
 
-function glyph_layout(
-  line: number,
-  slot: number,
-  layout: Layout,
-) {
+function glyph_layout(line: number, slot: number, layout: Layout) {
   const cells: Cell[] = []
 
   for (let row = 0; row < GLYPH_ROWS; row += 1) {

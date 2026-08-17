@@ -117,7 +117,7 @@
     animation: slip-leave var(--dur-long) var(--ease-out) both;
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .collection-previews {
       display: grid;
       box-sizing: border-box;
@@ -173,7 +173,7 @@
     }
   }
 
-  @media (max-height: 42rem) and (max-width: 40rem) {
+  @media (height < 42rem) and (width < 40rem) {
     .collection-previews {
       gap: 0.5rem;
       padding-top: max(15%, 4rem);

@@ -36,7 +36,6 @@
     ),
   })
 
-  /* oxlint-disable prefer-const -- Document props can update during client navigation. */
   let { document }: { document: MarkdownDocumentValue } = $props()
 </script>
 

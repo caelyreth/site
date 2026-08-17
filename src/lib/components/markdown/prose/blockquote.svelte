@@ -14,7 +14,6 @@
     children?: Snippet
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { as: alert_type, children, ...attributes }: Props = $props()
   const alert_label = $derived(
     alert_type ? (alert_labels[alert_type] ?? alert_type) : '',

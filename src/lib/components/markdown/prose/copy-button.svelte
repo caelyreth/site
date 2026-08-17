@@ -9,7 +9,6 @@
 
   type CopyState = 'copied' | 'failed' | 'idle'
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
   let { label, value }: Props = $props()
   let state = $state<CopyState>('idle')
   let reset_timer: ReturnType<typeof setTimeout> | undefined

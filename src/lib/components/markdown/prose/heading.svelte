@@ -8,9 +8,13 @@
     id?: string
   }
 
-  /* oxlint-disable prefer-const -- Renderer props can update with the document. */
-  let { children, class: class_name, depth = 2, id, ...attributes }: Props =
-    $props()
+  let {
+    children,
+    class: class_name,
+    depth = 2,
+    id,
+    ...attributes
+  }: Props = $props()
   const tag = $derived(`h${Math.min(6, Math.max(1, depth))}`)
 </script>
 

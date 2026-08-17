@@ -9,25 +9,22 @@
   import type { Snippet } from 'svelte'
 
   import Guide from './guide.svelte'
+  import { get_page_chrome } from './page-chrome'
 
   interface Props {
     children?: Snippet<[boolean, boolean]>
-    on_progress?: (progress: number) => void
-    progress?: number
     defer_surface_when_covered_mobile?: boolean
     surface_exit_progress?: number
     title: string
   }
 
-  /* oxlint-disable prefer-const -- Snippet props can update with the route. */
   let {
     children,
-    on_progress,
-    progress = 0,
     defer_surface_when_covered_mobile = false,
     surface_exit_progress,
     title,
   }: Props = $props()
+  const chrome = get_page_chrome()
   let defer_surface = $state(false)
   let sky_paused = $state(false)
 
@@ -54,7 +51,7 @@
     get_progress: stage_scroll_progress,
     observed_elements: stage_scroll_elements,
     on_progress(progress) {
-      on_progress?.(progress)
+      chrome.stage_progress = progress
     },
   })
   const observe_stage_activity = scroll_activity({
@@ -65,7 +62,7 @@
 
 <div
   class="stage-capture"
-  style:--stage-fallback-progress={progress}
+  style:--stage-fallback-progress={chrome.stage_progress}
   {@attach observe_stage_progress}
   {@attach observe_stage_return}
   {@attach observe_stage_activity}
@@ -106,8 +103,7 @@
       env(safe-area-inset-right)
     );
     --stage-intro-bottom-inset: calc(
-      max(1.25rem, env(safe-area-inset-bottom)) +
-        max(0px, 100lvh - 100dvh)
+      max(1.25rem, env(safe-area-inset-bottom)) + max(0px, 100lvh - 100dvh)
     );
     height: calc(var(--stage-viewport) + var(--stage-scroll-span));
   }
@@ -158,7 +154,7 @@
     background-size: var(--noise-size);
   }
 
-  @media (max-width: 40rem) {
+  @media (width < 40rem) {
     .stage-capture {
       --stage-frame-inset: 0px;
       --stage-frame-radius: 0px;
