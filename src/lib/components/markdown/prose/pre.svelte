@@ -94,12 +94,12 @@
     background: transparent;
   }
 
-  :global(.dark pre.shiki) {
+  :global(.dark) .code-block pre.shiki {
     color: var(--shiki-dark) !important;
     background-color: var(--shiki-dark-bg) !important;
   }
 
-  :global(.dark pre.shiki span) {
+  :global(.dark) .code-block pre.shiki :global(span) {
     color: var(--shiki-dark) !important;
   }
 
