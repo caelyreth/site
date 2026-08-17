@@ -138,7 +138,7 @@
     width: 12rem;
   }
 
-  @media (max-width: 79.99rem) {
+  @media (width < 80rem) {
     .toc-rail {
       display: none;
     }

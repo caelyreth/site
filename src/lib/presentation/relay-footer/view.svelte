@@ -296,6 +296,13 @@
     }
   }
 
+  @media (width < 40rem) {
+    .statement-row {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
   @media (min-width: 48rem) {
     .grid {
       grid-template-columns: 2.2fr 1.25fr 1.25fr;
