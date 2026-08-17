@@ -171,6 +171,12 @@
     }
   }
 
+  @media (max-width: 40rem) and (prefers-reduced-motion: no-preference) {
+    .intro-cluster {
+      transition: bottom 320ms var(--ease-out);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .social-links a {
       transform: none;
