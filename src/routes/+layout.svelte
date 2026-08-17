@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css'
   import 'virtual:uno.css'
+  import PageScrollbar from '$lib/components/layout/page-scrollbar.svelte'
   import { listen_for_content_updates } from '$lib/content/hmr.client'
   import { onMount } from 'svelte'
   import { SvelteTheme } from 'svelte-themes'
@@ -14,4 +15,5 @@
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
   {@render children()}
+  <PageScrollbar />
 </SvelteTheme>

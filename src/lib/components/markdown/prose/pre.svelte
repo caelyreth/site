@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ScrollbarIndicator from '$lib/components/layout/scrollbar-indicator.svelte'
   import type { Snippet } from 'svelte'
 
   import CopyButton from './copy-button.svelte'
@@ -26,6 +27,9 @@
     {...attributes}
     bind:this={pre}
     data-language={language || undefined}>{@render children?.()}</pre>
+  {#if pre}
+    <ScrollbarIndicator axis="inline" target={pre} />
+  {/if}
   <figcaption class="code-tools">
     {#if code_caption}<span class="code-caption">{code_caption}</span>{/if}
     <CopyButton label="Copy code" value={code_text} />
@@ -43,8 +47,13 @@
     padding: 0.875rem 1rem;
     overscroll-behavior-inline: contain;
     overflow-x: auto;
+    scrollbar-width: none;
     border: 1px solid var(--color-rule);
     background: var(--color-prose-surface);
+  }
+
+  pre::-webkit-scrollbar {
+    display: none;
   }
 
   .code-tools {
@@ -92,5 +101,15 @@
 
   :global(.dark pre.shiki span) {
     color: var(--shiki-dark) !important;
+  }
+
+  @media (forced-colors: active) {
+    pre {
+      scrollbar-width: auto;
+    }
+
+    pre::-webkit-scrollbar {
+      display: block;
+    }
   }
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ScrollbarIndicator from '$lib/components/layout/scrollbar-indicator.svelte'
   import type { Snippet } from 'svelte'
 
   import CopyButton from './copy-button.svelte'
@@ -18,6 +19,7 @@
   }: Props = $props()
   const table_label = $derived(caption ? `${caption} table` : 'Data table')
   let table: HTMLTableElement | undefined = $state()
+  let table_scroll: HTMLDivElement | undefined = $state()
 
   function table_text() {
     if (!table) return ''
@@ -30,7 +32,12 @@
   }
 </script>
 
-<div aria-label={table_label} class="table-scroll" role="region">
+<div
+  aria-label={table_label}
+  bind:this={table_scroll}
+  class="table-scroll"
+  role="region"
+>
   <table {...attributes} bind:this={table} class={class_name}>
     <caption>
       <span class="caption-row">
@@ -41,6 +48,9 @@
     {@render children?.()}
   </table>
 </div>
+{#if table_scroll}
+  <ScrollbarIndicator axis="inline" target={table_scroll} />
+{/if}
 
 <style>
   .table-scroll {
@@ -48,7 +58,11 @@
     margin-top: var(--prose-block-gap);
     overscroll-behavior-inline: contain;
     overflow-x: auto;
-    scrollbar-color: var(--color-boundary) transparent;
+    scrollbar-width: none;
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    display: none;
   }
 
   table {
@@ -84,5 +98,15 @@
 
   .caption-row :global(.copy-button) {
     margin-inline-start: auto;
+  }
+
+  @media (forced-colors: active) {
+    .table-scroll {
+      scrollbar-width: auto;
+    }
+
+    .table-scroll::-webkit-scrollbar {
+      display: block;
+    }
   }
 </style>
