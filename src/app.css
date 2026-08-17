@@ -152,7 +152,7 @@
   --inline-gutter: 1.5rem;
   --header-block-size: 3.25rem;
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
-  --stable-viewport-block: 100vh;
+  --stable-viewport-block: 100lvh;
   --stage-transition-span: min(
     var(--stable-viewport-block),
     max(18rem, 105vw)
@@ -242,18 +242,6 @@
   color-scheme: dark;
 }
 
-@supports (height: 100svh) {
-  :root {
-    --stable-viewport-block: 100svh;
-  }
-}
-
-@supports (height: 100lvh) {
-  :root {
-    --stable-viewport-block: 100lvh;
-  }
-}
-
 @media (max-width: 40rem) {
   :root {
     --stage-transition-span: clamp(8rem, 24svh, 12rem);
@@ -307,11 +295,6 @@ body {
 }
 
 ::selection {
-  color: var(--color-selection-ink);
-  background-color: var(--color-selection-surface);
-}
-
-::-moz-selection {
   color: var(--color-selection-ink);
   background-color: var(--color-selection-surface);
 }

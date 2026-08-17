@@ -11,25 +11,6 @@ export function observe_viewport_threshold(
   on_change: (active: boolean) => void,
 ) {
   return (() => {
-    const update = () => {
-      const element = document.getElementById(element_id)
-      on_change(
-        element !== null &&
-          element.getBoundingClientRect().top <= window.innerHeight * ratio,
-      )
-    }
-
-    if (typeof IntersectionObserver === 'undefined') {
-      window.addEventListener('scroll', update, { passive: true })
-      window.addEventListener('resize', update)
-      update()
-
-      return () => {
-        window.removeEventListener('scroll', update)
-        window.removeEventListener('resize', update)
-      }
-    }
-
     let observed_element: HTMLElement | undefined
     const observer = new IntersectionObserver(
       ([entry]) => {

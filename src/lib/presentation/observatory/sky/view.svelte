@@ -45,7 +45,10 @@
       max(var(--label-inline-inset), env(safe-area-inset-right))
     );
     --label-block-inset: max(1.25rem, env(safe-area-inset-top));
-    --label-bottom-inset: max(1.25rem, env(safe-area-inset-bottom));
+    --label-bottom-inset: calc(
+      max(1.25rem, env(safe-area-inset-bottom)) +
+        max(0px, 100lvh - 100dvh)
+    );
     --label-rail-top: calc(
       var(--label-block-inset) +
         (
@@ -73,15 +76,6 @@
   .sky-surface.is-deferred .sky-field {
     opacity: 0;
     visibility: hidden;
-  }
-
-  @supports (height: 100dvh) and (height: 100lvh) {
-    .sky-surface {
-      --label-bottom-inset: calc(
-        max(1.25rem, env(safe-area-inset-bottom)) +
-          max(0px, 100lvh - 100dvh)
-      );
-    }
   }
 
   .label {

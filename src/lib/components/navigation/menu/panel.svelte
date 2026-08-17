@@ -24,9 +24,9 @@
     --menu-gutter: clamp(0.75rem, 4vw, 2rem);
     --menu-inset-left: max(var(--menu-gutter), env(safe-area-inset-left));
     --menu-inset-right: max(var(--menu-gutter), env(safe-area-inset-right));
-    --menu-inset-bottom: max(
-      var(--menu-gutter),
-      env(safe-area-inset-bottom)
+    --menu-inset-bottom: calc(
+      max(var(--menu-gutter), env(safe-area-inset-bottom)) +
+        max(0px, 100lvh - 100dvh)
     );
     position: relative;
     z-index: 3;
@@ -53,12 +53,4 @@
     }
   }
 
-  @supports (height: 100dvh) and (height: 100lvh) {
-    .stage {
-      --menu-inset-bottom: calc(
-        max(var(--menu-gutter), env(safe-area-inset-bottom)) +
-          max(0px, 100lvh - 100dvh)
-      );
-    }
-  }
 </style>

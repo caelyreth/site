@@ -32,26 +32,19 @@
 
     let disposed = false
     let reveal_timer: ReturnType<typeof setTimeout> | undefined
-    const observer =
-      typeof IntersectionObserver === 'undefined'
-        ? undefined
-        : new IntersectionObserver(
-            ([entry]) => {
-              canvas_visible = entry?.isIntersecting ?? false
-              sync_engine_activity()
-            },
-            { rootMargin: '75% 0px 60%' },
-          )
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        canvas_visible = entry?.isIntersecting ?? false
+        sync_engine_activity()
+      },
+      { rootMargin: '75% 0px 60%' },
+    )
     const handle_visibility = () => {
       page_visible = document.visibilityState === 'visible'
       sync_engine_activity()
     }
 
-    if (observer) {
-      observer.observe(canvas)
-    } else {
-      canvas_visible = true
-    }
+    observer.observe(canvas)
     document.addEventListener('visibilitychange', handle_visibility)
     page_visible = document.visibilityState === 'visible'
 
@@ -84,7 +77,7 @@
       disposed = true
       clearTimeout(scene_timer)
       if (reveal_timer !== undefined) clearTimeout(reveal_timer)
-      observer?.disconnect()
+      observer.disconnect()
       document.removeEventListener('visibilitychange', handle_visibility)
       engine?.destroy()
       engine = undefined

@@ -10,13 +10,6 @@
   let visible = $state(false)
 
   function observe_footer(node: HTMLElement) {
-    if (typeof IntersectionObserver === 'undefined') {
-      visible = true
-      return () => {
-        visible = false
-      }
-    }
-
     const observer = new IntersectionObserver(
       ([entry]) => (visible = entry?.isIntersecting ?? false),
       { rootMargin: '200px 0px' },

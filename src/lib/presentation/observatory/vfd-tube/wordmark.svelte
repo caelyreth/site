@@ -92,10 +92,7 @@
 
   onMount(() => {
     if (reduced_motion.current) return
-    if (!wordmark || typeof IntersectionObserver === 'undefined') {
-      schedule_display_change(begin_refresh, VFD_REFRESH_INTERVAL)
-      return clear_display_timer
-    }
+    if (!wordmark) return
 
     const observer = new IntersectionObserver(([entry]) => {
       clear_display_timer()

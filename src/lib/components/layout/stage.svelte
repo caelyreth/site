@@ -102,7 +102,10 @@
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
-    --stage-intro-bottom-inset: max(1.25rem, env(safe-area-inset-bottom));
+    --stage-intro-bottom-inset: calc(
+      max(1.25rem, env(safe-area-inset-bottom)) +
+        max(0px, 100lvh - 100dvh)
+    );
     height: calc(var(--stage-viewport) + var(--stage-scroll-span));
   }
 
@@ -111,15 +114,6 @@
       animation: stage-progress 1ms linear both;
       animation-range: 0 var(--stage-scroll-span);
       animation-timeline: scroll(root block);
-    }
-  }
-
-  @supports (height: 100dvh) and (height: 100lvh) {
-    .stage-capture {
-      --stage-intro-bottom-inset: calc(
-        max(1.25rem, env(safe-area-inset-bottom)) +
-          max(0px, 100lvh - 100dvh)
-      );
     }
   }
 

@@ -40,12 +40,10 @@ function create_frame_scheduler(update: () => void) {
 }
 
 function observe_resize_targets(
-  resize_observer: ResizeObserver | undefined,
+  resize_observer: ResizeObserver,
   element: HTMLElement,
   observed_elements: ScrollProgressOptions['observed_elements'],
 ) {
-  if (!resize_observer) return
-
   resize_observer.observe(element)
   for (const observed_element of observed_elements?.(element) ?? []) {
     resize_observer.observe(observed_element)
@@ -66,10 +64,7 @@ export function scroll_progress(
       options.on_progress(clamp_progress(options.get_progress(element)))
     }
     const scheduler = create_frame_scheduler(update)
-    const resize_observer =
-      typeof ResizeObserver === 'undefined'
-        ? undefined
-        : new ResizeObserver(scheduler.schedule)
+    const resize_observer = new ResizeObserver(scheduler.schedule)
 
     observe_resize_targets(
       resize_observer,
@@ -81,7 +76,7 @@ export function scroll_progress(
 
     return () => {
       scheduler.cancel()
-      resize_observer?.disconnect()
+      resize_observer.disconnect()
       window.removeEventListener('scroll', scheduler.schedule)
     }
   }
