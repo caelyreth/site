@@ -5,6 +5,7 @@
   import Footer from '$lib/components/layout/footer.svelte'
   import Stage from '$lib/components/layout/stage.svelte'
   import Header from '$lib/components/navigation/header.svelte'
+  import TableOfContentsPanel from '$lib/components/navigation/table-of-contents-panel.svelte'
   import type { HeadingEntry } from '$lib/content/headings'
   import type { HomeDocument } from '$lib/content/home'
   import { SKY_FIELD_FADE_RATE } from '$lib/presentation/observatory/sky/config'
@@ -29,7 +30,14 @@
 <div class="home">
   <div class="scroll-chrome" style:--stage-progress={fallback_progress}>
     <Backdrop />
-    <Header />
+    <Header>
+      {#snippet mobile_panel(close_panel)}
+        <TableOfContentsPanel
+          entries={document_toc}
+          on_close={close_panel}
+        />
+      {/snippet}
+    </Header>
   </div>
   <main>
     <Stage
