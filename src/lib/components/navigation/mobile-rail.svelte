@@ -212,14 +212,6 @@
 
     .mobile-rail[data-collapsed='true']
       .rail-cells
-      > :global([data-rail-cell]) {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-    }
-
-    .mobile-rail[data-collapsed='true']
-      .rail-cells
       > :global([data-rail-cell])::before {
       opacity: 0;
     }
