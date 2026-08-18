@@ -25,9 +25,7 @@
   }
 
   function close_on_navigation(event: MouseEvent) {
-    if (is_primary_navigation(event)) {
-      on_navigate()
-    }
+    if (is_primary_navigation(event)) on_navigate()
   }
 </script>
 

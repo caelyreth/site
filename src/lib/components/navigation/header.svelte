@@ -9,12 +9,13 @@
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
-  import Menu from './menu/menu.svelte'
+  import { get_menu_controller } from './menu/controller'
   import MobileRail from './mobile-rail.svelte'
   import TableOfContentsPanel from './table-of-contents-panel.svelte'
 
   const home_path = base || '/'
   const chrome = get_page_chrome()
+  const menu = get_menu_controller()
   const entry_rail_delay = 640
   let scrolling = $state(false)
   let entry_rail_ready = $state(false)
@@ -77,15 +78,7 @@
   <header class="header">
     <div class="inner">
       <Brand href={home_path} on_activate={handle_brand_click} />
-      <Menu id="desktop-site-menu">
-        {#snippet children(open_menu, menu_open)}
-          <MenuTrigger
-            controls="desktop-site-menu"
-            is_open={menu_open}
-            on_open={open_menu}
-          />
-        {/snippet}
-      </Menu>
+      <MenuTrigger is_open={menu.is_open} on_open={menu.open} />
     </div>
   </header>
 
@@ -121,15 +114,7 @@
         data-rail-cell
         data-rail-priority={chrome.content_active ? 'secondary' : 'primary'}
       >
-        <Menu id="mobile-site-menu">
-          {#snippet children(open_menu, menu_open)}
-            <MenuTrigger
-              controls="mobile-site-menu"
-              is_open={menu_open}
-              on_open={open_menu}
-            />
-          {/snippet}
-        </Menu>
+        <MenuTrigger is_open={menu.is_open} on_open={menu.open} />
       </div>
 
       {#if has_panel}

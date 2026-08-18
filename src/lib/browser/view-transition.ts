@@ -1,9 +1,10 @@
 import { onNavigate } from '$app/navigation'
 
-export function install_view_transitions() {
+export function install_view_transitions(should_transition: () => boolean) {
   onNavigate((navigation) => {
     if (
       typeof document === 'undefined' ||
+      !should_transition() ||
       !document.startViewTransition ||
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ) {

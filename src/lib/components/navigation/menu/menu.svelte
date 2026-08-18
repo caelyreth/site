@@ -1,18 +1,17 @@
 <script lang="ts">
   import { lock_page_scroll } from '$lib/browser/page-lock'
   import { flushSync as flush_sync } from 'svelte'
-  import type { Snippet } from 'svelte'
 
+  import { get_menu_controller } from './controller'
   import MenuPanel from './panel.svelte'
 
   interface Props {
-    children?: Snippet<[() => void, boolean]>
     id?: string
   }
 
-  const { children, id = 'site-menu' }: Props = $props()
+  const { id = 'site-menu' }: Props = $props()
+  const controller = get_menu_controller()
   let dialog: HTMLDialogElement | undefined
-  let menu_open = $state(false)
   let closing = $state(false)
   let close_timer: number | undefined
   let dismiss_pointer_type: string | undefined
@@ -36,9 +35,11 @@
     if (!dialog || dialog.open) return
 
     closing = false
-    menu_open = true
+    controller.is_open = true
     dialog.showModal()
   }
+
+  controller.open = open_menu
 
   function request_close() {
     if (!dialog?.open || closing) return
@@ -51,13 +52,6 @@
     }, close_fallback)
   }
 
-  function close_for_navigation() {
-    if (!dialog?.open) return
-    clear_close_timer()
-    closing = false
-    dialog.close()
-  }
-
   function handle_cancel(event: Event) {
     event.preventDefault()
     request_close()
@@ -66,7 +60,7 @@
   function handle_close() {
     clear_close_timer()
     closing = false
-    menu_open = false
+    controller.is_open = false
   }
 
   function track_dismiss_pointer(event: PointerEvent) {
@@ -80,12 +74,10 @@
 
   // Keep the page fixed for the full modal lifecycle, including its exit.
   $effect(() => {
-    if (!menu_open) return
+    if (!controller.is_open) return
     return lock_page_scroll()
   })
 </script>
-
-{@render children?.(open_menu, menu_open)}
 
 <dialog
   {@attach manage_dialog}
@@ -108,9 +100,9 @@
 
   <MenuPanel
     is_closing={closing}
-    is_open={menu_open}
+    is_open={controller.is_open}
     on_close={request_close}
-    on_navigate={close_for_navigation}
+    on_navigate={request_close}
   />
 </dialog>
 
