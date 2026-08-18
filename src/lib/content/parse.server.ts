@@ -1,5 +1,6 @@
 import media from '$lib/components/markdown/media'
 import { eclat } from '$lib/components/markdown/rangi-theme'
+import { ensure_heading_ids } from '$lib/content/headings'
 import { createMarkdownParser } from 'comark'
 import toml from 'comark-toml'
 import alert from 'comark/plugins/alert'
@@ -12,7 +13,7 @@ import rangi from 'comark/plugins/rangi'
 import security from 'comark/plugins/security'
 import task_list from 'comark/plugins/task-list'
 
-export const parse_markdown = createMarkdownParser({
+const markdown_parser = createMarkdownParser({
   registerDefaultPlugins: false,
   plugins: [
     toml(),
@@ -27,4 +28,11 @@ export const parse_markdown = createMarkdownParser({
     media(),
     rangi({ preStyles: true, theme: eclat }),
   ],
+  headingIds: false,
 })
+
+export async function parse_markdown(source: string) {
+  const document = await markdown_parser(source)
+  ensure_heading_ids(document.nodes)
+  return document
+}
