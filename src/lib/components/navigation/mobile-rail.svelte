@@ -21,6 +21,7 @@
     panel,
   }: Props = $props()
   let panel_height = $state(0)
+  let rail = $state<HTMLDivElement>()
   let rail_cells = $state<HTMLDivElement>()
 
   const panel_id = 'mobile-rail-panel'
@@ -51,6 +52,20 @@
   })
 
   $effect(() => {
+    if (!expanded) return
+
+    const close_on_outside_press = (event: PointerEvent) => {
+      if (event.target instanceof Node && !rail?.contains(event.target)) {
+        close_panel()
+      }
+    }
+
+    window.addEventListener('pointerdown', close_on_outside_press)
+    return () =>
+      window.removeEventListener('pointerdown', close_on_outside_press)
+  })
+
+  $effect(() => {
     void cells
     const entries =
       rail_cells?.querySelectorAll<HTMLElement>('[data-rail-cell]')
@@ -64,6 +79,7 @@
 </script>
 
 <div
+  bind:this={rail}
   aria-hidden={!visible}
   class="mobile-rail"
   data-visible={visible}
