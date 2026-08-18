@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { drifts } from './content'
+  import { get_site_config } from '$lib/content/site'
+
+  import { drift_layouts } from './content'
 
   interface Props {
     is_closing: boolean
@@ -7,15 +9,23 @@
   }
 
   const { is_closing, is_open }: Props = $props()
+  const site = get_site_config()
+  const drifts = $derived(
+    site.current.menu.ornaments.map((text, index) => ({
+      layout: drift_layouts[index]!,
+      text,
+    })),
+  )
 </script>
 
 <div
+  aria-hidden="true"
   class:is-closing={is_closing}
   class:is-open={is_open}
   class="ornaments"
+  data-nosnippet=""
 >
   <svg
-    aria-hidden="true"
     class="orbits"
     viewBox="0 0 1600 900"
     preserveAspectRatio="none"
@@ -39,7 +49,6 @@
 
   {#each drifts as drift (drift.text)}
     <span
-      aria-hidden="true"
       class="drift-layer"
       style:--drift-enter-delay={drift.layout.enter_delay}
     >

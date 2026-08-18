@@ -18,6 +18,7 @@
   }: Props = $props()
   let is_closing = $state(false)
   let pointer_origin: { x: number; y: number } | undefined
+  const content_id = $props.id()
 
   function track_pointer(event: PointerEvent) {
     if (event.button !== 0) return
@@ -90,6 +91,7 @@
   <button
     type="button"
     class="details-toggle"
+    aria-controls={content_id}
     aria-expanded={open && !is_closing}
     onpointerdown={track_pointer}
     onclick={toggle_details}
@@ -97,6 +99,7 @@
     {summary}
   </button>
   <div
+    id={content_id}
     aria-hidden={!open || is_closing}
     class="details-content"
     inert={!open || is_closing}

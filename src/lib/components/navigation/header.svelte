@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { base } from '$app/paths'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { reduced_motion } from '$lib/browser/reduced-motion'
   import { scroll_activity } from '$lib/browser/scroll-activity'
@@ -13,7 +13,7 @@
   import MobileRail from './mobile-rail.svelte'
   import TableOfContentsPanel from './table-of-contents-panel.svelte'
 
-  const home_path = base || '/'
+  const home_path = resolve('/')
   const chrome = get_page_chrome()
   const menu = get_menu_controller()
   const entry_rail_delay = 640
@@ -82,7 +82,13 @@
     </div>
   </header>
 
-  <div class="desktop-actions" role="group" aria-label="页面操作">
+  <div
+    aria-hidden={!chrome.content_active}
+    class="desktop-actions"
+    inert={!chrome.content_active}
+    role="group"
+    aria-label="页面操作"
+  >
     <button
       type="button"
       class="action return-button"

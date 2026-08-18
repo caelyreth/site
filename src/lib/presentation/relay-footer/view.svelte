@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { base } from '$app/paths'
+  import { page } from '$app/state'
   import PaperEdge from '$lib/components/layout/paper-edge.svelte'
+  import { get_site_config } from '$lib/content/site'
+  import { site_href } from '$lib/navigation/path'
 
-  import { footer_barcode, footer_index } from './content'
   import FooterSignalMonitor from './signal-monitor.svelte'
 
   interface Props {
@@ -10,9 +11,16 @@
   }
 
   let { visible }: Props = $props()
+  const site = get_site_config()
+  const footer = $derived(site.current.footer)
+  const barcode = [
+    1, 2, 1, 3, 1, 1, 2, 1, 3, 1, 2, 1, 1, 3, 2, 1, 2, 1, 3, 1, 1, 2, 1, 3,
+    1, 2, 1, 1, 3, 1, 2, 1, 2, 1,
+  ] as const
 
-  function footer_href(href: string) {
-    return `${base}${href}`.replace('//', '/')
+  function is_current(href: string) {
+    const route = page.route.id
+    return route === href || (href !== '/' && route?.startsWith(`${href}/`))
   }
 </script>
 
@@ -25,46 +33,51 @@
   <div class="deck footer-deck footer-content">
     <div class="heading">
       <div>
-        {@render footer_label('档案传输')}
-        <p class="title">Caelyreth 中继站</p>
+        {@render footer_label(footer.label)}
+        <h2 class="title">{footer.title}</h2>
       </div>
       <div class="statement-row">
         <p class="statement">
-          记录、近况和未来的方向，都停在中继站的边缘。
+          {footer.statement}
         </p>
         <span aria-hidden="true" class="statement-mark"></span>
       </div>
     </div>
     <div class="grid">
-      <section class="footer-module">
-        {@render footer_label('站点索引')}
-        <ul class="sitemap" aria-label="站点索引">
-          {#each footer_index as item}
-            <li><a href={footer_href(item.href)}>{item.label}</a></li>
-          {/each}
-        </ul>
-        <p class="detail">当前中继站索引</p>
+      <section class="footer-module" aria-label={footer.index_label}>
+        {@render footer_label(footer.index_label)}
+        <nav aria-label={footer.index_label}>
+          <ul class="sitemap">
+            {#each footer.navigation as item}
+              <li>
+                <a
+                  aria-current={is_current(item.href) ? 'page' : undefined}
+                  href={site_href(item.href)}>{item.label}</a
+                >
+              </li>
+            {/each}
+          </ul>
+        </nav>
+        <p class="detail" data-nosnippet="">{footer.index_detail}</p>
       </section>
-      <section class="footer-module">
-        {@render footer_label('档案标记')}
-        <div aria-hidden="true" class="barcode">
-          {#each footer_barcode as width}<span style:--bar-width={width}
+      <section class="footer-module" aria-label={footer.archive_label}>
+        {@render footer_label(footer.archive_label)}
+        <div aria-hidden="true" class="barcode" data-nosnippet="">
+          {#each barcode as width}<span style:--bar-width={width}
             ></span>{/each}
         </div>
-        <p class="detail">RBK / 2026 / 余</p>
+        <p class="detail" data-nosnippet="">{footer.archive_detail}</p>
       </section>
       <section class="footer-module">
-        <FooterSignalMonitor is_active={visible} />
+        <FooterSignalMonitor is_active={visible} signal={footer.signal} />
       </section>
     </div>
     <div class="tail">
-      <span>© 2026 余</span>
-      <a
-        class="tail-link"
-        href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-        >CC BY-NC-SA</a
+      <span>{footer.copyright}</span>
+      <a class="tail-link" href={footer.license_href}
+        >{footer.license_label}</a
       >
-      <span class="tail-signature">Caelyreth</span>
+      <span class="tail-signature">{footer.signature}</span>
     </div>
   </div>
 </div>

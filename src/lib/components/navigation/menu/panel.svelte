@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { get_site_config } from '$lib/content/site'
+
   import MenuOrnaments from './ornaments.svelte'
   import MenuSlips from './slips.svelte'
   import ThemeSlip from './theme-slip.svelte'
@@ -11,18 +13,21 @@
   }
 
   const { is_closing, is_open, on_close, on_navigate }: Props = $props()
+  const site = get_site_config()
 </script>
 
-<div class="stage">
+<div class="stage" inert={is_closing}>
   <MenuOrnaments {is_closing} {is_open} />
   <MenuSlips {is_closing} {is_open} {on_navigate} />
   <ThemeSlip {is_closing} {is_open} {on_close} />
   <p
+    aria-hidden="true"
     class:is-closing={is_closing}
     class:is-open={is_open}
     class="micro-label field-note"
+    data-nosnippet=""
   >
-    Caelyreth 中继站 / 观测面 01
+    {site.current.menu.field_note}
   </p>
 </div>
 

@@ -37,7 +37,8 @@
     <Backdrop />
     <Header />
   </div>
-  <main>
+  <main id="main-content" tabindex="-1">
+    <h1 class="sr-only">{document.frontmatter.title}</h1>
     <Stage
       title={document.frontmatter.title}
       defer_surface_when_covered_mobile
@@ -47,6 +48,7 @@
         <Observatory
           {defer_surface}
           description={document.frontmatter.description}
+          observatory={document.frontmatter.observatory}
           {sky_paused}
         />
       {/snippet}

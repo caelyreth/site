@@ -5,22 +5,31 @@
   interface Props {
     deferred?: boolean
     paused?: boolean
+    descent_label: string
+    surface_label: string
   }
 
-  let { deferred = false, paused = false }: Props = $props()
+  let {
+    deferred = false,
+    paused = false,
+    descent_label,
+    surface_label,
+  }: Props = $props()
 </script>
 
 <div
+  aria-hidden="true"
   class="sky-surface"
   class:is-deferred={deferred}
   data-sky-field
+  data-nosnippet=""
   style:--sky-field-fade-rate={SKY_FIELD_FADE_RATE}
 >
   <div class="sky-field">
     <SkyCanvas {deferred} {paused} />
   </div>
-  <span class="label observatory-label">观测台</span>
-  <span aria-hidden="true" class="label descent-label">进入中继站</span>
+  <span class="label observatory-label">{surface_label}</span>
+  <span class="label descent-label">{descent_label}</span>
 </div>
 
 <style>
@@ -48,6 +57,8 @@
     inset: 0;
     z-index: 2;
     overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .sky-field {

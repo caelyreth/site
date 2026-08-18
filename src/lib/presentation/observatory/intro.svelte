@@ -1,46 +1,50 @@
 <script lang="ts">
   import StageIntro from '$lib/components/layout/stage-intro.svelte'
+  import type { HomeFrontmatter } from '$lib/content/schema'
 
-  import VfdTube from './vfd-tube/view.svelte'
+  import Wordmark from './vfd-tube/wordmark.svelte'
 
   interface Props {
     description?: string
+    observatory: HomeFrontmatter['observatory']
   }
 
-  let { description }: Props = $props()
+  let { description, observatory }: Props = $props()
 </script>
 
 <div class="intro-cluster">
-  <div aria-hidden="true" class="cabin-plate">
-    <span class="micro-label">舷窗 / 01</span>
+  <div aria-hidden="true" class="cabin-plate" data-nosnippet="">
+    <span class="micro-label">{observatory.cabin_label}</span>
   </div>
-  <VfdTube />
-  <nav aria-label="Caelyreth 链接" class="social-links">
-    <a
-      href="https://github.com/caelyreth"
-      rel="me noopener noreferrer"
-      target="_blank"
-    >
-      <span class="i-ri-github-line" aria-hidden="true"></span>
-      <span>GitHub</span>
-      <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
-    </a>
-    <a
-      href="https://x.com/caelyreth"
-      rel="me noopener noreferrer"
-      target="_blank"
-    >
-      <span class="i-ri-twitter-x-line" aria-hidden="true"></span>
-      <span>X (Twitter)</span>
-      <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
-    </a>
-    <a href="mailto:me@iki.moe">
-      <span class="i-ri-mail-line" aria-hidden="true"></span>
-      <span>邮箱</span>
-      <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
-    </a>
+  <div class="tube-layer">
+    <div aria-hidden="true" class="tube-glass"></div>
+    <div class="tube-wordmark">
+      <Wordmark
+        readout={observatory.vfd_readout}
+        refresh_readouts={observatory.vfd_refresh_readouts}
+        title={observatory.vfd_title}
+      />
+    </div>
+  </div>
+  <nav aria-label={observatory.social_label} class="social-links">
+    {#each observatory.social_links as link}
+      <a
+        href={link.href}
+        rel={link.external ? 'me noopener noreferrer' : undefined}
+        target={link.external ? '_blank' : undefined}
+        aria-label={link.aria_label}
+      >
+        <span class={link.icon} aria-hidden="true"></span>
+        <span>{link.label}</span>
+        <span class="i-ri-arrow-up-right-line" aria-hidden="true"></span>
+      </a>
+    {/each}
   </nav>
-  <StageIntro {description} invert_description_in_light />
+  <StageIntro
+    {description}
+    entry_label={observatory.entry_label}
+    invert_description_in_light
+  />
 </div>
 
 <style>
@@ -86,6 +90,37 @@
 
   .cabin-plate .micro-label {
     letter-spacing: 0.12em;
+  }
+
+  .tube-layer {
+    position: relative;
+    width: min(39vw, 29rem);
+    aspect-ratio: 68.4 / 22.2;
+    margin-inline-start: var(--vfd-inline-offset, 0px);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .tube-glass {
+    position: absolute;
+    inset: 13.4% 7.3% 13.2% 4.7%;
+    z-index: 0;
+    border-radius: 0.2rem;
+    background-color: color-mix(
+      in oklab,
+      var(--color-stage-glass-surface) 72%,
+      transparent
+    );
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--color-paper) 14%, transparent),
+      transparent 58%
+    );
+  }
+
+  .tube-wordmark {
+    position: relative;
+    z-index: 1;
   }
 
   .social-links {
@@ -167,6 +202,12 @@
 
     .cabin-plate {
       width: min(72vw, 25rem);
+    }
+  }
+
+  @media (width < 38rem) {
+    .tube-layer {
+      width: min(76vw, 26rem);
     }
   }
 

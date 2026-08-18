@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PageMeta from '$lib/components/layout/page-meta.svelte'
   import Content from '$lib/components/markdown/document.svelte'
 
   import type { PageData } from './$types'
@@ -6,14 +7,9 @@
   let { data }: { data: PageData } = $props()
 </script>
 
-<svelte:head>
-  <title>{data.document.frontmatter.title}</title>
-  {#if data.document.frontmatter.description}
-    <meta
-      name="description"
-      content={data.document.frontmatter.description}
-    />
-  {/if}
-</svelte:head>
+<PageMeta
+  description={data.document.frontmatter.description}
+  title={data.document.frontmatter.title}
+/>
 
 <Content document={data.document} font={data.document.frontmatter.font} />

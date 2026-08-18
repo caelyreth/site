@@ -1,11 +1,42 @@
 +++
 title = "Caelyreth"
 description = "关于建筑、几何与空间哲学的记录。"
+
+[observatory]
+cabin_label = "舷窗 / 01"
+surface_label = "观测台"
+descent_label = "进入中继站"
+entry_label = "下方是记录"
+social_label = "Caelyreth 链接"
+vfd_readout = "DEEP*VOID"
+vfd_title = "CAELYRETH"
+vfd_refresh_readouts = ["RX//ORBIT", "STAR*DRFT", "VOID*LINK", "SCAN+004"]
+
+[[observatory.social_links]]
+label = "GitHub"
+aria_label = "GitHub（在新标签页打开）"
+href = "https://github.com/caelyreth"
+icon = "i-ri-github-line"
+external = true
+
+[[observatory.social_links]]
+label = "X (Twitter)"
+aria_label = "X（在新标签页打开）"
+href = "https://x.com/caelyreth"
+icon = "i-ri-twitter-x-line"
+external = true
+
+[[observatory.social_links]]
+label = "邮箱"
+aria_label = "邮箱"
+href = "mailto:me@iki.moe"
+icon = "i-ri-mail-line"
+external = false
 +++
 
 ## Markdown 展示页 {#station}
 
-这是一座孤悬于勘测行星上的中继站。余在这里记录建筑、几何与 :accent[空间] 的哲学。
+这是一座孤悬于勘测行星上的中继站。雨在这里记录建筑、几何与 :accent[空间] 的哲学。
 
 ## 基础文本
 

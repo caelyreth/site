@@ -1,23 +1,26 @@
 <script lang="ts">
-  import { base } from '$app/paths'
+  import { get_library_config } from '$lib/content/library'
   import type { ConstellationReference } from '$lib/content/relations'
+  import { site_href } from '$lib/navigation/path'
 
   interface Props {
     constellations: ConstellationReference[]
   }
 
   let { constellations }: Props = $props()
-
-  function constellation_href(id: string) {
-    return `${base}/constellations/${id}`.replace('//', '/')
-  }
+  const library = get_library_config()
 </script>
 
 {#if constellations.length}
-  <nav class="constellation-links" aria-label="关联星群">
-    <span class="constellation-kind">星群</span>
+  <nav
+    class="constellation-links"
+    aria-label={library.current.constellations.related_navigation_label}
+  >
+    <span class="constellation-kind"
+      >{library.current.constellations.related_label}</span
+    >
     {#each constellations as constellation}
-      <a href={constellation_href(constellation.id)}>
+      <a href={site_href(`/constellations/${constellation.id}`)}>
         <span class="constellation-title">{constellation.title}</span>
       </a>
     {/each}

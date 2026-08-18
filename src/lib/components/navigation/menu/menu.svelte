@@ -85,14 +85,16 @@
   class="menu"
   class:is-closing={closing}
   aria-label="站点菜单"
+  aria-modal="true"
+  data-nosnippet=""
   oncancel={handle_cancel}
   onclose={handle_close}
 >
   <div aria-hidden="true" class="menu-veil"></div>
   <button
     type="button"
-    class="dismiss"
     aria-label="关闭菜单"
+    class="dismiss"
     tabindex="-1"
     onpointerdown={track_dismiss_pointer}
     onclick={dismiss_with_mouse}
@@ -128,6 +130,8 @@
     border: 0;
     color: var(--color-text);
     background: transparent;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   :global(.dark) .menu {

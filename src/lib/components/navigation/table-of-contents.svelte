@@ -102,6 +102,7 @@
     class="toc-rail"
     aria-label="本页目录"
     aria-hidden={!toc_visible}
+    inert={!toc_visible}
     class:has-hover={has_hover}
     class:is-visible={toc_visible}
     {@attach observe_rail}

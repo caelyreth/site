@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { base } from '$app/paths'
+  import { page } from '$app/state'
+  import { get_site_config } from '$lib/content/site'
+  import { site_href } from '$lib/navigation/path'
 
-  import { menu_previews } from './content'
+  import { menu_preview_layouts } from './content'
 
   interface Props {
     is_closing: boolean
@@ -10,6 +12,13 @@
   }
 
   const { is_closing, is_open, on_navigate }: Props = $props()
+  const site = get_site_config()
+  const previews = $derived(
+    site.current.menu.entries.map((entry, index) => ({
+      ...entry,
+      layout: menu_preview_layouts[index]!,
+    })),
+  )
 
   function is_primary_navigation(event: MouseEvent) {
     return (
@@ -27,6 +36,11 @@
   function close_on_navigation(event: MouseEvent) {
     if (is_primary_navigation(event)) on_navigate()
   }
+
+  function is_current(path: string) {
+    const route = page.route.id
+    return route === path || (path !== '/' && route?.startsWith(`${path}/`))
+  }
 </script>
 
 <div
@@ -34,16 +48,26 @@
   class:is-open={is_open}
   class="collection-previews"
 >
-  {#each menu_previews as item}
+  {#each previews as item}
     {#snippet contents()}
-      <span class="micro-label slip-code">{item.code}</span>
+      <span
+        aria-hidden="true"
+        class="micro-label slip-code"
+        data-nosnippet="">{item.code}</span
+      >
       <span class="slip-title">{item.title}</span>
-      <span class="micro-label slip-detail">{item.detail}</span>
+      <span
+        aria-hidden="true"
+        class="micro-label slip-detail"
+        data-nosnippet="">{item.detail}</span
+      >
     {/snippet}
     {#if item.href}
       <a
+        aria-current={is_current(item.href) ? 'page' : undefined}
+        aria-label={item.title}
         class="slip"
-        href={`${base}${item.href}`.replace('//', '/')}
+        href={site_href(item.href)}
         onclick={close_on_navigation}
         style:--slip-bottom={item.layout.bottom}
         style:--slip-enter-delay={item.layout.enter_delay}
@@ -58,7 +82,9 @@
       </a>
     {:else}
       <span
+        aria-hidden="true"
         class="slip"
+        data-nosnippet=""
         style:--slip-bottom={item.layout.bottom}
         style:--slip-enter-delay={item.layout.enter_delay}
         style:--slip-enter-x={item.layout.enter_x}

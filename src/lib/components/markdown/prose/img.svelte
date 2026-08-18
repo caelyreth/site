@@ -94,6 +94,11 @@
     <span aria-hidden="true" class="media-failure">图片无法显示</span>
   </div>
   {#if title}<figcaption>{title}</figcaption>{/if}
+  {#if media_state === 'failed'}
+    <span class="sr-only" role="status"
+      >图片无法显示：{alt || '未提供替代文本'}</span
+    >
+  {/if}
 </figure>
 
 <style>

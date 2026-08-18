@@ -38,7 +38,7 @@
     display: block;
     inline-size: 0.9375rem;
     block-size: 0.9375rem;
-    margin-block-start: 0.28em;
+    margin-block-start: 0.3rem;
   }
 
   .task-checkbox::before {

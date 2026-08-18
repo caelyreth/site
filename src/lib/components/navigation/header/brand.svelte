@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { get_site_config } from '$lib/content/site'
+
   interface Props {
     href: string
     on_activate: (event: MouseEvent) => void
   }
 
   const { href, on_activate }: Props = $props()
+  const site = get_site_config()
 </script>
 
 <a {href} class="brand" onclick={on_activate} title="返回顶部">
@@ -20,7 +23,7 @@
     <rect x="27.25" y="2" width="6" height="20" fill="currentColor" />
     <rect x="35.25" y="2" width="3" height="20" fill="currentColor" />
   </svg>
-  <span class="brand-name">Caelyreth</span>
+  <span class="brand-name">{site.current.title}</span>
 </a>
 
 <style>

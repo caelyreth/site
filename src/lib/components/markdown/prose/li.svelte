@@ -36,4 +36,8 @@
   li.task-list-item > :global(p) {
     grid-column: 2;
   }
+
+  li.task-list-item > :global(p) {
+    margin-block-start: 0;
+  }
 </style>

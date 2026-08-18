@@ -12,11 +12,19 @@
   let { label, value }: Props = $props()
   let state = $state<CopyState>('idle')
   let reset_timer: ReturnType<typeof setTimeout> | undefined
+  const status_id = $props.id()
 
   onDestroy(() => clearTimeout(reset_timer))
 
   const button_label = $derived(
     state === 'copied' ? '已复制' : state === 'failed' ? '重试' : label,
+  )
+  const status = $derived(
+    state === 'copied'
+      ? '内容已复制'
+      : state === 'failed'
+        ? '复制失败，请重试'
+        : '',
   )
 
   async function copy() {
@@ -36,12 +44,13 @@
 </script>
 
 <button
-  aria-live="polite"
+  aria-describedby={status_id}
   class="copy-button"
   data-state={state}
   onclick={copy}
   type="button">{button_label}</button
 >
+<span id={status_id} class="sr-only" role="status">{status}</span>
 
 <style>
   .copy-button {

@@ -2,10 +2,11 @@
   interface Props {
     description: string
     kind: 'constellations' | 'records'
+    kind_label: string
     title: string
   }
 
-  let { description, kind, title }: Props = $props()
+  let { description, kind, kind_label, title }: Props = $props()
 </script>
 
 <header
@@ -13,7 +14,7 @@
   class="archive-index-header"
 >
   <p class="micro-label kind">
-    {kind === 'records' ? '留存的文字' : '彼此回响的主题'}
+    {kind_label}
   </p>
   <h1>{title}</h1>
   <p>{description}</p>

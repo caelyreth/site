@@ -14,13 +14,14 @@
   import VfdMatrix from './matrix.svelte'
   import {
     VFD_REFRESH_INTERVAL,
-    VFD_REFRESH_READOUTS,
     VFD_REFRESH_STEP_DURATION,
     refresh_frame,
   } from './refresh'
 
   interface Props {
-    readout?: string
+    readout: string
+    refresh_readouts: readonly string[]
+    title: string
   }
 
   const tube_slots = 9
@@ -34,17 +35,16 @@
   }
   const idle = idle_matrix(tube_slots, tube_lines)
 
-  let { readout = 'R322*D+42' }: Props = $props()
+  let { readout, refresh_readouts, title }: Props = $props()
   let refresh_step = $state(-1)
   let readout_index = $state(-1)
   let wordmark = $state<SVGSVGElement>()
-  const reading = fit_text('CAELYRETH', tube_slots)
+  const reading = $derived(fit_text(title, tube_slots))
   const active_readout = $derived(
     readout_index < 0
       ? readout
-      : (VFD_REFRESH_READOUTS[
-          readout_index % VFD_REFRESH_READOUTS.length
-        ] ?? readout),
+      : (refresh_readouts[readout_index % refresh_readouts.length] ??
+          readout),
   )
   const refresh_reading = $derived(
     refresh_step < 0
@@ -109,6 +109,7 @@
 <svg
   aria-hidden="true"
   class="wordmark"
+  data-nosnippet=""
   bind:this={wordmark}
   fill="none"
   style:--boot-duration={`${WORDMARK_BOOT_DURATION}ms`}

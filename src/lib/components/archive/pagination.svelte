@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { base } from '$app/paths'
+  import { format_template, get_site_config } from '$lib/content/site'
+  import { site_href } from '$lib/navigation/path'
 
   interface Props {
     page: number
@@ -8,23 +9,47 @@
   }
 
   let { page, page_count, path }: Props = $props()
+  const site = get_site_config()
 
   function page_href(next_page: number) {
     const suffix = next_page === 1 ? '' : `/page/${next_page}`
-    return `${base}${path}${suffix}`.replace('//', '/')
+    return site_href(`${path}${suffix}`)
   }
 </script>
 
 {#if page_count > 1}
-  <nav class="pagination" aria-label="分页">
+  <nav
+    class="pagination"
+    aria-label={site.current.pagination.navigation_label}
+  >
     {#if page > 1}
-      <a href={page_href(page - 1)}>上一页</a>
+      <a
+        aria-label={format_template(
+          site.current.pagination.previous_aria_label,
+          {
+            page,
+            page_count,
+          },
+        )}
+        href={page_href(page - 1)}
+        rel="prev">{site.current.pagination.previous_label}</a
+      >
     {/if}
 
     <p>{page} / {page_count}</p>
 
     {#if page < page_count}
-      <a href={page_href(page + 1)}>下一页</a>
+      <a
+        aria-label={format_template(
+          site.current.pagination.next_aria_label,
+          {
+            page,
+            page_count,
+          },
+        )}
+        href={page_href(page + 1)}
+        rel="next">{site.current.pagination.next_label}</a
+      >
     {/if}
   </nav>
 {/if}

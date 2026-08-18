@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { base } from '$app/paths'
   import type { RecordSummary } from '$lib/content/relations'
+  import { site_href } from '$lib/navigation/path'
 
   import ArchiveList from './archive-list.svelte'
   import ConstellationLinks from './constellation-links.svelte'
@@ -19,10 +19,6 @@
     year: 'numeric',
   })
 
-  function record_href(id: string) {
-    return `${base}/records/${id}`.replace('//', '/')
-  }
-
   function display_date(value: string) {
     return date_formatter.format(new Date(`${value}T00:00:00Z`))
   }
@@ -31,7 +27,7 @@
 <ArchiveList>
   {#each entries as entry}
     <li>
-      <a class="record-link" href={record_href(entry.id)}>
+      <a class="record-link" href={site_href(`/records/${entry.id}`)}>
         <time datetime={entry.published}
           >{display_date(entry.published)}</time
         >

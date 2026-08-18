@@ -10,9 +10,18 @@
   import Header from '$lib/components/navigation/header.svelte'
   import TableOfContents from '$lib/components/navigation/table-of-contents.svelte'
   import type { HeadingEntry } from '$lib/content/headings'
+  import { set_library_config } from '$lib/content/library'
   import RelayFooter from '$lib/presentation/relay-footer/view.svelte'
+  import type { Snippet } from 'svelte'
 
-  const { children } = $props()
+  import type { LayoutData } from './$types'
+
+  interface Props {
+    children: Snippet
+    data: LayoutData
+  }
+
+  const { children, data }: Props = $props()
   const chrome = $state<PageChrome>({
     content_active: true,
     stage_progress: 1,
@@ -21,8 +30,14 @@
   const page_toc = $derived(
     ((page.data as { toc?: HeadingEntry[] }).toc ?? []) as HeadingEntry[],
   )
+  const library = {
+    get current() {
+      return data.library
+    },
+  }
 
   set_page_chrome(chrome)
+  set_library_config(library)
 
   $effect(() => {
     chrome.toc = page_toc
@@ -34,7 +49,7 @@
     <Backdrop />
     <Header />
   </div>
-  <main class="library-main">
+  <main id="main-content" class="library-main" tabindex="-1">
     <div class="library-surface">
       <PaperDeck edge>
         {@render children()}

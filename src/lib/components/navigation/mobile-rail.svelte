@@ -12,6 +12,7 @@
   let { visible, collapsed, cells, children, panel }: Props = $props()
   let expanded = $state(false)
   let panel_height = $state(0)
+  let rail_cells = $state<HTMLDivElement>()
 
   const panel_id = 'mobile-rail-panel'
   const has_panel = $derived(panel !== undefined)
@@ -39,9 +40,22 @@
   $effect(() => {
     if (!visible || collapsed) close_panel()
   })
+
+  $effect(() => {
+    void cells
+    const entries =
+      rail_cells?.querySelectorAll<HTMLElement>('[data-rail-cell]')
+
+    entries?.forEach((entry) => {
+      entry.inert =
+        !visible ||
+        (collapsed && entry.dataset.railPriority === 'secondary')
+    })
+  })
 </script>
 
 <div
+  aria-hidden={!visible}
   class="mobile-rail"
   data-visible={visible}
   data-collapsed={collapsed}
@@ -63,7 +77,7 @@
       </section>
     {/if}
 
-    <div class="rail-cells">
+    <div bind:this={rail_cells} class="rail-cells">
       {@render children?.(toggle_panel, expanded, has_panel, panel_id)}
     </div>
   </div>

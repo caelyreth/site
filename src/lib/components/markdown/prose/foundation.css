@@ -31,7 +31,9 @@
   line-height: 1.5;
 }
 
-.document :where(li, blockquote, aside, td, th, figcaption) > :first-child {
+.document
+  :where(li, blockquote, aside, td, th, figcaption)
+  > :first-child:not(.task-checkbox) {
   margin-block-start: 0;
 }
 

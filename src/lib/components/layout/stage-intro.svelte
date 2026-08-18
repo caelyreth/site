@@ -1,10 +1,15 @@
 <script lang="ts">
   interface Props {
     description?: string
+    entry_label: string
     invert_description_in_light?: boolean
   }
 
-  let { description, invert_description_in_light = false }: Props = $props()
+  let {
+    description,
+    entry_label,
+    invert_description_in_light = false,
+  }: Props = $props()
 </script>
 
 <div
@@ -15,7 +20,7 @@
     <p><span class="description">{description}</span></p>
   {/if}
   <a class="entry" href="#content">
-    <span>下方是记录</span>
+    <span>{entry_label}</span>
     <span class="i-ri-arrow-down-line entry-icon" aria-hidden="true"></span>
   </a>
 </div>

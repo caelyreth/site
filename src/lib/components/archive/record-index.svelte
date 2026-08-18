@@ -1,38 +1,29 @@
 <script lang="ts">
   import type { RecordSummary } from '$lib/content/relations'
-  import type { ContentPage } from '$lib/content/schema'
+  import type {
+    ContentPage,
+    RecordIndexDocument,
+  } from '$lib/content/schema'
 
-  import IndexHeader from './index-header.svelte'
-  import Pagination from './pagination.svelte'
-  import ReadingPlane from './reading-plane.svelte'
+  import ArchiveIndex from './archive-index.svelte'
   import RecordTrajectory from './record-trajectory.svelte'
 
   interface Props {
+    document: RecordIndexDocument
     records: ContentPage<RecordSummary>
   }
 
-  let { records }: Props = $props()
+  let { document, records }: Props = $props()
 </script>
 
-<ReadingPlane kind="records">
-  <section id="content" class="record-index">
-    <IndexHeader
-      kind="records"
-      title="记录"
-      description="从中继站留存下来的文字：关于房间、工具、等待，以及尚未完全定形的念头。"
-    />
-
+<ArchiveIndex
+  {document}
+  kind="records"
+  page={records.page}
+  page_count={records.page_count}
+  path="/records"
+>
+  {#snippet children()}
     <RecordTrajectory entries={records.entries} />
-    <Pagination
-      page={records.page}
-      page_count={records.page_count}
-      path="/records"
-    />
-  </section>
-</ReadingPlane>
-
-<style>
-  .record-index {
-    min-width: 0;
-  }
-</style>
+  {/snippet}
+</ArchiveIndex>

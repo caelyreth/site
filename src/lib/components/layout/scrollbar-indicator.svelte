@@ -37,7 +37,7 @@
   let is_visible = $state(false)
   let release_drag: (() => void) | undefined
   let schedule_hide_after_drag: (() => void) | undefined
-  let thumb: HTMLButtonElement | undefined = $state()
+  let thumb: HTMLElement | undefined = $state()
 
   const is_block = $derived(axis === 'block')
 
@@ -239,14 +239,12 @@
     style:--scrollbar-track-length={`${geometry.track_length}px`}
     style:--scrollbar-track-start={`${geometry.track_start}px`}
   >
-    <button
+    <div
       aria-hidden="true"
       bind:this={thumb}
       class="scrollbar-thumb"
-      tabindex="-1"
-      type="button"
       onpointerdown={begin_drag}
-    ></button>
+    ></div>
   </div>
 {/if}
 

@@ -1,14 +1,17 @@
 <script lang="ts">
   import RecordIndex from '$lib/components/archive/record-index.svelte'
+  import PageMeta from '$lib/components/layout/page-meta.svelte'
+  import { get_site_config, site_title } from '$lib/content/site'
 
   import type { PageData } from './$types'
 
   let { data }: { data: PageData } = $props()
+  const site = get_site_config()
 </script>
 
-<svelte:head>
-  <title>记录 / Caelyreth</title>
-  <meta name="description" content="留存在 Caelyreth 中继站的文字记录。" />
-</svelte:head>
+<PageMeta
+  description={data.index.frontmatter.description}
+  title={site_title(site.current, data.index.frontmatter.title)}
+/>
 
-<RecordIndex records={data.records} />
+<RecordIndex document={data.index} records={data.records} />

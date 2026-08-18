@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { base } from '$app/paths'
   import Content from '$lib/components/markdown/document.svelte'
+  import { get_library_config } from '$lib/content/library'
   import type {
     ConstellationSummary,
     RecordSummary,
@@ -9,6 +9,8 @@
     ConstellationDocument,
     ContentPage,
   } from '$lib/content/schema'
+  import { format_template } from '$lib/content/site'
+  import { site_href } from '$lib/navigation/path'
 
   import EntryHeader from './entry-header.svelte'
   import Pagination from './pagination.svelte'
@@ -22,7 +24,8 @@
   }
 
   let { document, entries, constellation }: Props = $props()
-  const back_href = `${base}/constellations`.replace('//', '/')
+  const library = get_library_config()
+  const back_href = site_href('/constellations')
   const constellation_path = $derived(`/constellations/${constellation.id}`)
 </script>
 
@@ -30,8 +33,13 @@
   <article id="content" class="constellation-detail">
     <EntryHeader
       {back_href}
-      back_label="星群"
-      meta={`${constellation.entry_count} 篇关联记录`}
+      back_label={library.current.constellations.back_label}
+      meta={format_template(
+        library.current.constellations.entry_count_label,
+        {
+          count: constellation.entry_count,
+        },
+      )}
       summary={constellation.summary}
       title={constellation.title}
     >
@@ -44,9 +52,15 @@
 
     <section
       class="constellation-records"
-      aria-label={`${constellation.title}中的记录`}
+      aria-label={format_template(
+        library.current.constellations.records_navigation_label,
+        {
+          records: library.current.records.title,
+          title: constellation.title,
+        },
+      )}
     >
-      <h2>停靠于此的记录</h2>
+      <h2>{library.current.constellations.records_label}</h2>
       <RecordTrajectory
         entries={entries.entries}
         show_constellations={false}

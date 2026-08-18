@@ -13,12 +13,114 @@ const document_fields = {
   title: v.string(),
 }
 
+const navigation_item_schema = v.strictObject({
+  href: v.string(),
+  label: v.string(),
+})
+
+const menu_item_schema = v.strictObject({
+  code: v.string(),
+  detail: v.string(),
+  href: v.optional(v.string()),
+  title: v.string(),
+})
+
+const social_link_schema = v.strictObject({
+  aria_label: v.string(),
+  external: v.boolean(),
+  href: v.string(),
+  icon: v.string(),
+  label: v.string(),
+})
+
+const observatory_schema = v.strictObject({
+  cabin_label: v.string(),
+  descent_label: v.string(),
+  entry_label: v.string(),
+  social_label: v.string(),
+  social_links: v.array(social_link_schema),
+  surface_label: v.string(),
+  vfd_readout: v.string(),
+  vfd_refresh_readouts: v.pipe(v.array(v.string()), v.minLength(1)),
+  vfd_title: v.string(),
+})
+
 const indexed_document_fields = {
   ...document_fields,
   summary: v.string(),
 }
 
-export const home_frontmatter_schema = v.strictObject(document_fields)
+const index_document_fields = {
+  ...document_fields,
+  description: v.string(),
+  kind: v.string(),
+}
+
+export const home_frontmatter_schema = v.strictObject({
+  ...document_fields,
+  observatory: observatory_schema,
+})
+
+export const record_index_frontmatter_schema = v.strictObject({
+  ...index_document_fields,
+  back_label: v.string(),
+  meta_label: v.string(),
+})
+
+export const constellation_index_frontmatter_schema = v.strictObject({
+  ...index_document_fields,
+  back_label: v.string(),
+  entry_count_label: v.string(),
+  records_label: v.string(),
+  records_navigation_label: v.string(),
+  related_label: v.string(),
+  related_navigation_label: v.string(),
+})
+
+export const site_config_schema = v.strictObject({
+  description: v.string(),
+  footer: v.strictObject({
+    archive_detail: v.string(),
+    archive_label: v.string(),
+    copyright: v.string(),
+    index_detail: v.string(),
+    index_label: v.string(),
+    label: v.string(),
+    license_href: v.string(),
+    license_label: v.string(),
+    navigation: v.array(navigation_item_schema),
+    signal: v.strictObject({
+      label: v.string(),
+      pause_label: v.string(),
+      resume_label: v.string(),
+      status: v.string(),
+    }),
+    signature: v.string(),
+    statement: v.string(),
+    title: v.string(),
+  }),
+  menu: v.strictObject({
+    entries: v.pipe(v.array(menu_item_schema), v.length(3)),
+    field_note: v.string(),
+    ornaments: v.pipe(v.array(v.string()), v.length(16)),
+    theme_code: v.string(),
+    theme_label: v.string(),
+  }),
+  pagination: v.strictObject({
+    label: v.string(),
+    navigation_label: v.string(),
+    next_aria_label: v.string(),
+    next_label: v.string(),
+    previous_aria_label: v.string(),
+    previous_label: v.string(),
+  }),
+  seo: v.strictObject({
+    locale: v.string(),
+    page_description: v.string(),
+    title_separator: v.string(),
+  }),
+  title: v.string(),
+})
 
 const constellation_id_schema = v.pipe(
   v.string(),
@@ -43,6 +145,13 @@ export const constellation_frontmatter_schema = v.strictObject(
 
 export type ContentFont = v.InferOutput<typeof content_font_schema>
 export type HomeFrontmatter = v.InferOutput<typeof home_frontmatter_schema>
+export type RecordIndexFrontmatter = v.InferOutput<
+  typeof record_index_frontmatter_schema
+>
+export type ConstellationIndexFrontmatter = v.InferOutput<
+  typeof constellation_index_frontmatter_schema
+>
+export type SiteConfig = v.InferOutput<typeof site_config_schema>
 export type RecordFrontmatter = v.InferOutput<
   typeof record_frontmatter_schema
 >
@@ -53,6 +162,16 @@ export type ConstellationFrontmatter = v.InferOutput<
 export type HomeDocument = MarkdownDocument<
   Record<string, unknown>,
   HomeFrontmatter
+>
+
+export type RecordIndexDocument = MarkdownDocument<
+  Record<string, unknown>,
+  RecordIndexFrontmatter
+>
+
+export type ConstellationIndexDocument = MarkdownDocument<
+  Record<string, unknown>,
+  ConstellationIndexFrontmatter
 >
 
 export type RecordDocument = MarkdownDocument<

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { get_site_config } from '$lib/content/site'
   import { useTheme as use_theme } from 'svelte-themes'
 
   import { theme_slip_layout } from './content'
@@ -11,8 +12,9 @@
   }
 
   const { is_closing, is_open, on_close }: Props = $props()
+  const site = get_site_config()
   const theme = use_theme()
-  const theme_label = $derived(
+  const mode_label = $derived(
     theme.theme === 'system'
       ? `跟随系统 / ${theme.resolvedTheme === 'dark' ? '深色' : '浅色'}`
       : `${theme.resolvedTheme === 'dark' ? '深色' : '浅色'}模式`,
@@ -23,7 +25,7 @@
   class:is-closing={is_closing}
   class:is-open={is_open}
   class="theme-slip"
-  aria-label="显示模式"
+  aria-label={site.current.menu.theme_label}
   style:--slip-bottom={theme_slip_layout.bottom}
   style:--slip-enter-delay={theme_slip_layout.enter_delay}
   style:--slip-enter-x={theme_slip_layout.enter_x}
@@ -31,9 +33,10 @@
   style:--slip-right={theme_slip_layout.right}
   style:--slip-rotation={theme_slip_layout.rotation}
 >
-  <div class="theme-copy">
-    <span class="micro-label slip-code">切换 / 002</span>
-    <span class="micro-label theme-label">{theme_label}</span>
+  <div aria-hidden="true" class="theme-copy" data-nosnippet="">
+    <span class="micro-label slip-code">{site.current.menu.theme_code}</span
+    >
+    <span class="micro-label theme-label">{mode_label}</span>
   </div>
   <div class="theme-controls">
     <ThemeToggle fill />

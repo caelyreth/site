@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { base } from '$app/paths'
   import Content from '$lib/components/markdown/document.svelte'
+  import { get_library_config } from '$lib/content/library'
   import type { ConstellationReference } from '$lib/content/relations'
   import type { RecordDocument } from '$lib/content/schema'
+  import { site_href } from '$lib/navigation/path'
 
   import BackLink from './back-link.svelte'
   import ConstellationLinks from './constellation-links.svelte'
@@ -15,6 +16,8 @@
   }
 
   let { constellations, document }: Props = $props()
+  const library = get_library_config()
+  const records_href = site_href('/records')
   const date_formatter = new Intl.DateTimeFormat('zh-CN', {
     day: 'numeric',
     month: 'long',
@@ -30,9 +33,9 @@
 <ReadingPlane kind="record">
   <article id="content" class="record-detail">
     <EntryHeader
-      back_href={`${base}/records`.replace('//', '/')}
-      back_label="记录"
-      meta={`记录 / ${display_date(document.frontmatter.published)}`}
+      back_href={records_href}
+      back_label={library.current.records.title}
+      meta={`${library.current.records.meta_label} / ${display_date(document.frontmatter.published)}`}
       summary={document.frontmatter.summary}
       title={document.frontmatter.title}
     >
@@ -47,8 +50,8 @@
 
     <footer class="entry-footer">
       <BackLink
-        href={`${base}/records`.replace('//', '/')}
-        label="返回记录"
+        href={records_href}
+        label={library.current.records.back_label}
       />
     </footer>
   </article>

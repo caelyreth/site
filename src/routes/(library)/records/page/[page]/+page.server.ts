@@ -4,10 +4,12 @@ import {
   page_count,
   page_number,
   paginate,
+  read_content,
 } from '$lib/content/query.server'
 import { record_index } from '$lib/content/relations'
 import {
   constellation_frontmatter_schema,
+  record_index_frontmatter_schema,
   record_frontmatter_schema,
 } from '$lib/content/schema'
 import { error } from '@sveltejs/kit'
@@ -48,14 +50,16 @@ export const load: PageServerLoad = async ({ depends, params }) => {
   const page = page_number(params.page)
   if (!page || page === 1) throw error(404, '未找到记录页')
 
-  const [record_entries, constellation_entries] = await Promise.all([
+  const [record_entries, constellation_entries, index] = await Promise.all([
     records.entries(),
     constellations.entries(),
+    read_content('records', record_index_frontmatter_schema),
   ])
   const entries = paginate(
     record_index(record_entries, constellation_entries),
     page,
   )
   if (!entries) throw error(404, '未找到记录页')
-  return { records: entries }
+  if (!index) throw new Error('Missing content/records.md.')
+  return { index: index.document, records: entries }
 }

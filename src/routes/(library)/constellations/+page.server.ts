@@ -1,8 +1,13 @@
 import { content_dependency } from '$lib/content/hmr'
-import { content_query, paginate } from '$lib/content/query.server'
+import {
+  content_query,
+  paginate,
+  read_content,
+} from '$lib/content/query.server'
 import { constellation_index, record_index } from '$lib/content/relations'
 import {
   constellation_frontmatter_schema,
+  constellation_index_frontmatter_schema,
   record_frontmatter_schema,
 } from '$lib/content/schema'
 
@@ -19,9 +24,10 @@ const constellations = content_query(
 export const load: PageServerLoad = async ({ depends }) => {
   depends(content_dependency('constellations'))
   depends(content_dependency('records'))
-  const [record_entries, constellation_entries] = await Promise.all([
+  const [record_entries, constellation_entries, index] = await Promise.all([
     records.entries(),
     constellations.entries(),
+    read_content('constellations', constellation_index_frontmatter_schema),
   ])
   const page = paginate(
     constellation_index(
@@ -31,5 +37,6 @@ export const load: PageServerLoad = async ({ depends }) => {
     1,
   )
   if (!page) throw new Error('无法创建第一页星群。')
-  return { constellations: page }
+  if (!index) throw new Error('Missing content/constellations.md.')
+  return { constellations: page, index: index.document }
 }

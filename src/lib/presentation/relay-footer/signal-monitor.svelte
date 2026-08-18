@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { SiteConfig } from '$lib/content/schema'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
 
@@ -7,9 +8,10 @@
 
   interface Props {
     is_active: boolean
+    signal: SiteConfig['footer']['signal']
   }
 
-  const { is_active }: Props = $props()
+  const { is_active, signal }: Props = $props()
 
   let signal_sequence = $state(1)
   let signals = $state([
@@ -41,13 +43,15 @@
 
 <div class="signal-monitor">
   <div class="module-head">
-    <p class="micro-label signal-label">信号监测</p>
+    <p class="micro-label signal-label">{signal.label}</p>
     <button
       type="button"
       class="signal-toggle"
-      aria-label={transmission_paused ? '继续轮换信号' : '暂停轮换信号'}
+      aria-label={transmission_paused
+        ? signal.resume_label
+        : signal.pause_label}
       aria-pressed={transmission_paused}
-      title={transmission_paused ? '继续轮换信号' : '暂停轮换信号'}
+      title={transmission_paused ? signal.resume_label : signal.pause_label}
       onclick={toggle_transmission}
     >
       {#if transmission_paused}<span
@@ -57,8 +61,8 @@
         ></span>{/if}
     </button>
   </div>
-  <p class="status">载波已保留</p>
-  <div aria-hidden="true" class="signal-log">
+  <p class="status">{signal.status}</p>
+  <div aria-hidden="true" class="signal-log" data-nosnippet="">
     {#each signals as signal, index (signal.id)}
       <span
         animate:flip={{ duration: 360 }}
