@@ -112,6 +112,7 @@
       pointer-events: none;
       transform: translateX(calc(50vw + var(--rail-size)));
       transition:
+        bottom 320ms var(--ease-out),
         width var(--rail-expand-duration) var(--rail-expand-ease),
         transform var(--rail-expand-duration) var(--rail-expand-ease),
         opacity var(--dur-short) var(--ease-out);
@@ -200,6 +201,7 @@
       pointer-events: auto;
       transform: translateX(calc(50vw - var(--rail-edge) - 100%));
       transition:
+        bottom 320ms var(--ease-out),
         width var(--rail-collapse-duration) var(--rail-collapse-ease),
         transform var(--rail-collapse-duration) var(--rail-collapse-ease),
         opacity var(--dur-short) var(--ease-out);
@@ -216,6 +218,14 @@
       transition:
         flex-grow var(--rail-collapse-duration) var(--rail-collapse-ease),
         opacity var(--rail-switch-duration) var(--ease-in-out);
+    }
+
+    /* The compact rail reuses this single cell for navigation and return. */
+    .mobile-rail[data-collapsed='true']
+      .rail-cells
+      > :global([data-rail-compact-control]) {
+      position: absolute;
+      inset: 0;
     }
 
     .mobile-rail[data-collapsed='true']

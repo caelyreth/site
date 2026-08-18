@@ -118,6 +118,7 @@
       <div
         class="mobile-menu"
         data-rail-cell
+        data-rail-compact-control
         data-rail-priority={chrome.content_active ? 'secondary' : 'primary'}
       >
         <MenuTrigger is_open={menu.is_open} on_open={menu.open} />
@@ -149,6 +150,7 @@
       <div
         class="mobile-actions"
         data-rail-cell
+        data-rail-compact-control
         data-rail-priority={chrome.content_active ? 'primary' : 'secondary'}
       >
         <button
