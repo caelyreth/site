@@ -42,8 +42,8 @@ export const menu_previews: readonly MenuPreview[] = [
       enter_delay: '80ms',
       enter_x: '-2rem',
       enter_y: '1rem',
-      left: '25%',
-      rotation: '-13deg',
+      left: '27%',
+      rotation: '6deg',
       top: '22%',
     },
     title: '记录',
@@ -56,20 +56,20 @@ export const menu_previews: readonly MenuPreview[] = [
       enter_delay: '140ms',
       enter_x: '1.75rem',
       enter_y: '-1rem',
-      left: '57%',
-      rotation: '11deg',
+      left: '60%',
+      rotation: '-2deg',
       top: '29%',
     },
     title: '星群',
   },
   {
-    code: '片段 / 待启用',
-    detail: '尚无信号',
+    code: '片段 / 003',
+    detail: '短暂记录',
     layout: {
       enter_delay: '200ms',
       enter_x: '-1.5rem',
       enter_y: '1.25rem',
-      left: '34%',
+      left: '28%',
       rotation: '-7deg',
       top: '56%',
     },
@@ -78,6 +78,17 @@ export const menu_previews: readonly MenuPreview[] = [
 ]
 
 export const drifts: readonly Drift[] = [
+  {
+    layout: {
+      blur: '8px',
+      enter_delay: '45ms',
+      left: '55%',
+      rotation: '-8deg',
+      tone: 0.3,
+      top: '6%',
+    },
+    text: '档案 / 023',
+  },
   {
     layout: {
       blur: '11px',
@@ -112,6 +123,28 @@ export const drifts: readonly Drift[] = [
   {
     layout: {
       blur: '5px',
+      enter_delay: '90ms',
+      left: '61%',
+      rotation: '11deg',
+      tone: 0.38,
+      top: '19%',
+    },
+    text: '等待 / 余波',
+  },
+  {
+    layout: {
+      blur: '12px',
+      enter_delay: '135ms',
+      left: '52%',
+      rotation: '-21deg',
+      tone: 0.22,
+      top: '32%',
+    },
+    text: '未命名 / 片段',
+  },
+  {
+    layout: {
+      blur: '5px',
       enter_delay: '100ms',
       right: '1%',
       rotation: '-38deg',
@@ -119,6 +152,17 @@ export const drifts: readonly Drift[] = [
       top: '45%',
     },
     text: 'CAELYRETH',
+  },
+  {
+    layout: {
+      blur: '4px',
+      enter_delay: '190ms',
+      left: '63%',
+      rotation: '4deg',
+      tone: 0.42,
+      top: '43%',
+    },
+    text: '静默 / 044',
   },
   {
     layout: {
@@ -208,10 +252,10 @@ export const drifts: readonly Drift[] = [
 ]
 
 export const theme_slip_layout = {
-  bottom: '15%',
+  bottom: '20%',
   enter_delay: '240ms',
   enter_x: '1.5rem',
   enter_y: '1rem',
-  right: '22%',
-  rotation: '16deg',
+  right: '30%',
+  rotation: '10deg',
 } as const satisfies Position & EnteringLayout & { rotation: string }

@@ -58,8 +58,7 @@
       </a>
     {:else}
       <span
-        aria-disabled="true"
-        class="slip is-deferred"
+        class="slip"
         style:--slip-bottom={item.layout.bottom}
         style:--slip-enter-delay={item.layout.enter_delay}
         style:--slip-enter-x={item.layout.enter_x}
@@ -95,7 +94,7 @@
       100vw - var(--menu-inset-left) - var(--menu-inset-right)
     );
     min-width: min(
-      11rem,
+      14rem,
       calc(100vw - var(--menu-inset-left) - var(--menu-inset-right))
     );
     padding: 0.9rem 1rem 1rem;
@@ -112,10 +111,6 @@
     transition:
       color var(--dur-short) var(--ease-out),
       background-color var(--dur-short) var(--ease-out);
-  }
-
-  .slip.is-deferred {
-    opacity: 0.65;
   }
 
   .slip:focus-visible {

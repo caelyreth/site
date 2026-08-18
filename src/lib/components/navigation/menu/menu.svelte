@@ -111,6 +111,7 @@
     --menu-highlight: var(--color-text-link-dark);
     --slip-surface: var(--color-ink);
     --slip-ink: var(--color-paper);
+    --slip-texture-opacity: 0.24;
     --drift-ink: var(--color-ink);
     position: fixed;
     inset: 0;
@@ -172,6 +173,24 @@
 
   .menu::backdrop {
     background: transparent;
+  }
+
+  .menu :global(.slip),
+  .menu :global(.theme-slip) {
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .menu :global(.slip)::before,
+  .menu :global(.theme-slip)::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: '';
+    opacity: var(--slip-texture-opacity);
+    background-image: var(--noise-tile);
+    background-size: var(--noise-size);
   }
 
   .menu.is-closing::backdrop {
