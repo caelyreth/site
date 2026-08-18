@@ -5,7 +5,7 @@
   import { reduced_motion } from '$lib/browser/reduced-motion'
   import { scroll_activity } from '$lib/browser/scroll-activity'
   import { get_page_chrome } from '$lib/components/layout/page-chrome'
-  import { onDestroy, onMount, tick } from 'svelte'
+  import { onMount, tick } from 'svelte'
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
@@ -18,12 +18,12 @@
   const chrome = get_page_chrome()
   const menu = get_menu_controller()
   const entry_rail_delay = 640
-  const observatory_rail_timeout = 3200
+  const rail_settle_delay = 1150
   let scrolling = $state(false)
   let entry_rail_ready = $state(false)
   let active_panel = $state<'navigation' | 'toc'>('navigation')
   let observatory_rail_expanded = $state(false)
-  let observatory_rail_timer: number | undefined
+  let rail_panel_expanded = $state(false)
   const rail_visible = $derived(chrome.content_active || entry_rail_ready)
   const observatory_rail_compact = $derived(
     !chrome.content_active && !observatory_rail_expanded,
@@ -38,12 +38,23 @@
   const has_toc = $derived(chrome.toc.length > 0)
 
   const observe_scroll = scroll_activity({
-    idle_delay: 1150,
+    idle_delay: rail_settle_delay,
     on_activity(active) {
       scrolling = active
       if (active) collapse_observatory_rail()
     },
   })
+
+  $effect(() => {
+    if (!observatory_rail_expanded || rail_panel_expanded) return
+
+    const timer = window.setTimeout(() => {
+      observatory_rail_expanded = false
+    }, rail_settle_delay)
+
+    return () => window.clearTimeout(timer)
+  })
+
   function has_navigation_modifier(event: MouseEvent) {
     return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey
   }
@@ -69,19 +80,10 @@
   }
 
   function expand_observatory_rail() {
-    collapse_observatory_rail()
-
     observatory_rail_expanded = true
-    observatory_rail_timer = window.setTimeout(() => {
-      collapse_observatory_rail()
-    }, observatory_rail_timeout)
   }
 
   function collapse_observatory_rail() {
-    if (observatory_rail_timer !== undefined) {
-      window.clearTimeout(observatory_rail_timer)
-      observatory_rail_timer = undefined
-    }
     observatory_rail_expanded = false
   }
 
@@ -110,10 +112,6 @@
     }, entry_rail_delay)
 
     return () => window.clearTimeout(timer)
-  })
-
-  onDestroy(() => {
-    collapse_observatory_rail()
   })
 </script>
 
@@ -160,6 +158,7 @@
     collapsed={rail_collapsed}
     cells={has_toc ? 4 : 3}
     {compact_control}
+    bind:expanded={rail_panel_expanded}
     panel={mobile_panel}
   >
     {#snippet children(toggle_panel, expanded, panel_id)}

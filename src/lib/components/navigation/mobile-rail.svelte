@@ -6,6 +6,7 @@
     collapsed: boolean
     cells: number
     compact_control: string
+    expanded?: boolean
     children?: Snippet<[() => void, boolean, string]>
     panel?: Snippet<[() => void]>
   }
@@ -15,10 +16,10 @@
     collapsed,
     cells,
     compact_control,
+    expanded = $bindable(false),
     children,
     panel,
   }: Props = $props()
-  let expanded = $state(false)
   let panel_height = $state(0)
   let rail_cells = $state<HTMLDivElement>()
 

@@ -44,7 +44,7 @@
     --label-safe-left: var(--stage-label-safe-left);
     --label-safe-right: var(--stage-label-safe-right);
     --label-block-inset: max(1.25rem, env(safe-area-inset-top));
-    --label-bottom-inset: var(--viewport-bottom-inset);
+    --label-bottom-inset: var(--stage-bottom-inset);
     --label-rail-top: calc(
       var(--label-block-inset) +
         (

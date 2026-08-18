@@ -171,8 +171,9 @@
   --header-safe-inset: calc(var(--header-block-size) + 1.75rem);
   --stage-frame-border: 1px;
   --stage-frame-inset: clamp(0.5rem, 1.6vw, 1.25rem);
-  --viewport-bottom-inset: calc(
-    max(1.25rem, env(safe-area-inset-bottom)) + max(0px, 100lvh - 100dvh)
+  --viewport-bottom-inset: max(1.25rem, env(safe-area-inset-bottom));
+  --stage-bottom-inset: calc(
+    var(--viewport-bottom-inset) + max(0px, 100lvh - 100dvh)
   );
   --stable-viewport-block: 100lvh;
   --stage-transition-span: min(
