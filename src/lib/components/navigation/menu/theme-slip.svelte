@@ -172,60 +172,6 @@
     animation: slip-leave var(--dur-long) var(--ease-out) both;
   }
 
-  @media (width < 40rem) {
-    .theme-slip {
-      --slip-effective-rotation: 0deg;
-      --theme-toggle-size: 2.75rem;
-
-      top: auto;
-      right: var(--menu-inset-right);
-      bottom: var(--menu-inset-bottom);
-      left: var(--menu-inset-left);
-      width: auto;
-    }
-
-    .theme-controls {
-      min-height: 2.75rem;
-    }
-
-    .close {
-      width: 2.75rem;
-    }
-
-    @keyframes mobile-slip-enter {
-      from {
-        opacity: 0;
-        transform: translate3d(0, 1.25rem, 0);
-      }
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-      }
-    }
-
-    @keyframes mobile-slip-leave {
-      to {
-        opacity: 0;
-        transform: translate3d(0, 1.25rem, 0);
-      }
-    }
-
-    .theme-slip.is-open:not(.is-closing) {
-      animation-name: mobile-slip-enter;
-    }
-
-    .theme-slip.is-closing {
-      animation-name: mobile-slip-leave;
-    }
-  }
-
-  @media (height < 42rem) and (width < 40rem) {
-    .theme-copy {
-      padding-block: 0.55rem;
-      gap: 0.25rem;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .theme-slip.is-open {
       animation: none;

@@ -60,12 +60,7 @@
         style:--drift-right={drift.layout.right}
         style:--drift-rotation={drift.layout.rotation}
         style:--drift-tone={drift.layout.tone}
-        style:--drift-top={drift.layout.top}
-        style:--drift-bottom-compact={drift.layout.compact?.bottom}
-        style:--drift-left-compact={drift.layout.compact?.left}
-        style:--drift-right-compact={drift.layout.compact?.right}
-        style:--drift-top-compact={drift.layout.compact?.top}
-        >{drift.text}</span
+        style:--drift-top={drift.layout.top}>{drift.text}</span
       >
     </span>
   {/each}
@@ -169,26 +164,6 @@
   .ornaments.is-closing .drift-layer,
   .ornaments.is-closing .orbits {
     animation: drift-leave var(--dur-long) var(--ease-out) both;
-  }
-
-  @media (width < 40rem) {
-    .orbits {
-      inset: -14% -48%;
-      width: 196%;
-      height: 128%;
-      opacity: 0.1;
-    }
-
-    .drift {
-      top: var(--drift-top-compact, var(--drift-top));
-      right: var(--drift-right-compact, var(--drift-right));
-      bottom: var(--drift-bottom-compact, var(--drift-bottom));
-      left: var(--drift-left-compact, var(--drift-left));
-    }
-
-    .drift-layer {
-      display: none;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

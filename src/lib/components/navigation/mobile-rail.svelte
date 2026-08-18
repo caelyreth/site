@@ -5,11 +5,19 @@
     visible: boolean
     collapsed: boolean
     cells: number
-    children?: Snippet<[() => void, boolean, boolean, string]>
+    compact_control: string
+    children?: Snippet<[() => void, boolean, string]>
     panel?: Snippet<[() => void]>
   }
 
-  let { visible, collapsed, cells, children, panel }: Props = $props()
+  let {
+    visible,
+    collapsed,
+    cells,
+    compact_control,
+    children,
+    panel,
+  }: Props = $props()
   let expanded = $state(false)
   let panel_height = $state(0)
   let rail_cells = $state<HTMLDivElement>()
@@ -49,7 +57,7 @@
     entries?.forEach((entry) => {
       entry.inert =
         !visible ||
-        (collapsed && entry.dataset.railPriority === 'secondary')
+        (collapsed && entry.dataset.railControl !== compact_control)
     })
   })
 </script>
@@ -78,7 +86,7 @@
     {/if}
 
     <div bind:this={rail_cells} class="rail-cells">
-      {@render children?.(toggle_panel, expanded, has_panel, panel_id)}
+      {@render children?.(toggle_panel, expanded, panel_id)}
     </div>
   </div>
 </div>
@@ -220,12 +228,37 @@
         opacity var(--rail-switch-duration) var(--ease-in-out);
     }
 
-    /* The compact rail reuses this single cell for navigation and return. */
+    @keyframes pin-compact-control {
+      to {
+        position: absolute;
+        inset: 0;
+      }
+    }
+
+    /* Pin the shared control only after the full rail has collapsed. */
     .mobile-rail[data-collapsed='true']
       .rail-cells
       > :global([data-rail-compact-control]) {
-      position: absolute;
-      inset: 0;
+      animation: pin-compact-control 1ms step-end
+        var(--rail-collapse-duration) forwards;
+    }
+
+    .mobile-rail[data-collapsed='true'][data-expanded='false'] .rail-shell {
+      transition: height var(--rail-collapse-duration)
+        var(--rail-collapse-ease);
+    }
+
+    .mobile-rail[data-collapsed='true'][data-expanded='false'] .rail-panel {
+      transition:
+        height var(--rail-collapse-duration) var(--rail-collapse-ease),
+        border-color var(--dur-micro) var(--ease-out),
+        opacity var(--rail-collapse-duration) var(--rail-collapse-ease);
+    }
+
+    .mobile-rail[data-collapsed='true'][data-expanded='false']
+      .rail-panel-content {
+      transition: transform var(--rail-collapse-duration)
+        var(--rail-collapse-ease);
     }
 
     .mobile-rail[data-collapsed='true']
@@ -267,6 +300,11 @@
     .rail-cells > :global([data-rail-cell]),
     .rail-cells > :global([data-rail-cell])::before {
       transition-duration: 1ms;
+    }
+
+    .rail-cells > :global([data-rail-compact-control]) {
+      animation-duration: 1ms;
+      animation-delay: 0ms;
     }
   }
 </style>

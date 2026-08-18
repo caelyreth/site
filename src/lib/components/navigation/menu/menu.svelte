@@ -32,7 +32,13 @@
   }
 
   function open_menu() {
-    if (!dialog || dialog.open) return
+    if (
+      !dialog ||
+      dialog.open ||
+      !window.matchMedia('(width >= 40rem)').matches
+    ) {
+      return
+    }
 
     closing = false
     controller.is_open = true
@@ -216,10 +222,8 @@
   }
 
   @media (width < 40rem) {
-    .menu-veil {
-      background: var(--color-paper);
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
+    .menu {
+      display: none;
     }
   }
 

@@ -5,11 +5,12 @@
   import { reduced_motion } from '$lib/browser/reduced-motion'
   import { scroll_activity } from '$lib/browser/scroll-activity'
   import { get_page_chrome } from '$lib/components/layout/page-chrome'
-  import { onMount, tick } from 'svelte'
+  import { onDestroy, onMount, tick } from 'svelte'
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
   import { get_menu_controller } from './menu/controller'
+  import MobileNavigationPanel from './mobile-navigation-panel.svelte'
   import MobileRail from './mobile-rail.svelte'
   import TableOfContentsPanel from './table-of-contents-panel.svelte'
 
@@ -17,15 +18,30 @@
   const chrome = get_page_chrome()
   const menu = get_menu_controller()
   const entry_rail_delay = 640
+  const observatory_rail_timeout = 3200
   let scrolling = $state(false)
   let entry_rail_ready = $state(false)
+  let active_panel = $state<'navigation' | 'toc'>('navigation')
+  let observatory_rail_expanded = $state(false)
+  let observatory_rail_timer: number | undefined
   const rail_visible = $derived(chrome.content_active || entry_rail_ready)
-  const rail_collapsed = $derived(!chrome.content_active || scrolling)
+  const observatory_rail_compact = $derived(
+    !chrome.content_active && !observatory_rail_expanded,
+  )
+  const rail_collapsed = $derived(scrolling || observatory_rail_compact)
+  const compact_control = $derived(
+    chrome.content_active ? 'return' : 'navigation',
+  )
+  const mobile_menu_icon = $derived(
+    rail_collapsed ? 'i-ri-expand-diagonal-s-line' : 'i-ri-compass-line',
+  )
+  const has_toc = $derived(chrome.toc.length > 0)
 
   const observe_scroll = scroll_activity({
     idle_delay: 1150,
     on_activity(active) {
       scrolling = active
+      if (active) collapse_observatory_rail()
     },
   })
   function has_navigation_modifier(event: MouseEvent) {
@@ -52,6 +68,37 @@
     void return_to_top()
   }
 
+  function expand_observatory_rail() {
+    collapse_observatory_rail()
+
+    observatory_rail_expanded = true
+    observatory_rail_timer = window.setTimeout(() => {
+      collapse_observatory_rail()
+    }, observatory_rail_timeout)
+  }
+
+  function collapse_observatory_rail() {
+    if (observatory_rail_timer !== undefined) {
+      window.clearTimeout(observatory_rail_timer)
+      observatory_rail_timer = undefined
+    }
+    observatory_rail_expanded = false
+  }
+
+  function toggle_rail_panel(
+    panel: 'navigation' | 'toc',
+    toggle: () => void,
+    expanded: boolean,
+  ) {
+    if (active_panel !== panel) {
+      active_panel = panel
+      if (!expanded) toggle()
+      return
+    }
+
+    toggle()
+  }
+
   onMount(() => {
     if (reduced_motion.current) {
       entry_rail_ready = true
@@ -64,10 +111,18 @@
 
     return () => window.clearTimeout(timer)
   })
+
+  onDestroy(() => {
+    collapse_observatory_rail()
+  })
 </script>
 
-{#snippet index_panel(close_panel: () => void)}
-  <TableOfContentsPanel entries={chrome.toc} on_close={close_panel} />
+{#snippet mobile_panel(close_panel: () => void)}
+  {#if active_panel === 'toc' && has_toc}
+    <TableOfContentsPanel entries={chrome.toc} on_close={close_panel} />
+  {:else}
+    <MobileNavigationPanel on_close={close_panel} />
+  {/if}
 {/snippet}
 
 <div
@@ -103,10 +158,11 @@
   <MobileRail
     visible={rail_visible}
     collapsed={rail_collapsed}
-    cells={chrome.toc.length ? 4 : 3}
-    panel={chrome.toc.length ? index_panel : undefined}
+    cells={has_toc ? 4 : 3}
+    {compact_control}
+    panel={mobile_panel}
   >
-    {#snippet children(toggle_panel, expanded, has_panel, panel_id)}
+    {#snippet children(toggle_panel, expanded, panel_id)}
       <div
         class="mobile-brand"
         data-rail-cell
@@ -119,12 +175,36 @@
         class="mobile-menu"
         data-rail-cell
         data-rail-compact-control
-        data-rail-priority={chrome.content_active ? 'secondary' : 'primary'}
+        data-rail-control="navigation"
+        data-rail-priority={compact_control === 'navigation'
+          ? 'primary'
+          : 'secondary'}
       >
-        <MenuTrigger is_open={menu.is_open} on_open={menu.open} />
+        <button
+          type="button"
+          class="action mobile-nav-toggle"
+          aria-controls={panel_id}
+          aria-expanded={expanded && active_panel === 'navigation'}
+          aria-label={observatory_rail_compact
+            ? '展开导航栏'
+            : expanded && active_panel === 'navigation'
+              ? '关闭站点导航'
+              : '打开站点导航'}
+          title={observatory_rail_compact
+            ? '展开导航栏'
+            : expanded && active_panel === 'navigation'
+              ? '关闭站点导航'
+              : '打开站点导航'}
+          onclick={() =>
+            observatory_rail_compact
+              ? expand_observatory_rail()
+              : toggle_rail_panel('navigation', toggle_panel, expanded)}
+        >
+          <span class={mobile_menu_icon} aria-hidden="true"></span>
+        </button>
       </div>
 
-      {#if has_panel}
+      {#if has_toc}
         <div
           class="mobile-index"
           data-rail-cell
@@ -134,13 +214,19 @@
             type="button"
             class="index-button"
             aria-controls={panel_id}
-            aria-expanded={expanded}
-            aria-label={expanded ? '关闭目录' : '打开目录'}
-            title={expanded ? '关闭目录' : '打开目录'}
-            onclick={toggle_panel}
+            aria-expanded={expanded && active_panel === 'toc'}
+            aria-label={expanded && active_panel === 'toc'
+              ? '关闭目录'
+              : '打开目录'}
+            title={expanded && active_panel === 'toc'
+              ? '关闭目录'
+              : '打开目录'}
+            onclick={() => toggle_rail_panel('toc', toggle_panel, expanded)}
           >
             <span
-              class={expanded ? 'i-ri-close-line' : 'i-ri-list-unordered'}
+              class={expanded && active_panel === 'toc'
+                ? 'i-ri-close-line'
+                : 'i-ri-list-unordered'}
               aria-hidden="true"
             ></span>
           </button>
@@ -151,7 +237,10 @@
         class="mobile-actions"
         data-rail-cell
         data-rail-compact-control
-        data-rail-priority={chrome.content_active ? 'primary' : 'secondary'}
+        data-rail-control="return"
+        data-rail-priority={compact_control === 'return'
+          ? 'primary'
+          : 'secondary'}
       >
         <button
           type="button"
@@ -255,6 +344,8 @@
   }
 
   .return-button .i-ri-arrow-up-line,
+  .mobile-nav-toggle .i-ri-compass-line,
+  .mobile-nav-toggle .i-ri-expand-diagonal-s-line,
   .index-button span {
     width: 1rem;
     height: 1rem;
@@ -271,6 +362,8 @@
     }
 
     .action:hover .i-ri-arrow-up-line,
+    .action:hover .i-ri-compass-line,
+    .action:hover .i-ri-expand-diagonal-s-line,
     .index-button:hover span {
       opacity: 1;
     }
@@ -352,13 +445,14 @@
       place-items: center;
     }
 
+    .mobile-menu .action,
     .mobile-actions .action {
       width: 100%;
       height: 100%;
     }
 
     .mobile-brand :global(.brand),
-    .mobile-menu :global(.menu-trigger),
+    .mobile-menu .action,
     .mobile-index .index-button,
     .mobile-actions .action {
       -webkit-tap-highlight-color: transparent;
@@ -369,6 +463,8 @@
     .action,
     .index-button,
     .return-button .i-ri-arrow-up-line,
+    .mobile-nav-toggle .i-ri-compass-line,
+    .mobile-nav-toggle .i-ri-expand-diagonal-s-line,
     .index-button span {
       transition-duration: 1ms;
     }

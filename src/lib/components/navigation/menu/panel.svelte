@@ -94,12 +94,6 @@
     animation: field-note-leave var(--dur-long) var(--ease-out) both;
   }
 
-  @media (width < 40rem) {
-    .field-note {
-      display: none;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .field-note.is-open,
     .field-note.is-closing {

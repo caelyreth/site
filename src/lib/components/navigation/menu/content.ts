@@ -16,7 +16,6 @@ type MenuPreviewLayout = Position & EnteringLayout & { rotation: string }
 type DriftLayout = Position &
   Partial<EnteringLayout> & {
     blur: string
-    compact?: Position
     rotation: string
     tone: number
   }
@@ -150,7 +149,6 @@ export const drift_layouts: readonly DriftLayout[] = [
   },
   {
     blur: '8px',
-    compact: { left: '-11%', top: '35%' },
     left: '19%',
     rotation: '6deg',
     tone: 0.24,
@@ -158,7 +156,6 @@ export const drift_layouts: readonly DriftLayout[] = [
   },
   {
     blur: '6px',
-    compact: { left: '8%', top: '50%' },
     left: '29%',
     rotation: '-10deg',
     tone: 0.29,
@@ -166,7 +163,6 @@ export const drift_layouts: readonly DriftLayout[] = [
   },
   {
     blur: '10px',
-    compact: { left: '0', top: '64%' },
     left: '42%',
     rotation: '8deg',
     tone: 0.2,
