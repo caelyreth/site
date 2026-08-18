@@ -39,25 +39,33 @@
   :global(.archive-list > li)::before {
     position: absolute;
     z-index: 1;
-    top: clamp(1.15rem, 2.2vw, 1.5rem);
-    left: calc(var(--archive-axis) - var(--archive-content-inset) - 2px);
+    top: var(--archive-mark-offset, 1.55rem);
+    left: calc(var(--archive-axis) - var(--archive-content-inset) - 3px);
     box-sizing: border-box;
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border: 1px solid var(--color-muted);
-    border-radius: 50%;
     content: '';
     background: var(--color-paper);
     transition:
       border-color var(--dur-micro) var(--ease-out),
-      background-color var(--dur-micro) var(--ease-out);
+      background-color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
   }
 
   @media (hover: hover) {
-    :global(.archive-list > li:hover)::before {
+    :global(.archive-list > li:hover)::before,
+    :global(.archive-list > li:focus-within)::before {
       border-color: var(--color-text-link);
       background: var(--color-text-link);
+      transform: scale(1.12);
     }
+  }
+
+  :global(.archive-list > li:focus-within)::before {
+    border-color: var(--color-focus);
+    background: var(--color-focus);
+    transform: scale(1.12);
   }
 
   @media (prefers-reduced-motion: reduce) {

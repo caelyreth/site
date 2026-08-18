@@ -23,12 +23,21 @@
   page={constellations.page}
   page_count={constellations.page_count}
   path="/constellations"
+  total={constellations.total}
 >
   {#snippet children()}
     <ArchiveList>
       {#each constellations.entries as constellation}
-        <li><ConstellationStrand {constellation} /></li>
+        <li class="constellation-item">
+          <ConstellationStrand {constellation} />
+        </li>
       {/each}
     </ArchiveList>
   {/snippet}
 </ArchiveIndex>
+
+<style>
+  .constellation-item {
+    --archive-mark-offset: 1.72rem;
+  }
+</style>

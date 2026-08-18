@@ -1,43 +1,84 @@
 <script lang="ts">
   interface Props {
     description: string
-    kind: 'constellations' | 'records'
     kind_label: string
+    page: number
+    page_count: number
+    total: number
     title: string
   }
 
-  let { description, kind, kind_label, title }: Props = $props()
+  let { description, kind_label, page, page_count, title, total }: Props =
+    $props()
 </script>
 
-<header
-  class:constellations={kind === 'constellations'}
-  class="archive-index-header"
->
-  <p class="micro-label kind">
-    {kind_label}
-  </p>
-  <h1>{title}</h1>
-  <p>{description}</p>
+<header class="archive-index-header">
+  <div aria-label={kind_label} class="archive-register" role="group">
+    <span class="register-kind">{kind_label}</span>
+    <span class="register-page"
+      >{String(page).padStart(2, '0')} / {String(page_count).padStart(
+        2,
+        '0',
+      )}</span
+    >
+    <span class="register-total">{total}</span>
+  </div>
+  <div class="archive-index-header-copy">
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </div>
 </header>
 
 <style>
   .archive-index-header {
-    display: block;
     min-width: 0;
-    padding-bottom: clamp(1.5rem, 4vw, 2.75rem);
-    border-bottom: 1px solid var(--color-boundary);
   }
 
-  .kind {
-    margin: 0 0 1rem;
+  .archive-index-header-copy {
+    max-width: 40rem;
+    min-width: 0;
+    padding-top: clamp(1.75rem, 4vw, 2.75rem);
+  }
+
+  .archive-register {
+    display: inline-grid;
+    min-height: 2.25rem;
+    border-block: 1px solid var(--color-boundary);
+    grid-template-columns: repeat(3, auto);
+    align-items: stretch;
     color: var(--color-muted);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+  }
+
+  .archive-register span {
+    display: inline-flex;
+    padding-inline: 0.75rem;
+    align-items: center;
+  }
+
+  .register-page,
+  .register-total {
+    border-inline-start: 1px solid var(--color-boundary);
+  }
+
+  .register-page {
+    justify-content: center;
+  }
+
+  .register-total {
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    justify-content: center;
   }
 
   h1 {
     margin: 0;
     color: var(--color-text);
     font-family: var(--font-stack-serif);
-    font-size: clamp(2rem, 3.25vw, 3.25rem);
+    font-size: clamp(1.875rem, 3.1vw, 2.75rem);
     font-weight: 700;
     letter-spacing: 0;
     line-height: 1.18;
@@ -46,16 +87,10 @@
   }
 
   p {
-    max-width: 34rem;
-    margin: 1rem 0 0;
+    max-width: 37rem;
+    margin: 0.875rem 0 0;
     color: var(--color-text-secondary);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.6;
-  }
-
-  @media (width >= 48rem) {
-    .archive-index-header.constellations p:not(.kind) {
-      max-width: 30rem;
-    }
   }
 </style>

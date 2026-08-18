@@ -4,6 +4,8 @@
   import { format_template } from '$lib/content/site'
   import { site_href } from '$lib/navigation/path'
 
+  import { format_published_date } from './date'
+
   interface Props {
     constellation: ConstellationSummary
   }
@@ -13,16 +15,25 @@
 </script>
 
 <article class="strand">
-  <a
-    class="strand-head"
-    href={site_href(`/constellations/${constellation.id}`)}
-  >
+  <header class="strand-head">
+    <span class="strand-count"
+      >{format_template(library.current.constellations.entry_count_label, {
+        count: constellation.entry_count,
+      })}</span
+    >
     <h2>{constellation.title}</h2>
     <span class="strand-summary">{constellation.summary}</span>
-  </a>
+    <a
+      class="strand-detail"
+      href={site_href(`/constellations/${constellation.id}`)}
+    >
+      <span>{library.current.constellations.detail_label}</span>
+      <span aria-hidden="true" class="i-ri-arrow-right-line"></span>
+    </a>
+  </header>
 
   <nav
-    class="strand-records"
+    class="strand-echoes"
     aria-label={format_template(
       library.current.constellations.records_navigation_label,
       {
@@ -31,8 +42,16 @@
       },
     )}
   >
-    {#each constellation.latest as record}
-      <a href={site_href(`/records/${record.id}`)}>{record.title}</a>
+    {#each constellation.latest as record, index}
+      <a href={site_href(`/records/${record.id}`)}>
+        <span aria-hidden="true" class="echo-sequence"
+          >{String(index + 1).padStart(2, '0')}</span
+        >
+        <span class="echo-title">{record.title}</span>
+        <time datetime={record.published}
+          >{format_published_date(record.published)}</time
+        >
+      </a>
     {/each}
   </nav>
 </article>
@@ -41,20 +60,29 @@
   .strand {
     display: grid;
     min-width: 0;
-    padding-block: clamp(1rem, 2.2vw, 1.45rem) clamp(1rem, 2.2vw, 1.55rem);
+    padding-block: clamp(1.25rem, 2.6vw, 1.8rem)
+      clamp(1.25rem, 2.6vw, 1.75rem);
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .strand-head,
-  .strand-records {
+  .strand-echoes {
     min-width: 0;
   }
 
   .strand-head {
     color: var(--color-text);
-    text-decoration: none;
-    transition: color var(--dur-short) var(--ease-out);
+  }
+
+  .strand-count {
+    display: block;
+    margin-bottom: 0.7rem;
+    color: var(--color-muted);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
   }
 
   h2 {
@@ -68,79 +96,121 @@
     overflow-wrap: anywhere;
   }
 
-  .strand-records {
+  .strand-echoes {
     display: grid;
-    padding-inline-start: 1rem;
-    border-inline-start: 1px solid var(--color-boundary);
-    font-size: 0.75rem;
-    line-height: 1.45;
-    gap: 0.375rem;
+    font-size: 0.8125rem;
+    gap: 0;
   }
 
-  .strand-records a {
+  .strand-echoes a {
     position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.55rem 0;
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+    align-items: center;
+    border-bottom: 1px solid var(--color-boundary);
+    color: var(--color-muted);
+    text-decoration: none;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .echo-sequence {
+    color: var(--color-muted);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+  }
+
+  .echo-title {
     min-width: 0;
     overflow: hidden;
-    color: var(--color-muted);
     text-overflow: ellipsis;
-    text-decoration: none;
     white-space: nowrap;
-    transition: color var(--dur-micro) var(--ease-out);
   }
 
-  .strand-records a::before {
-    position: absolute;
-    top: 0.65em;
-    right: 100%;
-    width: 0.5rem;
-    border-top: 1px solid var(--color-boundary);
-    content: '';
+  .strand-echoes time {
+    margin-inline-start: 1rem;
+    color: var(--color-muted);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+    white-space: nowrap;
   }
 
   .strand-summary {
     display: block;
     max-width: 25rem;
-    margin-top: 0.65rem;
+    margin-top: 0.55rem;
     color: var(--color-text-secondary);
     font-size: 0.8125rem;
     line-height: 1.5;
   }
 
-  .strand-head:focus-visible,
-  .strand-records a:focus-visible {
+  .strand-detail {
+    display: flex;
+    min-height: 2.25rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--color-boundary);
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-muted);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      color var(--dur-micro) var(--ease-out);
+  }
+
+  .i-ri-arrow-right-line {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .strand-detail:focus-visible,
+  .strand-echoes a:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 0.2rem;
   }
 
   @media (hover: hover) {
-    .strand-head:hover {
-      color: var(--color-text-link);
+    .strand-detail:hover {
+      border-color: var(--color-text-secondary);
+      color: var(--color-text);
     }
 
-    .strand-records a:hover {
-      color: var(--color-text-link);
+    .strand-echoes a:hover {
+      border-color: var(--color-text-secondary);
+      color: var(--color-text);
     }
   }
 
   @media (width >= 48rem) {
     .strand {
-      grid-template-columns: minmax(12rem, 0.65fr) minmax(0, 1fr);
+      grid-template-columns: minmax(12rem, 0.52fr) minmax(0, 1fr);
       align-items: start;
-      column-gap: clamp(2rem, 5vw, 5rem);
+      column-gap: clamp(1.5rem, 4vw, 3.5rem);
     }
 
     .strand-head {
       grid-column: 1;
     }
 
-    .strand-records {
+    .strand-echoes {
       grid-column: 2;
+      padding-inline-start: clamp(1rem, 2vw, 1.5rem);
+      border-inline-start: 1px solid var(--color-boundary);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .strand-head,
-    .strand-records a {
+    .strand-detail,
+    .strand-echoes a {
       transition: none;
     }
   }

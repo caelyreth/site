@@ -22,6 +22,7 @@
   page={records.page}
   page_count={records.page_count}
   path="/records"
+  total={records.total}
 >
   {#snippet children()}
     <RecordTrajectory entries={records.entries} />

@@ -131,7 +131,7 @@ export function content_query<Frontmatter extends Record<string, unknown>>(
   return { document, entries, entry, keys }
 }
 
-export const page_size = 4
+export const page_size = 7
 
 export function page_number(value: string | undefined) {
   if (value === undefined) return 1

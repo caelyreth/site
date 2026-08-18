@@ -40,7 +40,7 @@
   .constellation-kind {
     flex: 0 0 auto;
     color: var(--color-muted);
-    font-size: 0.5625rem;
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     line-height: 1.35;
   }
@@ -50,7 +50,7 @@
     min-width: 0;
     align-items: baseline;
     color: var(--color-muted);
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     line-height: 1.35;
     text-decoration: none;
     transition: color var(--dur-micro) var(--ease-out);

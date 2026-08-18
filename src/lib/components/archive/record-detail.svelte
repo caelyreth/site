@@ -7,6 +7,7 @@
 
   import BackLink from './back-link.svelte'
   import ConstellationLinks from './constellation-links.svelte'
+  import { format_published_date } from './date'
   import EntryHeader from './entry-header.svelte'
   import ReadingPlane from './reading-plane.svelte'
 
@@ -18,16 +19,6 @@
   let { constellations, document }: Props = $props()
   const library = get_library_config()
   const records_href = site_href('/records')
-  const date_formatter = new Intl.DateTimeFormat('zh-CN', {
-    day: 'numeric',
-    month: 'long',
-    timeZone: 'UTC',
-    year: 'numeric',
-  })
-
-  function display_date(value: string) {
-    return date_formatter.format(new Date(`${value}T00:00:00Z`))
-  }
 </script>
 
 <ReadingPlane kind="record">
@@ -35,7 +26,7 @@
     <EntryHeader
       back_href={records_href}
       back_label={library.current.records.title}
-      meta={`${library.current.records.meta_label} / ${display_date(document.frontmatter.published)}`}
+      meta={`${library.current.records.meta_label} / ${format_published_date(document.frontmatter.published, 'long')}`}
       summary={document.frontmatter.summary}
       title={document.frontmatter.title}
     >

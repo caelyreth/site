@@ -6,9 +6,10 @@
     page: number
     page_count: number
     path: string
+    placement?: 'after' | 'before'
   }
 
-  let { page, page_count, path }: Props = $props()
+  let { page, page_count, path, placement = 'after' }: Props = $props()
   const site = get_site_config()
 
   function page_href(next_page: number) {
@@ -19,6 +20,8 @@
 
 {#if page_count > 1}
   <nav
+    class:after={placement === 'after'}
+    class:before={placement === 'before'}
     class="pagination"
     aria-label={site.current.pagination.navigation_label}
   >
@@ -32,8 +35,13 @@
           },
         )}
         href={page_href(page - 1)}
-        rel="prev">{site.current.pagination.previous_label}</a
+        rel="prev"
       >
+        <span aria-hidden="true" class="i-ri-arrow-left-s-line"></span>
+        <span class="visually-hidden"
+          >{site.current.pagination.previous_label}</span
+        >
+      </a>
     {/if}
 
     <p>{page} / {page_count}</p>
@@ -48,8 +56,13 @@
           },
         )}
         href={page_href(page + 1)}
-        rel="next">{site.current.pagination.next_label}</a
+        rel="next"
       >
+        <span aria-hidden="true" class="i-ri-arrow-right-s-line"></span>
+        <span class="visually-hidden"
+          >{site.current.pagination.next_label}</span
+        >
+      </a>
     {/if}
   </nav>
 {/if}
@@ -57,38 +70,64 @@
 <style>
   .pagination {
     display: flex;
-    width: max-content;
-    max-width: 100%;
-    margin-top: clamp(2rem, 5vw, 3.5rem);
-    padding-top: 1rem;
-    border-top: 1px solid var(--color-boundary);
+    width: fit-content;
+    min-height: 2.25rem;
+    margin-inline-start: var(--archive-content-inset);
+    border: 1px solid var(--color-boundary);
     align-items: center;
-    gap: 1rem;
     color: var(--color-muted);
+  }
+
+  .pagination.before {
+    margin-block: clamp(1rem, 2vw, 1.5rem) clamp(0.5rem, 1vw, 0.75rem);
+  }
+
+  .pagination.after {
+    margin-top: clamp(2.5rem, 6vw, 4rem);
   }
 
   a {
     display: inline-flex;
-    min-height: 2.5rem;
+    width: 2.25rem;
+    min-height: 2.25rem;
     align-items: center;
+    justify-content: center;
+    color: inherit;
+    font-size: 0.8125rem;
     text-decoration: none;
-    transition:
-      color var(--dur-micro) var(--ease-out),
-      text-decoration-color var(--dur-micro) var(--ease-out);
-    text-decoration-color: var(--color-boundary);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.3em;
+    transition: color var(--dur-micro) var(--ease-out);
   }
 
   p {
-    min-width: 2.75rem;
+    min-width: 3.25rem;
     margin: 0;
+    padding-inline: 0.625rem;
     color: var(--color-text-secondary);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.04em;
     line-height: 1.2;
     text-align: center;
+    white-space: nowrap;
+  }
+
+  a + p,
+  p + a {
+    border-inline-start: 1px solid var(--color-boundary);
+  }
+
+  .i-ri-arrow-left-s-line,
+  .i-ri-arrow-right-s-line {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
     white-space: nowrap;
   }
 
@@ -100,7 +139,6 @@
   @media (hover: hover) {
     a:hover {
       color: var(--color-text-link);
-      text-decoration-color: currentcolor;
     }
   }
 

@@ -28,11 +28,11 @@
    * theme: established paper / cool accent · contrast: pass (40-41) · responsive: pass
    */
   .reading-plane {
-    --archive-axis: clamp(1rem, 4vw, 3.5rem);
+    --archive-axis: clamp(0.625rem, 2.75vw, 2.5rem);
     --archive-content-inset: calc(
-      var(--archive-axis) + clamp(1rem, 2vw, 1.5rem)
+      var(--archive-axis) + clamp(1.5rem, 3vw, 3.5rem)
     );
-    --plane-measure: 54rem;
+    --plane-measure: 58rem;
     box-sizing: border-box;
     display: flex;
     width: min(100%, var(--frame-measure));

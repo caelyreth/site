@@ -61,11 +61,18 @@
       )}
     >
       <h2>{library.current.constellations.records_label}</h2>
+      <Pagination
+        placement="before"
+        page={entries.page}
+        page_count={entries.page_count}
+        path={constellation_path}
+      />
       <RecordTrajectory
         entries={entries.entries}
         show_constellations={false}
       />
       <Pagination
+        placement="after"
         page={entries.page}
         page_count={entries.page_count}
         path={constellation_path}

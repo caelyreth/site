@@ -16,7 +16,7 @@ import { error } from '@sveltejs/kit'
 
 import type { EntryGenerator, PageServerLoad } from './$types'
 
-export const prerender = true
+export const prerender = 'auto'
 
 const records = content_query('records', record_frontmatter_schema)
 const constellations = content_query(

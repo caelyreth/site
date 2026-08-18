@@ -70,6 +70,7 @@ export const record_index_frontmatter_schema = v.strictObject({
 export const constellation_index_frontmatter_schema = v.strictObject({
   ...index_document_fields,
   back_label: v.string(),
+  detail_label: v.string(),
   entry_count_label: v.string(),
   records_label: v.string(),
   records_navigation_label: v.string(),
