@@ -12,7 +12,9 @@
   import { get_menu_controller } from './menu/controller'
   import MobileNavigationPanel from './mobile-navigation-panel.svelte'
   import MobileRail from './mobile-rail.svelte'
+  import RailCell from './rail-cell.svelte'
   import TableOfContentsPanel from './table-of-contents-panel.svelte'
+  import ThemeCycle from './theme-cycle.svelte'
 
   const home_path = resolve('/')
   const chrome = get_page_chrome()
@@ -145,117 +147,123 @@
     class="desktop-actions"
     inert={!chrome.content_active}
     role="group"
-    aria-label="页面操作"
+    aria-label="页面工具"
   >
-    <button
-      type="button"
-      class="action return-button"
-      aria-label="返回顶部"
-      title="返回顶部"
-      onclick={handle_return_click}
-    >
-      <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
-    </button>
+    <RailCell>
+      <ThemeCycle />
+    </RailCell>
+    <RailCell>
+      <button
+        type="button"
+        class="action return-button"
+        aria-label="返回顶部"
+        title="返回顶部"
+        onclick={handle_return_click}
+      >
+        <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
+      </button>
+    </RailCell>
   </div>
 
   <MobileRail
     visible={rail_visible}
     collapsed={rail_collapsed}
-    cells={has_toc ? 4 : 3}
+    cells={has_toc ? 5 : 4}
     {compact_control}
     bind:expanded={rail_panel_expanded}
     panel={mobile_panel}
   >
     {#snippet children(toggle_panel, expanded, panel_id)}
-      <div
-        class="mobile-brand"
-        data-rail-cell
-        data-rail-priority="secondary"
-      >
-        <Brand href={home_path} on_activate={handle_brand_click} />
-      </div>
+      <RailCell>
+        <div class="mobile-brand">
+          <Brand href={home_path} on_activate={handle_brand_click} />
+        </div>
+      </RailCell>
 
-      <div
-        class="mobile-menu"
-        data-rail-cell
-        data-rail-compact-control
-        data-rail-control="navigation"
-        data-rail-priority={compact_control === 'navigation'
+      <RailCell
+        compact_control
+        control="navigation"
+        priority={compact_control === 'navigation'
           ? 'primary'
           : 'secondary'}
       >
-        <button
-          type="button"
-          class="action mobile-nav-toggle"
-          aria-controls={panel_id}
-          aria-expanded={expanded && active_panel === 'navigation'}
-          aria-label={observatory_rail_compact
-            ? '展开导航栏'
-            : expanded && active_panel === 'navigation'
-              ? '关闭站点导航'
-              : '打开站点导航'}
-          title={observatory_rail_compact
-            ? '展开导航栏'
-            : expanded && active_panel === 'navigation'
-              ? '关闭站点导航'
-              : '打开站点导航'}
-          onclick={() =>
-            observatory_rail_compact
-              ? expand_observatory_rail()
-              : toggle_rail_panel('navigation', toggle_panel, expanded)}
-        >
-          <span class={mobile_menu_icon} aria-hidden="true"></span>
-        </button>
-      </div>
-
-      {#if has_toc}
-        <div
-          class="mobile-index"
-          data-rail-cell
-          data-rail-priority="secondary"
-        >
+        <div class="mobile-menu">
           <button
             type="button"
-            class="index-button"
+            class="action mobile-nav-toggle"
             aria-controls={panel_id}
-            aria-expanded={expanded && active_panel === 'toc'}
-            aria-label={expanded && active_panel === 'toc'
-              ? '关闭目录'
-              : '打开目录'}
-            title={expanded && active_panel === 'toc'
-              ? '关闭目录'
-              : '打开目录'}
-            onclick={() => toggle_rail_panel('toc', toggle_panel, expanded)}
+            aria-expanded={expanded && active_panel === 'navigation'}
+            aria-label={observatory_rail_compact
+              ? '展开导航栏'
+              : expanded && active_panel === 'navigation'
+                ? '关闭站点导航'
+                : '打开站点导航'}
+            title={observatory_rail_compact
+              ? '展开导航栏'
+              : expanded && active_panel === 'navigation'
+                ? '关闭站点导航'
+                : '打开站点导航'}
+            onclick={() =>
+              observatory_rail_compact
+                ? expand_observatory_rail()
+                : toggle_rail_panel('navigation', toggle_panel, expanded)}
           >
-            <span
-              class={expanded && active_panel === 'toc'
-                ? 'i-ri-close-line'
-                : 'i-ri-list-unordered'}
-              aria-hidden="true"
-            ></span>
+            <span class={mobile_menu_icon} aria-hidden="true"></span>
           </button>
         </div>
+      </RailCell>
+
+      {#if has_toc}
+        <RailCell>
+          <div class="mobile-index">
+            <button
+              type="button"
+              class="index-button"
+              aria-controls={panel_id}
+              aria-expanded={expanded && active_panel === 'toc'}
+              aria-label={expanded && active_panel === 'toc'
+                ? '关闭目录'
+                : '打开目录'}
+              title={expanded && active_panel === 'toc'
+                ? '关闭目录'
+                : '打开目录'}
+              onclick={() =>
+                toggle_rail_panel('toc', toggle_panel, expanded)}
+            >
+              <span
+                class={expanded && active_panel === 'toc'
+                  ? 'i-ri-close-line'
+                  : 'i-ri-list-unordered'}
+                aria-hidden="true"
+              ></span>
+            </button>
+          </div>
+        </RailCell>
       {/if}
 
-      <div
-        class="mobile-actions"
-        data-rail-cell
-        data-rail-compact-control
-        data-rail-control="return"
-        data-rail-priority={compact_control === 'return'
-          ? 'primary'
-          : 'secondary'}
+      <RailCell>
+        <div class="mobile-theme">
+          <ThemeCycle />
+        </div>
+      </RailCell>
+
+      <RailCell
+        compact_control
+        control="return"
+        priority={compact_control === 'return' ? 'primary' : 'secondary'}
       >
-        <button
-          type="button"
-          class="action return-button"
-          aria-label="返回顶部"
-          title="返回顶部"
-          onclick={handle_return_click}
-        >
-          <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
-        </button>
-      </div>
+        <div class="mobile-actions">
+          <button
+            type="button"
+            class="action return-button"
+            aria-label="返回顶部"
+            title="返回顶部"
+            onclick={handle_return_click}
+          >
+            <span class="i-ri-arrow-up-line" aria-hidden="true"></span>
+          </button>
+        </div>
+      </RailCell>
     {/snippet}
   </MobileRail>
 </div>
@@ -395,6 +403,7 @@
   .mobile-brand,
   .mobile-menu,
   .mobile-index,
+  .mobile-theme,
   .mobile-actions {
     color: var(--color-text);
   }
@@ -414,23 +423,48 @@
       color var(--dur-micro) var(--ease-out);
   }
 
-  @media (width >= 60rem) {
+  @media (width >= 40rem) {
     .desktop-actions {
       position: fixed;
-      left: var(--content-rail-start);
+      right: var(--inline-gutter);
       bottom: clamp(1.25rem, 4vw, 3rem);
       z-index: 49;
       display: flex;
+      width: 2.75rem;
       border: 1px solid var(--color-boundary);
+      flex-direction: column;
       transition:
         opacity var(--dur-short) var(--ease-out),
         transform var(--dur-short) var(--ease-out);
+    }
+
+    .desktop-actions > :global(.rail-cell) {
+      display: grid;
+      width: 100%;
+      height: 2.75rem;
+      place-items: center;
+    }
+
+    .desktop-actions > :global(.rail-cell + .rail-cell) {
+      border-top: 1px solid var(--color-boundary);
+    }
+
+    .desktop-actions .action {
+      width: 100%;
+      height: 100%;
     }
 
     .site-controls[data-content-active='false'] .desktop-actions {
       pointer-events: none;
       opacity: 0;
       transform: translateY(0.5rem);
+    }
+  }
+
+  @media (width >= 60rem) {
+    .desktop-actions {
+      right: auto;
+      left: var(--content-rail-start);
     }
   }
 
@@ -443,13 +477,17 @@
     .mobile-brand,
     .mobile-menu,
     .mobile-index,
+    .mobile-theme,
     .mobile-actions {
       display: grid;
+      width: 100%;
+      height: 100%;
       min-width: 0;
       place-items: center;
     }
 
     .mobile-menu .action,
+    .mobile-theme :global(.theme-cycle),
     .mobile-actions .action {
       width: 100%;
       height: 100%;
@@ -458,6 +496,7 @@
     .mobile-brand :global(.brand),
     .mobile-menu .action,
     .mobile-index .index-button,
+    .mobile-theme :global(.theme-cycle),
     .mobile-actions .action {
       -webkit-tap-highlight-color: transparent;
     }

@@ -104,8 +104,6 @@ export const site_config_schema = v.strictObject({
     entries: v.pipe(v.array(menu_item_schema), v.length(3)),
     field_note: v.string(),
     ornaments: v.pipe(v.array(v.string()), v.length(16)),
-    theme_code: v.string(),
-    theme_label: v.string(),
   }),
   pagination: v.strictObject({
     label: v.string(),
@@ -119,6 +117,9 @@ export const site_config_schema = v.strictObject({
     locale: v.string(),
     page_description: v.string(),
     title_separator: v.string(),
+  }),
+  theme: v.strictObject({
+    label: v.string(),
   }),
   title: v.string(),
 })

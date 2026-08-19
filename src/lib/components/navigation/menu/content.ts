@@ -169,12 +169,3 @@ export const drift_layouts: readonly DriftLayout[] = [
     top: '61%',
   },
 ]
-
-export const theme_slip_layout = {
-  bottom: '20%',
-  enter_delay: '240ms',
-  enter_x: '1.5rem',
-  enter_y: '1rem',
-  right: '30%',
-  rotation: '10deg',
-} as const satisfies Position & EnteringLayout & { rotation: string }

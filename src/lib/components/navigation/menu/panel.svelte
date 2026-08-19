@@ -3,23 +3,20 @@
 
   import MenuOrnaments from './ornaments.svelte'
   import MenuSlips from './slips.svelte'
-  import ThemeSlip from './theme-slip.svelte'
 
   interface Props {
     is_closing: boolean
     is_open: boolean
-    on_close: () => void
     on_navigate: () => void
   }
 
-  const { is_closing, is_open, on_close, on_navigate }: Props = $props()
+  const { is_closing, is_open, on_navigate }: Props = $props()
   const site = get_site_config()
 </script>
 
 <div class="stage" inert={is_closing}>
   <MenuOrnaments {is_closing} {is_open} />
   <MenuSlips {is_closing} {is_open} {on_navigate} />
-  <ThemeSlip {is_closing} {is_open} {on_close} />
   <p
     aria-hidden="true"
     class:is-closing={is_closing}

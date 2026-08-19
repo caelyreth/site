@@ -109,7 +109,6 @@
   <MenuPanel
     is_closing={closing}
     is_open={controller.is_open}
-    on_close={request_close}
     on_navigate={request_close}
   />
 </dialog>
@@ -185,14 +184,12 @@
     background: transparent;
   }
 
-  .menu :global(.slip),
-  .menu :global(.theme-slip) {
+  .menu :global(.slip) {
     isolation: isolate;
     overflow: hidden;
   }
 
-  .menu :global(.slip)::before,
-  .menu :global(.theme-slip)::before {
+  .menu :global(.slip)::before {
     position: absolute;
     inset: 0;
     z-index: -1;

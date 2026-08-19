@@ -17,8 +17,6 @@ next_aria_label = "下一页，当前为 {page}，共 {page_count} 页"
 
 [menu]
 field_note = "Caelyreth 中继站 / 观测面 01"
-theme_code = "切换 / 002"
-theme_label = "显示模式"
 ornaments = [
   "档案 / 023",
   "RBK // 044",
@@ -37,6 +35,9 @@ ornaments = [
   "观测面 / 01",
   "CAELYRETH / 在轨",
 ]
+
+[theme]
+label = "显示模式"
 
 [[menu.entries]]
 code = "记录 / 001"

@@ -3,8 +3,6 @@
   import { get_site_config } from '$lib/content/site'
   import { site_href } from '$lib/navigation/path'
 
-  import ThemeToggle from './menu/theme-toggle.svelte'
-
   interface Props {
     on_close: () => void
   }
@@ -49,13 +47,6 @@
       {/each}
     </ul>
   </nav>
-
-  <section aria-label={site.current.menu.theme_label} class="display">
-    <p class="label">{site.current.menu.theme_label}</p>
-    <div class="theme-control">
-      <ThemeToggle fill />
-    </div>
-  </section>
 </div>
 
 <style>
@@ -139,19 +130,6 @@
 
   .unavailable {
     opacity: 0.48;
-  }
-
-  .display {
-    padding-top: 0.875rem;
-    border-top: 1px solid var(--color-rule);
-  }
-
-  .theme-control {
-    --theme-toggle-size: 2.375rem;
-    --toggle-rule: var(--color-rule);
-
-    overflow: hidden;
-    border: 1px solid var(--color-rule);
   }
 
   .entries a:hover,
