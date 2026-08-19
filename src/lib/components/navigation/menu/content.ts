@@ -1,3 +1,9 @@
+interface EnteringMotion {
+  enter_delay: string
+  enter_x: string
+  enter_y: string
+}
+
 interface Position {
   bottom?: string
   left?: string
@@ -5,53 +11,33 @@ interface Position {
   top?: string
 }
 
-interface EnteringLayout {
-  enter_delay: string
-  enter_x: string
-  enter_y: string
-}
-
-type MenuPreviewLayout = Position & EnteringLayout & { rotation: string }
-
 type DriftLayout = Position &
-  Partial<EnteringLayout> & {
+  Partial<EnteringMotion> & {
     blur: string
     rotation: string
     tone: number
   }
 
-export const menu_preview_layouts: readonly MenuPreviewLayout[] = [
+export const menu_slip_entrances: readonly EnteringMotion[] = [
   {
     enter_delay: '80ms',
-    enter_x: '-2rem',
-    enter_y: '1rem',
-    left: '27%',
-    rotation: '6deg',
-    top: '22%',
+    enter_x: '-1.25rem',
+    enter_y: '0.75rem',
   },
   {
     enter_delay: '140ms',
-    enter_x: '1.75rem',
-    enter_y: '-1rem',
-    left: '60%',
-    rotation: '-2deg',
-    top: '29%',
+    enter_x: '1.25rem',
+    enter_y: '-0.75rem',
   },
   {
     enter_delay: '200ms',
-    enter_x: '-1.5rem',
-    enter_y: '1.25rem',
-    left: '28%',
-    rotation: '-7deg',
-    top: '56%',
+    enter_x: '-1rem',
+    enter_y: '0.75rem',
   },
   {
-    bottom: '22%',
     enter_delay: '260ms',
-    enter_x: '1.25rem',
-    enter_y: '1rem',
-    left: '58%',
-    rotation: '6deg',
+    enter_x: '1rem',
+    enter_y: '-0.75rem',
   },
 ]
 

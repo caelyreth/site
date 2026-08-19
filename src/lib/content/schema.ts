@@ -22,6 +22,7 @@ const menu_item_schema = v.strictObject({
   code: v.string(),
   detail: v.string(),
   href: v.optional(v.string()),
+  note: v.string(),
   title: v.string(),
 })
 

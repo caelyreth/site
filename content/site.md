@@ -43,23 +43,27 @@ label = "显示模式"
 code = "记录 / 001"
 detail = "技术记录"
 href = "/records"
+note = "关于工具、系统与失效边界的长期记录。"
 title = "记录"
 
 [[menu.entries]]
 code = "虚空之结 / 002"
 detail = "未归类文字"
 href = "/voidknot"
+note = "未归类的观察、叙事与缓慢的思考。"
 title = "虚空之结"
 
 [[menu.entries]]
 code = "星群 / 003"
 detail = "彼此回响"
 href = "/constellations"
+note = "让分散文字彼此靠近，再回望它们的轨迹。"
 title = "星群"
 
 [[menu.entries]]
 code = "碎片 / 004"
 detail = "短暂记录"
+note = "尚未归档的短句、片段与微弱讯号。"
 title = "碎片"
 
 [footer]
