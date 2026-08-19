@@ -5,12 +5,14 @@ import type { ContentDocument, ContentEntry, ContentPage } from './schema'
 import { content_key_pattern } from './schema'
 
 type Source = () => Promise<string>
+type ParsedDocument = Awaited<ReturnType<typeof parse_markdown>>
 
 const content_root = '../../../content/'
 const sources = import.meta.glob<string>('../../../content/**/*.md', {
   import: 'default',
   query: '?raw',
 })
+const parsed_documents = new Map<string, Promise<ParsedDocument>>()
 
 function validate_frontmatter<Frontmatter extends Record<string, unknown>>(
   value: unknown,
@@ -56,7 +58,15 @@ async function parse_content<Frontmatter extends Record<string, unknown>>(
   path: string,
   schema: v.GenericSchema<unknown, Frontmatter>,
 ) {
-  const document = await parse_markdown(await source())
+  const parse = async () => parse_markdown(await source())
+  const document = await (import.meta.env.DEV
+    ? parse()
+    : (parsed_documents.get(path) ??
+      (() => {
+        const parsed = parse()
+        parsed_documents.set(path, parsed)
+        return parsed
+      })()))
   return {
     ...document,
     frontmatter: validate_frontmatter(document.frontmatter, path, schema),
