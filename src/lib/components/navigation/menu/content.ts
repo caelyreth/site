@@ -46,12 +46,12 @@ export const menu_preview_layouts: readonly MenuPreviewLayout[] = [
     top: '56%',
   },
   {
-    bottom: '13%',
+    bottom: '22%',
     enter_delay: '260ms',
     enter_x: '1.25rem',
     enter_y: '1rem',
-    left: '54%',
-    rotation: '4deg',
+    left: '58%',
+    rotation: '6deg',
   },
 ]
 

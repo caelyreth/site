@@ -1,16 +1,35 @@
 <script lang="ts">
-  import { plana_layers } from './plana-asset'
+  import { plana_defs, plana_segments } from './plana-asset'
 </script>
 
+{#snippet layer()}
+  {#each plana_segments as { id, tone }}
+    <use href={`#${id}`} style:fill={`var(${tone})`}></use>
+  {/each}
+{/snippet}
+
 <div aria-hidden="true" class="plana-position">
+  <svg class="plana-definitions" width="0" height="0" aria-hidden="true">
+    <defs>{@html plana_defs}</defs>
+  </svg>
+
   <div class="plana-art plana-far">
-    <div class="plana-figure">{@html plana_layers.far}</div>
+    <svg class="plana-figure" viewBox="0 0 1593 1800" aria-hidden="true">
+      {@render layer()}
+    </svg>
   </div>
+
   <div class="plana-art plana-near">
-    <div class="plana-figure">{@html plana_layers.near}</div>
-    <div class="plana-figure plana-interference">
-      {@html plana_layers.interference}
-    </div>
+    <svg class="plana-figure" viewBox="0 0 1593 1800" aria-hidden="true">
+      {@render layer()}
+    </svg>
+    <svg
+      class="plana-figure plana-interference"
+      viewBox="0 0 1593 1800"
+      aria-hidden="true"
+    >
+      {@render layer()}
+    </svg>
   </div>
 </div>
 
@@ -69,12 +88,6 @@
   }
 
   .plana-figure {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .plana-figure :global(svg) {
     display: block;
     width: 100%;
     height: 100%;
@@ -180,18 +193,20 @@
     z-index: 3;
     -webkit-mask-image: linear-gradient(
       to right,
-      #000 0 54%,
-      rgb(0 0 0 / 0.82) 68%,
-      transparent 84%
+      #000 0 68%,
+      rgb(0 0 0 / 0.92) 78%,
+      transparent 96%
     );
     -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
     mask-image: linear-gradient(
       to right,
-      #000 0 54%,
-      rgb(0 0 0 / 0.82) 68%,
-      transparent 84%
+      #000 0 68%,
+      rgb(0 0 0 / 0.92) 78%,
+      transparent 96%
     );
     mask-repeat: no-repeat;
+    mask-size: 100% 100%;
   }
 
   :global(.dark) .plana-far {
