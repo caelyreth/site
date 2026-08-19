@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RecordIndex from '$lib/components/archive/record-index.svelte'
+  import EntryIndex from '$lib/components/archive/entry-index.svelte'
   import PageMeta from '$lib/components/layout/page-meta.svelte'
   import {
     format_template,
@@ -13,7 +13,7 @@
   const site = get_site_config()
   const page_label = $derived(
     format_template(site.current.pagination.label, {
-      page: data.records.page,
+      page: data.entries.page,
     }),
   )
 </script>
@@ -26,4 +26,8 @@
   title={site_title(site.current, data.index.frontmatter.title, page_label)}
 />
 
-<RecordIndex document={data.index} records={data.records} />
+<EntryIndex
+  collection={data.collection}
+  document={data.index}
+  entries={data.entries}
+/>

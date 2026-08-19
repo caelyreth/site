@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RecordIndex from '$lib/components/archive/record-index.svelte'
+  import EntryIndex from '$lib/components/archive/entry-index.svelte'
   import PageMeta from '$lib/components/layout/page-meta.svelte'
   import { get_site_config, site_title } from '$lib/content/site'
 
@@ -14,4 +14,8 @@
   title={site_title(site.current, data.index.frontmatter.title)}
 />
 
-<RecordIndex document={data.index} records={data.records} />
+<EntryIndex
+  collection={data.collection}
+  document={data.index}
+  entries={data.entries}
+/>

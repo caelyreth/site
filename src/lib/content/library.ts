@@ -1,13 +1,14 @@
 import { createContext } from 'svelte'
 
+import type { EntryCollection } from './entries'
 import type {
   ConstellationIndexFrontmatter,
-  RecordIndexFrontmatter,
+  EntryIndexFrontmatter,
 } from './schema'
 
 export interface LibraryConfig {
   constellations: ConstellationIndexFrontmatter
-  records: RecordIndexFrontmatter
+  entries: Record<EntryCollection, EntryIndexFrontmatter>
 }
 
 export const [get_library_config, set_library_config] = createContext<{

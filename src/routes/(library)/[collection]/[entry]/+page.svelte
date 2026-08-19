@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RecordDetail from '$lib/components/archive/record-detail.svelte'
+  import EntryDetail from '$lib/components/archive/entry-detail.svelte'
   import PageMeta from '$lib/components/layout/page-meta.svelte'
   import { get_library_config } from '$lib/content/library'
   import { get_site_config, site_title } from '$lib/content/site'
@@ -16,12 +16,13 @@
   title={site_title(
     site.current,
     data.document.frontmatter.title,
-    library.current.records.title,
+    library.current.entries[data.collection].title,
   )}
   type="article"
 />
 
-<RecordDetail
+<EntryDetail
+  collection={data.collection}
   constellations={data.constellations}
   document={data.document}
 />

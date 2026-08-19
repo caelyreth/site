@@ -1,16 +1,19 @@
 +++
-title = "有记忆的物件"
+title = "缓存失效应当沿内容路径发生"
 published = "2026-08-02"
-summary = "一盏灯、一块键盘，以及物件如何在用途之外留下记忆。"
-constellations = ["ordinary-machines", "ways-of-seeing"]
+summary = "内容更新不需要刷新整站；依赖关系应从被修改的文档向所属集合精确扩散。"
+constellations = ["private-infrastructure", "ordinary-machines"]
 +++
 
-## 不止于用途
+## 以路径作为依赖键
 
-功能不再是物件的全部时，它才开始有了记忆。磨损的按键不是感伤的证物，而是日复一日的注意留下的地图。
+当文章目录被约定为稳定的数据源时，开发环境的更新也应遵循同一条路径。`records/rendering-budget.md` 变化，详情页依赖它，记录列表依赖 `records`，星群又依赖所有内容集。
 
-有的物件因实用而被留下；有的则让一间房学会如何容纳时间。
+```ts
+invalidate(content_dependency(content_id))
+invalidate(content_dependency(collection))
+```
 
-## 工具的余生
+## 不要把重新加载当作同步策略
 
-工具沉默之后，仍会留下一种姿态：坐得多近、望向哪里，以及容许怎样的缓慢。
+只要能表达真实依赖，局部失效就比“改动后全量刷新”更快，也更容易知道为什么页面改变了。集合页与星群页需要的额外依赖应显式声明，而不是依靠某个全局刷新开关侥幸保持一致。

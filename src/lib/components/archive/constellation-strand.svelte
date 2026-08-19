@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { entry_path } from '$lib/content/entries'
   import { get_library_config } from '$lib/content/library'
   import type { ConstellationSummary } from '$lib/content/relations'
   import { format_template } from '$lib/content/site'
@@ -35,21 +36,21 @@
   <nav
     class="strand-echoes"
     aria-label={format_template(
-      library.current.constellations.records_navigation_label,
+      library.current.constellations.entries_navigation_label,
       {
-        records: library.current.records.title,
+        entries: library.current.constellations.entries_label,
         title: constellation.title,
       },
     )}
   >
-    {#each constellation.latest as record, index}
-      <a href={site_href(`/records/${record.id}`)}>
+    {#each constellation.latest as entry, index}
+      <a href={site_href(entry_path(entry.collection, entry.id))}>
         <span aria-hidden="true" class="echo-sequence"
           >{String(index + 1).padStart(2, '0')}</span
         >
-        <span class="echo-title">{record.title}</span>
-        <time datetime={record.published}
-          >{format_published_date(record.published)}</time
+        <span class="echo-title">{entry.title}</span>
+        <time datetime={entry.published}
+          >{format_published_date(entry.published)}</time
         >
       </a>
     {/each}

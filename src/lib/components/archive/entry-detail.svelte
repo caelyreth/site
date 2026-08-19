@@ -1,8 +1,9 @@
 <script lang="ts">
   import Content from '$lib/components/markdown/document.svelte'
+  import { entry_path, type EntryCollection } from '$lib/content/entries'
   import { get_library_config } from '$lib/content/library'
   import type { ConstellationReference } from '$lib/content/relations'
-  import type { RecordDocument } from '$lib/content/schema'
+  import type { EntryDocument } from '$lib/content/schema'
   import { site_href } from '$lib/navigation/path'
 
   import BackLink from './back-link.svelte'
@@ -12,21 +13,24 @@
   import ReadingPlane from './reading-plane.svelte'
 
   interface Props {
+    collection: EntryCollection
     constellations: ConstellationReference[]
-    document: RecordDocument
+    document: EntryDocument
   }
 
-  let { constellations, document }: Props = $props()
+  let { collection, constellations, document }: Props = $props()
   const library = get_library_config()
-  const records_href = site_href('/records')
+  const collection_config = $derived(library.current.entries[collection])
+  const collection_href = $derived(site_href(entry_path(collection)))
 </script>
 
-<ReadingPlane kind="record">
-  <article id="content" class="record-detail">
+<ReadingPlane kind={collection}>
+  <article id="content" class="entry-detail" data-collection={collection}>
     <EntryHeader
-      back_href={records_href}
-      back_label={library.current.records.title}
-      meta={`${library.current.records.meta_label} / ${format_published_date(document.frontmatter.published, 'long')}`}
+      back_href={collection_href}
+      back_label={collection_config.title}
+      {collection}
+      meta={`${collection_config.meta_label} / ${format_published_date(document.frontmatter.published, 'long')}`}
       summary={document.frontmatter.summary}
       title={document.frontmatter.title}
     >
@@ -41,15 +45,15 @@
 
     <footer class="entry-footer">
       <BackLink
-        href={records_href}
-        label={library.current.records.back_label}
+        href={collection_href}
+        label={collection_config.back_label}
       />
     </footer>
   </article>
 </ReadingPlane>
 
 <style>
-  .record-detail {
+  .entry-detail {
     min-width: 0;
   }
 
@@ -57,6 +61,14 @@
   .entry-body,
   .entry-footer {
     width: 100%;
+  }
+
+  .entry-detail[data-collection='records'] .entry-body {
+    margin-top: clamp(2.25rem, 5vw, 3.5rem);
+  }
+
+  .entry-detail[data-collection='voidknot'] .entry-body {
+    margin-top: clamp(3.5rem, 8vw, 5.5rem);
   }
 
   .entry-body {

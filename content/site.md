@@ -41,20 +41,21 @@ label = "显示模式"
 
 [[menu.entries]]
 code = "记录 / 001"
-detail = "留存文字"
+detail = "技术记录"
 href = "/records"
 title = "记录"
 
 [[menu.entries]]
-code = "星群 / 002"
+code = "虚空之结 / 002"
+detail = "未归类文字"
+href = "/voidknot"
+title = "虚空之结"
+
+[[menu.entries]]
+code = "星群 / 003"
 detail = "彼此回响"
 href = "/constellations"
 title = "星群"
-
-[[menu.entries]]
-code = "片段 / 003"
-detail = "短暂记录"
-title = "片段"
 
 [footer]
 label = "档案传输"
@@ -76,6 +77,10 @@ label = "观测台"
 [[footer.navigation]]
 href = "/records"
 label = "记录"
+
+[[footer.navigation]]
+href = "/voidknot"
+label = "虚空之结"
 
 [[footer.navigation]]
 href = "/constellations"

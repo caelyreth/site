@@ -3,7 +3,7 @@
   import { get_library_config } from '$lib/content/library'
   import type {
     ConstellationSummary,
-    RecordSummary,
+    EntrySummary,
   } from '$lib/content/relations'
   import type {
     ConstellationDocument,
@@ -13,13 +13,13 @@
   import { site_href } from '$lib/navigation/path'
 
   import EntryHeader from './entry-header.svelte'
+  import EntryList from './entry-list.svelte'
   import Pagination from './pagination.svelte'
   import ReadingPlane from './reading-plane.svelte'
-  import RecordTrajectory from './record-trajectory.svelte'
 
   interface Props {
     document: ConstellationDocument
-    entries: ContentPage<RecordSummary>
+    entries: ContentPage<EntrySummary>
     constellation: ConstellationSummary
   }
 
@@ -51,24 +51,25 @@
     </EntryHeader>
 
     <section
-      class="constellation-records"
+      class="constellation-entries"
       aria-label={format_template(
-        library.current.constellations.records_navigation_label,
+        library.current.constellations.entries_navigation_label,
         {
-          records: library.current.records.title,
+          entries: library.current.constellations.entries_label,
           title: constellation.title,
         },
       )}
     >
-      <h2>{library.current.constellations.records_label}</h2>
+      <h2>{library.current.constellations.entries_label}</h2>
       <Pagination
         placement="before"
         page={entries.page}
         page_count={entries.page_count}
         path={constellation_path}
       />
-      <RecordTrajectory
+      <EntryList
         entries={entries.entries}
+        show_collection
         show_constellations={false}
       />
       <Pagination
@@ -87,7 +88,7 @@
   }
 
   :global(.archive-entry-header),
-  .constellation-records {
+  .constellation-entries {
     width: 100%;
   }
 
@@ -96,11 +97,11 @@
     margin-top: 1.5rem;
   }
 
-  .constellation-records {
+  .constellation-entries {
     margin-top: clamp(3.5rem, 8vw, 6rem);
   }
 
-  .constellation-records h2 {
+  .constellation-entries h2 {
     margin: 0 0 1rem;
     color: var(--color-text-secondary);
     font-family: var(--font-stack-sans);
@@ -110,7 +111,7 @@
     line-height: 1.5;
   }
 
-  .constellation-records :global(.archive-list) {
+  .constellation-entries :global(.archive-list) {
     border-top: 1px solid var(--color-boundary);
   }
 </style>

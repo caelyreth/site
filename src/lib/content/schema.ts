@@ -61,7 +61,7 @@ export const home_frontmatter_schema = v.strictObject({
   observatory: observatory_schema,
 })
 
-export const record_index_frontmatter_schema = v.strictObject({
+export const entry_index_frontmatter_schema = v.strictObject({
   ...index_document_fields,
   back_label: v.string(),
   meta_label: v.string(),
@@ -72,8 +72,8 @@ export const constellation_index_frontmatter_schema = v.strictObject({
   back_label: v.string(),
   detail_label: v.string(),
   entry_count_label: v.string(),
-  records_label: v.string(),
-  records_navigation_label: v.string(),
+  entries_label: v.string(),
+  entries_navigation_label: v.string(),
   related_label: v.string(),
   related_navigation_label: v.string(),
 })
@@ -129,7 +129,7 @@ const constellation_id_schema = v.pipe(
   v.regex(content_key_pattern),
 )
 
-export const record_frontmatter_schema = v.strictObject({
+export const entry_frontmatter_schema = v.strictObject({
   ...indexed_document_fields,
   published: v.pipe(v.string(), v.isoDate()),
   constellations: v.optional(
@@ -147,15 +147,15 @@ export const constellation_frontmatter_schema = v.strictObject(
 
 export type ContentFont = v.InferOutput<typeof content_font_schema>
 export type HomeFrontmatter = v.InferOutput<typeof home_frontmatter_schema>
-export type RecordIndexFrontmatter = v.InferOutput<
-  typeof record_index_frontmatter_schema
+export type EntryIndexFrontmatter = v.InferOutput<
+  typeof entry_index_frontmatter_schema
 >
 export type ConstellationIndexFrontmatter = v.InferOutput<
   typeof constellation_index_frontmatter_schema
 >
 export type SiteConfig = v.InferOutput<typeof site_config_schema>
-export type RecordFrontmatter = v.InferOutput<
-  typeof record_frontmatter_schema
+export type EntryFrontmatter = v.InferOutput<
+  typeof entry_frontmatter_schema
 >
 export type ConstellationFrontmatter = v.InferOutput<
   typeof constellation_frontmatter_schema
@@ -166,9 +166,9 @@ export type HomeDocument = MarkdownDocument<
   HomeFrontmatter
 >
 
-export type RecordIndexDocument = MarkdownDocument<
+export type EntryIndexDocument = MarkdownDocument<
   Record<string, unknown>,
-  RecordIndexFrontmatter
+  EntryIndexFrontmatter
 >
 
 export type ConstellationIndexDocument = MarkdownDocument<
@@ -176,9 +176,9 @@ export type ConstellationIndexDocument = MarkdownDocument<
   ConstellationIndexFrontmatter
 >
 
-export type RecordDocument = MarkdownDocument<
+export type EntryDocument = MarkdownDocument<
   Record<string, unknown>,
-  RecordFrontmatter
+  EntryFrontmatter
 >
 
 export type ConstellationDocument = MarkdownDocument<

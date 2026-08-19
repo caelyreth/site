@@ -1,9 +1,10 @@
 <script lang="ts">
   import PaperSeam from '$lib/components/layout/paper-seam.svelte'
   import Content from '$lib/components/markdown/document.svelte'
+  import type { EntryCollection } from '$lib/content/entries'
   import type {
     ConstellationIndexDocument,
-    RecordIndexDocument,
+    EntryIndexDocument,
   } from '$lib/content/schema'
   import type { Snippet } from 'svelte'
 
@@ -13,8 +14,8 @@
 
   interface Props {
     children: Snippet
-    document: ConstellationIndexDocument | RecordIndexDocument
-    kind: 'constellations' | 'records'
+    document: ConstellationIndexDocument | EntryIndexDocument
+    kind: 'constellations' | EntryCollection
     page: number
     page_count: number
     path: string
@@ -26,7 +27,7 @@
 </script>
 
 <ReadingPlane {kind}>
-  <section id="content" class="archive-index">
+  <section id="content" class="archive-index" data-collection={kind}>
     <IndexHeader
       description={document.frontmatter.description}
       kind_label={document.frontmatter.kind}
@@ -55,6 +56,23 @@
 <style>
   .archive-index {
     min-width: 0;
+  }
+
+  .archive-index[data-collection='records']
+    :global(.archive-index-header h1) {
+    font-family: var(--font-stack-sans);
+    font-size: clamp(1.65rem, 2.5vw, 2.25rem);
+    font-weight: 650;
+    line-height: 1.25;
+  }
+
+  .archive-index[data-collection='voidknot']
+    :global(.archive-index-header h1) {
+    font-size: clamp(2rem, 3.4vw, 3rem);
+  }
+
+  .archive-index[data-collection='voidknot'] .index-prose {
+    max-width: 36rem;
   }
 
   .index-prose {

@@ -1,15 +1,13 @@
-import type {
-  ConstellationFrontmatter,
-  ContentEntry,
-  RecordFrontmatter,
-} from './schema'
+import type { CollectionEntry, EntryCollection } from './entries'
+import type { ConstellationFrontmatter, ContentEntry } from './schema'
 
 export interface ConstellationReference {
   id: string
   title: string
 }
 
-export interface RecordSummary {
+export interface EntrySummary {
+  collection: EntryCollection
   constellations: ConstellationReference[]
   id: string
   published: string
@@ -20,14 +18,14 @@ export interface RecordSummary {
 export interface ConstellationSummary {
   entry_count: number
   id: string
-  latest: RecordSummary[]
+  latest: EntrySummary[]
   summary: string
   title: string
 }
 
 type ConstellationEntries = ContentEntry<ConstellationFrontmatter>[]
 
-function compare_records(left: RecordSummary, right: RecordSummary) {
+function compare_entries(left: EntrySummary, right: EntrySummary) {
   return (
     right.published.localeCompare(left.published) ||
     left.id.localeCompare(right.id)
@@ -74,13 +72,14 @@ export function resolve_constellations(
   return resolve_constellation_ids(ids, path, constellation_lookup(entries))
 }
 
-export function record_index(
-  entries: ContentEntry<RecordFrontmatter>[],
+export function entry_index(
+  entries: CollectionEntry[],
   constellations: ConstellationEntries,
-): RecordSummary[] {
+): EntrySummary[] {
   const known = constellation_lookup(constellations)
   return entries
     .map((entry) => ({
+      collection: entry.collection,
       constellations: resolve_constellation_ids(
         entry.frontmatter.constellations,
         entry.path,
@@ -91,25 +90,25 @@ export function record_index(
       summary: entry.frontmatter.summary,
       title: entry.frontmatter.title,
     }))
-    .sort(compare_records)
+    .sort(compare_entries)
 }
 
-export function records_for_constellation(
-  records: RecordSummary[],
+export function entries_for_constellation(
+  entries: EntrySummary[],
   id: string,
 ) {
-  return records.filter((record) =>
-    record.constellations.some((constellation) => constellation.id === id),
+  return entries.filter((entry) =>
+    entry.constellations.some((constellation) => constellation.id === id),
   )
 }
 
 export function constellation_index(
   entries: ConstellationEntries,
-  records: RecordSummary[],
+  entry_summaries: EntrySummary[],
 ): ConstellationSummary[] {
   return entries
     .map((entry) => {
-      const related = records_for_constellation(records, entry.id)
+      const related = entries_for_constellation(entry_summaries, entry.id)
       return {
         entry_count: related.length,
         id: entry.id,

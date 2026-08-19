@@ -1,7 +1,8 @@
 <script lang="ts">
+  import type { EntryCollection } from '$lib/content/entries'
   import type { Snippet } from 'svelte'
 
-  export type ReadingPlaneKind = 'constellations' | 'record' | 'records'
+  export type ReadingPlaneKind = 'constellations' | EntryCollection
 
   interface Props {
     children: Snippet
@@ -13,8 +14,8 @@
 
 <section
   class:constellations={kind === 'constellations'}
-  class:record={kind === 'record'}
   class:records={kind === 'records'}
+  class:voidknot={kind === 'voidknot'}
   class="reading-plane"
 >
   <div class="reading-plane-inner">
@@ -42,8 +43,12 @@
       clamp(3.5rem, 8vw, 6.5rem);
   }
 
-  .reading-plane.record {
+  .reading-plane.records {
     --plane-measure: 45rem;
+  }
+
+  .reading-plane.voidknot {
+    --plane-measure: 48rem;
   }
 
   .reading-plane.constellations {
