@@ -19,6 +19,7 @@
   const menu = get_menu_controller()
   const entry_rail_delay = 640
   const rail_settle_delay = 1150
+  const observatory_rail_delay = rail_settle_delay * 2
   let scrolling = $state(false)
   let entry_rail_ready = $state(false)
   let active_panel = $state<'navigation' | 'toc'>('navigation')
@@ -50,7 +51,7 @@
 
     const timer = window.setTimeout(() => {
       observatory_rail_expanded = false
-    }, rail_settle_delay)
+    }, observatory_rail_delay)
 
     return () => window.clearTimeout(timer)
   })
@@ -59,24 +60,28 @@
     return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey
   }
 
-  async function return_to_top() {
+  function scroll_to_top() {
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }
+
+  async function return_home() {
     if (page.url.pathname !== home_path) {
       await goto(home_path, { keepFocus: true, noScroll: true })
       await tick()
     }
 
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    scroll_to_top()
   }
 
   function handle_brand_click(event: MouseEvent) {
     if (event.defaultPrevented || event.button !== 0) return
     if (has_navigation_modifier(event)) return
     event.preventDefault()
-    void return_to_top()
+    void return_home()
   }
 
   function handle_return_click() {
-    void return_to_top()
+    scroll_to_top()
   }
 
   function expand_observatory_rail() {
