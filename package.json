@@ -24,6 +24,7 @@
     "@types/three": "catalog:t",
     "comark": "catalog:f",
     "comark-toml": "catalog:f",
+    "katex": "^0.17.0",
     "oxfmt": "catalog:x",
     "oxlint": "catalog:x",
     "oxlint-tsgolint": "catalog:x",

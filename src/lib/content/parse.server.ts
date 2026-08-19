@@ -8,6 +8,7 @@ import attributes from 'comark/plugins/attributes'
 import components from 'comark/plugins/components'
 import footnotes from 'comark/plugins/footnotes'
 import headings from 'comark/plugins/headings'
+import math from 'comark/plugins/math'
 import punctuation from 'comark/plugins/punctuation'
 import rangi from 'comark/plugins/rangi'
 import security from 'comark/plugins/security'
@@ -23,6 +24,7 @@ const markdown_parser = createMarkdownParser({
     attributes(),
     footnotes({ label: '脚注' }),
     headings(),
+    math(),
     punctuation(),
     security({ allowDataImages: false }),
     media(),

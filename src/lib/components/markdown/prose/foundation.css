@@ -40,3 +40,33 @@
 .document :where(li, blockquote, aside, td, th, figcaption) > :last-child {
   margin-block-end: 0;
 }
+
+.document :where(.math) {
+  color: var(--color-text);
+}
+
+.document :where(.math.inline) {
+  padding-inline: 0.1em;
+}
+
+.document :where(.math.block) {
+  max-inline-size: 100%;
+  margin-block: var(--prose-block-gap) 0;
+  overflow-x: auto;
+  overflow-y: clip;
+  scrollbar-width: none;
+}
+
+.document :where(.math.block::-webkit-scrollbar) {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .document :where(.math.block) {
+    scrollbar-width: auto;
+  }
+
+  .document :where(.math.block::-webkit-scrollbar) {
+    display: block;
+  }
+}

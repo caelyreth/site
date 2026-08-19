@@ -1,7 +1,10 @@
 <script lang="ts">
   import type { ContentFont } from '$lib/content/schema'
   import { MarkdownDocument } from '@comark/svelte'
-  import type { MarkdownDocument as MarkdownDocumentValue } from 'comark'
+  import type {
+    ComponentManifest,
+    MarkdownDocument as MarkdownDocumentValue,
+  } from 'comark'
   import { pascalCase } from 'comark/utils'
   import type { Component } from 'svelte'
 
@@ -37,6 +40,10 @@
     ),
   })
 
+  const deferred_components: ComponentManifest = (name) => {
+    if (name === 'math') return import('./math.svelte')
+  }
+
   interface Props {
     document: MarkdownDocumentValue
     font?: ContentFont
@@ -46,5 +53,9 @@
 </script>
 
 <div class="document" data-font={font}>
-  <MarkdownDocument value={document} {components} />
+  <MarkdownDocument
+    value={document}
+    {components}
+    componentsManifest={deferred_components}
+  />
 </div>
