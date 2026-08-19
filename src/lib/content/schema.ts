@@ -91,6 +91,7 @@ export const site_config_schema = v.strictObject({
     license_href: v.string(),
     license_label: v.string(),
     navigation: v.array(navigation_item_schema),
+    qr_label: v.string(),
     signal: v.strictObject({
       label: v.string(),
       pause_label: v.string(),

@@ -13,10 +13,7 @@
   let { visible }: Props = $props()
   const site = get_site_config()
   const footer = $derived(site.current.footer)
-  const barcode = [
-    1, 2, 1, 3, 1, 1, 2, 1, 3, 1, 2, 1, 1, 3, 2, 1, 2, 1, 3, 1, 1, 2, 1, 3,
-    1, 2, 1, 1, 3, 1, 2, 1, 2, 1,
-  ] as const
+  const footer_qr = $derived((page.data as { footer_qr: string }).footer_qr)
 
   function is_current(href: string) {
     const route = page.route.id
@@ -60,13 +57,25 @@
         </nav>
         <p class="detail" data-nosnippet="">{footer.index_detail}</p>
       </section>
-      <section class="footer-module" aria-label={footer.archive_label}>
+      <section
+        class="footer-module footer-archive"
+        aria-label={footer.archive_label}
+      >
         {@render footer_label(footer.archive_label)}
-        <div aria-hidden="true" class="barcode" data-nosnippet="">
-          {#each barcode as width}<span style:--bar-width={width}
-            ></span>{/each}
+        <div class="archive-mark">
+          <div aria-hidden="true" class="qr" data-nosnippet="">
+            {@html footer_qr}
+          </div>
+          <div class="archive-copy">
+            <p class="micro-label qr-label">{footer.qr_label}</p>
+            <p class="archive-path" data-nosnippet="">
+              {page.url.pathname}
+            </p>
+            <p class="detail archive-detail" data-nosnippet="">
+              {footer.archive_detail}
+            </p>
+          </div>
         </div>
-        <p class="detail" data-nosnippet="">{footer.archive_detail}</p>
       </section>
       <section class="footer-module">
         <FooterSignalMonitor is_active={visible} signal={footer.signal} />
@@ -237,18 +246,64 @@
     }
   }
 
-  .barcode {
-    display: flex;
+  .archive-mark {
+    display: grid;
+    grid-template-columns: var(--archive-qr-size) minmax(0, 1fr);
     width: 100%;
-    min-height: 2.5rem;
-    gap: 1px;
-    margin-top: 1rem;
-    overflow: hidden;
+    margin-top: auto;
+    gap: 0.875rem;
+    align-items: end;
   }
 
-  .barcode span {
-    flex: var(--bar-width) 1 0;
-    background: var(--primary);
+  .qr {
+    display: grid;
+    width: var(--archive-qr-size);
+    padding: 0.25rem;
+    color: var(--primary);
+    aspect-ratio: 1;
+    box-shadow: 0 0 0 1px var(--rule);
+    place-items: center;
+  }
+
+  .qr :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .qr :global(path) {
+    stroke: currentColor;
+  }
+
+  .archive-copy {
+    display: flex;
+    min-width: 0;
+    min-height: var(--archive-qr-size);
+    padding-bottom: 0.1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .qr-label {
+    margin: 0;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .archive-path {
+    width: 100%;
+    margin: 0.375rem 0 0;
+    overflow: hidden;
+    color: var(--secondary);
+    font-family: var(--font-stack-mono);
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .archive-detail {
+    margin: auto 0 0;
   }
 
   .detail {
@@ -258,6 +313,10 @@
     letter-spacing: 0.04em;
     line-height: 1.3;
     text-transform: uppercase;
+  }
+
+  .footer-archive {
+    --archive-qr-size: 4.75rem;
   }
 
   .tail {
@@ -324,6 +383,10 @@
       padding: 1.25rem 1rem;
     }
 
+    .footer-archive {
+      --archive-qr-size: 5rem;
+    }
+
     .footer-module:first-child {
       position: relative;
       padding-left: 0;
@@ -339,6 +402,16 @@
     .footer-module + .footer-module {
       border-top: 0;
       border-inline-start: 1px solid var(--footer-rule);
+    }
+  }
+
+  @media (width < 24rem) {
+    .footer-archive {
+      --archive-qr-size: 4.25rem;
+    }
+
+    .archive-mark {
+      gap: 0.7rem;
     }
   }
 
