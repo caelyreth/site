@@ -7,7 +7,7 @@
     cells: number
     compact_control: string
     expanded?: boolean
-    children?: Snippet<[() => void, boolean, string]>
+    children?: Snippet<[() => void, string]>
     panel?: Snippet<[() => void]>
   }
 
@@ -103,7 +103,7 @@
     {/if}
 
     <div bind:this={rail_cells} class="rail-cells">
-      {@render children?.(toggle_panel, expanded, panel_id)}
+      {@render children?.(toggle_panel, panel_id)}
     </div>
   </div>
 </div>
