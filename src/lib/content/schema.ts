@@ -101,7 +101,7 @@ export const site_config_schema = v.strictObject({
     title: v.string(),
   }),
   menu: v.strictObject({
-    entries: v.pipe(v.array(menu_item_schema), v.length(3)),
+    entries: v.pipe(v.array(menu_item_schema), v.length(4)),
     field_note: v.string(),
     ornaments: v.pipe(v.array(v.string()), v.length(16)),
   }),

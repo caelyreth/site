@@ -57,6 +57,11 @@ detail = "彼此回响"
 href = "/constellations"
 title = "星群"
 
+[[menu.entries]]
+code = "碎片 / 004"
+detail = "短暂记录"
+title = "碎片"
+
 [footer]
 label = "档案传输"
 title = "Caelyreth 中继站"

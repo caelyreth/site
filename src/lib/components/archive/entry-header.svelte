@@ -52,7 +52,6 @@
   }
 
   .archive-entry-header[data-collection='records'] h1 {
-    font-family: var(--font-stack-sans);
     font-size: clamp(1.75rem, 3vw, 2.75rem);
     font-weight: 650;
     line-height: 1.25;

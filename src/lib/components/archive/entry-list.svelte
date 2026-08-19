@@ -172,7 +172,6 @@
   }
 
   .entry-item.records h2 {
-    font-family: var(--font-stack-sans);
     font-size: clamp(1.05rem, 1.55vw, 1.25rem);
     font-weight: 650;
     line-height: 1.35;

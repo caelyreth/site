@@ -60,7 +60,6 @@
 
   .archive-index[data-collection='records']
     :global(.archive-index-header h1) {
-    font-family: var(--font-stack-sans);
     font-size: clamp(1.65rem, 2.5vw, 2.25rem);
     font-weight: 650;
     line-height: 1.25;

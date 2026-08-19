@@ -45,6 +45,14 @@ export const menu_preview_layouts: readonly MenuPreviewLayout[] = [
     rotation: '-7deg',
     top: '56%',
   },
+  {
+    bottom: '13%',
+    enter_delay: '260ms',
+    enter_x: '1.25rem',
+    enter_y: '1rem',
+    left: '54%',
+    rotation: '4deg',
+  },
 ]
 
 export const drift_layouts: readonly DriftLayout[] = [

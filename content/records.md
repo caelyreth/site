@@ -1,5 +1,6 @@
 +++
 title = "记录"
+font = "serif"
 kind = "技术记录"
 description = "关于网页系统、内容路径与界面行为的工作笔记：从实现细节出发，也保留它们为何如此组织。"
 meta_label = "技术记录"
