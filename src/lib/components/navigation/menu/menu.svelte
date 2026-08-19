@@ -2,15 +2,15 @@
   import { lock_page_scroll } from '$lib/browser/page-lock'
   import { flushSync as flush_sync } from 'svelte'
 
-  import { get_menu_controller } from './controller'
   import MenuPanel from './panel.svelte'
+  import { get_menu_state } from './state'
 
   interface Props {
     id?: string
   }
 
   const { id = 'site-menu' }: Props = $props()
-  const controller = get_menu_controller()
+  const menu = get_menu_state()
   let dialog: HTMLDialogElement | undefined
   let closing = $state(false)
   let close_timer: number | undefined
@@ -31,7 +31,7 @@
     }
   }
 
-  function open_menu() {
+  function show_menu() {
     if (
       !dialog ||
       dialog.open ||
@@ -41,11 +41,8 @@
     }
 
     closing = false
-    controller.is_open = true
     dialog.showModal()
   }
-
-  controller.open = open_menu
 
   function request_close() {
     if (!dialog?.open || closing) return
@@ -66,7 +63,7 @@
   function handle_close() {
     clear_close_timer()
     closing = false
-    controller.is_open = false
+    menu.is_open = false
   }
 
   function track_dismiss_pointer(event: PointerEvent) {
@@ -78,9 +75,15 @@
     dismiss_pointer_type = undefined
   }
 
+  // The state is shared; native dialog lifecycle remains local.
+  $effect(() => {
+    if (!menu.is_open) return
+    show_menu()
+  })
+
   // Keep the page fixed for the full modal lifecycle, including its exit.
   $effect(() => {
-    if (!controller.is_open) return
+    if (!menu.is_open) return
     return lock_page_scroll()
   })
 </script>
@@ -108,7 +111,7 @@
 
   <MenuPanel
     is_closing={closing}
-    is_open={controller.is_open}
+    is_open={menu.is_open}
     on_navigate={request_close}
   />
 </dialog>

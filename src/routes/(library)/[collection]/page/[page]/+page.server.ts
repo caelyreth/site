@@ -20,7 +20,10 @@ export const load: PageServerLoad = async ({ depends, params }) => {
   const page = page_number(params.page)
   if (!page || page === 1) throw error(404, '未找到内容页')
 
-  const { document: index, entries } = await collection_page(collection, page)
+  const { document: index, entries } = await collection_page(
+    collection,
+    page,
+  )
   if (!entries) throw error(404, '未找到内容页')
   return { collection, entries, index }
 }

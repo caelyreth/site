@@ -1,5 +1,5 @@
-import { entry_collections } from '$lib/content/entries'
 import { constellation_page } from '$lib/content/constellations.server'
+import { entry_collections } from '$lib/content/entries'
 import { content_dependency } from '$lib/content/hmr'
 
 import type { PageServerLoad } from './$types'

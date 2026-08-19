@@ -41,7 +41,10 @@ async function collection_document(collection: EntryCollection) {
   return document.document
 }
 
-export async function collection_page(collection: EntryCollection, page: number) {
+export async function collection_page(
+  collection: EntryCollection,
+  page: number,
+) {
   const [entries, constellations, document] = await Promise.all([
     collection_entries(collection),
     constellation_source.entries(),

@@ -9,7 +9,7 @@
 
   import Brand from './header/brand.svelte'
   import MenuTrigger from './header/menu-trigger.svelte'
-  import { get_menu_controller } from './menu/controller'
+  import { get_menu_state } from './menu/state'
   import MobileNavigationPanel from './mobile-navigation-panel.svelte'
   import MobileRail from './mobile-rail.svelte'
   import RailCell from './rail-cell.svelte'
@@ -18,7 +18,7 @@
 
   const home_path = resolve('/')
   const chrome = get_page_chrome()
-  const menu = get_menu_controller()
+  const menu = get_menu_state()
   const entry_rail_delay = 640
   const rail_settle_delay = 1150
   const observatory_rail_delay = rail_settle_delay * 2
@@ -138,7 +138,10 @@
   <header class="header">
     <div class="inner">
       <Brand href={home_path} on_activate={handle_brand_click} />
-      <MenuTrigger is_open={menu.is_open} on_open={menu.open} />
+      <MenuTrigger
+        is_open={menu.is_open}
+        on_open={() => (menu.is_open = true)}
+      />
     </div>
   </header>
 

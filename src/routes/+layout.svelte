@@ -3,8 +3,8 @@
   import 'virtual:uno.css'
   import { install_view_transitions } from '$lib/browser/view-transition'
   import PageScrollbar from '$lib/components/layout/page-scrollbar.svelte'
-  import { set_menu_controller } from '$lib/components/navigation/menu/controller'
   import Menu from '$lib/components/navigation/menu/menu.svelte'
+  import { set_menu_state } from '$lib/components/navigation/menu/state'
   import { listen_for_content_updates } from '$lib/content/hmr.client'
   import { set_site_config } from '$lib/content/site'
   import { onMount, type Snippet } from 'svelte'
@@ -22,7 +22,6 @@
   const themes = ['light', 'dark', 'system'] as const
   const menu = $state({
     is_open: false,
-    open: () => {},
   })
   const site = {
     get current() {
@@ -30,7 +29,7 @@
     },
   }
 
-  set_menu_controller(menu)
+  set_menu_state(menu)
   set_site_config(site)
   install_view_transitions(() => !menu.is_open)
   onMount(listen_for_content_updates)

@@ -1,8 +1,8 @@
-import { entry_collections } from '$lib/content/entries'
 import {
   constellation_page,
   constellation_page_entries,
 } from '$lib/content/constellations.server'
+import { entry_collections } from '$lib/content/entries'
 import { content_dependency } from '$lib/content/hmr'
 import { page_number } from '$lib/content/query.server'
 import { error } from '@sveltejs/kit'

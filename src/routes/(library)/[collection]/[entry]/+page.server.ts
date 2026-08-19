@@ -1,4 +1,7 @@
-import { entry_page, entry_route_entries } from '$lib/content/entries.server'
+import {
+  entry_page,
+  entry_route_entries,
+} from '$lib/content/entries.server'
 import { entry_collection_param } from '$lib/content/entry-route.server'
 import { extract_headings } from '$lib/content/headings'
 import { content_dependency } from '$lib/content/hmr'

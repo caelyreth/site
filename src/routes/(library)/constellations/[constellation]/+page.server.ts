@@ -1,8 +1,8 @@
-import { entry_collections } from '$lib/content/entries'
 import {
   constellation_entry_page,
   constellation_route_entries,
 } from '$lib/content/constellations.server'
+import { entry_collections } from '$lib/content/entries'
 import { content_dependency } from '$lib/content/hmr'
 import { error } from '@sveltejs/kit'
 
