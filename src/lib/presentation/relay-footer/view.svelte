@@ -376,7 +376,7 @@
 
   @media (width >= 48rem) {
     .grid {
-      grid-template-columns: 2.2fr 1.25fr 1.25fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .footer-module {
