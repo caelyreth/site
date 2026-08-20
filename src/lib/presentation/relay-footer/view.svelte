@@ -1,16 +1,18 @@
 <script lang="ts">
   import { page } from '$app/state'
   import PaperEdge from '$lib/components/layout/paper-edge.svelte'
+  import type { EntryLink } from '$lib/content/entries'
   import { get_site_config } from '$lib/content/site'
   import { site_href } from '$lib/navigation/path'
 
   import FooterSignalMonitor from './signal-monitor.svelte'
 
   interface Props {
+    entries: readonly EntryLink[]
     visible: boolean
   }
 
-  let { visible }: Props = $props()
+  let { entries, visible }: Props = $props()
   const site = get_site_config()
   const footer = $derived(site.current.footer)
   const footer_qr = $derived((page.data as { footer_qr: string }).footer_qr)
@@ -78,7 +80,11 @@
         </div>
       </section>
       <section class="footer-module">
-        <FooterSignalMonitor is_active={visible} signal={footer.signal} />
+        <FooterSignalMonitor
+          {entries}
+          is_active={visible}
+          signal={footer.signal}
+        />
       </section>
     </div>
     <div class="tail">

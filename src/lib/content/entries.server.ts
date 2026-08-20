@@ -1,7 +1,9 @@
 import {
   entry_collections,
+  entry_path,
   type CollectionEntry,
   type EntryCollection,
+  type EntryLink,
 } from './entries'
 import { page_count, paginate, read_content } from './query.server'
 import { entry_index, resolve_constellations } from './relations'
@@ -21,6 +23,35 @@ export async function all_entry_entries(): Promise<CollectionEntry[]> {
   )
 
   return groups.flat()
+}
+
+export async function entry_links(): Promise<EntryLink[]> {
+  const groups = await Promise.all(
+    entry_collections.map(async (collection) => {
+      const [document, entries] = await Promise.all([
+        collection_document(collection),
+        collection_entries(collection),
+      ])
+      const label = document.frontmatter.title
+
+      return entries.map((entry) => ({
+        collection: label,
+        href: entry_path(collection, entry.id),
+        id: `${collection}/${entry.id}`,
+        published: entry.frontmatter.published,
+        title: entry.frontmatter.title,
+      }))
+    }),
+  )
+
+  return groups
+    .flat()
+    .sort(
+      (left, right) =>
+        right.published.localeCompare(left.published) ||
+        left.id.localeCompare(right.id),
+    )
+    .map(({ published: _published, ...entry }) => entry)
 }
 
 export async function collection_entries(

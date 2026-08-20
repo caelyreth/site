@@ -8,6 +8,13 @@ export type CollectionEntry = ContentEntry<EntryFrontmatter> & {
   collection: EntryCollection
 }
 
+export interface EntryLink {
+  collection: string
+  href: string
+  id: string
+  title: string
+}
+
 export function is_entry_collection(
   value: string,
 ): value is EntryCollection {

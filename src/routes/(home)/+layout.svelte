@@ -59,7 +59,7 @@
   </main>
   <Footer>
     {#snippet children(visible)}
-      <RelayFooter {visible} />
+      <RelayFooter entries={data.footer_entries} {visible} />
     {/snippet}
   </Footer>
 </div>

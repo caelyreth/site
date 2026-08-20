@@ -1,13 +1,9 @@
-const signal_glyphs = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+import type { EntryLink } from '$lib/content/entries'
 
-export function next_signal() {
-  const code = Array.from(
-    { length: 3 },
-    () => signal_glyphs[Math.floor(Math.random() * signal_glyphs.length)],
-  ).join('')
-  const sequence = String(Math.floor(Math.random() * 10_000)).padStart(
-    4,
-    '0',
-  )
-  return `RX//${code}-ORBIT-${sequence}`
+export function next_signal_entry(
+  entries: readonly EntryLink[],
+  displayed: ReadonlySet<string>,
+) {
+  const choices = entries.filter((entry) => !displayed.has(entry.id))
+  return choices[Math.floor(Math.random() * choices.length)]
 }

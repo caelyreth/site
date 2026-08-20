@@ -1,32 +1,47 @@
 <script lang="ts">
+  import type { EntryLink } from '$lib/content/entries'
   import type { SiteConfig } from '$lib/content/schema'
+  import { site_href } from '$lib/navigation/path'
   import { flip } from 'svelte/animate'
   import { fly } from 'svelte/transition'
 
-  import { next_signal } from './signal'
+  import { next_signal_entry } from './signal'
   import { text_refresh_in, text_refresh_out } from './transitions'
 
   interface Props {
+    entries: readonly EntryLink[]
     is_active: boolean
     signal: SiteConfig['footer']['signal']
   }
 
-  const { is_active, signal }: Props = $props()
+  const { entries, is_active, signal }: Props = $props()
 
-  let signal_sequence = $state(1)
-  let signals = $state([
-    {
-      id: 0,
-      value: 'RX//A72-ORBIT-0001',
-    },
-  ])
+  const initial_signals = $derived(
+    entries.slice(0, 3).map((entry, index) => ({ id: index, entry })),
+  )
+  let signal_sequence = $state(3)
+  let signals = $state<typeof initial_signals>([])
   let transmission_paused = $state(false)
+  const visible_signals = $derived(
+    signals.length ? signals : initial_signals,
+  )
 
   function advance_signal() {
-    signals = [
-      { id: signal_sequence, value: next_signal() },
-      ...signals,
-    ].slice(0, 3)
+    const entry = next_signal_entry(
+      entries,
+      new Set(visible_signals.map((signal) => signal.entry.id)),
+    )
+    if (!entry) {
+      if (visible_signals.length > 1) {
+        signals = [visible_signals.at(-1)!, ...visible_signals.slice(0, -1)]
+      }
+      return
+    }
+
+    signals = [{ id: signal_sequence, entry }, ...visible_signals].slice(
+      0,
+      3,
+    )
     signal_sequence += 1
   }
 
@@ -35,6 +50,9 @@
   }
 
   $effect(() => {
+    if (!signals.length && initial_signals.length) {
+      signals = initial_signals
+    }
     if (transmission_paused || !is_active) return
     const interval = window.setInterval(advance_signal, 1_600)
     return () => window.clearInterval(interval)
@@ -62,15 +80,19 @@
     </button>
   </div>
   <p class="status">{signal.status}</p>
-  <div aria-hidden="true" class="signal-log" data-nosnippet="">
-    {#each signals as signal, index (signal.id)}
-      <span
+  <div class="signal-log">
+    {#each visible_signals as signal, index (signal.id)}
+      <a
         animate:flip={{ duration: 360 }}
         class="signal"
+        href={site_href(signal.entry.href)}
         in:fly={text_refresh_in}
         out:fly={text_refresh_out}
-        style:--signal-opacity={1 - index * 0.3}>{signal.value}</span
+        style:--signal-opacity={1 - index * 0.3}
       >
+        <span class="signal-collection">{signal.entry.collection}</span>
+        <span class="signal-title">{signal.entry.title}</span>
+      </a>
     {/each}
   </div>
 </div>
@@ -113,7 +135,7 @@
   }
 
   .signal {
-    display: block;
+    display: flex;
     width: 100%;
     color: var(--accent);
     font-size: 0.75rem;
@@ -123,7 +145,37 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     will-change: opacity, transform;
+    text-decoration: none;
     transition: opacity var(--dur-long) var(--ease-out);
+  }
+
+  .signal-collection {
+    flex: none;
+    color: var(--secondary);
+  }
+
+  .signal-collection::after {
+    margin-inline: 0.35rem;
+    content: '/';
+    color: var(--muted);
+  }
+
+  .signal-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .signal:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 0.15rem;
+  }
+
+  @media (hover: hover) {
+    .signal:hover {
+      color: var(--primary);
+      opacity: 1;
+    }
   }
 
   .signal-toggle {
