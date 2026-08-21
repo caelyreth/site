@@ -12,6 +12,7 @@
 
 <style>
   del {
+    color: var(--color-muted);
     text-decoration-line: line-through;
     text-decoration-color: currentcolor;
     text-decoration-thickness: 1px;
