@@ -13,6 +13,7 @@
   --color-ink-light: oklch(19% 0 0);
   --color-ink-prime-light: oklch(34% 0 0);
   --color-accent-light: oklch(53% 0.115 274.713);
+  --color-accent-secondary-light: oklch(52% 0.055 274.713);
   --color-footer-surface-light: var(--color-accent-light);
   --color-footer-selection-surface-light: color-mix(
     in oklab,
@@ -65,6 +66,7 @@
   --color-ink-dark: oklch(93% 0 0);
   --color-ink-prime-dark: oklch(76% 0 0);
   --color-accent-dark: oklch(78.5% 0.115 274.713);
+  --color-accent-secondary-dark: oklch(71% 0.06 274.713);
   --color-footer-surface-dark: oklch(69% 0.06 274.713);
   --color-footer-selection-surface-dark: color-mix(
     in oklab,
@@ -117,6 +119,7 @@
   --color-ink: var(--color-ink-light);
   --color-ink-prime: var(--color-ink-prime-light);
   --color-accent: var(--color-accent-light);
+  --color-accent-secondary: var(--color-accent-secondary-light);
   --color-footer-surface: var(--color-footer-surface-light);
   --color-footer-selection-surface: var(
     --color-footer-selection-surface-light
@@ -234,6 +237,7 @@
   --color-ink: var(--color-ink-dark);
   --color-ink-prime: var(--color-ink-prime-dark);
   --color-accent: var(--color-accent-dark);
+  --color-accent-secondary: var(--color-accent-secondary-dark);
   --color-footer-surface: var(--color-footer-surface-dark);
   --color-footer-selection-surface: var(
     --color-footer-selection-surface-dark

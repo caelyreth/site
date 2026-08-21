@@ -1,6 +1,6 @@
 +++
-title = "Caelyreth"
-description = "关于建筑、几何与空间哲学的记录。"
+title = "泠雨 Caelyreth"
+description = "致我们今日的生命；独立开发者、设计师与业余文字创作者；关注系统开发、AI 计算基建、开发者体验与 Agent Harness 设计；同时记录一些关于时代发展、个人生活体验上的思考；愿你能找到一些平静。"
 
 [seo]
 locale = "zh_CN"
@@ -16,7 +16,7 @@ previous_aria_label = "上一页，当前为 {page}，共 {page_count} 页"
 next_aria_label = "下一页，当前为 {page}，共 {page_count} 页"
 
 [menu]
-field_note = "Caelyreth 中继站 / 观测面 01"
+field_note = "Caelyreth 深空站 / 观测面 01"
 ornaments = [
   "档案 / 023",
   "RBK // 044",
@@ -37,39 +37,39 @@ ornaments = [
 ]
 
 [theme]
-label = "显示模式"
+label = "显示主题"
 
 [[menu.entries]]
-code = "记录 / 001"
-detail = "技术记录"
+code = "Record / 001"
+detail = "一些简单的技术相关笔记"
 href = "/records"
-note = "关于工具、系统与失效边界的长期记录。"
-title = "记录"
+note = "关于日常开发、设计、产品与分析的记录"
+title = "简单记录"
 
 [[menu.entries]]
-code = "虚空之结 / 002"
-detail = "未归类文字"
+code = "VoidKnot / 002"
+detail = "以虚无紧系因果，接续时间的归途。"
 href = "/voidknot"
-note = "未归类的观察、叙事与缓慢的思考。"
+note = "启发性的观察、叙事与缓慢的思考。"
 title = "虚空之结"
 
 [[menu.entries]]
-code = "星群 / 003"
-detail = "彼此回响"
+code = "Constellation / 003"
+detail = "彼此回响的记录与思考"
 href = "/constellations"
-note = "让分散文字彼此靠近，再回望它们的轨迹。"
+note = "让文字重新靠近，追溯内容的轨迹与归类。"
 title = "星群"
 
 [[menu.entries]]
-code = "碎片 / 004"
+code = "Fragment / 004"
 detail = "短暂记录"
 note = "尚未归档的短句、片段与微弱讯号。"
 title = "碎片"
 
 [footer]
-label = "档案传输"
-title = "Caelyreth 中继站"
-statement = "记录、近况和未来的方向，都停在中继站的边缘。"
+label = "档案记录"
+title = "Caelyreth 深空站"
+statement = "Trading wept of yesterday, for what we sing today -- Chasing Daylight"
 index_label = "站点索引"
 index_detail = "当前中继站索引"
 archive_label = "档案标记"
@@ -78,7 +78,7 @@ qr_label = "页面路径"
 copyright = "© 2026 泠雨"
 license_label = "CC BY-NC-SA"
 license_href = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
-signature = "Caelyreth"
+signature = "愿你能找到一些平静"
 
 [[footer.navigation]]
 href = "/"
@@ -86,7 +86,7 @@ label = "观测台"
 
 [[footer.navigation]]
 href = "/records"
-label = "记录"
+label = "简单记录"
 
 [[footer.navigation]]
 href = "/voidknot"

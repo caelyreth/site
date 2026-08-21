@@ -12,7 +12,7 @@
 
 <style>
   p {
-    margin: 0.75rem 0 0;
+    margin: 0.875rem 0 0;
     color: var(--color-text-secondary);
     font-size: var(--prose-size);
     hyphens: auto;

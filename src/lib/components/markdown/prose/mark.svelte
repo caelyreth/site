@@ -12,11 +12,10 @@
 
 <style>
   mark {
-    padding-inline: 0.1em;
-    color: var(--color-text-secondary);
+    color: inherit;
     overflow-wrap: anywhere;
-    background: var(--color-highlight-surface);
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
+    background: transparent;
+    text-decoration: underline wavy var(--color-accent-secondary) 1.25px;
+    text-underline-offset: 0.25em;
   }
 </style>
