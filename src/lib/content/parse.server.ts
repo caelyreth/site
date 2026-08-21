@@ -1,6 +1,7 @@
 import media from '$lib/components/markdown/media'
 import { eclat } from '$lib/components/markdown/rangi-theme'
 import { ensure_heading_ids } from '$lib/content/headings'
+import cjk_inline_components from '$lib/content/inline-components'
 import { createMarkdownParser } from 'comark'
 import toml from 'comark-toml'
 import alert from 'comark/plugins/alert'
@@ -21,6 +22,7 @@ const markdown_parser = createMarkdownParser({
     alert(),
     task_list(),
     components(),
+    cjk_inline_components(),
     attributes(),
     footnotes({ label: '脚注' }),
     headings(),
