@@ -120,7 +120,7 @@
   .slip-bundle {
     display: grid;
     width: min(100%, 52rem);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: clamp(0.75rem, 1.25vw, 1rem);
     pointer-events: auto;
     transform: translateY(-6%) rotate(-1.5deg);
@@ -140,6 +140,7 @@
     background-color: var(--slip-surface);
     align-items: flex-start;
     flex-direction: column;
+    grid-column: span 2;
     justify-content: space-between;
     transform: translateY(var(--slip-offset-y, 0));
     white-space: nowrap;
@@ -251,6 +252,38 @@
 
   .slip:nth-child(4) {
     --slip-offset-y: 1.25rem;
+  }
+
+  .slip:nth-child(5) {
+    --slip-offset-y: 0;
+    width: max-content;
+    max-width: 100%;
+    min-height: 0;
+    margin-top: 1.75rem;
+    padding: 0.55rem 0.8rem;
+    background: var(--slip-surface);
+    grid-column: 1 / -1;
+    justify-self: center;
+    justify-content: center;
+  }
+
+  .slip:nth-child(5) .slip-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .slip:nth-child(5) .slip-title {
+    font-family: var(--font-stack-serif);
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .slip:nth-child(5) .slip-register,
+  .slip:nth-child(5) .slip-index {
+    display: none;
   }
 
   @media (hover: hover) {

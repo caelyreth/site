@@ -66,6 +66,13 @@ detail = "短暂记录"
 note = "尚未归档的短句、片段与微弱讯号。"
 title = "碎片"
 
+[[menu.entries]]
+code = "About / 005"
+detail = "关于泠雨、正在做的事情与来处"
+href = "/about"
+note = "一份仍会继续增补的个人档案。"
+title = "关于"
+
 [footer]
 label = "档案记录"
 title = "Caelyreth 深空站"
@@ -75,6 +82,8 @@ index_detail = "当前中继站索引"
 archive_label = "档案标记"
 archive_detail = "RBK / 2026 / 泠雨"
 qr_label = "页面路径"
+sitemap_label = "站点地图"
+sitemap_href = "/sitemap.xml"
 copyright = "© 2026 泠雨"
 license_label = "CC BY-NC-SA"
 license_href = "https://creativecommons.org/licenses/by-nc-sa/4.0/"

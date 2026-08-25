@@ -12,10 +12,18 @@
   import Pagination from './pagination.svelte'
   import ReadingPlane from './reading-plane.svelte'
 
+  type ArchiveIndexKind = 'constellations' | EntryCollection
+
+  const empty_messages: Record<ArchiveIndexKind, string> = {
+    constellations: '尚未建立可回溯的星群。',
+    records: '当前没有可供检索的记录。',
+    voidknot: '当前没有停靠于此的文字。',
+  }
+
   interface Props {
     children: Snippet
     document: ConstellationIndexDocument | EntryIndexDocument
-    kind: 'constellations' | EntryCollection
+    kind: ArchiveIndexKind
     page: number
     page_count: number
     path: string
@@ -24,6 +32,7 @@
 
   let { children, document, kind, page, page_count, path, total }: Props =
     $props()
+  const empty_message = $derived(empty_messages[kind])
 </script>
 
 <ReadingPlane {kind}>
@@ -47,9 +56,13 @@
       <PaperSeam />
     </div>
 
-    <Pagination placement="before" {page} {page_count} {path} />
-    {@render children()}
-    <Pagination placement="after" {page} {page_count} {path} />
+    {#if total}
+      <Pagination placement="before" {page} {page_count} {path} />
+      {@render children()}
+      <Pagination placement="after" {page} {page_count} {path} />
+    {:else}
+      <p class="archive-empty">{empty_message}</p>
+    {/if}
   </section>
 </ReadingPlane>
 
@@ -82,5 +95,12 @@
   .archive-seam {
     width: calc(100% + var(--inline-gutter) * 2);
     margin: clamp(2.5rem, 6vw, 4.5rem) calc(-1 * var(--inline-gutter)) 0;
+  }
+
+  .archive-empty {
+    margin: clamp(1.75rem, 4vw, 2.75rem) 0 0 var(--archive-content-inset);
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    line-height: 1.6;
   }
 </style>

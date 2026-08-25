@@ -97,10 +97,15 @@
   .prose-heading[data-heading-depth='1'] {
     margin: 0;
     font-family: var(--font-stack-serif);
-    font-size: clamp(2.25rem, 7vw, 3rem);
+    font-size: clamp(1.875rem, 4vw, 2.5rem);
     font-weight: 700;
-    line-height: 1.08;
+    line-height: 1.15;
     text-wrap: balance;
+  }
+
+  .prose-heading[data-heading-depth='2'],
+  .prose-heading[data-heading-depth='3'] {
+    font-family: var(--font-stack-serif);
   }
 
   .prose-heading[data-heading-depth='2'] {

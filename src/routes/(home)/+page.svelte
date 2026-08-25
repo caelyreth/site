@@ -1,4 +1,5 @@
 <script lang="ts">
+  import RecentArchive from '$lib/components/archive/recent-archive.svelte'
   import PageMeta from '$lib/components/layout/page-meta.svelte'
   import Content from '$lib/components/markdown/document.svelte'
 
@@ -12,4 +13,5 @@
   title={data.document.frontmatter.title}
 />
 
+<RecentArchive items={data.recent} />
 <Content document={data.document} font={data.document.frontmatter.font} />

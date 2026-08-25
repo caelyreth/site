@@ -35,8 +35,8 @@ const social_link_schema = v.strictObject({
 })
 
 const observatory_schema = v.strictObject({
+  about_label: v.string(),
   cabin_label: v.string(),
-  descent_label: v.string(),
   entry_label: v.string(),
   social_label: v.string(),
   social_links: v.array(social_link_schema),
@@ -61,6 +61,8 @@ export const home_frontmatter_schema = v.strictObject({
   ...document_fields,
   observatory: observatory_schema,
 })
+
+export const about_frontmatter_schema = v.strictObject(document_fields)
 
 export const entry_index_frontmatter_schema = v.strictObject({
   ...index_document_fields,
@@ -92,6 +94,8 @@ export const site_config_schema = v.strictObject({
     license_label: v.string(),
     navigation: v.array(navigation_item_schema),
     qr_label: v.string(),
+    sitemap_href: v.string(),
+    sitemap_label: v.string(),
     signal: v.strictObject({
       label: v.string(),
       pause_label: v.string(),
@@ -103,7 +107,7 @@ export const site_config_schema = v.strictObject({
     title: v.string(),
   }),
   menu: v.strictObject({
-    entries: v.pipe(v.array(menu_item_schema), v.length(4)),
+    entries: v.pipe(v.array(menu_item_schema), v.length(5)),
     field_note: v.string(),
     ornaments: v.pipe(v.array(v.string()), v.length(16)),
   }),
@@ -134,6 +138,7 @@ const constellation_id_schema = v.pipe(
 export const entry_frontmatter_schema = v.strictObject({
   ...indexed_document_fields,
   published: v.pipe(v.string(), v.isoDate()),
+  updated: v.optional(v.pipe(v.string(), v.isoDate())),
   constellations: v.optional(
     v.pipe(
       v.array(constellation_id_schema),
@@ -149,6 +154,9 @@ export const constellation_frontmatter_schema = v.strictObject(
 
 export type ContentFont = v.InferOutput<typeof content_font_schema>
 export type HomeFrontmatter = v.InferOutput<typeof home_frontmatter_schema>
+export type AboutFrontmatter = v.InferOutput<
+  typeof about_frontmatter_schema
+>
 export type EntryIndexFrontmatter = v.InferOutput<
   typeof entry_index_frontmatter_schema
 >
@@ -166,6 +174,11 @@ export type ConstellationFrontmatter = v.InferOutput<
 export type HomeDocument = MarkdownDocument<
   Record<string, unknown>,
   HomeFrontmatter
+>
+
+export type AboutDocument = MarkdownDocument<
+  Record<string, unknown>,
+  AboutFrontmatter
 >
 
 export type EntryIndexDocument = MarkdownDocument<

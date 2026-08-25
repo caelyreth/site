@@ -1,21 +1,14 @@
-import { env } from '$env/dynamic/public'
 import { entry_links } from '$lib/content/entries.server'
 import { content_dependency } from '$lib/content/hmr'
 import { read_content } from '$lib/content/query.server'
 import { site_config_schema } from '$lib/content/schema'
+import { site_url } from '$lib/navigation/site-url.server'
 import { create_footer_qr } from '$lib/presentation/relay-footer/qr.server'
 
 import type { LayoutServerLoad } from './$types'
 
 function footer_qr_target(url: URL) {
-  const configured_origin = env.PUBLIC_SITE_ORIGIN?.trim()
-  const origin = configured_origin ?? url.origin
-
-  try {
-    return new URL(url.pathname, origin).toString()
-  } catch {
-    return new URL(url.pathname, url.origin).toString()
-  }
+  return site_url(url.pathname, url)
 }
 
 export const load: LayoutServerLoad = async ({ depends, url }) => {

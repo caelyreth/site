@@ -3,33 +3,39 @@
   import { SKY_FIELD_FADE_RATE } from './config'
 
   interface Props {
+    about_href: string
+    about_label: string
     deferred?: boolean
     paused?: boolean
-    descent_label: string
     surface_label: string
   }
 
   let {
+    about_href,
+    about_label,
     deferred = false,
     paused = false,
-    descent_label,
     surface_label,
   }: Props = $props()
 </script>
 
 <div
-  aria-hidden="true"
   class="sky-surface"
   class:is-deferred={deferred}
   data-sky-field
-  data-nosnippet=""
   style:--sky-field-fade-rate={SKY_FIELD_FADE_RATE}
 >
-  <div class="sky-field">
+  <div aria-hidden="true" class="sky-field" data-nosnippet="">
     <SkyCanvas {deferred} {paused} />
   </div>
-  <span class="label observatory-label">{surface_label}</span>
-  <span class="label descent-label">{descent_label}</span>
+  <span aria-hidden="true" class="label observatory-label" data-nosnippet=""
+    >{surface_label}</span
+  >
+  <a class="label descent-link" href={about_href}>
+    <span>{about_label}</span>
+    <span aria-hidden="true" class="i-ri-arrow-right-line descent-icon"
+    ></span>
+  </a>
 </div>
 
 <style>
@@ -97,14 +103,36 @@
     white-space: nowrap;
   }
 
-  .descent-label {
+  .descent-link {
     position: absolute;
     right: var(--label-safe-right);
     bottom: var(--label-bottom-inset);
     z-index: 4;
+    display: inline-flex;
+    color: var(--color-stage-ink-secondary);
+    align-items: center;
+    gap: 0.45rem;
     text-align: right;
+    text-decoration: none;
     white-space: nowrap;
     opacity: var(--sky-field-opacity);
+    transition: color var(--dur-short) var(--ease-out);
+  }
+
+  .descent-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .descent-link:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 0.25rem;
+  }
+
+  @media (hover: hover) {
+    .descent-link:hover {
+      color: var(--color-stage-ink);
+    }
   }
 
   @media (width < 40rem) {
@@ -114,8 +142,14 @@
       --sky-field-fade-end: 28%;
     }
 
-    .descent-label {
+    .descent-link {
       display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .descent-link {
+      transition: none;
     }
   }
 </style>

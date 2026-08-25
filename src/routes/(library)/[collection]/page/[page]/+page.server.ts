@@ -9,7 +9,7 @@ import { error } from '@sveltejs/kit'
 
 import type { EntryGenerator, PageServerLoad } from './$types'
 
-export const prerender = true
+export const prerender = 'auto'
 
 export const entries: EntryGenerator = collection_page_entries
 

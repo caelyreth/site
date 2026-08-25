@@ -61,23 +61,27 @@
       )}
     >
       <h2>{library.current.constellations.entries_label}</h2>
-      <Pagination
-        placement="before"
-        page={entries.page}
-        page_count={entries.page_count}
-        path={constellation_path}
-      />
-      <EntryList
-        entries={entries.entries}
-        show_collection
-        show_constellations={false}
-      />
-      <Pagination
-        placement="after"
-        page={entries.page}
-        page_count={entries.page_count}
-        path={constellation_path}
-      />
+      {#if entries.total}
+        <Pagination
+          placement="before"
+          page={entries.page}
+          page_count={entries.page_count}
+          path={constellation_path}
+        />
+        <EntryList
+          entries={entries.entries}
+          show_collection
+          show_constellations={false}
+        />
+        <Pagination
+          placement="after"
+          page={entries.page}
+          page_count={entries.page_count}
+          path={constellation_path}
+        />
+      {:else}
+        <p class="constellation-empty">尚无关联文字。</p>
+      {/if}
     </section>
   </article>
 </ReadingPlane>
@@ -113,5 +117,12 @@
 
   .constellation-entries :global(.archive-list) {
     border-top: 1px solid var(--color-boundary);
+  }
+
+  .constellation-empty {
+    margin: 1.25rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    line-height: 1.6;
   }
 </style>

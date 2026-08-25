@@ -13,6 +13,7 @@ export interface EntrySummary {
   published: string
   summary: string
   title: string
+  updated?: string
 }
 
 export interface ConstellationSummary {
@@ -22,6 +23,16 @@ export interface ConstellationSummary {
   summary: string
   title: string
 }
+
+export type RecentArchiveItem =
+  | (EntrySummary & {
+      kind: 'entry'
+      updated: string
+    })
+  | (ConstellationSummary & {
+      kind: 'constellation'
+      updated: string
+    })
 
 type ConstellationEntries = ContentEntry<ConstellationFrontmatter>[]
 
@@ -89,6 +100,7 @@ export function entry_index(
       published: entry.frontmatter.published,
       summary: entry.frontmatter.summary,
       title: entry.frontmatter.title,
+      updated: entry.frontmatter.updated,
     }))
     .sort(compare_entries)
 }
@@ -118,4 +130,34 @@ export function constellation_index(
       }
     })
     .sort(compare_constellations)
+}
+
+export function recent_archive(
+  entries: EntrySummary[],
+  constellations: ConstellationSummary[],
+  limit = 6,
+): RecentArchiveItem[] {
+  const recent_entries: RecentArchiveItem[] = entries
+    .slice(0, limit)
+    .map((entry) => ({
+      ...entry,
+      kind: 'entry',
+      updated: entry.updated ?? entry.published,
+    }))
+  const recent_constellations: RecentArchiveItem[] = constellations
+    .slice(0, limit)
+    .map((constellation) => ({
+      ...constellation,
+      kind: 'constellation',
+      updated: latest_date(constellation),
+    }))
+
+  return [...recent_entries, ...recent_constellations]
+    .sort(
+      (left, right) =>
+        right.updated.localeCompare(left.updated) ||
+        left.kind.localeCompare(right.kind) ||
+        left.id.localeCompare(right.id),
+    )
+    .slice(0, limit)
 }

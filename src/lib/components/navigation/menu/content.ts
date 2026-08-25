@@ -39,6 +39,11 @@ export const menu_slip_entrances: readonly EnteringMotion[] = [
     enter_x: '1rem',
     enter_y: '-0.75rem',
   },
+  {
+    enter_delay: '320ms',
+    enter_x: '0',
+    enter_y: '0.75rem',
+  },
 ]
 
 export const drift_layouts: readonly DriftLayout[] = [

@@ -92,6 +92,9 @@
       <a class="tail-link" href={footer.license_href}
         >{footer.license_label}</a
       >
+      <a class="tail-link" href={site_href(footer.sitemap_href)}
+        >{footer.sitemap_label}</a
+      >
       <span class="tail-signature">{footer.signature}</span>
     </div>
   </div>

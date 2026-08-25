@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { HomeFrontmatter } from '$lib/content/schema'
+  import { site_href } from '$lib/navigation/path'
 
   import Intro from './intro.svelte'
   import PlanaSurface from './plana-surface.svelte'
@@ -23,9 +24,10 @@
 
 <div class="observatory">
   <SkyField
+    about_href={site_href('/about')}
+    about_label={observatory.about_label}
     deferred={defer_surface}
     paused={sky_paused}
-    descent_label={observatory.descent_label}
     surface_label={observatory.surface_label}
   />
   <SiteMark />
