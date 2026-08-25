@@ -1,5 +1,6 @@
 import { sitemap_entries } from '$lib/content/sitemap.server'
 import { site_url } from '$lib/navigation/site-url.server'
+import { escape_xml } from '$lib/server/xml'
 import type { RequestHandler } from '@sveltejs/kit'
 
 export const prerender = false
@@ -7,19 +8,6 @@ export const prerender = false
 const cache_control = import.meta.env.DEV
   ? 'no-store'
   : 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400'
-
-function escape_xml(value: string) {
-  return value.replace(/[&<>"']/g, (character) => {
-    const entities: Record<string, string> = {
-      '&': '&amp;',
-      "'": '&apos;',
-      '"': '&quot;',
-      '<': '&lt;',
-      '>': '&gt;',
-    }
-    return entities[character]
-  })
-}
 
 export const GET: RequestHandler = async ({ url }) => {
   const entries = await sitemap_entries()

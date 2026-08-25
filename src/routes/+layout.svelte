@@ -7,6 +7,7 @@
   import { set_menu_state } from '$lib/components/navigation/menu/state'
   import { listen_for_content_updates } from '$lib/content/hmr.client'
   import { set_site_config } from '$lib/content/site'
+  import { site_href } from '$lib/navigation/path'
   import { onMount, type Snippet } from 'svelte'
   import { SvelteTheme } from 'svelte-themes'
 
@@ -34,6 +35,21 @@
   install_view_transitions(() => !menu.is_open)
   onMount(listen_for_content_updates)
 </script>
+
+<svelte:head>
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    title={data.site.footer.atom_label}
+    href={site_href(data.site.footer.atom_href)}
+  />
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title={data.site.footer.rss_label}
+    href={site_href(data.site.footer.rss_href)}
+  />
+</svelte:head>
 
 <SvelteTheme attribute="class" defaultTheme="system" {themes}>
   <a class="skip-link" href="#main-content">跳至主要内容</a>

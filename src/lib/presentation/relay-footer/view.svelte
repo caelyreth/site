@@ -95,6 +95,12 @@
       <a class="tail-link" href={site_href(footer.sitemap_href)}
         >{footer.sitemap_label}</a
       >
+      <a class="tail-link" href={site_href(footer.atom_href)}
+        >{footer.atom_label}</a
+      >
+      <a class="tail-link" href={site_href(footer.rss_href)}
+        >{footer.rss_label}</a
+      >
       <span class="tail-signature">{footer.signature}</span>
     </div>
   </div>

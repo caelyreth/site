@@ -94,6 +94,10 @@ export const site_config_schema = v.strictObject({
     license_label: v.string(),
     navigation: v.array(navigation_item_schema),
     qr_label: v.string(),
+    atom_href: v.string(),
+    atom_label: v.string(),
+    rss_href: v.string(),
+    rss_label: v.string(),
     sitemap_href: v.string(),
     sitemap_label: v.string(),
     signal: v.strictObject({
