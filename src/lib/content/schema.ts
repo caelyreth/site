@@ -110,7 +110,6 @@ export const site_config_schema = v.strictObject({
     archive_detail: v.string(),
     archive_label: v.string(),
     copyright: v.string(),
-    index_detail: v.string(),
     index_label: v.string(),
     label: v.string(),
     license_href: v.string(),

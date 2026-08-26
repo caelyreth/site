@@ -55,9 +55,23 @@
                 >
               </li>
             {/each}
+            <li>
+              <a href={site_href(footer.sitemap_href)} data-sveltekit-reload
+                >{footer.sitemap_label}</a
+              >
+            </li>
+            <li>
+              <a href={site_href(footer.atom_href)} data-sveltekit-reload
+                >{footer.atom_label}</a
+              >
+            </li>
+            <li>
+              <a href={site_href(footer.rss_href)} data-sveltekit-reload
+                >{footer.rss_label}</a
+              >
+            </li>
           </ul>
         </nav>
-        <p class="detail" data-nosnippet="">{footer.index_detail}</p>
       </section>
       <section
         class="footer-module footer-archive"
@@ -91,21 +105,6 @@
       <span>{footer.copyright}</span>
       <a class="tail-link" href={footer.license_href}
         >{footer.license_label}</a
-      >
-      <a
-        class="tail-link"
-        href={site_href(footer.sitemap_href)}
-        data-sveltekit-reload>{footer.sitemap_label}</a
-      >
-      <a
-        class="tail-link"
-        href={site_href(footer.atom_href)}
-        data-sveltekit-reload>{footer.atom_label}</a
-      >
-      <a
-        class="tail-link"
-        href={site_href(footer.rss_href)}
-        data-sveltekit-reload>{footer.rss_label}</a
       >
       <span class="tail-signature">{footer.signature}</span>
     </div>
