@@ -46,6 +46,28 @@ const observatory_schema = v.strictObject({
   vfd_title: v.string(),
 })
 
+const comments_schema = v.strictObject({
+  category: v.string(),
+  category_id: v.string(),
+  description: v.string(),
+  emit_metadata: v.picklist(['0', '1']),
+  input_position: v.picklist(['top', 'bottom']),
+  language: v.string(),
+  mapping: v.picklist([
+    'url',
+    'title',
+    'og:title',
+    'specific',
+    'number',
+    'pathname',
+  ]),
+  reactions_enabled: v.picklist(['0', '1']),
+  repo: v.string(),
+  repo_id: v.string(),
+  strict: v.picklist(['0', '1']),
+  title: v.string(),
+})
+
 const indexed_document_fields = {
   ...document_fields,
   summary: v.string(),
@@ -82,6 +104,7 @@ export const constellation_index_frontmatter_schema = v.strictObject({
 })
 
 export const site_config_schema = v.strictObject({
+  comments: comments_schema,
   description: v.string(),
   footer: v.strictObject({
     archive_detail: v.string(),

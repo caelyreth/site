@@ -39,6 +39,20 @@ ornaments = [
 [theme]
 label = "显示主题"
 
+[comments]
+title = "留下回声"
+description = "如果这段记录在你那里留下了回声，可以在这里继续讨论。"
+repo = "caelyreth/site"
+repo_id = "R_kgDOTA7TNg"
+category = "General"
+category_id = "DIC_kwDOTA7TNs4DEOlA"
+mapping = "pathname"
+strict = "0"
+reactions_enabled = "1"
+emit_metadata = "0"
+input_position = "top"
+language = "zh-CN"
+
 [[menu.entries]]
 code = "Record / 001"
 detail = "一些简单的技术相关笔记"

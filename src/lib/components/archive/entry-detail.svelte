@@ -1,9 +1,10 @@
 <script lang="ts">
+  import Giscus from '$lib/components/comments/giscus.svelte'
   import Content from '$lib/components/markdown/document.svelte'
   import { entry_path, type EntryCollection } from '$lib/content/entries'
   import { get_library_config } from '$lib/content/library'
   import type { ConstellationReference } from '$lib/content/relations'
-  import type { EntryDocument } from '$lib/content/schema'
+  import type { EntryDocument, SiteConfig } from '$lib/content/schema'
   import { site_href } from '$lib/navigation/path'
 
   import BackLink from './back-link.svelte'
@@ -13,12 +14,13 @@
   import ReadingPlane from './reading-plane.svelte'
 
   interface Props {
+    comments: SiteConfig['comments']
     collection: EntryCollection
     constellations: ConstellationReference[]
     document: EntryDocument
   }
 
-  let { collection, constellations, document }: Props = $props()
+  let { comments, collection, constellations, document }: Props = $props()
   const library = get_library_config()
   const collection_config = $derived(library.current.entries[collection])
   const collection_href = $derived(site_href(entry_path(collection)))
@@ -42,6 +44,8 @@
     <div class="entry-body">
       <Content {document} font={document.frontmatter.font} />
     </div>
+
+    <Giscus config={comments} />
 
     <footer class="entry-footer">
       <BackLink

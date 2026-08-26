@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Giscus from '$lib/components/comments/giscus.svelte'
   import PageMeta from '$lib/components/layout/page-meta.svelte'
   import Content from '$lib/components/markdown/document.svelte'
   import { get_site_config, site_title } from '$lib/content/site'
@@ -18,6 +19,7 @@
 <article id="content" class="about-document">
   <h1 class="sr-only">{data.document.frontmatter.title}</h1>
   <Content document={data.document} font={data.document.frontmatter.font} />
+  <Giscus config={site.current.comments} />
 </article>
 
 <style>

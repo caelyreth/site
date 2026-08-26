@@ -8,6 +8,7 @@ catalogs:
     'typescript': npm:typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2
   f:
     '@comark/svelte': ^0.6.2
+    '@giscus/svelte': ^3.1.0
     '@iconify-json/ri': ^1.2.10
     '@sveltejs/adapter-auto': ^7.0.1
     '@sveltejs/kit': ^2.70.2
