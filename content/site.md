@@ -1,6 +1,6 @@
 +++
 title = "泠雨 Caelyreth"
-description = "致我们今日的生命；独立开发者、设计师与业余文字创作者；关注系统开发、AI 计算基建、开发者体验与 Agent Harness 设计；同时记录一些关于时代发展、个人生活体验上的思考；愿你能找到一些平静。"
+description = "泠雨的个人站点。独立开发者、设计师与业余文字创作者，关注系统开发、AI 计算基础设施、开发者体验与 Agent Harness 设计，也记录关于时代与个人生活的思考。"
 
 [seo]
 locale = "zh_CN"
@@ -16,7 +16,7 @@ previous_aria_label = "上一页，当前为 {page}，共 {page_count} 页"
 next_aria_label = "下一页，当前为 {page}，共 {page_count} 页"
 
 [menu]
-field_note = "Caelyreth 深空站 / 观测面 01"
+field_note = "Caelyreth / 个人站点"
 ornaments = [
   "档案 / 023",
   "RBK // 044",
@@ -40,8 +40,8 @@ ornaments = [
 label = "显示主题"
 
 [comments]
-title = "留下回声"
-description = "如果这段记录在你那里留下了回声，可以在这里继续讨论。"
+title = "讨论"
+description = "欢迎在这里继续讨论。"
 repo = "caelyreth/site"
 repo_id = "R_kgDOTA7TNg"
 category = "General"
@@ -55,45 +55,52 @@ language = "zh-CN"
 
 [[menu.entries]]
 code = "Record / 001"
-detail = "一些简单的技术相关笔记"
+detail = "技术、设计与产品笔记"
 href = "/records"
-note = "关于日常开发、设计、产品与分析的记录"
+note = "关于开发、设计、产品与分析的记录。"
 title = "简单记录"
 
 [[menu.entries]]
 code = "VoidKnot / 002"
-detail = "以虚无紧系因果，接续时间的归途。"
+detail = "日常与个人体验的短篇文字"
 href = "/voidknot"
-note = "启发性的观察、叙事与缓慢的思考。"
+note = "观察、叙事与个人思考。"
 title = "虚空之结"
 
 [[menu.entries]]
 code = "Constellation / 003"
-detail = "彼此回响的记录与思考"
+detail = "跨内容主题索引"
 href = "/constellations"
-note = "让文字重新靠近，追溯内容的轨迹与归类。"
+note = "查看围绕同一主题的相关内容。"
 title = "星群"
 
 [[menu.entries]]
 code = "Fragment / 004"
 detail = "短暂记录"
-note = "尚未归档的短句、片段与微弱讯号。"
+note = "尚未整理的短句与片段。"
 title = "碎片"
 
 [[menu.entries]]
-code = "About / 005"
-detail = "关于泠雨、正在做的事情与来处"
+code = "Timeline / 005"
+detail = "项目与坐标"
+href = "/timeline"
+note = "正在进行的开源工作与更长的个人时间线。"
+title = "项目与时间线"
+
+[[menu.entries]]
+code = "About / 006"
+detail = "泠雨与正在进行的工作"
 href = "/about"
-note = "一份仍会继续增补的个人档案。"
+note = "个人资料与近况。"
 title = "关于"
 
 [footer]
-label = "档案记录"
-title = "Caelyreth 深空站"
+label = "站点信息"
+title = "Caelyreth"
 statement = "Trading wept of yesterday, for what we sing today -- Chasing Daylight"
 index_label = "站点索引"
-index_detail = "当前中继站索引"
-archive_label = "档案标记"
+index_detail = "当前页面路径索引"
+archive_label = "版本标记"
 archive_detail = "RBK / 2026 / 泠雨"
 qr_label = "页面路径"
 sitemap_label = "站点地图"
@@ -109,7 +116,7 @@ signature = "愿你能找到一些平静"
 
 [[footer.navigation]]
 href = "/"
-label = "观测台"
+label = "首页"
 
 [[footer.navigation]]
 href = "/records"
@@ -124,8 +131,8 @@ href = "/constellations"
 label = "星群"
 
 [footer.signal]
-label = "信号监测"
-status = "载波已保留"
-pause_label = "暂停轮换信号"
-resume_label = "继续轮换信号"
+label = "最近更新"
+status = "内容持续更新"
+pause_label = "暂停自动轮换"
+resume_label = "继续自动轮换"
 +++

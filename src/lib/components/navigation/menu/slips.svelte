@@ -254,7 +254,8 @@
     --slip-offset-y: 1.25rem;
   }
 
-  .slip:nth-child(5) {
+  .slip:nth-child(5),
+  .slip:nth-child(6) {
     --slip-offset-y: 0;
     width: max-content;
     max-width: 100%;
@@ -262,27 +263,41 @@
     margin-top: 1.75rem;
     padding: 0.55rem 0.8rem;
     background: var(--slip-surface);
-    grid-column: 1 / -1;
-    justify-self: center;
+    align-items: center;
     justify-content: center;
   }
 
-  .slip:nth-child(5) .slip-heading {
+  .slip:nth-child(5) {
+    grid-column: 1 / span 2;
+    justify-self: end;
+  }
+
+  .slip:nth-child(6) {
+    grid-column: 3 / span 2;
+    justify-self: start;
+  }
+
+  .slip:nth-child(5) .slip-heading,
+  .slip:nth-child(6) .slip-heading {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.55rem;
   }
 
-  .slip:nth-child(5) .slip-title {
+  .slip:nth-child(5) .slip-title,
+  .slip:nth-child(6) .slip-title {
     font-family: var(--font-stack-serif);
-    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    font-size: clamp(0.9375rem, 1.25vw, 1.125rem);
     font-weight: 700;
     letter-spacing: 0;
     line-height: 1;
   }
 
   .slip:nth-child(5) .slip-register,
-  .slip:nth-child(5) .slip-index {
+  .slip:nth-child(5) .slip-index,
+  .slip:nth-child(6) .slip-register,
+  .slip:nth-child(6) .slip-index {
     display: none;
   }
 

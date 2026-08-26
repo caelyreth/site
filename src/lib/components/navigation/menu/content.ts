@@ -41,6 +41,11 @@ export const menu_slip_entrances: readonly EnteringMotion[] = [
   },
   {
     enter_delay: '320ms',
+    enter_x: '-0.75rem',
+    enter_y: '0.5rem',
+  },
+  {
+    enter_delay: '380ms',
     enter_x: '0',
     enter_y: '0.75rem',
   },

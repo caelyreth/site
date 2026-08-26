@@ -1,0 +1,121 @@
+body {
+  background: transparent;
+}
+
+main,
+button,
+textarea {
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+
+main {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gsc-header {
+  padding-bottom: 0.75rem;
+}
+
+.gsc-comment-box,
+.gsc-comment {
+  border-radius: 0;
+}
+
+.gsc-comment-box,
+.gsc-comment-content,
+.gsc-comment-box-tabs,
+.gsc-comment-box-bottom {
+  border-color: var(--color-border-muted);
+}
+
+.gsc-comment-box,
+.gsc-comment-box-tabs,
+.gsc-comment-box-bottom {
+  background: var(--giscus-surface);
+}
+
+.gsc-timeline,
+.gsc-replies {
+  border-color: var(--color-border-muted);
+}
+
+.gsc-comment-box-textarea {
+  background: var(--giscus-input);
+}
+
+.gsc-comment-content,
+.gsc-reactions-button,
+.gsc-reactions-menu {
+  background: transparent;
+}
+
+.gsc-comment-box-tabs button {
+  border-radius: 0;
+  color: var(--color-fg-muted);
+}
+
+.gsc-comment-box-tabs button[aria-selected='true'] {
+  color: var(--color-fg-default);
+  background: var(--giscus-surface-raised);
+  box-shadow: inset 0 -1px 0 var(--giscus-focus);
+}
+
+.gsc-comment-box-textarea:focus {
+  border-color: var(--giscus-focus);
+  outline: 0;
+  box-shadow: inset 0 0 0 1px var(--giscus-focus);
+}
+
+.gsc-comment-box-write:focus-within {
+  border-color: var(--giscus-focus);
+  box-shadow: inset 0 0 0 1px var(--giscus-focus);
+}
+
+.gsc-comment-box-bottom .btn-link {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-fg-muted);
+  box-shadow: none;
+}
+
+.gsc-comment-box-bottom .btn-link:hover {
+  color: var(--color-fg-default);
+  text-decoration: underline;
+}
+
+.gsc-comment-box-bottom button[type='submit'],
+.gsc-comment-box-bottom .btn-primary {
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.gsc-reactions-popover,
+.gsc-reactions-popover .Popover-message {
+  background: var(--giscus-surface-raised);
+  border-color: var(--giscus-border);
+  box-shadow: none;
+}
+
+.gsc-reactions-popover button:hover {
+  background: var(--color-social-reaction-bg-hover);
+}
+
+.gsc-reactions-popover button[aria-pressed='true'] {
+  background: var(--color-social-reaction-bg-reacted-hover);
+}
+
+.gsc-comment-author,
+.gsc-comment-footer {
+  color: var(--color-fg-muted);
+}
+
+.gsc-reactions-count {
+  display: none;
+}

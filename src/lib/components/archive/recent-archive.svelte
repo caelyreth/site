@@ -33,7 +33,7 @@
   <header class="recent-head">
     <div>
       <p class="micro-label">近期归档</p>
-      <h2 id="recent-archive-title">正在接收的信号</h2>
+      <h2 id="recent-archive-title">最新内容</h2>
     </div>
     <a href={site_href('/constellations')}>查看星群</a>
   </header>
@@ -63,7 +63,7 @@
       {/each}
     </ArchiveList>
   {:else}
-    <p class="recent-empty">暂未接收到可归档的信号。</p>
+    <p class="recent-empty">暂时没有可显示的内容。</p>
   {/if}
 </section>
 

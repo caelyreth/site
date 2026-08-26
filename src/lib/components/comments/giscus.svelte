@@ -121,7 +121,7 @@
 
   .comments-transition {
     width: calc(100% + var(--inline-gutter) * 2);
-    margin-inline: calc(-1 * var(--inline-gutter));
+    margin: clamp(2.5rem, 6vw, 4.5rem) calc(-1 * var(--inline-gutter)) 0;
   }
 
   .comments-header {

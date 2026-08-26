@@ -84,7 +84,7 @@ export const home_frontmatter_schema = v.strictObject({
   observatory: observatory_schema,
 })
 
-export const about_frontmatter_schema = v.strictObject(document_fields)
+export const page_frontmatter_schema = v.strictObject(document_fields)
 
 export const entry_index_frontmatter_schema = v.strictObject({
   ...index_document_fields,
@@ -134,7 +134,7 @@ export const site_config_schema = v.strictObject({
     title: v.string(),
   }),
   menu: v.strictObject({
-    entries: v.pipe(v.array(menu_item_schema), v.length(5)),
+    entries: v.pipe(v.array(menu_item_schema), v.length(6)),
     field_note: v.string(),
     ornaments: v.pipe(v.array(v.string()), v.length(16)),
   }),
@@ -181,9 +181,7 @@ export const constellation_frontmatter_schema = v.strictObject(
 
 export type ContentFont = v.InferOutput<typeof content_font_schema>
 export type HomeFrontmatter = v.InferOutput<typeof home_frontmatter_schema>
-export type AboutFrontmatter = v.InferOutput<
-  typeof about_frontmatter_schema
->
+export type PageFrontmatter = v.InferOutput<typeof page_frontmatter_schema>
 export type EntryIndexFrontmatter = v.InferOutput<
   typeof entry_index_frontmatter_schema
 >
@@ -203,9 +201,9 @@ export type HomeDocument = MarkdownDocument<
   HomeFrontmatter
 >
 
-export type AboutDocument = MarkdownDocument<
+export type PageDocument = MarkdownDocument<
   Record<string, unknown>,
-  AboutFrontmatter
+  PageFrontmatter
 >
 
 export type EntryIndexDocument = MarkdownDocument<

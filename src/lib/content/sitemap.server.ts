@@ -40,6 +40,7 @@ export async function sitemap_entries(): Promise<SitemapEntry[]> {
   return [
     { lastmod: latest_date(indexed_entries), path: '/' },
     { path: '/about' },
+    { path: '/timeline' },
     ...entry_collections.map((collection) => ({
       lastmod: latest_date(collection_entries.get(collection) ?? []),
       path: entry_path(collection),

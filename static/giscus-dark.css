@@ -1,99 +1,39 @@
-body {
-  background: transparent;
-}
+@import url('./giscus-base.css');
 
 main {
+  --giscus-surface: #1c1c1b;
+  --giscus-surface-raised: #242423;
+  --giscus-border: #3d3d3a;
+  --giscus-border-quiet: #30302e;
+  --giscus-focus: #aeb8f6;
   --color-canvas-default: transparent;
-  --color-canvas-overlay: transparent;
-  --color-canvas-inset: #171717;
-  --color-canvas-subtle: #222222;
-  --color-border-default: #3b3b3b;
-  --color-border-muted: #313131;
+  --color-canvas-overlay: var(--giscus-surface-raised);
+  --color-canvas-inset: var(--giscus-surface);
+  --color-canvas-subtle: var(--giscus-surface-raised);
+  --color-border-default: var(--giscus-border);
+  --color-border-muted: var(--giscus-border-quiet);
   --color-fg-default: #e3e3e3;
   --color-fg-muted: #a3a3a3;
   --color-fg-subtle: #7d7d7d;
-  --color-accent-fg: #aeb8f6;
-  --color-accent-emphasis: #aeb8f6;
-  --color-accent-muted: #aeb8f64d;
-  --color-accent-subtle: #aeb8f61a;
+  --color-accent-fg: var(--giscus-focus);
+  --color-accent-emphasis: var(--giscus-focus);
+  --color-accent-muted: #aeb8f638;
+  --color-accent-subtle: #aeb8f614;
   --color-neutral-muted: #e3e3e31c;
   --color-btn-text: #ededed;
-  --color-btn-bg: #303030;
-  --color-btn-border: #505050;
-  --color-btn-hover-bg: #3b3b3b;
-  --color-btn-hover-border: #707070;
-  --color-btn-primary-text: #1b1b1b;
-  --color-btn-primary-bg: #aeb8f6;
-  --color-btn-primary-border: #aeb8f6;
-  --color-btn-primary-hover-bg: #c2c9ff;
-  --color-btn-primary-hover-border: #c2c9ff;
-}
-
-main,
-button,
-textarea {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
-}
-
-main {
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.gsc-header {
-  padding-bottom: 0.75rem;
-}
-
-.gsc-comment-box,
-.gsc-comment {
-  border-radius: 0;
-}
-
-.gsc-comment-box,
-.gsc-comment-content {
-  border-color: var(--color-border-muted);
-}
-
-.gsc-comment-box {
-  background-color: var(--color-canvas-inset);
-}
-
-.gsc-timeline {
-  border-color: var(--color-border-muted);
-}
-
-.gsc-comment-box-tabs,
-.gsc-comment-box-bottom {
-  background: var(--color-canvas-subtle);
-}
-
-.gsc-comment-box-textarea {
-  background: var(--color-canvas-inset);
-}
-
-.gsc-comment-content {
-  background: transparent;
-}
-
-.gsc-comment-box-textarea:focus {
-  border-color: var(--color-accent-emphasis);
-  box-shadow: 0 0 0 1px var(--color-accent-emphasis);
-}
-
-.gsc-comment-author,
-.gsc-comment-footer {
-  color: var(--color-fg-muted);
-}
-
-.gsc-replies {
-  border-color: var(--color-border-muted);
-}
-
-.gsc-reactions-count {
-  display: none;
+  --color-btn-bg: var(--giscus-surface-raised);
+  --color-btn-border: var(--giscus-border);
+  --color-btn-hover-bg: #2b2b29;
+  --color-btn-hover-border: #555552;
+  --color-btn-primary-text: #f1f1ed;
+  --color-btn-primary-bg: #30354d;
+  --color-btn-primary-border: #6975bb;
+  --color-btn-primary-hover-bg: #3a4160;
+  --color-btn-primary-hover-border: #8d99db;
+  --color-btn-primary-disabled-text: #8e8e89;
+  --color-btn-primary-disabled-bg: #242423;
+  --color-btn-primary-disabled-border: #3a3a37;
+  --color-social-reaction-bg-hover: #2b2b29;
+  --color-social-reaction-bg-reacted-hover: #30354d;
+  --giscus-input: #181817;
 }

@@ -27,7 +27,7 @@ export function sitemap_document(entries: SitemapEntry[]) {
       <header>
         <div>
           <h1>站点地图</h1>
-          <p>Caelyreth 深空站公开路径索引。</p>
+          <p>Caelyreth 公开页面索引。</p>
         </div>
         <div class="count">${entries.length} 条路径</div>
       </header>

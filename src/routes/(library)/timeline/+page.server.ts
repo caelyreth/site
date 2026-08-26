@@ -8,12 +8,12 @@ import type { PageServerLoad } from './$types'
 export const prerender = true
 
 export const load: PageServerLoad = async ({ depends }) => {
-  depends(content_dependency('about'))
-  const about = await read_content('about', page_frontmatter_schema)
-  if (!about) throw new Error('Missing content/about.md.')
+  depends(content_dependency('timeline'))
+  const timeline = await read_content('timeline', page_frontmatter_schema)
+  if (!timeline) throw new Error('Missing content/timeline.md.')
 
   return {
-    document: about.document,
-    toc: extract_headings(about.document.nodes),
+    document: timeline.document,
+    toc: extract_headings(timeline.document.nodes),
   }
 }

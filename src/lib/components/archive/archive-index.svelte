@@ -15,9 +15,9 @@
   type ArchiveIndexKind = 'constellations' | EntryCollection
 
   const empty_messages: Record<ArchiveIndexKind, string> = {
-    constellations: '尚未建立可回溯的星群。',
+    constellations: '暂时没有可显示的星群。',
     records: '当前没有可供检索的记录。',
-    voidknot: '当前没有停靠于此的文字。',
+    voidknot: '当前没有可显示的文字。',
   }
 
   interface Props {
