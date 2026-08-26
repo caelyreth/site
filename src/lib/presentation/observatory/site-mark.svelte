@@ -11,7 +11,7 @@
     opacity: 0.78;
     pointer-events: none;
     background-color: var(--color-stage-ink-secondary);
-    -webkit-mask: url('/favicon.svg') center / contain no-repeat;
-    mask: url('/favicon.svg') center / contain no-repeat;
+    -webkit-mask: url('/favicon-light.svg') center / contain no-repeat;
+    mask: url('/favicon-light.svg') center / contain no-repeat;
   }
 </style>

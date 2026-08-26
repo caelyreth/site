@@ -1,7 +1,7 @@
 +++
 title = "Caelyreth"
 description = """
-这里是泠雨，独立开发者、设计师与业余文字创作者
+泠雨的个人站点。记录系统开发、AI 计算基础设施、开发者体验、Agent Harness 设计，以及关于时代与个人生活的思考。
 """
 
 [observatory]

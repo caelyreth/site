@@ -195,8 +195,8 @@
     flex: none;
     aspect-ratio: 1;
     background-color: var(--footer-secondary);
-    -webkit-mask: url('/favicon.svg') center / contain no-repeat;
-    mask: url('/favicon.svg') center / contain no-repeat;
+    -webkit-mask: url('/favicon-light.svg') center / contain no-repeat;
+    mask: url('/favicon-light.svg') center / contain no-repeat;
   }
 
   .grid {

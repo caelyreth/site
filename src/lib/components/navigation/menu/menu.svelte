@@ -95,7 +95,6 @@
   class:is-closing={closing}
   aria-label="站点菜单"
   aria-modal="true"
-  data-nosnippet=""
   oncancel={handle_cancel}
   onclose={handle_close}
 >
@@ -109,11 +108,13 @@
     onclick={dismiss_with_mouse}
   ></button>
 
-  <MenuPanel
-    is_closing={closing}
-    is_open={menu.is_open}
-    on_navigate={request_close}
-  />
+  <div class="menu-content" data-nosnippet="">
+    <MenuPanel
+      is_closing={closing}
+      is_open={menu.is_open}
+      on_navigate={request_close}
+    />
+  </div>
 </dialog>
 
 <style>
@@ -185,6 +186,13 @@
 
   .menu::backdrop {
     background: transparent;
+  }
+
+  .menu-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
   }
 
   .menu :global(.slip) {
