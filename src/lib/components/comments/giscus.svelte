@@ -9,9 +9,10 @@
 
   interface Props {
     config: SiteConfig['comments']
+    term: string
   }
 
-  let { config }: Props = $props()
+  let { config, term }: Props = $props()
   let container = $state<HTMLElement>()
   type GiscusComponent = typeof import('@giscus/svelte').default
   let Giscus = $state<GiscusComponent>()
@@ -58,7 +59,7 @@
 </script>
 
 <div class="comments-transition">
-  <PaperSeam lower_surface="field" />
+  <PaperSeam />
 </div>
 
 <section
@@ -77,24 +78,22 @@
 
   <div class="comments-body">
     {#if Giscus}
-      {#key theme_url}
-        <Giscus
-          category={config.category}
-          categoryId={config.category_id}
-          emitMetadata={config.emit_metadata}
-          id="giscus-comments"
-          inputPosition={config.input_position}
-          lang={config.language}
-          loading="lazy"
-          mapping={config.mapping}
-          reactionsEnabled={config.reactions_enabled}
-          repo={config.repo as Repo}
-          repoId={config.repo_id}
-          strict={config.strict}
-          term={page.url.pathname}
-          theme={theme_url}
-        />
-      {/key}
+      <Giscus
+        category={config.category}
+        categoryId={config.category_id}
+        emitMetadata={config.emit_metadata}
+        id="giscus-comments"
+        inputPosition={config.input_position}
+        lang={config.language}
+        loading="lazy"
+        mapping={config.mapping}
+        reactionsEnabled={config.reactions_enabled}
+        repo={config.repo as Repo}
+        repoId={config.repo_id}
+        strict={config.strict}
+        {term}
+        theme={theme_url}
+      />
     {:else}
       <div aria-hidden="true" class="comments-placeholder">
         <span
@@ -114,13 +113,10 @@
       var(--color-boundary) 78%,
       transparent
     );
-    --comments-surface: var(--color-field);
     position: relative;
-    isolation: isolate;
     width: calc(100% + var(--inline-gutter) * 2);
     margin-inline: calc(-1 * var(--inline-gutter));
-    border-block: 1px solid var(--comments-rule);
-    background: var(--comments-surface);
+    background: transparent;
   }
 
   .comments-transition {
@@ -171,7 +167,7 @@
   .comments-body {
     min-width: 0;
     padding: clamp(1.125rem, 3vw, 1.875rem) var(--inline-gutter)
-      clamp(1.5rem, 3.5vw, 2.75rem);
+      clamp(0.75rem, 1.5vw, 1.25rem);
   }
 
   .comments-body :global(giscus-widget) {

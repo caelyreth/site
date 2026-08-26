@@ -19,7 +19,10 @@
 <article id="content" class="about-document">
   <h1 class="sr-only">{data.document.frontmatter.title}</h1>
   <Content document={data.document} font={data.document.frontmatter.font} />
-  <Giscus config={site.current.comments} />
+  <Giscus
+    config={site.current.comments}
+    term={data.document.frontmatter.title}
+  />
 </article>
 
 <style>

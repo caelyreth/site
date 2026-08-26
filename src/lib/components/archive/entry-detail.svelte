@@ -45,7 +45,7 @@
       <Content {document} font={document.frontmatter.font} />
     </div>
 
-    <Giscus config={comments} />
+    <Giscus config={comments} term={document.frontmatter.title} />
 
     <footer class="entry-footer">
       <BackLink

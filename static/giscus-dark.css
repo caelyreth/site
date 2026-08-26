@@ -1,6 +1,10 @@
+body {
+  background: transparent;
+}
+
 main {
-  --color-canvas-default: #1a1a1a;
-  --color-canvas-overlay: #202020;
+  --color-canvas-default: transparent;
+  --color-canvas-overlay: transparent;
   --color-canvas-inset: #171717;
   --color-canvas-subtle: #222222;
   --color-border-default: #3b3b3b;
@@ -68,9 +72,12 @@ main {
   background: var(--color-canvas-subtle);
 }
 
-.gsc-comment-box-textarea,
+.gsc-comment-box-textarea {
+  background: var(--color-canvas-inset);
+}
+
 .gsc-comment-content {
-  background: var(--color-canvas-default);
+  background: transparent;
 }
 
 .gsc-comment-box-textarea:focus {
