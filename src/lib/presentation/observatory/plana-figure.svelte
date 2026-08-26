@@ -19,7 +19,7 @@
     --plana-materialize-delay: 420ms;
     --plana-figure-aspect-ratio: 0.885;
     --plana-normal-inline-start: clamp(3.5rem, 17vw, 19rem);
-    --plana-normal-width: clamp(23rem, 48vw, 48rem);
+    --plana-normal-width: clamp(30rem, 48vw, 48rem);
     --plana-art-height: min(
       54rem,
       calc(
@@ -47,7 +47,7 @@
     );
 
     position: absolute;
-    bottom: clamp(-3rem, -3vw, -1.25rem);
+    bottom: 0;
     left: 0;
     width: var(--plana-normal-width);
     height: var(--plana-art-height);

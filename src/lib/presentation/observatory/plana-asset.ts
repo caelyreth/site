@@ -1,5 +1,10 @@
 import plana_figure_source from '$lib/assets/illustrations/plana-figure.svg?raw'
 
+const plana_figure = plana_figure_source.replace(
+  '<svg ',
+  '<svg preserveAspectRatio="xMidYMax meet" ',
+)
+
 const plana_palette = [
   ['#fafafa', '--plana-tone-0'],
   ['#f7f6f7', '--plana-tone-1'],
@@ -12,7 +17,7 @@ const plana_palette = [
 ] as const
 
 function recolor_plana(clip_id: string) {
-  let figure = plana_figure_source
+  let figure = plana_figure
     .replaceAll('url(#a)', `url(#${clip_id})`)
     .replace('id="a"', `id="${clip_id}"`)
   for (const [source, tone] of plana_palette) {
