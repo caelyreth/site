@@ -220,6 +220,9 @@ catalogs:
     '@sveltejs/kit':
       specifier: ^2.70.2
       version: 2.70.2
+    '@vercel/speed-insights':
+      specifier: ^2.0.0
+      version: 2.0.0
     comark:
       specifier: ^0.6.2
       version: 0.6.2
@@ -305,6 +308,9 @@ importers:
       '@types/three':
         specifier: catalog:t
         version: 0.185.1
+      '@vercel/speed-insights':
+        specifier: catalog:f
+        version: 2.0.0(@sveltejs/kit@2.70.2(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.8)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0)))(svelte@5.56.8)(typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0)))(svelte@5.56.8)
       comark:
         specifier: catalog:f
         version: 0.6.2(katex@0.17.0)(rangi@2.2.0)
@@ -1232,6 +1238,32 @@ packages:
     resolution: {integrity: sha512-1z1TBCNJCR2WzjPtjzmCHr8rtzXHosMjLdsCNe6Mzsfwiw044gzzLVuiEZO9vIjkI50lvQ+gIOxOiVQG0hGAeA==}
     peerDependencies:
       vite: ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0
+
+  '@vercel/speed-insights@2.0.0':
+    resolution: {integrity: sha512-jwkNcrTeafWxjmWq4AHBaptSqZiJkYU5adLC9QBSqeim0GcqDMgN5Ievh8OG1rJ6W3A4l1oiP7qr9CWxGuzu3w==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      nuxt: '>= 3'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      nuxt:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   acorn@8.18.0:
     resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==}
@@ -2617,6 +2649,11 @@ snapshots:
       tinyglobby: 0.2.17
       unplugin-utils: 0.3.2
       vite: 8.1.5(@types/node@26.1.2)(jiti@2.7.0)
+
+  '@vercel/speed-insights@2.0.0(@sveltejs/kit@2.70.2(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.8)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0)))(svelte@5.56.8)(typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0)))(svelte@5.56.8)':
+    optionalDependencies:
+      '@sveltejs/kit': 2.70.2(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.8)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0)))(svelte@5.56.8)(typescript-native-bridge@6.0.3-bridge.7.tsgo.7.0.2)(vite@8.1.5(@types/node@26.1.2)(jiti@2.7.0))
+      svelte: 5.56.8
 
   acorn@8.18.0: {}
 
