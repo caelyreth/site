@@ -77,7 +77,7 @@ title = "星群"
 [[menu.entries]]
 code = "Fragment / 004"
 detail = "短暂记录"
-note = "尚未整理的短句与片段。"
+note = "WIP，用不了！"
 title = "碎片"
 
 [[menu.entries]]
