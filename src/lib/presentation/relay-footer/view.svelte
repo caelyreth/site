@@ -102,16 +102,18 @@
       </section>
     </div>
     <div class="tail">
-      <span>{footer.copyright}</span>
-      <a class="tail-link" href={footer.license_href}
-        >{footer.license_label}</a
-      >
-      <a
-        class="tail-link"
-        href={footer.icp_href}
-        rel="noopener noreferrer"
-        target="_blank">{footer.icp_label}</a
-      >
+      <div class="tail-meta">
+        <span>{footer.copyright}</span>
+        <a class="tail-link" href={footer.license_href}
+          >{footer.license_label}</a
+        >
+        <a
+          class="tail-link"
+          href={footer.icp_href}
+          rel="noopener noreferrer"
+          target="_blank">{footer.icp_label}</a
+        >
+      </div>
       <span class="tail-signature">{footer.signature}</span>
     </div>
   </div>
@@ -341,12 +343,18 @@
 
   .tail {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
+    min-width: 0;
     padding-top: 1rem;
     color: var(--footer-secondary);
     font-size: 0.625rem;
     line-height: 1.3;
+  }
+
+  .tail-meta {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
   }
 
   .tail-link {
@@ -354,6 +362,7 @@
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
+    white-space: nowrap;
   }
 
   .tail-signature {
@@ -371,6 +380,20 @@
     .statement-row {
       width: 100%;
       justify-content: space-between;
+    }
+
+    .tail {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .tail-meta {
+      gap: 0.5rem 1rem;
+    }
+
+    .tail-signature {
+      margin-inline-start: 0;
+      justify-self: start;
     }
   }
 
