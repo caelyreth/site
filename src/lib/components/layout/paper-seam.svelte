@@ -1,5 +1,11 @@
 <script lang="ts">
   import PaperEdge from './paper-edge.svelte'
+
+  interface Props {
+    lower_surface?: 'field' | 'paper'
+  }
+
+  let { lower_surface = 'paper' }: Props = $props()
 </script>
 
 <div aria-hidden="true" class="field-surface paper-seam">
@@ -9,7 +15,12 @@
       <PaperEdge guide side="bottom" />
     </div>
   </div>
-  <div class="lower-edge">
+  <div
+    class="lower-edge"
+    style:--paper-edge-surface={lower_surface === 'field'
+      ? 'var(--color-field)'
+      : 'var(--color-paper)'}
+  >
     <PaperEdge side="top" />
   </div>
 </div>

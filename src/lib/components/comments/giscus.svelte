@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import PaperSeam from '$lib/components/layout/paper-seam.svelte'
   import type { SiteConfig } from '$lib/content/schema'
   import { site_href } from '$lib/navigation/path'
   import type { Repo } from '@giscus/svelte'
@@ -56,13 +57,17 @@
   })
 </script>
 
+<div class="comments-transition">
+  <PaperSeam lower_surface="field" />
+</div>
+
 <section
   aria-labelledby="comments-title"
   bind:this={container}
   class="comments"
 >
   <header class="comments-header">
-    <div>
+    <div class="comments-heading">
       <p class="micro-label">DISCUSSION CHANNEL</p>
       <h2 id="comments-title">{config.title}</h2>
       <p class="comments-description">{config.description}</p>
@@ -109,15 +114,18 @@
       var(--color-boundary) 78%,
       transparent
     );
-    --comments-surface: color-mix(
-      in oklab,
-      var(--color-prose-surface) 72%,
-      var(--color-paper)
-    );
-    width: 100%;
-    margin-top: clamp(3rem, 8vw, 5.5rem);
+    --comments-surface: var(--color-field);
+    position: relative;
+    isolation: isolate;
+    width: calc(100% + var(--inline-gutter) * 2);
+    margin-inline: calc(-1 * var(--inline-gutter));
     border-block: 1px solid var(--comments-rule);
     background: var(--comments-surface);
+  }
+
+  .comments-transition {
+    width: calc(100% + var(--inline-gutter) * 2);
+    margin-inline: calc(-1 * var(--inline-gutter));
   }
 
   .comments-header {
@@ -125,25 +133,29 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1.5rem;
-    padding: clamp(1.25rem, 3vw, 1.75rem) var(--inline-gutter)
-      clamp(1rem, 2.5vw, 1.5rem);
-    border-bottom: 1px solid var(--comments-rule);
+    padding: clamp(1.125rem, 2.75vw, 1.75rem) var(--inline-gutter)
+      clamp(1rem, 2.25vw, 1.375rem);
+    border-bottom: 1px dashed var(--comments-rule);
+  }
+
+  .comments-heading {
+    min-width: 0;
   }
 
   .comments-header h2 {
-    margin: 0.5rem 0 0;
+    margin: 0.4rem 0 0;
     color: var(--color-text);
     font-family: var(--font-stack-serif);
-    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-size: clamp(1.125rem, 1.8vw, 1.375rem);
     font-weight: 650;
     line-height: 1.25;
   }
 
   .comments-description {
-    max-width: 34rem;
-    margin: 0.5rem 0 0;
+    max-width: 36rem;
+    margin: 0.45rem 0 0;
     color: var(--color-text-secondary);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     line-height: 1.55;
   }
 
@@ -151,15 +163,15 @@
     flex: none;
     width: 1.25rem;
     height: 1.25rem;
-    margin-top: 0.2rem;
+    margin-top: 0.1rem;
     color: var(--color-muted);
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 
   .comments-body {
     min-width: 0;
-    padding: clamp(1rem, 3vw, 1.75rem) var(--inline-gutter)
-      clamp(1.25rem, 3vw, 2rem);
+    padding: clamp(1.125rem, 3vw, 1.875rem) var(--inline-gutter)
+      clamp(1.5rem, 3.5vw, 2.75rem);
   }
 
   .comments-body :global(giscus-widget) {
@@ -186,10 +198,6 @@
   }
 
   @media (width < 40rem) {
-    .comments {
-      margin-top: 3.25rem;
-    }
-
     .comments-header {
       gap: 1rem;
     }
