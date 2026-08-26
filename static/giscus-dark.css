@@ -1,14 +1,14 @@
 @import url('./giscus-base.css');
 
-main {
+:root {
   --giscus-surface: #1c1c1b;
   --giscus-surface-raised: #242423;
   --giscus-border: #3d3d3a;
   --giscus-border-quiet: #30302e;
   --giscus-focus: #aeb8f6;
   --color-canvas-default: transparent;
-  --color-canvas-overlay: var(--giscus-surface-raised);
-  --color-canvas-inset: var(--giscus-surface);
+  --color-canvas-overlay: var(--giscus-surface);
+  --color-canvas-inset: var(--giscus-surface-raised);
   --color-canvas-subtle: var(--giscus-surface-raised);
   --color-border-default: var(--giscus-border);
   --color-border-muted: var(--giscus-border-quiet);

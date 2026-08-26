@@ -1,4 +1,5 @@
-body {
+body,
+main {
   background: transparent;
 }
 
@@ -23,36 +24,79 @@ main {
 }
 
 .gsc-comment-box,
-.gsc-comment {
+.gsc-comment,
+.gsc-comment-content {
   border-radius: 0;
 }
 
 .gsc-comment-box,
 .gsc-comment-content,
 .gsc-comment-box-tabs,
-.gsc-comment-box-bottom {
-  border-color: var(--color-border-muted);
-}
-
-.gsc-comment-box,
-.gsc-comment-box-tabs,
-.gsc-comment-box-bottom {
-  background: var(--giscus-surface);
-}
-
+.gsc-comment-box-bottom,
 .gsc-timeline,
 .gsc-replies {
   border-color: var(--color-border-muted);
 }
 
-.gsc-comment-box-textarea {
-  background: var(--giscus-input);
+.gsc-comment-box-tabs,
+.gsc-comment-box-bottom {
+  background: transparent;
 }
 
-.gsc-comment-content,
-.gsc-reactions-button,
+.gsc-comment-box {
+  background: transparent;
+}
+
+.gsc-comment-box-textarea,
+.gsc-comment-box-textarea-extras,
+.gsc-comment-box-write,
+.gsc-comment-box-preview,
+.gsc-reply-box,
+.gsc-reply-box .form-control {
+  background: transparent;
+}
+
+.gsc-comment,
+.gsc-comment-content {
+  background: transparent;
+}
+
 .gsc-reactions-menu {
   background: transparent;
+}
+
+.gsc-reactions-button {
+  border: 1px solid var(--color-border-muted);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.gsc-reactions .btn-sm {
+  border: 1px solid var(--color-border-muted);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.gsc-reactions-button:hover {
+  border-color: var(--color-border-default);
+  background: transparent;
+}
+
+.gsc-reactions .btn-sm:hover {
+  border-color: var(--color-border-default);
+  background: transparent;
+}
+
+.gsc-reactions-button:focus-visible {
+  border-color: var(--giscus-focus);
+  outline: 0;
+  box-shadow: 0 0 0 1px var(--giscus-focus);
+}
+
+.gsc-reactions .btn-sm:focus-visible {
+  border-color: var(--giscus-focus);
+  outline: 0;
+  box-shadow: 0 0 0 1px var(--giscus-focus);
 }
 
 .gsc-comment-box-tabs button {
@@ -62,7 +106,7 @@ main {
 
 .gsc-comment-box-tabs button[aria-selected='true'] {
   color: var(--color-fg-default);
-  background: var(--giscus-surface-raised);
+  background: transparent;
   box-shadow: inset 0 -1px 0 var(--giscus-focus);
 }
 
@@ -93,27 +137,46 @@ main {
 .gsc-comment-box-bottom .btn-primary {
   min-height: 2.25rem;
   border-radius: 0.5rem;
+  background: transparent;
   box-shadow: none;
+}
+
+.gsc-header .btn,
+.gsc-comment .btn,
+.gsc-comment-box .btn {
+  background: transparent;
 }
 
 .gsc-reactions-popover,
 .gsc-reactions-popover .Popover-message {
-  background: var(--giscus-surface-raised);
+  background: var(--giscus-surface);
   border-color: var(--giscus-border);
   box-shadow: none;
 }
 
 .gsc-reactions-popover button:hover {
-  background: var(--color-social-reaction-bg-hover);
+  background: transparent;
 }
 
 .gsc-reactions-popover button[aria-pressed='true'] {
-  background: var(--color-social-reaction-bg-reacted-hover);
+  background: transparent;
 }
 
 .gsc-comment-author,
 .gsc-comment-footer {
   color: var(--color-fg-muted);
+}
+
+.gsc-comment-link,
+.gsc-comment-footer a,
+.gsc-header a {
+  color: var(--color-fg-muted);
+}
+
+.gsc-comment-link:hover,
+.gsc-comment-footer a:hover,
+.gsc-header a:hover {
+  color: var(--color-fg-default);
 }
 
 .gsc-reactions-count {

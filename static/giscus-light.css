@@ -1,14 +1,14 @@
 @import url('./giscus-base.css');
 
-main {
+:root {
   --giscus-surface: #fbfaf7;
-  --giscus-surface-raised: #f2f1ec;
-  --giscus-border: #cecdc7;
-  --giscus-border-quiet: #deddd8;
+  --giscus-surface-raised: #eeede7;
+  --giscus-border: #cbc9c1;
+  --giscus-border-quiet: #dcdad2;
   --giscus-focus: #5867b6;
   --color-canvas-default: transparent;
-  --color-canvas-overlay: var(--giscus-surface-raised);
-  --color-canvas-inset: var(--giscus-surface);
+  --color-canvas-overlay: var(--giscus-surface);
+  --color-canvas-inset: var(--giscus-surface-raised);
   --color-canvas-subtle: var(--giscus-surface-raised);
   --color-border-default: var(--giscus-border);
   --color-border-muted: var(--giscus-border-quiet);
@@ -19,12 +19,12 @@ main {
   --color-accent-emphasis: var(--giscus-focus);
   --color-accent-muted: #5867b633;
   --color-accent-subtle: #5867b612;
-  --color-neutral-muted: #2727271c;
+  --color-neutral-muted: #27272714;
   --color-btn-text: #272727;
   --color-btn-bg: var(--giscus-surface-raised);
   --color-btn-border: var(--giscus-border);
-  --color-btn-hover-bg: #e8e7e1;
-  --color-btn-hover-border: #b9b8b1;
+  --color-btn-hover-bg: #e5e4dd;
+  --color-btn-hover-border: #b9b7ae;
   --color-btn-primary-text: #20202a;
   --color-btn-primary-bg: #e2e5fa;
   --color-btn-primary-border: #6975bb;
@@ -33,7 +33,7 @@ main {
   --color-btn-primary-disabled-text: #858580;
   --color-btn-primary-disabled-bg: #efeee9;
   --color-btn-primary-disabled-border: #d7d6d0;
-  --color-social-reaction-bg-hover: #e8e7e1;
+  --color-social-reaction-bg-hover: #e5e4dd;
   --color-social-reaction-bg-reacted-hover: #e2e5fa;
-  --giscus-input: #fffefb;
+  --giscus-input: #fffefa;
 }
