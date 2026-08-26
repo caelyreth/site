@@ -24,6 +24,7 @@
     "@types/node": "catalog:t",
     "@types/qrcode": "^1.5.6",
     "@types/three": "catalog:t",
+    "@vercel/analytics": "catalog:f",
     "@vercel/speed-insights": "catalog:f",
     "comark": "catalog:f",
     "comark-toml": "catalog:f",
