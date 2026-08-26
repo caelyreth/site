@@ -80,8 +80,6 @@
   }
 
   .entry-footer {
-    margin-top: clamp(2.75rem, 7vw, 5rem);
-    padding-block: 1rem clamp(2.5rem, 6vw, 4.5rem);
     border-top: 1px solid var(--color-boundary);
   }
 </style>
