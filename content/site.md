@@ -111,6 +111,8 @@ rss_href = "/rss.xml"
 copyright = "© 2026 泠雨"
 license_label = "CC BY-NC-SA"
 license_href = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+icp_label = "萌ICP备20263076号"
+icp_href = "https://icp.gov.moe/?keyword=20263076"
 signature = "愿你能找到一些平静"
 
 [[footer.navigation]]
