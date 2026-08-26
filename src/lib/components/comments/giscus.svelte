@@ -175,6 +175,12 @@
     width: 100%;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    .comments-body :global(giscus-widget::part(iframe)) {
+      transition: height var(--dur-short) var(--ease-out);
+    }
+  }
+
   .comments-placeholder {
     display: grid;
     gap: 0.75rem;
