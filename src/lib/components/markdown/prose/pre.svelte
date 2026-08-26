@@ -70,7 +70,7 @@
   .code-caption {
     min-inline-size: 0;
     color: var(--color-muted);
-    font-family: var(--font-stack-mono);
+    font-family: var(--font-stack-sans);
     font-size: 0.6875rem;
     line-height: 1.45;
     overflow-wrap: anywhere;
@@ -84,7 +84,7 @@
     padding: 0;
     border: 0;
     color: inherit;
-    font-family: var(--font-stack-mono);
+    font-family: var(--font-stack-sans);
     font-size: 0.75rem;
     font-synthesis: none;
     font-variant-ligatures: none;

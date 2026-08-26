@@ -59,7 +59,6 @@
   .label {
     margin: 0 0 0.5rem;
     color: var(--color-muted);
-    font-family: var(--font-stack-mono);
     font-size: 0.625rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -112,7 +111,6 @@
   .detail {
     flex: none;
     color: var(--color-muted);
-    font-family: var(--font-stack-mono);
     font-size: 0.5625rem;
     font-weight: 600;
     letter-spacing: 0.06em;

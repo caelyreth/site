@@ -15,7 +15,7 @@
     padding: 0.1rem 0.25rem;
     border: 1px solid var(--color-rule);
     color: var(--color-text);
-    font-family: var(--font-stack-mono);
+    font-family: var(--font-stack-sans);
     font-size: 0.8em;
     font-synthesis: none;
     font-variant-ligatures: none;

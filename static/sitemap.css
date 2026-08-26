@@ -84,7 +84,6 @@ p {
 .count {
   flex: none;
   color: var(--muted);
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -164,7 +163,6 @@ a:focus-visible {
 
 .meta {
   color: var(--muted);
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;

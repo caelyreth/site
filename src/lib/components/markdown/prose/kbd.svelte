@@ -16,7 +16,7 @@
     border: 1px solid var(--color-rule);
     border-bottom-width: 2px;
     color: var(--color-text);
-    font-family: var(--font-stack-mono);
+    font-family: var(--font-stack-sans);
     font-size: 0.78em;
     font-synthesis: none;
     font-variant-ligatures: none;

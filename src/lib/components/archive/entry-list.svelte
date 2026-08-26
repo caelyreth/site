@@ -183,10 +183,6 @@
     line-height: 1.55;
   }
 
-  .entry-item.records .entry-sequence {
-    font-family: var(--font-stack-mono);
-  }
-
   .entry-item.voidknot .entry-link {
     padding-block: clamp(1.6rem, 3.4vw, 2.5rem)
       clamp(1.1rem, 2.2vw, 1.65rem);

@@ -151,7 +151,6 @@
   --color-alert-caution: var(--color-alert-caution-light);
   --font-stack-sans: system-ui, sans-serif;
   --font-stack-serif: 'Noto Serif SC', ui-serif, serif;
-  --font-stack-mono: ui-monospace, monospace;
 
   /* layout control */
   --half-measure: 24rem;

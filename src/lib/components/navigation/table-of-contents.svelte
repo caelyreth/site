@@ -122,7 +122,6 @@
     width: 2rem;
     max-block-size: calc(100vh - var(--header-safe-inset) - 2rem);
     overflow: visible;
-    font-family: var(--font-stack-mono);
     font-size: 0.625rem;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.04em;

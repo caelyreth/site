@@ -126,7 +126,6 @@
     align-items: baseline;
     gap: 0.5rem;
     color: var(--color-muted);
-    font-family: var(--font-stack-mono);
     font-size: 0.625rem;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.06em;
