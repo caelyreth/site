@@ -104,7 +104,7 @@ title = "朋友"
 [footer]
 label = "站点信息"
 title = "Caelyreth"
-statement = "Trading wept of yesterday, for what we sing today -- Chasing Daylight"
+statement = "Find the way to neverland."
 index_label = "站点索引"
 archive_label = "版本标记"
 archive_detail = "RBK / 2026 / 泠雨"

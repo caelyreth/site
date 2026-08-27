@@ -185,6 +185,7 @@
     max-width: 36ch;
     margin: 0;
     color: var(--footer-secondary);
+    font-family: var(--font-stack-serif);
     font-size: 0.75rem;
     line-height: 1.55;
   }
@@ -373,6 +374,15 @@
     .heading {
       grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.8fr);
       gap: 2rem;
+    }
+
+    .statement-row {
+      justify-self: end;
+      justify-content: end;
+    }
+
+    .statement {
+      text-align: start;
     }
   }
 
