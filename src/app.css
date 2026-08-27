@@ -75,7 +75,7 @@
   );
   --color-footer-selection-ink-dark: var(--color-ink-dark);
   --color-focus-dark: oklch(67.3% 0.182 276.935);
-  --color-text-dark: oklch(93% 0 0);
+  --color-text-dark: oklch(86% 0 0);
   --color-text-secondary-dark: oklch(80% 0 0);
   --color-text-link-dark: oklch(75% 0.115 274.713);
   --color-highlight-surface-dark: color-mix(
