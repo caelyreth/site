@@ -23,7 +23,7 @@ function latest_date(entries: { published: string; updated?: string }[]) {
 export async function sitemap_entries(): Promise<SitemapEntry[]> {
   const [entries, constellations] = await Promise.all([
     all_entry_entries(),
-    constellation_source.entries(),
+    constellation_source.documents(),
   ])
   const indexed_entries = entry_index(entries, constellations)
   const indexed_constellations = constellation_index(

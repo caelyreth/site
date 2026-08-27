@@ -20,7 +20,7 @@ async function constellation_document() {
 async function indexed_constellations() {
   const [entries, constellations] = await Promise.all([
     all_entry_entries(),
-    constellation_source.entries(),
+    constellation_source.documents(),
   ])
   return constellation_index(
     constellations,
@@ -51,11 +51,13 @@ export function constellation_route_entries() {
 }
 
 export async function constellation_entry_page(id: string, page: number) {
-  const [document, entries, constellations] = await Promise.all([
-    constellation_source.document(id),
+  const [entries, constellations] = await Promise.all([
     all_entry_entries(),
-    constellation_source.entries(),
+    constellation_source.documents(),
   ])
+  const document = constellations.find(
+    (constellation) => constellation.id === id,
+  )
   if (!document) return undefined
 
   const index = entry_index(entries, constellations)

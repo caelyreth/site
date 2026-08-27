@@ -10,3 +10,5 @@ entries_label = "关联内容"
 entries_navigation_label = "{title}中的{entries}"
 entry_count_label = "{count} 篇关联文字"
 +++
+
+类似标签的系统，不过每一个星座是一个独立的小文章，用于描述连缀内容。

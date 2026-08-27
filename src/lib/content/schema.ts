@@ -170,22 +170,10 @@ export const site_config_schema = v.strictObject({
   title: v.string(),
 })
 
-const constellation_id_schema = v.pipe(
-  v.string(),
-  v.regex(content_key_pattern),
-)
-
 export const entry_frontmatter_schema = v.strictObject({
   ...indexed_document_fields,
   published: v.pipe(v.string(), v.isoDate()),
   updated: v.optional(v.pipe(v.string(), v.isoDate())),
-  constellations: v.optional(
-    v.pipe(
-      v.array(constellation_id_schema),
-      v.transform((ids) => [...new Set(ids)]),
-    ),
-    [],
-  ),
 })
 
 export const constellation_frontmatter_schema = v.strictObject(

@@ -26,7 +26,7 @@ export async function feed_data() {
   const [site, entries, constellations] = await Promise.all([
     read_content('site', site_config_schema),
     all_entry_entries(),
-    constellation_source.entries(),
+    constellation_source.documents(),
   ])
   if (!site) throw new Error('Missing content/site.md.')
 

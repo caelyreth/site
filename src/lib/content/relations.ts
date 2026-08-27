@@ -1,5 +1,12 @@
-import type { CollectionEntry, EntryCollection } from './entries'
-import type { ConstellationFrontmatter, ContentEntry } from './schema'
+import type { ElementNode, Node } from 'comark'
+
+import {
+  is_entry_collection,
+  type CollectionEntry,
+  type EntryCollection,
+} from './entries'
+import { content_key_pattern } from './schema'
+import type { ConstellationFrontmatter, ContentDocument } from './schema'
 
 export interface ConstellationReference {
   id: string
@@ -34,7 +41,7 @@ export type RecentArchiveItem =
       updated: string
     })
 
-type ConstellationEntries = ContentEntry<ConstellationFrontmatter>[]
+type ConstellationDocuments = ContentDocument<ConstellationFrontmatter>[]
 
 function compare_entries(left: EntrySummary, right: EntrySummary) {
   return (
@@ -57,45 +64,98 @@ function compare_constellations(
   )
 }
 
-function constellation_lookup(entries: ConstellationEntries) {
-  return new Map(entries.map((entry) => [entry.id, entry]))
+function is_element(node: Node): node is ElementNode {
+  return Array.isArray(node) && typeof node[0] === 'string'
 }
 
-function resolve_constellation_ids(
-  ids: string[],
-  path: string,
-  known: ReturnType<typeof constellation_lookup>,
-): ConstellationReference[] {
-  return ids.map((id) => {
-    const constellation = known.get(id)
-    if (!constellation) {
-      throw new Error(`${path}: unknown constellation "${id}".`)
+function links_in(nodes: Node[]) {
+  const links: string[] = []
+
+  function visit(current_nodes: Node[]) {
+    for (const node of current_nodes) {
+      if (!is_element(node)) continue
+
+      const [tag, attributes, ...children] = node
+      if (tag === 'a' && typeof attributes.href === 'string') {
+        links.push(attributes.href)
+      }
+      visit(children)
     }
-    return { id, title: constellation.frontmatter.title }
-  })
+  }
+
+  visit(nodes)
+  return links
 }
 
-export function resolve_constellations(
-  ids: string[],
-  path: string,
-  entries: ConstellationEntries,
-): ConstellationReference[] {
-  return resolve_constellation_ids(ids, path, constellation_lookup(entries))
+function entry_key(collection: EntryCollection, id: string) {
+  return `${collection}/${id}`
+}
+
+function linked_entry_key(href: string) {
+  let url: URL
+  try {
+    url = new URL(href, 'https://content.invalid/constellations/page')
+  } catch {
+    return undefined
+  }
+  if (url.origin !== 'https://content.invalid') return undefined
+
+  const [collection, id, ...rest] = url.pathname.split('/').filter(Boolean)
+  if (
+    rest.length ||
+    !is_entry_collection(collection) ||
+    !id ||
+    !content_key_pattern.test(id)
+  ) {
+    return undefined
+  }
+  return entry_key(collection, id)
+}
+
+function linked_constellations(
+  entries: CollectionEntry[],
+  constellations: ConstellationDocuments,
+) {
+  const known_entries = new Map(
+    entries.map((entry) => [entry_key(entry.collection, entry.id), entry]),
+  )
+  const related = new Map<string, ConstellationReference[]>()
+
+  for (const constellation of constellations) {
+    const linked = new Set(
+      links_in(constellation.document.nodes)
+        .map(linked_entry_key)
+        .filter((key): key is string => key !== undefined),
+    )
+
+    for (const key of linked) {
+      if (!known_entries.has(key)) {
+        throw new Error(
+          `${constellation.path}: linked entry "${key}" does not exist.`,
+        )
+      }
+      const references = related.get(key) ?? []
+      references.push({
+        id: constellation.id,
+        title: constellation.document.frontmatter.title,
+      })
+      related.set(key, references)
+    }
+  }
+
+  return related
 }
 
 export function entry_index(
   entries: CollectionEntry[],
-  constellations: ConstellationEntries,
+  constellations: ConstellationDocuments,
 ): EntrySummary[] {
-  const known = constellation_lookup(constellations)
+  const related = linked_constellations(entries, constellations)
   return entries
     .map((entry) => ({
       collection: entry.collection,
-      constellations: resolve_constellation_ids(
-        entry.frontmatter.constellations,
-        entry.path,
-        known,
-      ),
+      constellations:
+        related.get(entry_key(entry.collection, entry.id)) ?? [],
       id: entry.id,
       published: entry.frontmatter.published,
       summary: entry.frontmatter.summary,
@@ -115,7 +175,7 @@ export function entries_for_constellation(
 }
 
 export function constellation_index(
-  entries: ConstellationEntries,
+  entries: ConstellationDocuments,
   entry_summaries: EntrySummary[],
 ): ConstellationSummary[] {
   return entries
@@ -125,8 +185,8 @@ export function constellation_index(
         entry_count: related.length,
         id: entry.id,
         latest: related.slice(0, 3),
-        summary: entry.frontmatter.summary,
-        title: entry.frontmatter.title,
+        summary: entry.document.frontmatter.summary,
+        title: entry.document.frontmatter.title,
       }
     })
     .sort(compare_constellations)

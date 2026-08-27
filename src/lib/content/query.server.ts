@@ -138,7 +138,15 @@ export function content_query<Frontmatter extends Record<string, unknown>>(
     )
   }
 
-  return { document, entries, entry, keys }
+  async function documents() {
+    const found = await Promise.all(keys().map(document))
+    return found.filter(
+      (document): document is ContentDocument<Frontmatter> =>
+        document !== undefined,
+    )
+  }
+
+  return { document, documents, entries, entry, keys }
 }
 
 export const page_size = 7

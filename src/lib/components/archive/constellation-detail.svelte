@@ -97,7 +97,6 @@
   }
 
   .constellation-intro {
-    max-width: 41rem;
     margin-top: 1.5rem;
   }
 

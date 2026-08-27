@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ depends }) => {
   const [home, entries, constellations] = await Promise.all([
     read_content('home', home_frontmatter_schema),
     all_entry_entries(),
-    constellation_source.entries(),
+    constellation_source.documents(),
   ])
   if (!home) throw new Error('Missing content/home.md.')
 

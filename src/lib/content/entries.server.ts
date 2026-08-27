@@ -6,7 +6,7 @@ import {
   type EntryLink,
 } from './entries'
 import { page_count, paginate, read_content } from './query.server'
-import { entry_index, resolve_constellations } from './relations'
+import { entry_index } from './relations'
 import { entry_index_frontmatter_schema } from './schema'
 import { constellation_source, entry_source } from './sources.server'
 
@@ -77,33 +77,43 @@ export async function collection_page(
   page: number,
 ) {
   const [entries, constellations, document] = await Promise.all([
-    collection_entries(collection),
-    constellation_source.entries(),
+    all_entry_entries(),
+    constellation_source.documents(),
     collection_document(collection),
   ])
 
   return {
     document,
-    entries: paginate(entry_index(entries, constellations), page),
+    entries: paginate(
+      entry_index(entries, constellations).filter(
+        (entry) => entry.collection === collection,
+      ),
+      page,
+    ),
   }
 }
 
 export async function collection_page_entries() {
-  const constellations = await constellation_source.entries()
-  const pages = await Promise.all(
-    entry_collections.map(async (collection) => {
-      const total = entry_index(
-        await collection_entries(collection),
-        constellations,
-      )
-      return Array.from(
-        { length: Math.max(0, page_count(total.length) - 1) },
-        (_, index) => ({ collection, page: String(index + 2) }),
-      )
-    }),
-  )
+  const [entries, constellations] = await Promise.all([
+    all_entry_entries(),
+    constellation_source.documents(),
+  ])
+  const indexed = entry_index(entries, constellations)
 
-  return pages.flat()
+  return entry_collections.flatMap((collection) =>
+    Array.from(
+      {
+        length: Math.max(
+          0,
+          page_count(
+            indexed.filter((entry) => entry.collection === collection)
+              .length,
+          ) - 1,
+        ),
+      },
+      (_, index) => ({ collection, page: String(index + 2) }),
+    ),
+  )
 }
 
 export function entry_route_entries() {
@@ -115,18 +125,20 @@ export function entry_route_entries() {
 }
 
 export async function entry_page(collection: EntryCollection, id: string) {
-  const [entry, constellations] = await Promise.all([
+  const [entry, entries, constellations] = await Promise.all([
     entry_source(collection).document(id),
-    constellation_source.entries(),
+    all_entry_entries(),
+    constellation_source.documents(),
   ])
   if (!entry) return undefined
 
+  const summary = entry_index(entries, constellations).find(
+    (current) => current.collection === collection && current.id === id,
+  )
+  if (!summary) return undefined
+
   return {
-    constellations: resolve_constellations(
-      entry.document.frontmatter.constellations,
-      entry.path,
-      constellations,
-    ),
+    constellations: summary.constellations,
     document: entry.document,
   }
 }
