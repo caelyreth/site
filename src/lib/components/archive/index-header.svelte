@@ -35,7 +35,6 @@
   }
 
   .archive-index-header-copy {
-    max-width: 40rem;
     min-width: 0;
     padding-top: clamp(1.75rem, 4vw, 2.75rem);
   }

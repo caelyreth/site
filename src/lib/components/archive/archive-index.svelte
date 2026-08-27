@@ -71,24 +71,7 @@
     min-width: 0;
   }
 
-  .archive-index[data-collection='records']
-    :global(.archive-index-header h1) {
-    font-size: clamp(1.65rem, 2.5vw, 2.25rem);
-    font-weight: 650;
-    line-height: 1.25;
-  }
-
-  .archive-index[data-collection='voidknot']
-    :global(.archive-index-header h1) {
-    font-size: clamp(2rem, 3.4vw, 3rem);
-  }
-
-  .archive-index[data-collection='voidknot'] .index-prose {
-    max-width: 36rem;
-  }
-
   .index-prose {
-    max-width: 40rem;
     margin: 1.375rem 0 clamp(2.5rem, 6vw, 4.5rem);
   }
 

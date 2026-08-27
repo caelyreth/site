@@ -67,14 +67,6 @@
     width: 100%;
   }
 
-  .entry-detail[data-collection='records'] .entry-body {
-    margin-top: clamp(2.25rem, 5vw, 3.5rem);
-  }
-
-  .entry-detail[data-collection='voidknot'] .entry-body {
-    margin-top: clamp(3.5rem, 8vw, 5.5rem);
-  }
-
   .entry-body {
     margin-top: clamp(2.75rem, 7vw, 5rem);
   }
