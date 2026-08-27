@@ -20,6 +20,8 @@
       index: String(index + 1).padStart(3, '0'),
     })),
   )
+  const primary_previews = $derived(previews.slice(0, 4))
+  const utility_previews = $derived(previews.slice(4))
 
   function is_primary_navigation(event: MouseEvent) {
     return (
@@ -50,7 +52,7 @@
   class="collection-previews"
 >
   <div class="slip-bundle">
-    {#each previews as item}
+    {#snippet slip(item: (typeof previews)[number], compact = false)}
       {#snippet contents()}
         <span class="slip-heading">
           <span
@@ -82,6 +84,7 @@
           aria-current={is_current(item.href) ? 'page' : undefined}
           aria-label={item.title}
           class="slip"
+          class:compact
           href={site_href(item.href)}
           onclick={close_on_navigation}
           style:--slip-enter-delay={item.entrance.enter_delay}
@@ -94,6 +97,7 @@
         <span
           aria-hidden="true"
           class="slip"
+          class:compact
           data-nosnippet=""
           style:--slip-enter-delay={item.entrance.enter_delay}
           style:--slip-enter-x={item.entrance.enter_x}
@@ -102,7 +106,18 @@
           {@render contents()}
         </span>
       {/if}
-    {/each}
+    {/snippet}
+
+    <div class="primary-slips">
+      {#each primary_previews as item}
+        {@render slip(item)}
+      {/each}
+    </div>
+    <div class="utility-slips">
+      {#each utility_previews as item}
+        {@render slip(item, true)}
+      {/each}
+    </div>
   </div>
 </div>
 
@@ -120,11 +135,22 @@
   .slip-bundle {
     display: grid;
     width: min(100%, 52rem);
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(0.75rem, 1.25vw, 1rem);
+    gap: 1.75rem;
     pointer-events: auto;
     transform: translateY(-6%) rotate(-1.5deg);
     transform-origin: center;
+  }
+
+  .primary-slips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.25vw, 1rem);
+  }
+
+  .utility-slips {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
   }
 
   .slip {
@@ -140,7 +166,6 @@
     background-color: var(--slip-surface);
     align-items: flex-start;
     flex-direction: column;
-    grid-column: span 2;
     justify-content: space-between;
     transform: translateY(var(--slip-offset-y, 0));
     white-space: nowrap;
@@ -242,20 +267,19 @@
     opacity: 0.1;
   }
 
-  .slip:nth-child(2) {
+  .primary-slips .slip:nth-child(2) {
     --slip-offset-y: 0.75rem;
   }
 
-  .slip:nth-child(3) {
+  .primary-slips .slip:nth-child(3) {
     --slip-offset-y: 0.5rem;
   }
 
-  .slip:nth-child(4) {
+  .primary-slips .slip:nth-child(4) {
     --slip-offset-y: 1.25rem;
   }
 
-  .slip:nth-child(5),
-  .slip:nth-child(6) {
+  .slip.compact {
     --slip-offset-y: 0;
     width: max-content;
     max-width: 100%;
@@ -267,26 +291,14 @@
     justify-content: center;
   }
 
-  .slip:nth-child(5) {
-    grid-column: 1 / span 2;
-    justify-self: end;
-  }
-
-  .slip:nth-child(6) {
-    grid-column: 3 / span 2;
-    justify-self: start;
-  }
-
-  .slip:nth-child(5) .slip-heading,
-  .slip:nth-child(6) .slip-heading {
+  .slip.compact .slip-heading {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
   }
 
-  .slip:nth-child(5) .slip-title,
-  .slip:nth-child(6) .slip-title {
+  .slip.compact .slip-title {
     font-family: var(--font-stack-serif);
     font-size: clamp(0.9375rem, 1.25vw, 1.125rem);
     font-weight: 700;
@@ -294,10 +306,8 @@
     line-height: 1;
   }
 
-  .slip:nth-child(5) .slip-register,
-  .slip:nth-child(5) .slip-index,
-  .slip:nth-child(6) .slip-register,
-  .slip:nth-child(6) .slip-index {
+  .slip.compact .slip-register,
+  .slip.compact .slip-index {
     display: none;
   }
 

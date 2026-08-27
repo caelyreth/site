@@ -94,6 +94,13 @@ href = "/about"
 note = "个人资料与近况。"
 title = "关于"
 
+[[menu.entries]]
+code = "Friends / 007"
+detail = "同行者与朋友"
+href = "/friends"
+note = "一些仍在创作、构建与思考的人。"
+title = "朋友"
+
 [footer]
 label = "站点信息"
 title = "Caelyreth"

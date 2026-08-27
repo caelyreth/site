@@ -44,7 +44,7 @@ external = false
 
 以下是一些快速链接，不过也可以通过导航前往。
 
-[关于](/about) 与 [项目与时间线](/timeline)
+[关于](/about) 与 [项目与时间线](/timeline)，还有 [朋友们](/friends)！
 
 ## 希望能多写一些东西？
 

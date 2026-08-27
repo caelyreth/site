@@ -86,6 +86,18 @@ export const home_frontmatter_schema = v.strictObject({
 
 export const page_frontmatter_schema = v.strictObject(document_fields)
 
+const friend_schema = v.strictObject({
+  avatar_url: v.string(),
+  description: v.string(),
+  link: v.string(),
+  name: v.string(),
+})
+
+export const friends_frontmatter_schema = v.strictObject({
+  ...document_fields,
+  friends: v.array(friend_schema),
+})
+
 export const entry_index_frontmatter_schema = v.strictObject({
   ...index_document_fields,
   back_label: v.string(),
@@ -135,7 +147,7 @@ export const site_config_schema = v.strictObject({
     title: v.string(),
   }),
   menu: v.strictObject({
-    entries: v.pipe(v.array(menu_item_schema), v.length(6)),
+    entries: v.pipe(v.array(menu_item_schema), v.length(7)),
     field_note: v.string(),
     ornaments: v.pipe(v.array(v.string()), v.length(16)),
   }),
@@ -183,6 +195,10 @@ export const constellation_frontmatter_schema = v.strictObject(
 export type ContentFont = v.InferOutput<typeof content_font_schema>
 export type HomeFrontmatter = v.InferOutput<typeof home_frontmatter_schema>
 export type PageFrontmatter = v.InferOutput<typeof page_frontmatter_schema>
+export type Friend = v.InferOutput<typeof friend_schema>
+export type FriendsFrontmatter = v.InferOutput<
+  typeof friends_frontmatter_schema
+>
 export type EntryIndexFrontmatter = v.InferOutput<
   typeof entry_index_frontmatter_schema
 >
@@ -205,6 +221,11 @@ export type HomeDocument = MarkdownDocument<
 export type PageDocument = MarkdownDocument<
   Record<string, unknown>,
   PageFrontmatter
+>
+
+export type FriendsDocument = MarkdownDocument<
+  Record<string, unknown>,
+  FriendsFrontmatter
 >
 
 export type EntryIndexDocument = MarkdownDocument<

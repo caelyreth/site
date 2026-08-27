@@ -3,14 +3,16 @@
   import PageMeta from '$lib/components/layout/page-meta.svelte'
   import type { PageDocument } from '$lib/content/schema'
   import { get_site_config, site_title } from '$lib/content/site'
+  import type { Snippet } from 'svelte'
 
   import Content from './document.svelte'
 
   interface Props {
+    children?: Snippet
     document: PageDocument
   }
 
-  let { document }: Props = $props()
+  let { children, document }: Props = $props()
   const site = get_site_config()
 </script>
 
@@ -23,6 +25,7 @@
 <article id="content" class="document-page">
   <h1 class="sr-only">{document.frontmatter.title}</h1>
   <Content {document} font={document.frontmatter.font} />
+  {@render children?.()}
   <Giscus
     config={site.current.comments}
     term={document.frontmatter.title}
