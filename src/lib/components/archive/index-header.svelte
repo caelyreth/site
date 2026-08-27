@@ -2,25 +2,16 @@
   interface Props {
     description: string
     kind_label: string
-    page: number
-    page_count: number
     total: number
     title: string
   }
 
-  let { description, kind_label, page, page_count, title, total }: Props =
-    $props()
+  let { description, kind_label, title, total }: Props = $props()
 </script>
 
 <header class="archive-index-header">
   <div aria-label={kind_label} class="archive-register" role="group">
     <span class="register-kind">{kind_label}</span>
-    <span class="register-page"
-      >{String(page).padStart(2, '0')} / {String(page_count).padStart(
-        2,
-        '0',
-      )}</span
-    >
     <span class="register-total">{total}</span>
   </div>
   <div class="archive-index-header-copy">
@@ -43,7 +34,7 @@
     display: inline-grid;
     min-height: 2.25rem;
     border-block: 1px solid var(--color-boundary);
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(2, auto);
     align-items: stretch;
     color: var(--color-muted);
     font-size: 0.625rem;
@@ -58,13 +49,8 @@
     align-items: center;
   }
 
-  .register-page,
   .register-total {
     border-inline-start: 1px solid var(--color-boundary);
-  }
-
-  .register-page {
-    justify-content: center;
   }
 
   .register-total {

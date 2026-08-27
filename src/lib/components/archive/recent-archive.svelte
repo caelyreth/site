@@ -1,13 +1,13 @@
 <script lang="ts">
   import { entry_path } from '$lib/content/entries'
-  import type { RecentArchiveItem } from '$lib/content/relations'
+  import type { EntrySummary } from '$lib/content/relations'
   import { site_href } from '$lib/navigation/path'
 
   import ArchiveList from './archive-list.svelte'
   import { format_published_date } from './date'
 
   interface Props {
-    items: RecentArchiveItem[]
+    items: EntrySummary[]
   }
 
   let { items }: Props = $props()
@@ -16,17 +16,6 @@
     records: '简单记录',
     voidknot: '虚空之结',
   } as const
-
-  function item_href(item: RecentArchiveItem) {
-    return item.kind === 'entry'
-      ? entry_path(item.collection, item.id)
-      : `/constellations/${item.id}`
-  }
-
-  function item_label(item: RecentArchiveItem) {
-    if (item.kind === 'entry') return collection_labels[item.collection]
-    return `星群 / ${item.entry_count} 条记录`
-  }
 </script>
 
 <section class="recent-archive" aria-labelledby="recent-archive-title">
@@ -40,21 +29,21 @@
 
   {#if items.length}
     <ArchiveList>
-      {#each items as item, index}
-        <li class:constellation={item.kind === 'constellation'}>
-          <a class="recent-link" href={site_href(item_href(item))}>
-            <div class="recent-coordinate">
-              <span aria-hidden="true"
-                >{String(index + 1).padStart(2, '0')}</span
-              >
-              {#if item.updated}
-                <time datetime={item.updated}
-                  >{format_published_date(item.updated)}</time
-                >
-              {/if}
-            </div>
+      {#each items as item}
+        <li>
+          <a
+            class="recent-link"
+            href={site_href(entry_path(item.collection, item.id))}
+          >
             <div class="recent-copy">
-              <span class="recent-kind">{item_label(item)}</span>
+              <div class="recent-meta">
+                <time datetime={item.published}
+                  >{format_published_date(item.published)}</time
+                >
+                <span class="recent-kind"
+                  >{collection_labels[item.collection]}</span
+                >
+              </div>
               <h3>{item.title}</h3>
               <p>{item.summary}</p>
             </div>
@@ -102,9 +91,13 @@
   }
 
   .recent-head a {
-    flex: none;
-    color: var(--color-muted);
-    font-size: 0.75rem;
+    display: inline-flex;
+    min-height: 2.5rem;
+    padding-inline: 0.25rem;
+    align-items: center;
+    color: var(--color-text-secondary);
+    font-family: var(--font-stack-serif);
+    font-size: 0.9375rem;
     line-height: 1.4;
     text-decoration: none;
     transition: color var(--dur-micro) var(--ease-out);
@@ -114,15 +107,14 @@
     display: grid;
     min-width: 0;
     padding-block: 1.05rem;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.35rem;
     color: var(--color-text);
     text-decoration: none;
     transition: color var(--dur-micro) var(--ease-out);
   }
 
-  .recent-coordinate {
+  .recent-meta {
     display: flex;
+    margin-bottom: 0.35rem;
     align-items: baseline;
     gap: 0.5rem;
     color: var(--color-muted);
@@ -134,15 +126,6 @@
 
   .recent-copy {
     min-width: 0;
-  }
-
-  .recent-kind {
-    display: block;
-    margin-bottom: 0.35rem;
-    color: var(--color-muted);
-    font-size: 0.625rem;
-    letter-spacing: 0.06em;
-    line-height: 1.35;
   }
 
   h3 {
@@ -175,10 +158,6 @@
     --archive-mark-offset: 1.55rem;
   }
 
-  :global(.recent-archive .archive-list > li.constellation)::before {
-    border-radius: 50%;
-  }
-
   .recent-link:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: -2px;
@@ -188,17 +167,6 @@
     .recent-link:hover,
     .recent-head a:hover {
       color: var(--color-text-link);
-    }
-  }
-
-  @media (width >= 42rem) {
-    .recent-link {
-      grid-template-columns: clamp(5.5rem, 12vw, 6.75rem) minmax(0, 1fr);
-      column-gap: clamp(0.75rem, 1.75vw, 1.25rem);
-    }
-
-    .recent-coordinate {
-      padding-top: 0.15rem;
     }
   }
 

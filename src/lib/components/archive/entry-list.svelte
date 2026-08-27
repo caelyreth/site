@@ -25,7 +25,7 @@
 </script>
 
 <ArchiveList>
-  {#each entries as entry, index}
+  {#each entries as entry}
     <li
       class:records={collection === 'records'}
       class:voidknot={collection === 'voidknot'}
@@ -35,20 +35,15 @@
         class="entry-link"
         href={site_href(entry_path(entry.collection, entry.id))}
       >
-        <div class="entry-coordinate">
-          <span aria-hidden="true" class="entry-sequence"
-            >{String(index + 1).padStart(2, '0')}</span
-          >
-          <time datetime={entry.published}
-            >{format_published_date(entry.published)}</time
-          >
-        </div>
         <div class="entry-copy">
-          {#if show_collection}
-            <span class="entry-source"
-              >{library.current.entries[entry.collection].title}</span
+          <div class="entry-meta">
+            <time datetime={entry.published}
+              >{format_published_date(entry.published)}</time
             >
-          {/if}
+            {#if show_collection}
+              <span>{library.current.entries[entry.collection].title}</span>
+            {/if}
+          </div>
           <h2>{entry.title}</h2>
           <p>{entry.summary}</p>
         </div>
@@ -65,8 +60,6 @@
 <style>
   .entry-item {
     --archive-mark-offset: 1.72rem;
-    --entry-coordinate-width: clamp(5.75rem, 14vw, 7rem);
-    --entry-column-gap: clamp(0.75rem, 1.75vw, 1.25rem);
     min-width: 0;
   }
 
@@ -76,31 +69,21 @@
     min-width: 0;
     padding-block: clamp(1.25rem, 2.6vw, 1.8rem)
       clamp(0.85rem, 1.8vw, 1.25rem);
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.4rem;
     color: var(--color-text);
     text-decoration: none;
     transition: color var(--dur-short) var(--ease-out);
   }
 
-  .entry-coordinate {
+  .entry-meta {
     display: flex;
+    margin-bottom: 0.45rem;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: 0.55rem;
     color: var(--color-muted);
-    font-variant-numeric: tabular-nums;
-    line-height: 1.45;
-  }
-
-  .entry-coordinate time {
     font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
     letter-spacing: 0.03em;
-  }
-
-  .entry-sequence {
-    color: var(--color-text-secondary);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
+    line-height: 1.3;
   }
 
   .entry-copy {
@@ -116,15 +99,6 @@
     letter-spacing: 0;
     line-height: 1.18;
     overflow-wrap: anywhere;
-  }
-
-  .entry-source {
-    display: block;
-    margin-bottom: 0.45rem;
-    color: var(--color-muted);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-    line-height: 1.25;
   }
 
   p {
@@ -147,23 +121,6 @@
   @media (hover: hover) {
     .entry-link:hover {
       color: var(--color-text-link);
-    }
-  }
-
-  @media (width >= 42rem) {
-    .entry-link {
-      grid-template-columns: var(--entry-coordinate-width) minmax(0, 1fr);
-      column-gap: var(--entry-column-gap);
-    }
-
-    .entry-coordinate {
-      padding-top: 0.2rem;
-    }
-
-    .entry-constellations {
-      margin-left: calc(
-        var(--entry-coordinate-width) + var(--entry-column-gap)
-      );
     }
   }
 

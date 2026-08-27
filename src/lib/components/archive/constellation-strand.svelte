@@ -17,11 +17,18 @@
 
 <article class="strand">
   <header class="strand-head">
-    <span class="strand-count"
-      >{format_template(library.current.constellations.entry_count_label, {
-        count: constellation.entry_count,
-      })}</span
-    >
+    <div class="strand-meta">
+      {#if constellation.latest_published}
+        <time datetime={constellation.latest_published}
+          >{format_published_date(constellation.latest_published)}</time
+        >
+      {/if}
+      <span
+        >{format_template(library.current.constellations.entry_count_label, {
+          count: constellation.entry_count,
+        })}</span
+      >
+    </div>
     <h2>{constellation.title}</h2>
     <span class="strand-summary">{constellation.summary}</span>
     <a
@@ -43,15 +50,12 @@
       },
     )}
   >
-    {#each constellation.latest as entry, index}
+    {#each constellation.latest as entry}
       <a href={site_href(entry_path(entry.collection, entry.id))}>
-        <span aria-hidden="true" class="echo-sequence"
-          >{String(index + 1).padStart(2, '0')}</span
-        >
-        <span class="echo-title">{entry.title}</span>
         <time datetime={entry.published}
           >{format_published_date(entry.published)}</time
         >
+        <span class="echo-title">{entry.title}</span>
       </a>
     {/each}
   </nav>
@@ -76,9 +80,11 @@
     color: var(--color-text);
   }
 
-  .strand-count {
-    display: block;
+  .strand-meta {
+    display: flex;
     margin-bottom: 0.7rem;
+    align-items: baseline;
+    gap: 0.65rem;
     color: var(--color-muted);
     font-size: 0.625rem;
     font-variant-numeric: tabular-nums;
@@ -105,12 +111,10 @@
 
   .strand-echoes a {
     position: relative;
-    display: grid;
+    display: block;
     min-width: 0;
     min-height: 2.75rem;
-    padding: 0.55rem 0;
-    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
-    align-items: center;
+    padding: 0.65rem 0;
     border-bottom: 1px solid var(--color-boundary);
     color: var(--color-muted);
     text-decoration: none;
@@ -119,7 +123,9 @@
       color var(--dur-micro) var(--ease-out);
   }
 
-  .echo-sequence {
+  .strand-echoes time {
+    display: block;
+    margin-bottom: 0.25rem;
     color: var(--color-muted);
     font-size: 0.625rem;
     font-variant-numeric: tabular-nums;
@@ -130,16 +136,6 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .strand-echoes time {
-    margin-inline-start: 1rem;
-    color: var(--color-muted);
-    font-size: 0.625rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.03em;
-    line-height: 1.3;
     white-space: nowrap;
   }
 

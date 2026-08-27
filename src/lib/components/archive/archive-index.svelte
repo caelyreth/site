@@ -40,8 +40,6 @@
     <IndexHeader
       description={document.frontmatter.description}
       kind_label={document.frontmatter.kind}
-      {page}
-      {page_count}
       {total}
       title={document.frontmatter.title}
     />
