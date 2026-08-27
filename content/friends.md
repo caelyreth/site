@@ -8,6 +8,12 @@ name = "sherry 的博客"
 link = "https://sherrygsx.cn/"
 avatar_url = "https://sherrygsx.cn/upload/b_87a12b213f914d4fc74607f72c4739c4.jpg?width=1200"
 description = "一个喜欢瞎折腾的初中生"
+
+[[friends]]
+name = "Ray's Blog"
+link = "https://blog.mk1.io"
+avatar_url = "https://img.mk1.io/img/avatar.png"
+description = "Never say never."
 +++
 
 # 朋友 {#friends}
