@@ -29,9 +29,21 @@ function edge(character: string | undefined): Edge {
 
 function visible_edges(value: string): Edges {
   const characters = [...value.trim()]
+
+  function find_edge(start: number, step: -1 | 1) {
+    for (
+      let index = start;
+      index >= 0 && index < characters.length;
+      index += step
+    ) {
+      const found = edge(characters[index])
+      if (found) return found
+    }
+  }
+
   return {
-    end: edge(characters.at(-1)),
-    start: edge(characters[0]),
+    end: find_edge(characters.length - 1, -1),
+    start: find_edge(0, 1),
   }
 }
 
