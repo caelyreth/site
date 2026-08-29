@@ -1,6 +1,11 @@
-import { defineComarkPlugin, type MarkdownItPlugin } from 'comark'
+import {
+  defineComarkPlugin,
+  type MarkdownItPlugin,
+  type Node,
+} from 'comark'
 
 const default_boundaries = new Set([' ', '\t', '\n', '*', '_', '~', '['])
+const inline_block_marker = 'data-comark-inline-block'
 const cjk_or_punctuation =
   /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u2010-\u206f\u3001-\u303f\uff01-\uff0f\uff1a-\uff20\uff3b-\uff40\uff5b-\uff65]/u
 const component_name = /^[a-z$][\w$-]*$/i
@@ -18,11 +23,27 @@ interface InlineState {
 }
 
 interface InlineRuleHost {
+  core: {
+    ruler: {
+      after(name: string, rule_name: string, rule: CoreRule): void
+    }
+  }
   inline: {
     ruler: {
       at(name: string, rule: InlineRule): void
     }
   }
+}
+
+interface BlockToken {
+  attrSet(name: string, value: string): void
+  level: number
+  nesting: -1 | 0 | 1
+  type: string
+}
+
+interface CoreState {
+  tokens: BlockToken[]
 }
 
 interface InlineComponent {
@@ -35,6 +56,7 @@ interface InlineComponent {
 }
 
 type InlineRule = (state: InlineState, silent: boolean) => boolean
+type CoreRule = (state: CoreState) => void
 
 function component_boundary(source: string, start: number) {
   if (start === 0) return true
@@ -106,12 +128,53 @@ const parse_inline_component: InlineRule = (state, silent) => {
   return true
 }
 
+function mark_standalone_inline_components(state: CoreState) {
+  for (const token of state.tokens) {
+    if (
+      token.type !== 'mdc_block_shorthand' ||
+      token.nesting === -1 ||
+      token.level !== 0
+    ) {
+      continue
+    }
+
+    token.attrSet(inline_block_marker, '')
+  }
+}
+
 const inline_components: MarkdownItPlugin = (markdown) => {
-  const { inline } = markdown as unknown as InlineRuleHost
+  const { core, inline } = markdown as unknown as InlineRuleHost
   inline.ruler.at('comark_inline_component', parse_inline_component)
+  core.ruler.after(
+    'block',
+    'mark_standalone_inline_components',
+    mark_standalone_inline_components,
+  )
+}
+
+function wrap_standalone_inline_components(nodes: Node[]) {
+  return nodes.map((node) => {
+    if (!Array.isArray(node) || node[0] === null) return node
+
+    const [tag, attributes, ...children] = node
+    if (!(inline_block_marker in attributes)) {
+      return node
+    }
+
+    const { [inline_block_marker]: _, ...component_attributes } = attributes
+    return [
+      'p',
+      {},
+      [tag, component_attributes, ...children],
+    ] satisfies Node
+  })
 }
 
 export default defineComarkPlugin(() => ({
   name: 'inline-components',
   markdownItPlugins: [inline_components],
+  post(state) {
+    if (!state.tree) return
+    state.tree.nodes = wrap_standalone_inline_components(state.tree.nodes)
+  },
 }))
