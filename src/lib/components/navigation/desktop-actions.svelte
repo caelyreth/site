@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { scroll_to_top } from '$lib/browser/scroll'
   import { get_page_chrome } from '$lib/components/layout/page-chrome'
 
   import RailAction from './rail-action.svelte'
@@ -6,10 +7,6 @@
   import ThemeCycle from './theme-cycle.svelte'
 
   const chrome = get_page_chrome()
-
-  function scroll_to_top() {
-    window.scrollTo({ top: 0, behavior: 'auto' })
-  }
 </script>
 
 <div

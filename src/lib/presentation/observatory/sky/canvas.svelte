@@ -19,6 +19,26 @@
   let canvas_visible = $state(false)
   let page_visible = $state(true)
   let field_ready = $state(false)
+  let mounted = $state(false)
+  let scene_failed = $state(false)
+  let scene_loading = $state(false)
+  let scene_timer: ReturnType<typeof setTimeout> | undefined
+  let reveal_timer: ReturnType<typeof setTimeout> | undefined
+  const scene_active = $derived(
+    canvas !== undefined &&
+      canvas_visible &&
+      page_visible &&
+      !deferred &&
+      !paused,
+  )
+  const scene_start_ready = $derived(
+    mounted &&
+      scene_active &&
+      engine === undefined &&
+      !scene_failed &&
+      !scene_loading &&
+      scene_timer === undefined,
+  )
 
   function sync_engine_activity() {
     engine?.set_active(
@@ -26,52 +46,71 @@
     )
   }
 
+  function cancel_scene_start() {
+    if (scene_timer === undefined) return
+    clearTimeout(scene_timer)
+    scene_timer = undefined
+  }
+
+  function start_scene() {
+    scene_timer = undefined
+    if (scene_loading || engine || !scene_active) return
+
+    scene_loading = true
+    void load_engine()
+      .then((create_engine) => {
+        if (!mounted || engine || !canvas || !scene_active) return
+        engine = create_engine(canvas, theme.resolvedTheme === 'dark')
+        sync_engine_activity()
+        reveal_timer = setTimeout(() => {
+          if (mounted) field_ready = true
+        }, 32)
+      })
+      .catch((error: unknown) => {
+        if (!mounted) return
+        scene_failed = true
+        console.error('无法初始化星空场。', error)
+      })
+      .finally(() => {
+        scene_loading = false
+        schedule_scene_start()
+      })
+  }
+
+  function schedule_scene_start() {
+    if (!scene_start_ready) return
+
+    scene_timer = setTimeout(
+      start_scene,
+      reduced_motion.current ? 0 : SKY_FIELD_START_DELAY,
+    )
+  }
+
   onMount(() => {
     if (!canvas) return
 
-    let disposed = false
-    let reveal_timer: ReturnType<typeof setTimeout> | undefined
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        canvas_visible = entry?.isIntersecting ?? false
-        sync_engine_activity()
-      },
-      { rootMargin: '75% 0px 60%' },
-    )
+    mounted = true
+    const observer = new IntersectionObserver(([entry]) => {
+      canvas_visible = entry?.isIntersecting ?? false
+      sync_engine_activity()
+      if (!canvas_visible) cancel_scene_start()
+      schedule_scene_start()
+    })
     const handle_visibility = () => {
       page_visible = document.visibilityState === 'visible'
       sync_engine_activity()
+      if (!page_visible) cancel_scene_start()
+      schedule_scene_start()
     }
 
     observer.observe(canvas)
     document.addEventListener('visibilitychange', handle_visibility)
     page_visible = document.visibilityState === 'visible'
-
-    const start_scene = () => {
-      void load_engine()
-        .then((create_engine) => {
-          if (disposed || !canvas) return
-          engine = create_engine(canvas, theme.resolvedTheme === 'dark')
-          sync_engine_activity()
-          reveal_timer = setTimeout(() => {
-            if (!disposed) field_ready = true
-          }, 32)
-        })
-        .catch((error: unknown) => {
-          if (!disposed) {
-            console.error('无法初始化星空场。', error)
-          }
-        })
-    }
-
-    const scene_timer = setTimeout(
-      start_scene,
-      reduced_motion.current ? 0 : SKY_FIELD_START_DELAY,
-    )
+    schedule_scene_start()
 
     return () => {
-      disposed = true
-      clearTimeout(scene_timer)
+      mounted = false
+      cancel_scene_start()
       if (reveal_timer !== undefined) clearTimeout(reveal_timer)
       observer.disconnect()
       document.removeEventListener('visibilitychange', handle_visibility)
@@ -87,6 +126,8 @@
 
   $effect(() => {
     sync_engine_activity()
+    if (!scene_active) cancel_scene_start()
+    schedule_scene_start()
   })
 </script>
 

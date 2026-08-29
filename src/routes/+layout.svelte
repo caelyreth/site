@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css'
   import 'virtual:uno.css'
+  import { resolve } from '$app/paths'
   import { install_view_transitions } from '$lib/browser/view-transition'
   import PageScrollbar from '$lib/components/layout/page-scrollbar.svelte'
   import Menu from '$lib/components/navigation/menu/menu.svelte'
@@ -21,6 +22,7 @@
   const { children, data }: Props = $props()
 
   const themes = ['light', 'dark', 'system'] as const
+  const home_path = resolve('/')
   const menu = $state({
     is_open: false,
   })
@@ -32,7 +34,13 @@
 
   set_menu_state(menu)
   set_site_config(site)
-  install_view_transitions(() => !menu.is_open)
+  install_view_transitions((navigation) => {
+    const touches_home =
+      navigation.from?.url.pathname === home_path ||
+      navigation.to?.url.pathname === home_path
+
+    return !menu.is_open && !touches_home
+  })
   onMount(listen_for_content_updates)
 </script>
 

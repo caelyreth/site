@@ -1,10 +1,13 @@
 import { onNavigate } from '$app/navigation'
+import type { OnNavigate } from '@sveltejs/kit'
 
-export function install_view_transitions(should_transition: () => boolean) {
+export function install_view_transitions(
+  should_transition: (navigation: OnNavigate) => boolean,
+) {
   onNavigate((navigation) => {
     if (
       typeof document === 'undefined' ||
-      !should_transition() ||
+      !should_transition(navigation) ||
       !document.startViewTransition ||
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ) {

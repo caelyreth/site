@@ -1,5 +1,6 @@
 <script lang="ts">
   import { reduced_motion } from '$lib/browser/reduced-motion'
+  import { scroll_to_top } from '$lib/browser/scroll'
   import { scroll_activity } from '$lib/browser/scroll-activity'
   import { get_page_chrome } from '$lib/components/layout/page-chrome'
   import { onMount } from 'svelte'
@@ -66,10 +67,6 @@
 
     return () => window.clearTimeout(timer)
   })
-
-  function scroll_to_top() {
-    window.scrollTo({ top: 0, behavior: 'auto' })
-  }
 
   function toggle_rail_panel(
     panel: 'navigation' | 'toc',

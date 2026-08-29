@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { tick } from 'svelte'
+  import { scroll_to_top } from '$lib/browser/scroll'
 
   import Brand from './header/brand.svelte'
 
@@ -12,13 +12,13 @@
     return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey
   }
 
-  async function return_home() {
+  function return_home() {
+    // Reset the outgoing page before the observatory mounts. Otherwise its
+    // scene starts at the old scroll position and competes with the return.
+    scroll_to_top()
     if (page.url.pathname !== home_path) {
-      await goto(home_path, { keepFocus: true, noScroll: true })
-      await tick()
+      return goto(home_path, { keepFocus: true, noScroll: true })
     }
-
-    window.scrollTo({ top: 0, behavior: 'auto' })
   }
 
   function handle_activate(event: MouseEvent) {
