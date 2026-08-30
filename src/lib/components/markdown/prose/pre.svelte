@@ -37,11 +37,15 @@
 
 <style>
   .code-block {
+    inline-size: 100%;
     max-width: 100%;
     margin: var(--prose-block-gap) 0 0;
+    min-inline-size: 0;
   }
 
   pre {
+    box-sizing: border-box;
+    max-inline-size: 100%;
     margin: 0;
     padding: 0.875rem 1rem;
     overscroll-behavior-inline: contain;
@@ -57,6 +61,9 @@
 
   .code-tools {
     display: flex;
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
     gap: 0.75rem;
     align-items: center;
     min-block-size: 2.25rem;

@@ -31,30 +31,37 @@
   }
 </script>
 
-<div
-  aria-label={table_label}
-  bind:this={table_scroll}
-  class="table-scroll"
-  role="region"
->
-  <table {...attributes} bind:this={table} class={class_name}>
-    <caption>
-      <span class="caption-row">
-        {#if caption}<span class="caption-text">{caption}</span>{/if}
-        <CopyButton label="复制表格" value={table_text} />
-      </span>
-    </caption>
-    {@render children?.()}
-  </table>
+<div class="table-block">
+  <div
+    aria-label={table_label}
+    bind:this={table_scroll}
+    class="table-scroll"
+    role="region"
+  >
+    <table {...attributes} bind:this={table} class={class_name}>
+      <caption class="sr-only">{table_label}</caption>
+      {@render children?.()}
+    </table>
+  </div>
+  <div class="table-tools">
+    {#if caption}<span class="caption-text">{caption}</span>{/if}
+    <CopyButton label="复制表格" value={table_text} />
+  </div>
 </div>
 {#if table_scroll}
   <ScrollbarIndicator axis="inline" target={table_scroll} />
 {/if}
 
 <style>
-  .table-scroll {
+  .table-block {
     max-inline-size: 100%;
     margin-top: var(--prose-block-gap);
+    min-inline-size: 0;
+  }
+
+  .table-scroll {
+    max-inline-size: 100%;
+    min-inline-size: 0;
     overscroll-behavior-inline: contain;
     overflow-x: auto;
     scrollbar-width: none;
@@ -76,16 +83,12 @@
     line-height: var(--prose-leading);
   }
 
-  caption {
-    padding: 0.625rem 0 0;
-    caption-side: bottom;
-    text-align: start;
-  }
-
-  .caption-row {
+  .table-tools {
     display: flex;
     gap: 0.75rem;
     align-items: center;
+    min-block-size: 2.25rem;
+    padding: 0.625rem 0 0;
   }
 
   .caption-text {
@@ -95,7 +98,7 @@
     line-height: 1.45;
   }
 
-  .caption-row :global(.copy-button) {
+  .table-tools :global(.copy-button) {
     margin-inline-start: auto;
   }
 
